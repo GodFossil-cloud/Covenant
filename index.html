@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contract Agreement</title>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  body {
+    font-family: 'Georgia', serif;
+    color: #222;
+    margin: 40px auto;
+    line-height: 1.75;
+    max-width: 800px;
+  }
+  h1 {
+    text-align: center;
+    font-weight: normal;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+  }
+  p, li { margin-bottom: 1em; }
+  .divider {
+    margin: 40px 0;
+    border-top: 1px solid #bbb;
+  }
+  #signature-pad {
+    width: 100%;
+    height: 220px;
+    border: 1px solid #333;
+    margin-top: 10px;
+  }
+  #actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
+  button {
+    padding: 10px 18px;
+    font-size: 16px;
+    border: none;
+    background: #333;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover { background: #555; }
+  footer {
+    margin-top: 60px;
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Contract Agreement</h1>
+
+<section id="contract-text">
+  <p>
+    <!-- Replace this section with your actual contract -->
+    Be it known that the undersigned, having read this Covenant in full, 
+    accepts the duties, rights, and obligations contained herein. 
+    The terms below are binding upon signature.
+  </p>
+
+  <ol>
+    <li>Clause One — Obligations of the Signer</li>
+    <li>Clause Two — Terms of Service and Conduct</li>
+    <li>Clause Three — Duration and Conditions</li>
+  </ol>
+</section>
+
+<div class="divider"></div>
+
+<h3>Sign Below to Accept</h3>
+<canvas id="signature-pad"></canvas>
+<div id="actions">
+  <button id="clear">Clear</button>
+  <button id="finalize">Finalize &amp; Download PDF</button>
+</div>
+
+<footer>All rights reserved &copy; 2025</footer>
+
+<script>
+const { jsPDF } = window.jspdf;
+const canvas = document.getElementById('signature-pad');
+const pad = new SignaturePad(canvas);
+
+document.getElementById('clear').onclick = () => pad.clear();
+
+document.getElementById('finalize').onclick = () => {
+  if (pad.isEmpty()) {
+    alert('Please sign before finalizing.');
+    return;
+  }
+
+  const sig = pad.toDataURL('image/png');
+  const pdf = new jsPDF({ unit: 'pt', format: 'letter' });
+
+  pdf.setFont('Times', 'normal');
+  pdf.setFontSize(12);
+  const margin = 40;
+  let y = 60;
+
+  pdf.text('Contract Agreement', 220, y);
+  y += 40;
+
+  // Extract contract text from the page
+  const text = document.getElementById('contract-text').innerText;
+  const lines = pdf.splitTextToSize(text, 520);
+  pdf.text(lines, margin, y);
+  y = pdf.lastAutoTable ? pdf.lastAutoTable.finalY + 40 : y + lines.length * 14 + 40;
+
+  pdf.addImage(sig, 'PNG', margin, y, 200, 80);
+  pdf.text('Signature', margin, y + 100);
+
+  pdf.save('Signed_Contract.pdf');
+};
+</script>
+
+</body>
+</html>
