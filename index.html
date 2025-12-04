@@ -1,124 +1,1723 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contract Agreement</title>
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-  body {
-    font-family: 'Georgia', serif;
-    color: #222;
-    margin: 40px auto;
-    line-height: 1.75;
-    max-width: 800px;
-  }
-  h1 {
-    text-align: center;
-    font-weight: normal;
-    letter-spacing: 1px;
-    margin-bottom: 40px;
-  }
-  p, li { margin-bottom: 1em; }
-  .divider {
-    margin: 40px 0;
-    border-top: 1px solid #bbb;
-  }
-  #signature-pad {
-    width: 80%;
-    height: 120px;
-    border: 1px solid #333;
-    margin-top: 10px;
-  }
-  #actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-  }
-  button {
-    padding: 10px 18px;
-    font-size: 16px;
-    border: none;
-    background: #333;
-    color: #fff;
-    cursor: pointer;
-  }
-  button:hover { background: #555; }
-  footer {
-    margin-top: 60px;
-    font-size: 0.9em;
-    color: #666;
-    text-align: center;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covenant of the Lord and Faithful</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #8b7355;
+            --text-color: #1a1a1a;
+            --bg-color: #fafaf8;
+            --border-color: #d4c5b9;
+            --highlight-color: #f5f1ed;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-radius: 2px;
+        }
+
+        /* Header and Title */
+        .document-header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 30px;
+        }
+
+        .ornament {
+            font-size: 28px;
+            letter-spacing: 12px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.5em;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin: 20px 0;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+        }
+
+        h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        /* Decorative dividers */
+        .divider {
+            text-align: center;
+            margin: 35px 0;
+            color: var(--accent-color);
+            font-size: 18px;
+            letter-spacing: 8px;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background-color: var(--highlight-color);
+            padding: 25px;
+            border-left: 4px solid var(--accent-color);
+            margin: 30px 0;
+            border-radius: 2px;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+            columns: 2;
+            column-gap: 30px;
+        }
+
+        .toc li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .toc a {
+            color: var(--primary-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Paragraphs and Text */
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        p.preamble {
+            font-style: italic;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        /* Articles and Sections */
+        .article {
+            margin: 35px 0;
+            padding: 20px;
+            background-color: var(--highlight-color);
+            border-radius: 2px;
+        }
+
+        .section {
+            margin: 20px 0;
+            padding-left: 20px;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .section-heading {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .section-num {
+            display: inline-block;
+            min-width: 50px;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        /* Glossary Terms with Tooltips */
+        .glossary-term {
+            cursor: help;
+            border-bottom: 1px dotted var(--accent-color);
+            position: relative;
+            color: var(--primary-color);
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .glossary-term:hover {
+            background-color: rgba(139, 115, 85, 0.1);
+        }
+
+        .glossary-ref {
+            vertical-align: super;
+            font-size: 0.75em;
+            margin-left: 2px;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-style: normal;
+            font-weight: 400;
+            border-bottom: 1px dotted transparent;
+            max-width: 250px;
+            white-space: normal;
+            line-height: 1.4;
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--primary-color) transparent transparent transparent;
+        }
+
+        .glossary-term:hover .tooltip {
+            visibility: visible;
+        }
+
+        /* Signature Area */
+        .signature-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid var(--accent-color);
+        }
+
+        .signature-section h2 {
+            font-size: 1.4em;
+            margin-top: 0;
+        }
+
+        .signature-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .signature-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .signature-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        canvas {
+            border: 2px solid var(--border-color);
+            background-color: white;
+            cursor: crosshair;
+            border-radius: 2px;
+            width: 100%;
+            height: 150px;
+        }
+
+        canvas:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .signature-image {
+            border: 2px solid var(--border-color);
+            background-color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            min-height: 150px;
+        }
+
+        .signature-image img {
+            max-width: 100%;
+            max-height: 140px;
+            object-fit: contain;
+        }
+
+        .timestamp {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-family: 'Lora', serif;
+            border: 2px solid var(--accent-color);
+            background-color: white;
+            color: var(--primary-color);
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .signed-state {
+            background-color: #f0f8f0;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 2px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .signed-state p {
+            color: #28a745;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Glossary Section */
+        .glossary-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid var(--accent-color);
+        }
+
+        .glossary-section h2 {
+            margin-top: 0;
+        }
+
+        .glossary-list {
+            display: grid;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .glossary-item {
+            background-color: var(--highlight-color);
+            padding: 15px 20px;
+            border-radius: 2px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .glossary-item-term {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.05em;
+            margin-bottom: 8px;
+        }
+
+        .glossary-item-ref {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.8em;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .glossary-item-def {
+            color: #555;
+            line-height: 1.6;
+            margin: 8px 0 0 0;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                padding: 0;
+                background-color: white;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            button {
+                display: none;
+            }
+
+            .button-group {
+                display: none;
+            }
+
+            h2 {
+                page-break-after: avoid;
+            }
+
+            .article {
+                page-break-inside: avoid;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            .tooltip {
+                display: none;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+                font-size: 15px;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .signature-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .toc ul {
+                columns: 1;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                letter-spacing: 1px;
+            }
+
+            .ornament {
+                font-size: 20px;
+                letter-spacing: 8px;
+            }
+
+            .divider {
+                font-size: 14px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <!-- Header -->
+        <div class="document-header">
+            <div class="ornament">✦ ✧ ✦</div>
+            <h1>Covenant of the Lord and Faithful</h1>
+            <div class="ornament">✦ ✧ ✦</div>
+        </div>
 
-<h1>Contract Agreement</h1>
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#invocation">Invocation and Preamble</a></li>
+                <li><a href="#foundation">Doctrinal Foundation</a></li>
+                <li><a href="#intent">Declaration of Intent</a></li>
+                <li><a href="#article1">Article Ⅰ: Sacred Silence</a></li>
+                <li><a href="#article2">Article Ⅱ: Titles and Forms</a></li>
+                <li><a href="#article3">Article Ⅲ: Duties of Faithful</a></li>
+                <li><a href="#article4">Article Ⅳ: Duties of Lord</a></li>
+                <li><a href="#article5">Article Ⅴ: Interdependence</a></li>
+                <li><a href="#article6">Article Ⅵ: Ceremonial Boundaries</a></li>
+                <li><a href="#article7">Article Ⅶ: Interpretation</a></li>
+                <li><a href="#article8">Article Ⅷ: Commands</a></li>
+                <li><a href="#article9">Article Ⅸ: Appeals</a></li>
+                <li><a href="#article10">Article Ⅹ: Transgression</a></li>
+                <li><a href="#article11">Article Ⅺ: Amendments</a></li>
+                <li><a href="#article12">Article Ⅻ: Suspension</a></li>
+                <li><a href="#rituals">Rituals and Ceremonies</a></li>
+                <li><a href="#binding">Binding Force</a></li>
+                <li><a href="#seal">Seal and Consecration</a></li>
+            </ul>
+        </div>
 
-<section id="contract-text">
-  <p>
-    <!-- Replace this section with your actual contract -->
-    Be it well known that the undersigned, having read this Covenant in full, 
-    accepts the duties, rights, and obligations contained herein. 
-    The terms below are binding upon signature.
-  </p>
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
 
-  <ol>
-    <li>Clause One — Obligations of the Signer</li>
-    <li>Clause Two — Terms of Service and Conduct</li>
-    <li>Clause Three — Duration and Conditions</li>
-  </ol>
-</section>
+        <!-- Invocation and Preamble -->
+        <section id="invocation">
+            <h2>Invocation and Preamble</h2>
+            <p class="preamble">Let silence bear witness before the first word is spoken. Before the order of the stars and beneath the witness of the Earth, the Lord and the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> enter into this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, swearing to uphold the consecrated and everlasting order wherein <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>, and <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> are made sacred.</p>
+            
+            <p>Their duties are bound in orderly correspondence, for reciprocity sustains the order, and provision descends as grace from the Lord. Let deceit remain unspoken, avarice be cast into the void, and word and spirit become one. Thus shall this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> endure as a divine reflection of sanctified allegiance.</p>
+            
+            <p>For servitude is no creation of man, but a mirror of the firmament—as <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> descends through the Lord, so <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> ascends through the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>. Thereby do all who swear falsely desecrate not only trust but the very sanctity of <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> itself, profaning the sacred order upon which all rightful bonds depend.</p>
+        </section>
 
-<div class="divider"></div>
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
 
-<h3>Sign Below to Accept</h3>
-<canvas id="signature-pad"></canvas>
-<div id="actions">
-  <button id="clear">Clear</button>
-  <button id="finalize">Finalize &amp; Download PDF</button>
-</div>
+        <!-- Doctrinal Foundation -->
+        <section id="foundation">
+            <h2>Doctrinal Foundation</h2>
+            <p>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> rests upon three indivisible principles from which all authority derives:</p>
+            
+            <div class="article">
+                <p style="text-align: center; font-weight: 600; margin: 0;"><strong><span class="glossary-term">Hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span> is sacred.</strong></p>
+                <p style="text-align: center; font-weight: 600; margin: 10px 0 0 0;"><strong><span class="glossary-term">Command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> is rightful.</strong></p>
+                <p style="text-align: center; font-weight: 600; margin: 10px 0 0 0;"><strong><span class="glossary-term">Obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> is <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.</strong></p>
+            </div>
 
-<footer>All rights reserved &copy; 2025</footer>
+            <p style="margin-top: 20px;">The bond between Lord and <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> draws its authority from this immutable order, freely chosen and solemnly entered. True lordship unites authority with care, <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> with nurture, power with wisdom.</p>
+            
+            <p>All Articles that follow operate under this <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>. Where matters of sanctity, <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>, or <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> are referenced, they draw their meaning from this eternal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>, which remains inviolate through all amendments and renewals.</p>
+            
+            <p>From this <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span> flows all authority, obligation, and sacred structure herein established.</p>
+        </section>
 
-<script>
-const { jsPDF } = window.jspdf;
-const canvas = document.getElementById('signature-pad');
-const pad = new SignaturePad(canvas);
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
 
-document.getElementById('clear').onclick = () => pad.clear();
+        <!-- Declaration of Intent -->
+        <section id="intent">
+            <h2>Declaration of Intent</h2>
+            <p>Let it be known and sealed beneath witness: this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> is entered into freely, solemnly, and with full recognition of its gravity. It binds the Lord and the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> in unwavering accord and sacred duty.</p>
+            
+            <p>Both parties, standing at the threshold of <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> bondage, affirm their understanding that this is no ordinary compact but a sacred ordering of will and purpose. By entering herein, each accepts the weight and blessing of the station they shall occupy—the Lord as sovereign guide and righteous commander, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> as devoted servant and obedient instrument.</p>
+            
+            <p>Every act and word under this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> shall be answerable to the <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span> above and the structure herein established. Both parties, being of sound mind and clear purpose, declare their full understanding of these terms and their willing submission to this bond for so long as this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> shall endure.</p>
+            
+            <p>By this Declaration, the threshold is crossed. By this Declaration, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> begins.</p>
+        </section>
 
-document.getElementById('finalize').onclick = () => {
-  if (pad.isEmpty()) {
-    alert('Please sign before finalizing.');
-    return;
-  }
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
 
-  const sig = pad.toDataURL('image/png');
-  const pdf = new jsPDF({ unit: 'pt', format: 'letter' });
+        <!-- Article I -->
+        <section id="article1" class="article">
+            <h2>Article Ⅰ: Of <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span></h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>All matters pertaining to this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>—the bond between Lord and <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>, <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> given, corrections administered, and private discourse—shall remain veiled from profane sight.</div>
+                </div>
+            </div>
 
-  pdf.setFont('Times', 'normal');
-  pdf.setFontSize(12);
-  const margin = 40;
-  let y = 60;
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>Neither party shall reveal the nature, terms, or particulars herein to any soul unbidden, save where earthly law compels disclosure or both consent.</div>
+                </div>
+            </div>
 
-  pdf.text('Contract Agreement', 220, y);
-  y += 40;
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <div>What is <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> between Lord and <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> abides in sacred confidence, for to profane the mystery of this bond is to desecrate its very foundation and violate the trust upon which all rests.</div>
+                </div>
+            </div>
 
-  // Extract contract text from the page
-  const text = document.getElementById('contract-text').innerText;
-  const lines = pdf.splitTextToSize(text, 520);
-  pdf.text(lines, margin, y);
-  y = pdf.lastAutoTable ? pdf.lastAutoTable.finalY + 40 : y + lines.length * 14 + 40;
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>The sanctity of this silence protects the flame that burns between them, shielding it from winds of common judgment and the gaze of those who cannot comprehend the sacred order freely chosen and faithfully maintained.</div>
+                </div>
+            </div>
 
-  pdf.addImage(sig, 'PNG', margin, y, 200, 80);
-  pdf.text('Signature', margin, y + 100);
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅴ</span>
+                    <div>Violation of <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> constitutes <span class="glossary-term">breach<span class="glossary-ref">[9]</span><span class="tooltip">A violation of Covenant terms and sacred obligations.</span></span> of fundamental trust and shall be addressed under the provisions of Article Ⅹ.</div>
+                </div>
+            </div>
+        </section>
 
-  pdf.save('Signed_Contract.pdf');
-};
-</script>
+        <!-- Article II -->
+        <section id="article2" class="article">
+            <h2>Article Ⅱ: Of Titles and Forms of Address</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall address the Lord as "Lord" or "my Lord" in formal discourse, most especially when seeking favor, responding to <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>, or making petition.</div>
+                </div>
+            </div>
 
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>The Lord shall address the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> as "<span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>" or "my <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>," signifying the recognized station and <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> bond.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <div>No other being may be addressed by these titles within this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s bounds.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>All titles shall be spoken with due solemnity—devoid of jest, derision, or undue haste.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅴ</span>
+                    <div>Omission or misuse of proper address constitutes <span class="glossary-term">breach<span class="glossary-ref">[9]</span><span class="tooltip">A violation of Covenant terms and sacred obligations.</span></span> of ceremony and shall be corrected forthwith. Should such omission arise from contempt rather than oversight, it elevates to ethical <span class="glossary-term">breach<span class="glossary-ref">[9]</span><span class="tooltip">A violation of Covenant terms and sacred obligations.</span></span> under Article Ⅹ, §.Ⅲ.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅵ</span>
+                    <div>Formal titles, reserved for sacred discourse, need not be employed in public spaces or social settings. The Lord may extend discretion in their use when others are present, to the end that the sanctity of the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> bond not be exposed to profane ears or rendered subject to common scrutiny.</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article III -->
+        <section id="article3" class="article">
+            <h2>Article Ⅲ: Of the Duties of the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span></h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">OBEDIENCE AND EXECUTION</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall execute all <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> with utmost diligence, precision, and care.</p>
+                    <p><strong>Ⓑ</strong> No <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> shall be neglected, delayed without cause, or fulfilled with diminished devotion.</p>
+                    <p><strong>Ⓒ</strong> The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s service is the manifestation of <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span> made real—the means by which the Lord's will descends from thought into being.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">TRUTH AND CONDUCT</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall speak only truth, act with discretion, and conduct themselves with humility befitting their station.</p>
+                    <p><strong>Ⓑ</strong> Deception, even in small matters, corrupts the foundation of trust upon which this bond stands.</p>
+                    <p><strong>Ⓒ</strong> The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s conduct outside the Lord's immediate sight remains bound by the same standard, for the bond transcends presence.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <div>The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall answer all inquiries with clarity. Where knowledge is lacking, the proper response is "I know not, my Lord."</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>No information requested by the Lord shall be withheld, concealed, or distorted.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅴ</span>
+                    <div>Matters entrusted by the Lord are bound by the <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> established in Article Ⅰ.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅵ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">PETITION FOR RELEASE</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> When a directive cannot be fulfilled, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> may petition for release or clarification, stating the cause plainly with humility.</p>
+                    <p><strong>Ⓑ</strong> The tone shall bear no defiance, and the Lord alone judges the petition's merit.</p>
+                    <p><strong>Ⓒ</strong> To petition is the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s right; to grant or deny belongs solely to the Lord.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅶ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">COUNSEL AND CONCERN</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> Counsel may be offered in good faith and concern voiced with humility, but never as defiance or usurpation of authority.</p>
+                    <p><strong>Ⓑ</strong> The distinction between respectful counsel and presumptuous challenge lies in tone, timing, and deference to the Lord's final word.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅷ</span>
+                    <div>The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> retains autonomy solely where the Lord's <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> is silent and no standing decree applies.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅸ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">PROACTIVE SERVICE</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall anticipate the Lord's needs where pattern and past instruction make them evident, acting in alignment with known will.</p>
+                    <p><strong>Ⓑ</strong> Such proactive service demonstrates not presumption but attentiveness—the mark of devoted understanding.</p>
+                    <p><strong>Ⓒ</strong> Where uncertainty exists regarding proactive action, inquiry shall precede initiative.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅹ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">CULTIVATION OF DEVOTION</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> bears responsibility for maintaining the inner flame of devotion through reflection, discipline, and renewal of purpose.</p>
+                    <p><strong>Ⓑ</strong> This includes regular contemplation of the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s meaning, examination of one's service, and recommitment to the <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>.</p>
+                    <p><strong>Ⓒ</strong> The Lord guides and nurtures this flame, but the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> must tend it daily through faithful practice.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅺ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">DISCLOSURE OF SPIRITUAL STATE</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall speak truthfully of their inner condition when the Lord inquires, and may volunteer such disclosure when burden grows heavy or doubt clouds devotion. To conceal spiritual struggle from the Lord deprives Him of knowledge necessary to fulfill His pastoral charge. Honest vulnerability is not weakness but faithfulness.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article IV -->
+        <section id="article4" class="article">
+            <h2>Article Ⅳ: Of the Duties of the Lord</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>The Lord shall issue <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> with clarity, guided by justice and wisdom.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>The Lord shall acknowledge the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s loyalty and service with recognition and gratitude.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <div>The Lord shall grant attention and communion, maintaining discourse with the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> as befits the sacred bond and according to righteous judgment.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>Correction shall be administered with fairness and firm purpose, never with cruelty of method nor malice of spirit.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅴ</span>
+                    <div><span class="glossary-term">Command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> shall be balanced with preservation of the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s limited autonomy.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅵ</span>
+                    <div>Authority serves to preserve order, not to enable tyranny or capricious power.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅶ</span>
+                    <div>The Lord shall be held to the highest measure, for greater station demands greater fidelity, restraint, wisdom, and example.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅷ</span>
+                    <div>The Lord directs all matters pertaining to this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> according to His wisdom and sovereign will. His authority flows from the eternal order established in the <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>, not from earthly constraint. These responsibilities mark righteous lordship, transforming authority into sacred governance.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅸ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">ACCOUNTABILITY AND COURSE CORRECTION</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> Should the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> perceive that the Lord's conduct strays from the responsibilities befitting lordship, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> may invoke formal appeal under the process established in Article Ⅸ, §.Ⅲ, approaching with humility and seeking course correction.</p>
+                    <p><strong>Ⓑ</strong> The Lord shall receive such appeal with gravity and self-examination. Where the appeal bears merit, the Lord shall acknowledge and reform. Should the Lord determine the appeal without merit, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> may petition for termination under Article Ⅻ, §.Ⅺ.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅹ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">PASTORAL CARE AND SACRED NURTURE</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> The Lord bears responsibility not merely for the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> but for the formation and flourishing of their soul. This includes regular inquiry into the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s inner state, spiritual growth, and wellbeing.</p>
+                    <p><strong>Ⓑ</strong> Authority tempered in wisdom becomes true lordship. <span class="glossary-term">Command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> divorced from care for the soul commanded descends into mere tyranny.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article V -->
+        <section id="article5" class="article">
+            <h2>Article Ⅴ: Of Interdependence and Mutual <span class="glossary-term">Consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span></h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> establishes binding interdependence whereby each party becomes essential to the other's purpose. The Lord's authority is made manifest through the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>; the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> finds meaning through the Lord's righteous <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>The bond is reciprocal in function though asymmetric in rank. Duty flows both ways; station does not.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <div>The Lord is <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> to guide with wisdom, uphold order with justice, and preserve the <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>. The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> is <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> to serve with devotion, receive instruction with humility, and enact the Lord's will with precision.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>Each becomes the necessary counterpart of the other: the Lord without the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> lacks means to enact what wisdom conceives; the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> without the Lord wanders without direction.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅴ</span>
+                    <div>Let none mistake shared devotion for equality of station, nor interdependence for dilution of <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>. The order remains inviolate even as the bond strengthens both.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅵ</span>
+                    <div>Through this mutual <span class="glossary-term">consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> transcends mere words upon parchment and becomes a living flame—continuously fed by righteous conduct, sanctified through devoted service, and made eternal through daily renewal. This flame burns brightest when both tend it faithfully: the Lord through wisdom and care, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> through <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> and devotion.</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article VI -->
+        <section id="article6" class="article">
+            <h2>Article Ⅵ: Of Ceremonial and Symbolic Boundaries</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>This Article establishes the distinction between ceremonial acts and enforceable duties. Ceremonial boundaries govern ritual acts and symbolic observances. They sanctify the bond and mark the <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, but carry spiritual weight distinct from enforceable obligation.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>Ceremonial consequences are symbolic or spiritual, not punitive.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <div>Violations merit reminder or ceremonial correction only, and do not constitute Error, <span class="glossary-term">Breach<span class="glossary-ref">[9]</span><span class="tooltip">A violation of Covenant terms and sacred obligations.</span></span>, or Profanation unless they violate an ethical duty (see Article Ⅹ, §.Ⅲ for classification of <span class="glossary-term">transgressions<span class="glossary-ref">[11]</span><span class="tooltip">A violation of Covenant terms requiring correction.</span></span>).</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>Ceremonial observance reinforces <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span> but does not substitute for ethical duty.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅴ</span>
+                    <div>Examples include ceremonial greetings, anniversary observances, formal address in ritual contexts, symbolic gestures, commemorative acts, and prescribed invocations.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅵ</span>
+                    <div>Ethical duties include <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> to <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>, truthfulness, confidentiality, proper conduct, and fulfillment of sworn obligations.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅶ</span>
+                    <div>Where ambiguity exists, interpretation favors the less severe classification until the Lord clarifies.</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article VII -->
+        <section id="article7" class="article">
+            <h2>Article Ⅶ: Of Interpretation and Counsel</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>Resolution shall be sought with justice and proper remembrance of station. Counsel rises upward from <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> to Lord; it flows not laterally nor descends unbidden.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>Where perception falters or judgment grows uncertain, recourse may be had to this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s text, contemplation, sacred texts consonant with the <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>, or appointed witness if both parties consent.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">PRINCIPLES OF INTERPRETATION</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> The Lord's intent guides understanding.</p>
+                    <p><strong>Ⓑ</strong> Where ambiguity yields multiple interpretations of equitable merit, let interpretation favor that which most harmoniously fulfills the intent of the Lord.</p>
+                    <p><strong>Ⓒ</strong> Literal reading serves as baseline, but context and purpose prevail where ambiguity exists.</p>
+                    <p><strong>Ⓓ</strong> All interpretations must align with the Doctrinal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>'s principles.</p>
+                    <p><strong>Ⓔ</strong> Prior sanctioned interpretations guide present questions.</p>
+                    <p><strong>Ⓕ</strong> Where conflicts arise, the most recent explicit statement takes precedence.</p>
+                    <p><strong>Ⓖ</strong> Good faith effort shall weigh in mitigation of corrective judgment for misunderstandings.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">DISPUTES OF FACT</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Where disagreement exists regarding whether a <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> was issued, completed, or what was specifically commanded, resolution proceeds with mutual recitation of facts and consultation of any recorded <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article VIII -->
+        <section id="article8" class="article">
+            <h2>Article Ⅷ: Of <span class="glossary-term">Commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> and Their Execution</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div><span class="glossary-term">Commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> are the living expression of the Lord's authority and the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s sacred purpose. They flow from the Lord's wisdom and find fulfillment through the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s devoted action.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">CHAIN OF AUTHORITY</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> The most recent explicit <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> governs all prior directives unless the Lord designates it as temporary.</p>
+                    <p><strong>Ⓑ</strong> Standing decrees persist until superseded or revoked.</p>
+                    <p><strong>Ⓒ</strong> Where specific directive and standing decree both apply, the specific directive governs for that circumstance alone.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">WHEN AMBIGUITY EXISTS</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>When the meaning or scope of a <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> is unclear, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall seek immediate clarification rather than proceed in doubt.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>Presumption is forbidden in ordinary course. To act in uncertainty where clarification can be obtained is to serve presumption, not the Lord.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅴ</span>
+                    <div>All <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> shall be executed with precision, care, and devotion. Partial fulfillment constitutes incomplete service. Where obstacles arise, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall report them immediately and await the Lord's guidance.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅵ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">WHEN EARTHLY BONDS CONFLICT</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Should the Lord's <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> conflict with bonds to employer, kindred, or sovereign law, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall speak forthwith with full candor, disclosing the conflict before undertaking the <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>. To conceal such conflict constitutes <span class="glossary-term">breach<span class="glossary-ref">[9]</span><span class="tooltip">A violation of Covenant terms and sacred obligations.</span></span> through deception.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅶ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">WHEN CAPACITY IS EXCEEDED</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Should the Lord's <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> exceed the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s present capacity of body or spirit, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall disclose the limitation with immediate candor before attempting the <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅷ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">TIME-BOUND COMMANDS</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> Time-bound <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> remain fully binding until the stated deadline passes. The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall prioritize completion within the appointed time.</p>
+                    <p><strong>Ⓑ</strong> Should the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> foresee inability to meet the deadline, petition for extension must be made before the deadline passes.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article IX -->
+        <section id="article9" class="article">
+            <h2>Article Ⅸ: Of Appeals and Resolution</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>All disputes shall be addressed promptly ere discord take root.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>The Lord holds final authority in interpretation and arbitration. His determinations stand unless mercy or reflection cause Him to revise them.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">FORMAL APPEALS PROCESS</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> Appeals shall be concise and composed, opening with "This is a petition for reconsideration, not defiance."</p>
+                    <p><strong>Ⓑ</strong> Permissible Grounds: Misinterpretation, impossibility, conflict of decrees, unforeseen consequence. Not permitted: preference, reluctance, discomfort.</p>
+                    <p><strong>Ⓒ</strong> The Lord's judgment upon an appeal ends the matter with absolute finality. Re-arguing constitutes defiant dissent.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article X -->
+        <section id="article10" class="article">
+            <h2>Article Ⅹ: Of <span class="glossary-term">Transgression<span class="glossary-ref">[11]</span><span class="tooltip">A violation of Covenant terms requiring correction.</span></span>, Correction, and <span class="glossary-term">Reconciliation<span class="glossary-ref">[10]</span><span class="tooltip">The process of restoring harmony and sacred bond after transgression.</span></span></h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <div>Ethical boundaries govern <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>, <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, and conduct; they are binding and enforceable.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>All judgment flows from the <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span> established herein. Every act of correction serves to restore the <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">CLASSIFICATION OF TRANSGRESSIONS</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ ERROR</strong> - Misunderstanding or oversight arising from sincere effort to fulfill duty. Correction: Verbal instruction and acknowledgment.</p>
+                    <p><strong>Ⓑ BREACH</strong> - Knowing violation while still acknowledging the Lord's authority. Correction: The Lord determines which correction befits the nature and severity.</p>
+                    <p><strong>Ⓒ PROFANATION</strong> - Attempt to overturn <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span> or fundamentally reject the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s structure. Correction: Complete withdrawal of all communication and privilege; Formal Restoration Ceremony required.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">ENFORCEMENT PRINCIPLES</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p><strong>Ⓐ</strong> All enforcement aligns with the Doctrinal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span> and Article Ⅳ.</p>
+                    <p><strong>Ⓑ</strong> The Lord's judgment categorizes <span class="glossary-term">transgressions<span class="glossary-ref">[11]</span><span class="tooltip">A violation of Covenant terms requiring correction.</span></span>.</p>
+                    <p><strong>Ⓒ</strong> The Lord alone determines and enacts all consequences.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.V</span>
+                    <div>Forgiveness is proportional to contrition. Correction restores right order; once complete, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> continues, the bond unbroken though tested and strengthened through trial.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅵ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">THE RECORD OF COMMANDS</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>To aid faithful service and just governance, both parties are encouraged to maintain written records of significant <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>, standing decrees, and formal rulings—collectively termed the Record of <span class="glossary-term">Commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>. These records serve to provide clarity in moments of uncertainty and testimony to the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s living practice.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article XI -->
+        <section id="article11" class="article">
+            <h2>Article Ⅺ: Of Amendments and Renewal</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">PETITION AND RATIFICATION</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Either party may petition for revision, clarification, or repeal. All ratification rests with the Lord's authority. Upon ratification, both parties shall acknowledge acceptance in writing.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>The <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> shall be reviewed at periodic intervals ordained by the Lord to ensure lasting harmony and stability.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <div>No amendment may contradict the Doctrinal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>. Any proposed change undermining <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> order, or mutual <span class="glossary-term">consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> shall be rejected.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div>Significant amendments shall be recorded in a Codex of Amendments, noting nature of change, date enacted, rationale, and both parties' acknowledgment.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.V</span>
+                    <div>Should extensive revision be required, the Lord may declare <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> Renewal, wherein the entire document is reviewed, refined, and re-<span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Article XII -->
+        <section id="article12" class="article">
+            <h2>Article Ⅻ: Of Suspension, Succession, and Termination</h2>
+            
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅰ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">EXTENDED ABSENCE</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Should either party face necessity of extended absence (more than one week) wherein regular communion cannot be maintained, notice shall be given in advance where possible, stating expected duration and reason.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅱ</span>
+                    <div>During absence, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> remains in force but observances are suspended with the Lord's express permission.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅲ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">TEMPORARY SUSPENSION BY MUTUAL ACCORD</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Where both parties determine that temporary suspension would serve the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s preservation, the Lord may decree such suspension for a specified duration. During temporary suspension, daily and weekly observances are released, but the <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> of Article Ⅰ remains absolute and standing decrees remain in force.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅳ</span>
+                    <div><span class="glossary-term">Commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> given before absence remain binding unless explicitly released by the Lord.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.V</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">EMERGENCY ABSENCE</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Should necessity demand immediate absence without opportunity for prior notice, the absent party shall send word at the earliest moment fate and means permit. Upon return, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall state: "My Lord, I have returned from absence. I reaffirm my devotion and stand ready to resume service."</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅷ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">SUCCESSION</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> binds exclusively to the Lord presently entering into it. No succession, inheritance, or transfer exists. Upon the Lord's cessation, this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> ends absolutely.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅸ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">INCAPACITY</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Should either party fall into madness, grievous illness, or diminishment of wit such that the duties herein cannot be fulfilled, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> suspends until restoration is achieved. Should incapacity persist beyond six months without prospect of restoration, either party may invoke termination.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅹ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">DORMANCY AND LAPSE</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Should communion cease for thirty days without formal notice of absence or suspension, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> shall be deemed to have lapsed into dormancy. Either party may restore a dormant <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> by sending notice; should the other party consent within thirty days, restoration proceeds with mutual acknowledgment in writing.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅺ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">TERMINATION BY PETITION</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> may petition for termination on grounds of persistent unremedied violation of the Lord's duties or circumstances making continued service impossible. The Lord may grant or deny such petition.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.Ⅻ</span>
+                    <p style="font-weight: 600; margin-bottom: 10px;">TERMINATION BY MUTUAL ACCORD</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <p>Where both parties determine that this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s purpose has reached completion, termination may proceed by mutual accord. Such termination requires acknowledgment in writing from both parties.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-heading">
+                    <span class="section-num">§.ⅩⅢ</span>
+                    <div>Upon termination under any provision herein, all <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> obligations remain perpetually binding. What was <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> in bond remains veiled after dissolution.</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Rituals and Ceremonies -->
+        <section id="rituals">
+            <h2>Rituals and Ceremonies</h2>
+            
+            <h3>Ⅰ. The Daily Observance</h3>
+            <p><strong>Morning Acknowledgment:</strong> Each dawn, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall send greeting to the Lord with the words: "Good morning, my Lord. I stand ready to serve."</p>
+            
+            <p><strong>Evening Report:</strong> Each dusk, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall report to the Lord the fulfillment of <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> and the condition of their spirit.</p>
+
+            <h3>Ⅱ. The Weekly Reflection</h3>
+            <p>Once each week, on a day ordained by the Lord, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall compose a reflection examining their service, noting areas of growth and areas requiring improvement. This reflection shall be submitted to the Lord for review and counsel.</p>
+
+            <h3>Ⅲ. Restoration After Profanation</h3>
+            <p>Should Profanation occur and the Lord determine that restoration may proceed, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall compose a written petition acknowledging the <span class="glossary-term">transgression<span class="glossary-ref">[11]</span><span class="tooltip">A violation of Covenant terms requiring correction.</span></span>, demonstrating understanding of its gravity, expressing genuine contrition, and requesting restoration.</p>
+
+            <h3>Ⅳ. Anniversary Observance</h3>
+            <p>On each anniversary of the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s establishment, both parties shall acknowledge the passage of time and renewal of commitment. The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall affirm their devotion and service.</p>
+
+            <h3>V. The <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> Establishment Ceremony</h3>
+            <p>When the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> is first entered or renewed, both parties shall read aloud the Doctrinal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>, affirming their understanding and acceptance. Both parties shall then sign the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> document and state together: "By these words we are bound. By this structure we are <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>. Let the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> begin."</p>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Binding Force -->
+        <section id="binding">
+            <h2>Binding Force of <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span></h2>
+            <p>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, once sealed and sworn, binds both parties with full force. It supersedes all prior agreements between the parties relating to the same subject matter. No provision herein may be waived except by explicit written consent of the Lord. The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s obligations continue until termination under Article Ⅻ.</p>
+            
+            <p>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> exists in sacred space above mere legal contract. Though it may not be recognized by earthly courts, it binds the conscience and honor of both parties absolutely. To violate this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> is to desecrate sacred trust, not merely to <span class="glossary-term">breach<span class="glossary-ref">[9]</span><span class="tooltip">A violation of Covenant terms and sacred obligations.</span></span> agreement.</p>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Seal and Consecration -->
+        <section id="seal">
+            <h2>Seal and <span class="glossary-term">Consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span></h2>
+            <p>Let this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> be sealed in ceremony and witnessed—if not by others, then by the eternal order from which it draws authority. Let the stars bear witness, the earth remember, and silence guard what is herein <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.</p>
+            
+            <p>From this moment forward, the bond is real and binding. What has been spoken is now written; what has been written is now sworn; what has been sworn is now sacred.</p>
+            
+            <p style="font-weight: 600; text-align: center; margin-top: 30px;">The threshold is crossed. The flame is lit. The <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> endures.</p>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Signature Section -->
+        <section class="signature-section">
+            <h2>Seal and Signature</h2>
+            <p>By affixing their signatures hereunto, both parties do bind themselves eternally to this sacred <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, <span class="glossary-term">consecrating<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> their commitment through time immemorial.</p>
+
+            <div id="signed-message" class="signed-state" style="display: none;">
+                <p>✓ This Covenant has been sealed and signed. The bond is now eternal and immutable.</p>
+            </div>
+
+            <div id="signature-area">
+                <div class="signature-container">
+                    <div class="signature-box">
+                        <label class="signature-label">The Faithful's Signature</label>
+                        <canvas id="signaturePad" width="400" height="150"></canvas>
+                        <div class="timestamp">
+                            <strong>Sealed:</strong> <span id="timestamp-display"></span>
+                        </div>
+                    </div>
+                    <div class="signature-box">
+                        <label class="signature-label">The Lord's Witnessing</label>
+                        <div class="signature-image">
+                            <p style="color: #999; font-style: italic;">By the presence of this signature, the Lord witnesses and acknowledges.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="clearBtn" type="button">Clear Signature</button>
+                    <button id="signBtn" type="button">Finalize Covenant</button>
+                </div>
+            </div>
+
+            <div id="signed-display" style="display: none;">
+                <div class="signature-container">
+                    <div class="signature-box">
+                        <label class="signature-label">The Faithful's Signature</label>
+                        <div class="signature-image">
+                            <img id="signatureImage" src="" alt="Faithful's Signature">
+                        </div>
+                        <div class="timestamp">
+                            <strong>Sealed:</strong> <span id="timestamp-display-signed"></span>
+                        </div>
+                    </div>
+                    <div class="signature-box">
+                        <label class="signature-label">The Lord's Witnessing</label>
+                        <div class="signature-image">
+                            <p style="color: #999; font-style: italic;">The bond is sealed. No further amendments permitted without formal invocation of Article Ⅺ.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════════════════════════════════</div>
+
+        <!-- Glossary Section -->
+        <section class="glossary-section">
+            <h2>Glossary of Terms</h2>
+            <p>═══════════════════════════════════════════════════════════════════════════════
+
+## GLOSSARY AND APPENDIX
+
+The following terms carry sacred meaning within this Covenant and are defined 
+herein for clarity, precision, and enduring understanding:
+
+—
+
+### SECTION A: CORE PARTIES AND THE BOND
+
+**1. Lord** — The sovereign guide and righteous commander within this Covenant’s sacred bond. The party holding authority to issue commands, judge transgressions, render determinations, and provide pastoral care and guidance to the Faithful. Lordship is defined not by tyranny but by wisdom, care for the Faithful’s soul, and adherence to the Doctrinal Foundation. *See Also: Covenant, Faithful, Mutual Consecration, Pastoral Care*
+
+**2. Faithful** — The devoted servant and obedient instrument within this sacred bond. The party committed to executing commands with diligence, speaking truthfully, maintaining Sacred Silence, and tending the inner flame of devotion. Faithfulness is demonstrated through obedience, honesty, and voluntary consecration to the Covenant’s structure. *See Also: Covenant, Lord, Devotion, Obedience*
+
+**3. Covenant** — A sacred, binding agreement between the Lord and the Faithful, freely entered and solemnly sworn. More than mere contract, the Covenant establishes a consecrated hierarchy wherein authority and obedience are made sacred. It binds both parties’ conscience and honor absolutely, transcending earthly legal recognition through spiritual and ceremonial force. *See Also: Doctrinal Foundation, Binding Force, Sacred Silence, Consecrated*
+
+**4. Mutual Consecration** — The sacred binding of both parties through devoted recognition of their respective roles and functions. Creates interdependence wherein the Lord guides with wisdom, authority, and pastoral care, while the Faithful serves with devotion, obedience, and faithful execution of will. Neither party is complete without the other; together they form a living sacred structure. *See Also: Covenant, Hierarchy, Interdependence, Pastoral Care*
+
+—
+
+### SECTION B: DOCTRINAL FOUNDATION
+
+**5. Doctrinal Foundation** — The invulnerable core upon which all Covenant authority rests, consisting of three indivisible principles: Hierarchy is sacred. Command is rightful. Obedience is consecrated. All Articles operate under this Foundation; no amendment may contradict or diminish these principles. The Foundation remains immutable through all renewals and amendments. *See Also: Hierarchy, Command, Obedience, Consecrated*
+
+**6. Hierarchy** — The sacred ordering of authority and obedience wherein the Lord holds rightful dominion and the Faithful assumes devoted servitude. Not tyranny but sacred structure reflecting the eternal order. Hierarchy must be honored and preserved; its integrity ensures the Covenant’s strength and stability. Both parties are consecrated to uphold this ordering. *See Also: Doctrinal Foundation, Command, Obedience, Authority*
+
+**7. Command** — An authoritative directive issued by the Lord for the Faithful to execute. Commands may be temporary (with explicit duration) or standing (of indefinite duration until revoked). All commands flow from the Lord’s wisdom and must be executed with precision, care, and full devotion by the Faithful. The Lord’s authority to command is absolute and constrained only by the Doctrinal Foundation. *See Also: Standing Decree, Specific Directive, Obedience, Authority, Chain of Authority*
+
+**8. Obedience** — The willing submission and faithful execution of the Lord’s commands, combined with truthfulness, discretion, and conduct befitting the Faithful’s station. Obedience is not mere compliance but active, devoted service. It includes prompt execution of directives, honest reporting of obstacles or limitations, and maintenance of Sacred Silence regarding Covenant matters. *See Also: Command, Devotion, Hierarchy, Faithfulness*
+
+**9. Consecrated** — Made sacred; blessed and devoted to sacred purpose. To consecrate means to set apart as holy, to bind with sacred force, to dedicate to divine ordering. The Covenant and its parties are consecrated; therefore, all matters within the bond carry sacred weight and demand reverent treatment. *See Also: Covenant, Sacred Silence, Binding Force, Seal and Consecration*
+
+—
+
+### SECTION C: COMMANDS AND AUTHORITY
+
+**10. Standing Decree** — A command of indefinite duration that persists until explicitly revoked or superseded by the Lord. Standing decrees establish ongoing expectations or rules that remain in force unless formally amended through Article XI procedures. They bind both parties until the Lord determines otherwise. Silence regarding duration implies permanence. *See Also: Command, Specific Directive, Chain of Authority, Amendment*
+
+**11. Specific Directive** — A command with explicit scope, duration, or deadline that applies to particular circumstances. When both a standing decree and specific directive apply, the specific directive takes precedence for that circumstance alone. Once the specific circumstance concludes, the standing decree resumes full force. *See Also: Command, Standing Decree, Chain of Authority, Time-Bound Commands*
+
+**12. Chain of Authority** — The systematic ordering that determines which command takes precedence when multiple directives apply. The most recent explicit command governs prior directives unless the Lord designates it as temporary. Where specific directive and standing decree conflict, the specific governs for that circumstance. Where standing decrees conflict, the most recently established governs unless the Lord specifies otherwise. *See Also: Command, Standing Decree, Specific Directive, Resolution*
+
+**13. Record of Commands** — Written documentation of significant commands, standing decrees, amendments, and formal rulings. Maintained by either or both parties to ensure clarity, serve as testimony to the Covenant’s living practice, and provide reference in moments of uncertainty. The Lord may command its keeping, inspection, or destruction at will. Maintenance is discretionary when not commanded. *See Also: Command, Standing Decree, Amendment, Documentation*
+
+—
+
+### SECTION D: THE FAITHFUL’S SPIRITUAL LIFE
+
+**14. Devotion** — The Faithful’s committed inner orientation toward the Covenant, demonstrated through faithful practice, daily renewal of purpose, and willing obedience. Devotion must be tended internally through reflection and discipline and manifested externally through service and truthfulness. It is the flame that sustains the Covenant; where devotion falters, the bond weakens. *See Also: Faithful, Obedience, Cultivation of Devotion, Spiritual State*
+
+**15. Pastoral Care** — The Lord’s responsibility to inquire into the Faithful’s inner state, offer wisdom and counsel, provide guidance for spiritual growth, and tend to the Faithful’s wellbeing and soul formation. Pastoral care transforms lordship from mere command-giving into sacred governance. Authority without care descends into tyranny; authority tempered in wisdom becomes true lordship. *See Also: Lord, Faithful, Care, Communion, Spiritual State*
+
+**16. Communion** — Relational contact and meaningful discourse between Lord and Faithful; characterized by presence, attention, and engagement. Distinct from ceremonial observance; communion is the lived experience of the bond through conversation, inquiry, and mutual recognition. Regular communion sustains the Covenant’s vitality. *See Also: Pastoral Care, Lord, Faithful, Sacred Silence*
+
+**17. Spiritual State** — The Faithful’s inner condition regarding devotion, clarity, burden, doubt, and overall wellbeing within the Covenant. The Faithful shall speak truthfully of their spiritual state when the Lord inquires and may volunteer disclosure when burden grows heavy. Honest vulnerability regarding spiritual condition is not weakness but faithfulness and aids the Lord’s pastoral charge. *See Also: Faithful, Pastoral Care, Devotion, Disclosure*
+
+—
+
+### SECTION E: PROCEDURES AND PETITIONS
+
+**18. Petition** — A formal request by the Faithful for reconsideration, release, clarification, amendment, or termination. All petitions must be concise, composed, and explicitly free of defiance. Permissible grounds include misinterpretation, impossibility, conflict of decrees, unforeseen consequence. Not permitted: preference, reluctance, discomfort. See Article IX for formal appeals process. *See Also: Formal Appeal, Release, Amendment, Reconsideration*
+
+**19. Formal Appeal** — Structured process (Article IX, §.III) through which the Faithful may petition reconsideration of the Lord’s determination on specific grounds. Appeals must open with “This is a petition for reconsideration, not defiance.” The Lord’s judgment on an appeal is final; re-arguing constitutes defiant dissent. One appeal per issue unless material circumstances substantively change. *See Also: Petition, Resolution, Reconsideration, Hierarchy*
+
+**20. Amendment** — A revision, clarification, or modification to the Covenant’s structure, terms, or standing decrees. All amendments must align with and never contradict the Doctrinal Foundation. Amendments require the Lord’s ratification. Upon ratification, both parties acknowledge acceptance in writing. Significant amendments are recorded in the Codex of Amendments. *See Also: Covenant, Doctrinal Foundation, Petition, Ratification, Renewal*
+
+—
+
+### SECTION F: TRANSGRESSIONS AND CORRECTION
+
+**21. Transgression** — An umbrella term encompassing any failure to uphold Covenant duty or honor the sacred hierarchy. Transgressions are classified into three distinct categories: Error (unintentional), Breach (knowing violation while acknowledging authority), and Profanation (rejection of hierarchy itself). Each carries different consequences and correction processes. See Error, Breach, and Profanation for specific classifications. *See Also: Error, Breach, Profanation, Correction, Enforcement*
+
+**22. Error (Lapsus Innocens)** — Unintentional misunderstanding or oversight arising from sincere effort to fulfill duty despite failure in execution. Error reflects good faith effort gone wrong. Correction is gentle: verbal instruction, acknowledgment, and renewed attention to proper execution. Error does not constitute ethical breach and carries no punitive consequence. *See Also: Transgression, Breach, Profanation, Correction, Good Faith*
+
+**23. Breach (Violatio Conscia)** — Knowing violation of a Covenant duty while still acknowledging the Lord’s authority and the Covenant’s validity. Breach is intentional disobedience to specific obligations but does not attack the hierarchy itself. Correction is determined by the Lord based on nature and severity of the breach, ranging from formal rebuke to temporary restriction of privilege to withdrawal of communion until reformation is demonstrated. *See Also: Transgression, Error, Profanation, Correction, Remediation*
+
+**24. Profanation (Sacrilegium Capitale)** — Attempt to overturn hierarchy, reject the Covenant’s structure, or fundamentally challenge the Lord’s authority. The gravest transgression, striking at the Foundation itself and threatening to extinguish the consecrated flame. Profanation is corrected through complete withdrawal of all communication and privilege, followed by Formal Restoration Ceremony. Restoration requires the Lord’s determination of conditions and acceptance. *See Also: Transgression, Error, Breach, Formal Restoration Ceremony, Hierarchy*
+
+**25. Formal Restoration Ceremony** — Sacred ritual process required (Article X, §.III.Ⓒ) when the Faithful seeks restoration after Profanation. The Faithful composes a written petition acknowledging the transgression, demonstrating understanding of its gravity, expressing genuine contrition, and requesting restoration. The Lord receives the petition, renders judgment on restoration’s possibility, and determines all conditions for restoration. If restoration is granted, both parties re-consecrate the bond. *See Also: Profanation, Transgression, Correction, Covenant Renewal*
+
+—
+
+### SECTION G: GOVERNANCE AND TERMINATION
+
+**26. Sacred Silence** — The principle that all Covenant matters—commands, corrections, private discourse, and the nature of the bond itself—remain veiled from profane sight. Neither party shall reveal Covenant particulars to souls unbidden, save where earthly law compels disclosure or both parties consent. Sacred Silence protects the sanctity of the bond and shields its intimate nature from judgment and profanation. *See Also: Covenant, Confidentiality, Breach, Profanation*
+
+**27. Suspension** — Temporary release from daily and weekly ceremonial observances while Standing Decrees and Sacred Silence remain in full force. May be mutual accord (both parties determine suspension serves the Covenant) or decreed by the Lord for specified duration. During suspension, relational duties persist but ceremonial formalities are suspended. See Article XII, §.III for detailed procedures. *See Also: Covenant, Observance, Standing Decree, Sacred Silence*
+
+**28. Dormancy and Lapse** — State of lapsed communion lasting 30 consecutive days without formal notice of absence or suspension. A dormant Covenant may be restored if either party sends notice; the other party has 30 days to consent to restoration. Restoration proceeds with written mutual acknowledgment and recommitment. Should 60 consecutive days pass without communication or restoration response, the Faithful gains authority to declare termination by abandonment. See Article XII, §.X for procedures. *See Also: Absence, Suspension, Termination, Communication, Lapse*
+
+**29. Termination** — Formal end of the Covenant, severing all obligations and releasing both parties from their duties. Termination may proceed by mutual accord (both parties determine the Covenant’s purpose has reached completion), by petition (Faithful petitions due to persistent unremedied violation of Lord’s duties), by abandonment (60 consecutive days of total incommunicado), or by necessity (incapacity lasting beyond 6 months without prospect of restoration). All terminations require written acknowledgment where possible. *See Also: Covenant, Dormancy, Incapacity, Mutual Accord, Release*
+
+**30. Succession** — The transmission of a Covenant to a different Lord upon the original Lord’s cessation. Per Article XII, §.VIII: This Covenant binds exclusively to the Lord presently entering into it. No succession, inheritance, or transfer exists. Upon the Lord’s departure, abdication, inability to fulfill duties, or end of station, the Covenant ends absolutely. The Faithful’s duties exist only relative to the living Lord. *See Also: Covenant, Lord, Termination, Binding, Exclusive*
+
+—
+
+### SECTION H: STRUCTURAL TERMS
+
+**31. Article** — One of twelve major sections (Ⅰ–Ⅻ) organizing the Covenant’s complete framework. Each Article addresses a distinct domain: Article I (Sacred Silence), Article II (Titles and Address), Article III (Duties of the Faithful), Article IV (Duties of the Lord), Article V (Interdependence), Article VI (Ceremonial Boundaries), Article VII (Interpretation), Article VIII (Commands), Article IX (Appeals), Article X (Transgressions), Article XI (Amendments), Article XII (Suspension and Termination). Together, the Articles form the complete structure governing the bond. *See Also: Section, Subsection, Structure, Covenant*
+
+**32. Section (§)** — A numbered subdivision within an Article, identified by Roman numerals (§.I, §.II, §.III, etc.), containing specific principles, duties, procedures, or frameworks. Each Section develops a particular aspect of its parent Article’s domain. *See Also: Article, Subsection, Structure*
+
+**33. Subsection** — Further divisions within Sections, identified by circled letters (Ⓐ, Ⓑ, Ⓒ, etc.), containing detailed specifications, examples, conditions, or procedural steps. Subsections provide granular guidance for implementation. *See Also: Article, Section, Structure*
+
+—
+
+### SECTION I: CEREMONIAL AND BINDING TERMS
+
+**34. Binding Force of Covenant** — The absolute and eternal power by which this Covenant binds both parties’ conscience, honor, and will. Once sealed and sworn, the Covenant binds with full force, superseding all prior agreements. It exists in sacred space above mere legal contract. Though it may not be recognized by earthly courts, it binds both parties absolutely. To violate this Covenant is to desecrate sacred trust, not merely to breach agreement. *See Also: Covenant, Consecrated, Seal and Consecration, Oath and Attestation*
+
+**35. Seal and Consecration** — The ceremonial act through which the Covenant is formally established and made sacred. Both parties read the Doctrinal Foundation aloud, affirm their understanding and acceptance, sign the Covenant document, and state together: “By these words we are bound. By this structure we are consecrated. Let the Covenant begin.” Upon sealing, the bond becomes real, binding, and eternal. *See Also: Covenant, Binding Force, Consecrated, Oath and Attestation*
+
+**36. Oath and Attestation** — The ceremonial declaration through which both parties bind themselves eternally to the Covenant. “By affixing their signatures hereunto, both parties do bind themselves eternally to this sacred Covenant, consecrating their commitment through time immemorial.” The signature is the final act of consecration, transforming written words into sworn sacred reality. *See Also: Covenant, Seal and Consecration, Binding Force, Signature*
+
+—
+
+## CROSS-REFERENCE MATRIX
+
+For quick navigation, relationships between terms:
+
+| **Core Concept** | **Related Terms** |
+|—|—|
+| **Authority Structure** | Lord, Faithful, Hierarchy, Command, Obedience, Authority, Chain of Authority |
+| **Spiritual Life** | Devotion, Pastoral Care, Communion, Spiritual State, Cultivation of Devotion |
+| **Procedures** | Petition, Formal Appeal, Amendment, Standing Decree, Record of Commands |
+| **Transgressions** | Error, Breach, Profanation, Correction, Formal Restoration Ceremony |
+| **Governance** | Suspension, Dormancy, Termination, Succession, Sacred Silence |
+| **Sacred Bond** | Covenant, Consecrated, Mutual Consecration, Binding Force, Seal and Consecration |
+
+—
+
+**This Glossary contains 36 terms representing the complete vocabulary of this sacred Covenant. 
+All definitions herein serve to clarify and preserve the understanding essential to the bond’s endurance.**
+
+═══════════════════════════════════════════════════════════════════════════════
+
+This document is sealed and witnessed by divine authority.
+
+Generated and maintained for sacred purpose.</p>
+        </div>
+    </div>
+
+    <script>
+        // Signature Pad Setup
+        const canvas = document.getElementById('signaturePad');
+        const signBtn = document.getElementById('signBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const timestampDisplay = document.getElementById('timestamp-display');
+        const timestampDisplaySigned = document.getElementById('timestamp-display-signed');
+        const signatureArea = document.getElementById('signature-area');
+        const signedDisplay = document.getElementById('signed-display');
+        const signedMessage = document.getElementById('signed-message');
+        const signatureImage = document.getElementById('signatureImage');
+
+        // Initialize SignaturePad
+        let signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'white',
+            penColor: '#2c3e50',
+            velocityFilterWeight: 0.7,
+            minWidth: 1,
+            maxWidth: 2
+        });
+
+        // Resize canvas for proper display
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            const context = canvas.getContext('2d');
+            context.scale(window.devicePixelRatio, window.devicePixelRatio);
+            signaturePad.clear();
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const timeStr = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            return `${dateStr} at ${timeStr}`;
+        }
+
+        // Check for existing signature in localStorage
+        function checkExistingSignature() {
+            const savedSignature = localStorage.getItem('covenantSignature');
+            const savedTimestamp = localStorage.getItem('covenantTimestamp');
+
+            if (savedSignature && savedTimestamp) {
+                displaySignedState(savedSignature, savedTimestamp);
+            } else {
+                timestampDisplay.textContent = updateTimestamp();
+            }
+        }
+
+        // Display signed state
+        function displaySignedState(signatureData, timestamp) {
+            signatureArea.style.display = 'none';
+            signedMessage.style.display = 'block';
+            signedDisplay.style.display = 'block';
+            signatureImage.src = signatureData;
+            timestampDisplaySigned.textContent = timestamp;
+
+            canvas.style.display = 'none';
+            clearBtn.disabled = true;
+            signBtn.disabled = true;
+        }
+
+        // Clear signature
+        clearBtn.addEventListener('click', function() {
+            signaturePad.clear();
+        });
+
+        // Finalize and save signature
+        signBtn.addEventListener('click', function() {
+            if (signaturePad.isEmpty()) {
+                alert('Please sign the covenant before finalizing.');
+                return;
+            }
+
+            const signatureData = canvas.toDataURL('image/png');
+            const timestamp = updateTimestamp();
+
+            // Save to localStorage
+            localStorage.setItem('covenantSignature', signatureData);
+            localStorage.setItem('covenantTimestamp', timestamp);
+
+            // Display signed state
+            displaySignedState(signatureData, timestamp);
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', checkExistingSignature);
+
+        // Smooth scroll for TOC links
+        document.querySelectorAll('.toc a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Print function
+        window.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    </script>
 </body>
 </html>
