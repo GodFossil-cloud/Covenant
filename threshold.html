@@ -173,8 +173,6 @@
             overflow: hidden;
             white-space: nowrap;
             animation: writeText 2s ease-out 2.3s forwards;
-            -webkit-mask-image: linear-gradient(to right, black calc(100% - 6px), transparent 100%);
-            mask-image: linear-gradient(to right, black calc(100% - 6px), transparent 100%);
         }
 
         h1 {
@@ -273,11 +271,6 @@
         @media (max-width: 600px) {
             h1 {
                 font-size: 3.5rem;
-            }
-
-            h1::before {
-                -webkit-mask-image: linear-gradient(to right, black calc(100% - 4px), transparent 100%);
-                mask-image: linear-gradient(to right, black calc(100% - 4px), transparent 100%);
             }
 
             .signature-line {
