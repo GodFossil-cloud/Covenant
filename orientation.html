@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orientation — Initiation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: "Georgia", serif;
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+            line-height: 1.7;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        main.container {
+            max-width: 700px;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .eyebrow {
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #7a7a7a;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            margin-bottom: 2rem;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #2c2c2c;
+            letter-spacing: 0.04em;
+        }
+
+        p {
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            color: #4a4a4a;
+        }
+
+        ul {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            color: #4a4a4a;
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background-color: #8a8a8a;
+            margin: 1.5rem 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #d0d0d0;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border: 1px solid #2c2c2c;
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .nav-button:hover,
+        .nav-button:focus-visible {
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+        }
+
+        .nav-button--secondary {
+            background-color: transparent;
+            color: #2c2c2c;
+        }
+
+        .nav-button--secondary:hover,
+        .nav-button--secondary:focus-visible {
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nav-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" aria-labelledby="orientation-title">
+        <header>
+            <div class="eyebrow">Primer</div>
+            <h1 id="orientation-title">Orientation</h1>
+        </header>
+
+        <p>Before you proceed to the Covenant, you must understand the structure and expectations of this initiation.</p>
+
+        <div class="divider"></div>
+
+        <h2>The Path Ahead</h2>
+
+        <p>This initiation consists of five stages, each building upon the last. You will move through them in strict sequence. There are no shortcuts.</p>
+
+        <h2>What You Will Encounter</h2>
+
+        <ul>
+            <li><strong>The Covenant:</strong> A written agreement of principles and commitments.</li>
+            <li><strong>Daily Rituals:</strong> Structured practices to integrate these principles into your life.</li>
+            <li><strong>The Oath:</strong> A spoken, recorded commitment witnessed and signed.</li>
+            <li><strong>Consecration:</strong> The final acknowledgment of your transformation.</li>
+        </ul>
+
+        <h2>Requirements</h2>
+
+        <p>You will need:</p>
+
+        <ul>
+            <li>A quiet space for the Oath recording</li>
+            <li>A device capable of audio recording and signature capture</li>
+            <li>Full presence and undivided attention</li>
+            <li>Willingness to be bound by your word</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h2>Proceed with Awareness</h2>
+
+        <p>This is not a casual undertaking. Once you enter the Covenant, you are moving toward a binding commitment. If you have doubt, return to the threshold. If you are certain, continue forward.</p>
+
+        <nav class="navigation" aria-label="Orientation navigation">
+            <a href="index.html" class="nav-button nav-button--secondary">← Back to Threshold</a>
+            <a href="covenant.html" class="nav-button">Forward to the Covenant →</a>
+        </nav>
+    </main>
+</body>
+</html>
