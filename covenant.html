@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Covenant of the Lord and Faithful</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -495,6 +494,174 @@
                 letter-spacing: 4px;
             }
         }
+        /* Linear navigation (Orientation ←→ Rituals) */
+.navigation-section {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+}
+
+.site-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.site-nav a {
+    display: inline-block;
+    padding: 0.75rem 1.75rem;
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-color);
+    color: #f5f5f0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+    background-color: #f5f5f0;
+    color: var(--primary-color);
+}
+
+.site-nav a.site-nav--secondary {
+    background-color: transparent;
+    color: var(--primary-color);
+}
+
+.site-nav a.site-nav--secondary:hover,
+.site-nav a.site-nav--secondary:focus-visible {
+    background-color: var(--primary-color);
+    color: #f5f5f0;
+}
+
+/* Lexicon glyph and slide-in panel */
+.lexicon-glyph-toggle {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1000;
+}
+
+.lexicon-glyph-toggle button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-color);
+    background-color: #fff;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.lexicon-glyph-toggle button:hover,
+.lexicon-glyph-toggle button:focus-visible {
+    background-color: var(--accent-color);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* Slide-in Lexicon panel */
+.lexicon-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(360px, 90vw);
+    background-color: #fdfaf6;
+    border-left: 1px solid var(--border-color);
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.12);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+}
+
+.lexicon-panel.is-open {
+    transform: translateX(0);
+}
+
+.lexicon-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.lexicon-panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+}
+
+.lexicon-panel-close {
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+.lexicon-panel-body {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+.lexicon-panel-body p + p {
+    margin-top: 0.9rem;
+}
+
+.lexicon-link {
+    display: inline-block;
+    margin-top: 1.4rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 2px;
+    border: 1px solid var(--accent-color);
+    color: var(--primary-color);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    background-color: #f9f3ec;
+}
+
+.lexicon-link:hover,
+.lexicon-link:focus-visible {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+/* Dimmed overlay behind the panel */
+.lexicon-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease;
+    z-index: 1050;
+}
+
+.lexicon-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
     </style>
 </head>
 <body>
@@ -525,9 +692,6 @@
                 <li><a href="#article10">Article Ⅹ: Transgression</a></li>
                 <li><a href="#article11">Article Ⅺ: Amendments</a></li>
                 <li><a href="#article12">Article Ⅻ: Suspension</a></li>
-                <li><a href="#rituals">Rituals and Ceremonies</a></li>
-                <li><a href="#binding">Binding Force</a></li>
-                <li><a href="#seal">Seal and Consecration</a></li>
             </ul>
         </div>
 
@@ -1345,232 +1509,102 @@
                     <span class="section-num">§.ⅩⅢ</span>
                     <div>Upon termination under any provision herein, all <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> obligations remain perpetually binding. What was <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> in bond remains veiled after dissolution.</div>
                 </div>
+<!-- Linear navigation: back to Orientation, forward to Rituals -->
+        <section class="navigation-section" aria-label="Covenant navigation">
+            <div class="site-nav">
+                <a href="orientation.html" class="site-nav--secondary">
+                    ← Back to Orientation
+                </a>
+                <a href="rituals.html">
+                    Forward to Rituals →
+                </a>
             </div>
         </section>
+            </div> <!-- end .container -->
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
-
-        <!-- Rituals and Ceremonies -->
-        <section id="rituals">
-            <h2>Rituals and Ceremonies</h2>
-            
-            <h3>Ⅰ. The Daily Observance</h3>
-            <p><strong>Morning Acknowledgment:</strong> Each dawn, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall send greeting to the Lord with the words: "Good morning, my Lord. I stand ready to serve."</p>
-            
-            <p><strong>Evening Report:</strong> Each dusk, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall report to the Lord the fulfillment of <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> and the condition of their spirit.</p>
-
-            <h3>Ⅱ. The Weekly Reflection</h3>
-            <p>Once each week, on a day ordained by the Lord, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall compose a reflection examining their service, noting areas of growth and areas requiring improvement. This reflection shall be submitted to the Lord for review and counsel.</p>
-
-            <h3>Ⅲ. Restoration After Profanation</h3>
-            <p>Should Profanation occur and the Lord determine that restoration may proceed, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall compose a written petition acknowledging the <span class="glossary-term">transgression<span class="glossary-ref">[11]</span><span class="tooltip">A violation of Covenant terms requiring correction.</span></span>, demonstrating understanding of its gravity, expressing genuine contrition, and requesting restoration.</p>
-
-            <h3>Ⅳ. Anniversary Observance</h3>
-            <p>On each anniversary of the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s establishment, both parties shall acknowledge the passage of time and renewal of commitment. The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall affirm their devotion and service.</p>
-
-            <h3>V. The <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> Establishment Ceremony</h3>
-            <p>When the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> is first entered or renewed, both parties shall read aloud the Doctrinal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>, affirming their understanding and acceptance. Both parties shall then sign the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> document and state together: "By these words we are bound. By this structure we are <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>. Let the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> begin."</p>
-        </section>
-
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
-
-        <!-- Binding Force -->
-        <section id="binding">
-            <h2>Binding Force of <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span></h2>
-            <p>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, once sealed and sworn, binds both parties with full force. It supersedes all prior agreements between the parties relating to the same subject matter. No provision herein may be waived except by explicit written consent of the Lord. The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s obligations continue until termination under Article Ⅻ.</p>
-            
-            <p>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> exists in sacred space above mere legal contract. Though it may not be recognized by earthly courts, it binds the conscience and honor of both parties absolutely. To violate this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> is to desecrate sacred trust, not merely to <span class="glossary-term">breach<span class="glossary-ref">[9]</span><span class="tooltip">A violation of Covenant terms and sacred obligations.</span></span> agreement.</p>
-        </section>
-
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
-
-        <!-- Seal and Consecration -->
-        <section id="seal">
-            <h2>Seal and <span class="glossary-term">Consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span></h2>
-            <p>Let this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> be sealed in ceremony and witnessed—if not by others, then by the eternal order from which it draws authority. Let the stars bear witness, the earth remember, and silence guard what is herein <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.</p>
-            
-            <p>From this moment forward, the bond is real and binding. What has been spoken is now written; what has been written is now sworn; what has been sworn is now sacred.</p>
-            
-            <p style="font-weight: 600; text-align: center; margin-top: 30px;">The threshold is crossed. The flame is lit. The <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> endures.</p>
-        </section>
-
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
-
-        <!-- Signature Section -->
-        <section class="signature-section">
-            <h2>Seal and Signature</h2>
-            <p>By affixing their signatures hereunto, both parties do bind themselves eternally to this sacred <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, <span class="glossary-term">consecrating<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> their commitment through time immemorial.</p>
-
-            <div id="signed-message" class="signed-state" style="display: none;">
-                <p>✓ This Covenant has been sealed and signed. The bond is now eternal and immutable.</p>
-            </div>
-
-            <div id="signature-area">
-                <div class="signature-container">
-                    <div class="signature-box">
-                        <label class="signature-label">The Faithful's Signature</label>
-                        <canvas id="signaturePad" width="400" height="150"></canvas>
-                        <div class="timestamp">
-                            <strong>Sealed:</strong> <span id="timestamp-display"></span>
-                        </div>
-                    </div>
-                    <div class="signature-box">
-                        <label class="signature-label">The Lord's Witnessing</label>
-                        <div class="signature-image">
-                            <p style="color: #999; font-style: italic;">By the presence of this signature, the Lord witnesses and acknowledges.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button id="clearBtn" type="button">Clear Signature</button>
-                    <button id="signBtn" type="button">Finalize Covenant</button>
-                </div>
-            </div>
-
-            <div id="signed-display" style="display: none;">
-                <div class="signature-container">
-                    <div class="signature-box">
-                        <label class="signature-label">The Faithful's Signature</label>
-                        <div class="signature-image">
-                            <img id="signatureImage" src="" alt="Faithful's Signature">
-                        </div>
-                        <div class="timestamp">
-                            <strong>Sealed:</strong> <span id="timestamp-display-signed"></span>
-                        </div>
-                    </div>
-                    <div class="signature-box">
-                        <label class="signature-label">The Lord's Witnessing</label>
-                        <div class="signature-image">
-                            <p style="color: #999; font-style: italic;">The bond is sealed. No further amendments permitted without formal invocation of Article Ⅺ.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<!-- Lexicon glyph and slide-in panel  -->
+    <div class="lexicon-glyph-toggle">
+        <button id="lexiconToggle"
+                type="button"
+                aria-label="Open Covenant Lexicon panel">
+            ✶
+        </button>
     </div>
 
+    <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
+        <div class="lexicon-panel-header">
+            <div class="lexicon-panel-title">Lexicon</div>
+            <button class="lexicon-panel-close"
+                    type="button"
+                    aria-label="Close Lexicon panel">
+                ×
+            </button>
+        </div>
+        <div class="lexicon-panel-body">
+            <p>
+                Throughout this Covenant, highlighted terms carry precise meanings
+                within the sacred structure of hierarchy, command, and obedience.
+            </p>
+            <p>
+                Use this panel when you need deeper context. It opens the full
+                Lexicon in a separate view so that you may consult definitions
+                without leaving this document or altering the linear progression.
+            </p>
+            <a href="lexicon.html"
+               target="_blank"
+               rel="noopener"
+               class="lexicon-link">
+                Open Full Lexicon
+            </a>
+        </div>
+    </div>
+
+    <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
+
     <script>
-        // Signature Pad Setup
-        const canvas = document.getElementById('signaturePad');
-        const signBtn = document.getElementById('signBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const timestampDisplay = document.getElementById('timestamp-display');
-        const timestampDisplaySigned = document.getElementById('timestamp-display-signed');
-        const signatureArea = document.getElementById('signature-area');
-        const signedDisplay = document.getElementById('signed-display');
-        const signedMessage = document.getElementById('signed-message');
-        const signatureImage = document.getElementById('signatureImage');
+        (function () {
+            var toggle = document.getElementById('lexiconToggle');
+            var panel = document.getElementById('lexiconPanel');
+            var overlay = document.getElementById('lexiconOverlay');
+            var closeButtons = panel.querySelectorAll('.lexicon-panel-close');
 
-        // Initialize SignaturePad
-        let signaturePad = new SignaturePad(canvas, {
-            backgroundColor: 'white',
-            penColor: '#2c3e50',
-            velocityFilterWeight: 0.7,
-            minWidth: 1,
-            maxWidth: 2
-        });
-
-        // Resize canvas for proper display
-        function resizeCanvas() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * window.devicePixelRatio;
-            canvas.height = rect.height * window.devicePixelRatio;
-            const context = canvas.getContext('2d');
-            context.scale(window.devicePixelRatio, window.devicePixelRatio);
-            signaturePad.clear();
-        }
-
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        // Update timestamp
-        function updateTimestamp() {
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            const timeStr = now.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            });
-            return `${dateStr} at ${timeStr}`;
-        }
-
-        // Check for existing signature in localStorage
-        function checkExistingSignature() {
-            const savedSignature = localStorage.getItem('covenantSignature');
-            const savedTimestamp = localStorage.getItem('covenantTimestamp');
-
-            if (savedSignature && savedTimestamp) {
-                displaySignedState(savedSignature, savedTimestamp);
-            } else {
-                timestampDisplay.textContent = updateTimestamp();
-            }
-        }
-
-        // Display signed state
-        function displaySignedState(signatureData, timestamp) {
-            signatureArea.style.display = 'none';
-            signedMessage.style.display = 'block';
-            signedDisplay.style.display = 'block';
-            signatureImage.src = signatureData;
-            timestampDisplaySigned.textContent = timestamp;
-
-            canvas.style.display = 'none';
-            clearBtn.disabled = true;
-            signBtn.disabled = true;
-        }
-
-        // Clear signature
-        clearBtn.addEventListener('click', function() {
-            signaturePad.clear();
-        });
-
-        // Finalize and save signature
-        signBtn.addEventListener('click', function() {
-            if (signaturePad.isEmpty()) {
-                alert('Please sign the covenant before finalizing.');
-                return;
+            function openPanel() {
+                panel.classList.add('is-open');
+                overlay.classList.add('is-open');
+                panel.setAttribute('aria-hidden', 'false');
+                overlay.setAttribute('aria-hidden', 'false');
             }
 
-            const signatureData = canvas.toDataURL('image/png');
-            const timestamp = updateTimestamp();
-
-            // Save to localStorage
-            localStorage.setItem('covenantSignature', signatureData);
-            localStorage.setItem('covenantTimestamp', timestamp);
-
-            // Display signed state
-            displaySignedState(signatureData, timestamp);
-        });
-
-        // Initialize on page load
-        window.addEventListener('load', checkExistingSignature);
-
-        // Smooth scroll for TOC links
-        document.querySelectorAll('.toc a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-
-        // Print function
-        window.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-                e.preventDefault();
-                window.print();
+            function closePanel() {
+                panel.classList.remove('is-open');
+                overlay.classList.remove('is-open');
+                panel.setAttribute('aria-hidden', 'true');
+                overlay.setAttribute('aria-hidden', 'true');
             }
-        });
+
+            if (toggle && panel && overlay) {
+                toggle.addEventListener('click', function () {
+                    if (panel.classList.contains('is-open')) {
+                        closePanel();
+                    } else {
+                        openPanel();
+                    }
+                });
+
+                overlay.addEventListener('click', closePanel);
+
+                closeButtons.forEach(function (btn) {
+                    btn.addEventListener('click', closePanel);
+                });
+
+                // Close on Escape
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape' && panel.classList.contains('is-open')) {
+                        closePanel();
+                    }
+                });
+            }
+        })();
     </script>
 </body>
 </html>
