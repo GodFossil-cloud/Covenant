@@ -24,6 +24,17 @@
             display: flex;
             flex-direction: column;
             padding: 2rem;
+            opacity: 0;
+            animation: fadeInFromParchment 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInFromParchment {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         main.container {
