@@ -101,7 +101,7 @@
             margin: 0 auto;
             text-align: center;
             opacity: 0;
-            animation: fadeIn 3s ease-in 1.5s forwards;
+            animation: fadeIn 2s ease-in 1.5s forwards;
             position: relative;
             min-height: 400px;
             display: flex;
@@ -116,16 +116,21 @@
             }
         }
 
-        @keyframes expandLetters {
+        @keyframes writeText {
             from {
-                opacity: 0;
-                letter-spacing: -0.05em;
-                transform: translateY(-10px);
+                width: 0;
             }
             to {
-                opacity: 1;
-                letter-spacing: 0.02em;
-                transform: translateY(0);
+                width: 100%;
+            }
+        }
+
+        @keyframes drawLine {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
             }
         }
 
@@ -152,10 +157,30 @@
             font-size: 5rem;
             font-weight: 400;
             color: #2a2520;
-            animation: expandLetters 3.5s ease-out 2.3s forwards;
             margin-bottom: 2rem;
-            opacity: 0;
             text-shadow: 0 1px 2px rgba(196, 165, 105, 0.15);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        h1::before {
+            content: 'For Ruby';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: writeText 2.5s ease-out 2.3s forwards;
+        }
+
+        h1 {
+            color: transparent;
+        }
+
+        h1::before {
+            color: #2a2520;
         }
 
         .signature-line {
@@ -168,9 +193,10 @@
                 #c4a569 80%,
                 transparent
             );
-            opacity: 0;
-            animation: fadeIn 2s ease-in 4.5s forwards;
             box-shadow: 0 0 2px rgba(196, 165, 105, 0.3);
+            transform: scaleX(0);
+            transform-origin: center;
+            animation: drawLine 1.2s ease-out 4.8s forwards;
         }
 
         /* Minimalist arrow button */
