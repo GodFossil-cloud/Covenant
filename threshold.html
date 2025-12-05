@@ -116,12 +116,23 @@
             }
         }
 
-        @keyframes writeText {
-            0% {
+        @keyframes writeTextWidth {
+            from {
                 width: 0;
             }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes writeTextMask {
+            0% {
+                -webkit-mask-image: linear-gradient(to right, black 0%, transparent 40px);
+                mask-image: linear-gradient(to right, black 0%, transparent 40px);
+            }
             100% {
-                width: 110%;
+                -webkit-mask-image: linear-gradient(to right, black 100%, transparent 100%);
+                mask-image: linear-gradient(to right, black 100%, transparent 100%);
             }
         }
 
@@ -172,9 +183,7 @@
             width: 0;
             overflow: hidden;
             white-space: nowrap;
-            animation: writeText 2s ease-out 2.3s forwards;
-            -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
-            mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+            animation: writeTextWidth 2s ease-out 2.3s forwards, writeTextMask 2s ease-out 2.3s forwards;
         }
 
         h1 {
@@ -275,9 +284,15 @@
                 font-size: 3.5rem;
             }
 
-            h1::before {
-                -webkit-mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
-                mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
+            @keyframes writeTextMask {
+                0% {
+                    -webkit-mask-image: linear-gradient(to right, black 0%, transparent 25px);
+                    mask-image: linear-gradient(to right, black 0%, transparent 25px);
+                }
+                100% {
+                    -webkit-mask-image: linear-gradient(to right, black 100%, transparent 100%);
+                    mask-image: linear-gradient(to right, black 100%, transparent 100%);
+                }
             }
 
             .signature-line {
