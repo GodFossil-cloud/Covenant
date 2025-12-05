@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threshold — Initiation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: "Georgia", serif;
+            background: linear-gradient(135deg, #f0ebe0 0%, #fffef7 40%, #f8f3e8 100%);
+            color: #1a1a1a;
+        }
+
+        /* Fade in from black on page load */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000;
+            pointer-events: none;
+            z-index: 10000;
+            animation: fadeFromBlack 1.5s ease-out forwards;
+        }
+
+        @keyframes fadeFromBlack {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Enhanced parchment texture overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.025) 1px,
+                    rgba(196, 165, 105, 0.025) 2px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.02) 1px,
+                    rgba(196, 165, 105, 0.02) 2px
+                ),
+                radial-gradient(
+                    ellipse at 20% 30%,
+                    rgba(196, 165, 105, 0.03),
+                    transparent 50%
+                ),
+                radial-gradient(
+                    ellipse at 80% 70%,
+                    rgba(196, 165, 105, 0.02),
+                    transparent 50%
+                );
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 3s ease-in 1.5s forwards;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes expandLetters {
+            from {
+                opacity: 0;
+                letter-spacing: -0.05em;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                letter-spacing: 0.02em;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes arrowAppear {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .content-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 5rem;
+            font-weight: 400;
+            color: #2a2520;
+            animation: expandLetters 3.5s ease-out 2.3s forwards;
+            margin-bottom: 2rem;
+            opacity: 0;
+            text-shadow: 0 1px 2px rgba(196, 165, 105, 0.15);
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(
+                to right,
+                transparent,
+                #c4a569 20%,
+                #c4a569 80%,
+                transparent
+            );
+            opacity: 0;
+            animation: fadeIn 2s ease-in 4.5s forwards;
+            box-shadow: 0 0 2px rgba(196, 165, 105, 0.3);
+        }
+
+        /* Minimalist arrow button */
+        .arrow-button {
+            position: fixed;
+            bottom: 3rem;
+            right: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 1.5px solid #c4a569;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            opacity: 0;
+            animation: arrowAppear 1s ease-out 6s forwards;
+            z-index: 100;
+        }
+
+        .arrow-button::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #c4a569;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .arrow-mark {
+            font-size: 1.5rem;
+            color: #c4a569;
+            z-index: 1;
+            transition: all 0.4s ease;
+        }
+
+        .arrow-button:hover,
+        .arrow-button:focus-visible {
+            border-color: #a8865a;
+            transform: translateX(4px);
+        }
+
+        .arrow-button:hover::before,
+        .arrow-button:focus-visible::before {
+            opacity: 1;
+        }
+
+        .arrow-button:hover .arrow-mark,
+        .arrow-button:focus-visible .arrow-mark {
+            color: #fffef7;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 3.5rem;
+            }
+
+            .signature-line {
+                width: 160px;
+            }
+
+            .arrow-button {
+                bottom: 2rem;
+                right: 2rem;
+                width: 55px;
+                height: 55px;
+            }
+
+            .arrow-mark {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" aria-labelledby="greeting">
+        <div class="content-center">
+            <h1 id="greeting">For Ruby</h1>
+            <div class="signature-line"></div>
+        </div>
+    </main>
+    
+    <a href="orientation.html" class="arrow-button" aria-label="Continue to Orientation">
+        <span class="arrow-mark">⇢</span>
+    </a>
+</body>
+</html>
