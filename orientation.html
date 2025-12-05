@@ -25,16 +25,11 @@
             flex-direction: column;
             padding: 2rem;
             opacity: 0;
-            animation: fadeInFromParchment 0.8s ease-out forwards;
+            transition: opacity 0.8s ease-out;
         }
 
-        @keyframes fadeInFromParchment {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        body.fade-in {
+            opacity: 1;
         }
 
         main.container {
@@ -201,5 +196,17 @@
             <a href="covenant.html" class="nav-button">Forward to the Covenant →</a>
         </nav>
     </main>
+
+    <script>
+        // Trigger fade-in after DOM is ready
+        // Small delay ensures mobile browsers register the animation
+        document.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    document.body.classList.add('fade-in');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
