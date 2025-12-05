@@ -173,6 +173,9 @@
             overflow: hidden;
             white-space: nowrap;
             animation: writeText 2.5s ease-out 2.3s forwards;
+            /* Gradient mask for smooth fade on right edge */
+            -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+            mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
         }
 
         h1 {
@@ -271,6 +274,11 @@
         @media (max-width: 600px) {
             h1 {
                 font-size: 3.5rem;
+            }
+
+            h1::before {
+                -webkit-mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
+                mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
             }
 
             .signature-line {
