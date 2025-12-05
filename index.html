@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Threshold — Initiation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,7 +19,6 @@
             font-family: "Georgia", serif;
             background-color: #f5f5f0;
             color: #2c2c2c;
-            line-height: 1.7;
         }
 
         body {
@@ -25,127 +27,396 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.01) 2px,
+                    rgba(0, 0, 0, 0.01) 4px
+                );
         }
 
         .container {
-            max-width: 700px;
+            max-width: 550px;
             width: 100%;
             margin: 0 auto;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 0.8s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInCorner {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInDelayed {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes expandLetters {
+            from {
+                opacity: 0;
+                letter-spacing: -0.05em;
+            }
+            to {
+                opacity: 1;
+                letter-spacing: 0.02em;
+            }
+        }
+
+        @keyframes sealAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotate(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
         }
 
         .threshold-card {
-            border: 1px solid #d0d0d0;
-            padding: 2.5rem 2rem;
-            background-color: #fafaf5;
+            border: 3px double #c4a569;
+            padding: 5rem 3rem 3rem 3rem;
+            background-color: #fffef7;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.02) 1px,
+                    rgba(196, 165, 105, 0.02) 2px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.015) 1px,
+                    rgba(196, 165, 105, 0.015) 2px
+                );
+            position: relative;
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.08),
+                inset 0 0 60px rgba(196, 165, 105, 0.03);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .eyebrow {
-            font-size: 0.8rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: #7a7a7a;
-            margin-bottom: 0.75rem;
+        /* Inner ornamental border */
+        .threshold-card::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid #c4a569;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* Decorative corner ornaments with staggered animation */
+        .corner-ornament {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            opacity: 0;
+        }
+
+        .corner-top-left {
+            top: 12px;
+            left: 12px;
+            border-top: 1px solid #c4a569;
+            border-left: 1px solid #c4a569;
+            animation: fadeInCorner 0.6s ease-out 0s forwards;
+        }
+
+        .corner-top-left::before {
+            content: '╔';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            font-size: 1.2rem;
+            color: #c4a569;
+            opacity: 0.6;
+        }
+
+        .corner-top-right {
+            top: 12px;
+            right: 12px;
+            border-top: 1px solid #c4a569;
+            border-right: 1px solid #c4a569;
+            animation: fadeInCorner 0.6s ease-out 0.15s forwards;
+        }
+
+        .corner-top-right::before {
+            content: '╗';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 1.2rem;
+            color: #c4a569;
+            opacity: 0.6;
+        }
+
+        .corner-bottom-left {
+            bottom: 12px;
+            left: 12px;
+            border-bottom: 1px solid #c4a569;
+            border-left: 1px solid #c4a569;
+            animation: fadeInCorner 0.6s ease-out 0.3s forwards;
+        }
+
+        .corner-bottom-left::before {
+            content: '╚';
+            position: absolute;
+            bottom: -8px;
+            left: -8px;
+            font-size: 1.2rem;
+            color: #c4a569;
+            opacity: 0.6;
+        }
+
+        .corner-bottom-right {
+            bottom: 12px;
+            right: 12px;
+            border-bottom: 1px solid #c4a569;
+            border-right: 1px solid #c4a569;
+            animation: fadeInCorner 0.6s ease-out 0.45s forwards;
+        }
+
+        .corner-bottom-right::before {
+            content: '╝';
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            font-size: 1.2rem;
+            color: #c4a569;
+            opacity: 0.6;
+        }
+
+        /* Ornamental border accent dots */
+        .border-accent {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #c4a569;
+            border-radius: 50%;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-in 0.7s forwards;
+        }
+
+        .accent-top {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .accent-bottom {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .accent-left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .accent-right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .content-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 1;
         }
 
         h1 {
-            font-size: 2.2rem;
-            font-weight: 300;
-            letter-spacing: 0.08em;
-            margin-bottom: 1.5rem;
+            font-family: 'Ephesis', cursive;
+            font-size: 5rem;
+            font-weight: 400;
             color: #1a1a1a;
-        }
-
-        p {
-            font-size: 1rem;
-            color: #4a4a4a;
-            margin-bottom: 1.2rem;
-        }
-
-        .divider {
-            width: 40px;
-            height: 1px;
-            background-color: #8a8a8a;
-            margin: 1.8rem 0;
-        }
-
-        .cta-region {
-            margin-top: 1rem;
-        }
-
-        .cta-note {
-            font-size: 0.9rem;
-            color: #5a5a5a;
+            animation: expandLetters 2s ease-out 0.8s forwards;
             margin-bottom: 1.5rem;
+            opacity: 0;
         }
 
-        .primary-button {
-            display: inline-block;
-            padding: 0.85rem 2.2rem;
-            border: 1px solid #2c2c2c;
-            background-color: #2c2c2c;
-            color: #f5f5f0;
+        .signature-line {
+            width: 180px;
+            height: 1px;
+            background-color: #c4a569;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in 2.3s forwards;
+        }
+
+        /* Wax seal button */
+        .wax-seal {
+            position: absolute;
+            bottom: 2rem;
+            right: 2.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #d4a574, #b8935f, #8b6f47);
             text-decoration: none;
-            font-size: 0.9rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
+            font-family: "Georgia", serif;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            transition: all 0.4s ease;
             cursor: pointer;
+            opacity: 0;
+            animation: sealAppear 0.8s ease-out 2.8s forwards;
+            box-shadow: 
+                0 3px 8px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            z-index: 10;
         }
 
-        .primary-button:hover,
-        .primary-button:focus-visible {
-            background-color: #f5f5f0;
-            color: #2c2c2c;
+        /* Wax texture overlay */
+        .wax-seal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background-image: 
+                repeating-radial-gradient(
+                    circle at 35% 35%,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.03) 2px,
+                    rgba(0, 0, 0, 0.03) 4px
+                );
+            pointer-events: none;
         }
 
-        .footer-note {
-            margin-top: 1.5rem;
-            font-size: 0.8rem;
-            color: #8a8a8a;
+        /* Subtle drip effect */
+        .wax-seal::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65px;
+            height: 8px;
+            background: radial-gradient(ellipse at center, rgba(184, 147, 95, 0.4), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Seal imprint initial */
+        .seal-mark {
+            color: rgba(58, 42, 26, 0.7);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            position: relative;
+        }
+
+        .wax-seal:hover,
+        .wax-seal:focus-visible {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 
+                0 5px 15px rgba(139, 111, 71, 0.4),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.25),
+                inset 0 2px 4px rgba(255, 255, 255, 0.25),
+                0 0 20px rgba(196, 165, 105, 0.3);
         }
 
         @media (max-width: 600px) {
             .threshold-card {
-                padding: 2rem 1.4rem;
+                padding: 4rem 2rem 2.5rem 2rem;
+                min-height: 350px;
+            }
+
+            .corner-ornament {
+                width: 35px;
+                height: 35px;
+            }
+
+            .corner-top-left::before,
+            .corner-top-right::before,
+            .corner-bottom-left::before,
+            .corner-bottom-right::before {
+                font-size: 1rem;
             }
 
             h1 {
-                font-size: 1.8rem;
+                font-size: 3.5rem;
+            }
+
+            .signature-line {
+                width: 140px;
+            }
+
+            .wax-seal {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                width: 55px;
+                height: 55px;
+                font-size: 0.65rem;
+            }
+
+            .wax-seal::after {
+                width: 60px;
             }
         }
     </style>
 </head>
 <body>
-    <main class="container" aria-labelledby="threshold-title">
+    <main class="container" aria-labelledby="greeting">
         <section class="threshold-card">
-            <div class="eyebrow">Threshold</div>
-            <h1 id="threshold-title">The Beginning of the Covenant</h1>
-
-            <p>
-                This page is the single entry to the initiation path. 
-                Crossing this threshold commits you to move through each stage in order, without skipping ahead.
-            </p>
-
-            <div class="divider"></div>
-
-            <p>
-                When you are ready, you will proceed only to Orientation, where the structure and expectations of the Covenant journey are laid out in full.
-            </p>
-
-            <div class="cta-region">
-                <p class="cta-note">
-                    Prepare yourself to read carefully and proceed deliberately. 
-                    If you are not yet certain, you may close this page and return when you are ready.
-                </p>
-
-                <a href="orientation.html" class="primary-button">
-                    Enter Orientation
-                </a>
+            <span class="corner-ornament corner-top-left"></span>
+            <span class="corner-ornament corner-top-right"></span>
+            <span class="corner-ornament corner-bottom-left"></span>
+            <span class="corner-ornament corner-bottom-right"></span>
+            
+            <span class="border-accent accent-top"></span>
+            <span class="border-accent accent-bottom"></span>
+            <span class="border-accent accent-left"></span>
+            <span class="border-accent accent-right"></span>
+            
+            <div class="content-center">
+                <h1 id="greeting">For Ruby</h1>
+                <div class="signature-line"></div>
             </div>
-
-            <p class="footer-note">
-                Use your browser's back function to return to this threshold at any time before you give your Oath.
-            </p>
+            
+            <a href="orientation.html" class="wax-seal" aria-label="Continue to Orientation">
+                <span class="seal-mark">R</span>
+            </a>
         </section>
     </main>
 </body>
