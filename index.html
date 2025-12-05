@@ -43,6 +43,21 @@
             50% { transform: scale(1.02); }
         }
 
+        @keyframes successFlash {
+            0% { 
+                background-color: #1a1a1a;
+                border-color: #444;
+                color: #f5f5f5;
+                box-shadow: none;
+            }
+            100% { 
+                background-color: #ffffff;
+                border-color: #ffffff;
+                color: #000000;
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+        }
+
         .password-form {
             display: flex;
             flex-direction: column;
@@ -120,6 +135,10 @@
             box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
         }
 
+        button.success-flash {
+            animation: successFlash 0.15s ease-out forwards;
+        }
+
         @media (max-width: 600px) {
             input[type="password"],
             button {
@@ -139,16 +158,17 @@
                     autocomplete="off"
                 >
             </div>
-            <button type="submit">Enter</button>
+            <button type="submit" id="submitBtn">Enter</button>
         </form>
     </main>
 
     <script>
         // Set your password here
-        const correctPassword = 'nobodylovesme'; // Change this to your desired password
+        const correctPassword = 'ruby2025';
 
         const form = document.getElementById('passwordForm');
         const input = document.getElementById('passwordInput');
+        const submitBtn = document.getElementById('submitBtn');
         const body = document.body;
 
         form.addEventListener('submit', (e) => {
@@ -168,11 +188,18 @@
             }
 
             if (enteredPassword === correctPassword) {
-                // Successful entry - fade to threshold page
-                body.classList.add('fade-out');
+                // Flash the button bright white
+                submitBtn.classList.add('success-flash');
+                
+                // After flash, fade out entire page
+                setTimeout(() => {
+                    body.classList.add('fade-out');
+                }, 150);
+                
+                // Navigate after full fade
                 setTimeout(() => {
                     window.location.href = 'threshold.html';
-                }, 1500);
+                }, 1650); // 150ms flash + 1500ms fade
             } else {
                 // Show error with red pulse
                 input.classList.remove('error-empty');
