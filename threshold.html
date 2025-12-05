@@ -116,23 +116,12 @@
             }
         }
 
-        @keyframes writeTextWidth {
+        @keyframes writeText {
             from {
                 width: 0;
             }
             to {
-                width: 100%;
-            }
-        }
-
-        @keyframes writeTextMask {
-            0% {
-                -webkit-mask-image: linear-gradient(to right, black 0%, transparent 40px);
-                mask-image: linear-gradient(to right, black 0%, transparent 40px);
-            }
-            100% {
-                -webkit-mask-image: linear-gradient(to right, black 100%, transparent 100%);
-                mask-image: linear-gradient(to right, black 100%, transparent 100%);
+                width: 105%;
             }
         }
 
@@ -171,7 +160,7 @@
             margin-bottom: 2rem;
             text-shadow: 0 1px 2px rgba(196, 165, 105, 0.15);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             white-space: nowrap;
         }
 
@@ -183,7 +172,9 @@
             width: 0;
             overflow: hidden;
             white-space: nowrap;
-            animation: writeTextWidth 2s ease-out 2.3s forwards, writeTextMask 2s ease-out 2.3s forwards;
+            animation: writeText 2s ease-out 2.3s forwards;
+            -webkit-mask-image: linear-gradient(to right, black calc(100% - 35px), transparent 100%);
+            mask-image: linear-gradient(to right, black calc(100% - 35px), transparent 100%);
         }
 
         h1 {
@@ -284,15 +275,9 @@
                 font-size: 3.5rem;
             }
 
-            @keyframes writeTextMask {
-                0% {
-                    -webkit-mask-image: linear-gradient(to right, black 0%, transparent 25px);
-                    mask-image: linear-gradient(to right, black 0%, transparent 25px);
-                }
-                100% {
-                    -webkit-mask-image: linear-gradient(to right, black 100%, transparent 100%);
-                    mask-image: linear-gradient(to right, black 100%, transparent 100%);
-                }
+            h1::before {
+                -webkit-mask-image: linear-gradient(to right, black calc(100% - 20px), transparent 100%);
+                mask-image: linear-gradient(to right, black calc(100% - 20px), transparent 100%);
             }
 
             .signature-line {
