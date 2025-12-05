@@ -6,7 +6,7 @@
     <title>Threshold — Initiation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,8 +17,8 @@
         html, body {
             height: 100%;
             font-family: "Georgia", serif;
-            background-color: #f5f5f0;
-            color: #2c2c2c;
+            background-color: #fffef7;
+            color: #1a1a1a;
         }
 
         body {
@@ -31,38 +31,35 @@
                 repeating-linear-gradient(
                     0deg,
                     transparent,
-                    transparent 2px,
-                    rgba(0, 0, 0, 0.01) 2px,
-                    rgba(0, 0, 0, 0.01) 4px
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.015) 1px,
+                    rgba(196, 165, 105, 0.015) 2px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.01) 1px,
+                    rgba(196, 165, 105, 0.01) 2px
                 );
         }
 
         .container {
-            max-width: 550px;
+            max-width: 600px;
             width: 100%;
             margin: 0 auto;
+            text-align: center;
             opacity: 0;
-            animation: fadeIn 1s ease-in 0.8s forwards;
+            animation: fadeIn 2s ease-in forwards;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeInCorner {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes fadeInDelayed {
             to {
                 opacity: 1;
             }
@@ -90,334 +87,98 @@
             }
         }
 
-        .threshold-card {
-            border: 3px double #c4a569;
-            padding: 5rem 3rem 3rem 3rem;
-            background-color: #fffef7;
-            background-image: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 1px,
-                    rgba(196, 165, 105, 0.02) 1px,
-                    rgba(196, 165, 105, 0.02) 2px
-                ),
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 1px,
-                    rgba(196, 165, 105, 0.015) 1px,
-                    rgba(196, 165, 105, 0.015) 2px
-                );
-            position: relative;
-            box-shadow: 
-                0 4px 20px rgba(0, 0, 0, 0.08),
-                inset 0 0 60px rgba(196, 165, 105, 0.03);
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Inner ornamental border */
-        .threshold-card::after {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            right: 8px;
-            bottom: 8px;
-            border: 1px solid #c4a569;
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        /* Decorative corner ornaments with staggered animation */
-        .corner-ornament {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            opacity: 0;
-        }
-
-        .corner-top-left {
-            top: 12px;
-            left: 12px;
-            border-top: 1px solid #c4a569;
-            border-left: 1px solid #c4a569;
-            animation: fadeInCorner 0.6s ease-out 0s forwards;
-        }
-
-        .corner-top-left::before {
-            content: '╔';
-            position: absolute;
-            top: -8px;
-            left: -8px;
-            font-size: 1.2rem;
-            color: #c4a569;
-            opacity: 0.6;
-        }
-
-        .corner-top-right {
-            top: 12px;
-            right: 12px;
-            border-top: 1px solid #c4a569;
-            border-right: 1px solid #c4a569;
-            animation: fadeInCorner 0.6s ease-out 0.15s forwards;
-        }
-
-        .corner-top-right::before {
-            content: '╗';
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            font-size: 1.2rem;
-            color: #c4a569;
-            opacity: 0.6;
-        }
-
-        .corner-bottom-left {
-            bottom: 12px;
-            left: 12px;
-            border-bottom: 1px solid #c4a569;
-            border-left: 1px solid #c4a569;
-            animation: fadeInCorner 0.6s ease-out 0.3s forwards;
-        }
-
-        .corner-bottom-left::before {
-            content: '╚';
-            position: absolute;
-            bottom: -8px;
-            left: -8px;
-            font-size: 1.2rem;
-            color: #c4a569;
-            opacity: 0.6;
-        }
-
-        .corner-bottom-right {
-            bottom: 12px;
-            right: 12px;
-            border-bottom: 1px solid #c4a569;
-            border-right: 1px solid #c4a569;
-            animation: fadeInCorner 0.6s ease-out 0.45s forwards;
-        }
-
-        .corner-bottom-right::before {
-            content: '╝';
-            position: absolute;
-            bottom: -8px;
-            right: -8px;
-            font-size: 1.2rem;
-            color: #c4a569;
-            opacity: 0.6;
-        }
-
-        /* Ornamental border accent dots */
-        .border-accent {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background-color: #c4a569;
-            border-radius: 50%;
-            opacity: 0;
-            animation: fadeIn 0.4s ease-in 0.7s forwards;
-        }
-
-        .accent-top {
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .accent-bottom {
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .accent-left {
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .accent-right {
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
         .content-center {
-            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            z-index: 1;
         }
 
         h1 {
-            font-family: 'Ephesis', cursive;
+            font-family: 'Great Vibes', cursive;
             font-size: 5rem;
             font-weight: 400;
             color: #1a1a1a;
-            animation: expandLetters 2s ease-out 0.8s forwards;
-            margin-bottom: 1.5rem;
+            animation: expandLetters 2.5s ease-out forwards;
+            margin-bottom: 2rem;
             opacity: 0;
         }
 
         .signature-line {
-            width: 180px;
+            width: 200px;
             height: 1px;
             background-color: #c4a569;
             opacity: 0;
-            animation: fadeIn 1.5s ease-in 2.3s forwards;
+            animation: fadeIn 1.5s ease-in 2s forwards;
         }
 
-        /* Wax seal button */
+        /* Simplified flat wax seal */
         .wax-seal {
             position: absolute;
-            bottom: 2rem;
-            right: 2.5rem;
+            bottom: 0;
+            right: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #d4a574, #b8935f, #8b6f47);
+            background-color: #a67c52;
+            border: 2px solid #8b6847;
             text-decoration: none;
-            font-family: "Georgia", serif;
-            font-size: 0.7rem;
-            font-weight: bold;
-            letter-spacing: 0.08em;
             transition: all 0.4s ease;
             cursor: pointer;
             opacity: 0;
-            animation: sealAppear 0.8s ease-out 2.8s forwards;
-            box-shadow: 
-                0 3px 8px rgba(0, 0, 0, 0.3),
-                inset 0 -2px 4px rgba(0, 0, 0, 0.2),
-                inset 0 2px 4px rgba(255, 255, 255, 0.2);
-            z-index: 10;
+            animation: sealAppear 0.8s ease-out 2.5s forwards;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Wax texture overlay */
-        .wax-seal::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 50%;
-            background-image: 
-                repeating-radial-gradient(
-                    circle at 35% 35%,
-                    transparent,
-                    transparent 2px,
-                    rgba(0, 0, 0, 0.03) 2px,
-                    rgba(0, 0, 0, 0.03) 4px
-                );
-            pointer-events: none;
-        }
-
-        /* Subtle drip effect */
-        .wax-seal::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 65px;
-            height: 8px;
-            background: radial-gradient(ellipse at center, rgba(184, 147, 95, 0.4), transparent);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        /* Seal imprint initial */
         .seal-mark {
-            color: rgba(58, 42, 26, 0.7);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            z-index: 1;
-            position: relative;
+            font-family: "Georgia", serif;
+            font-size: 2rem;
+            font-weight: normal;
+            color: #3a2a1a;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
         }
 
         .wax-seal:hover,
         .wax-seal:focus-visible {
-            transform: scale(1.05) rotate(5deg);
-            box-shadow: 
-                0 5px 15px rgba(139, 111, 71, 0.4),
-                inset 0 -2px 4px rgba(0, 0, 0, 0.25),
-                inset 0 2px 4px rgba(255, 255, 255, 0.25),
-                0 0 20px rgba(196, 165, 105, 0.3);
+            transform: scale(1.08);
+            background-color: #b8935f;
+            border-color: #a67c52;
+            box-shadow: 0 4px 16px rgba(196, 165, 105, 0.5);
         }
 
         @media (max-width: 600px) {
-            .threshold-card {
-                padding: 4rem 2rem 2.5rem 2rem;
-                min-height: 350px;
-            }
-
-            .corner-ornament {
-                width: 35px;
-                height: 35px;
-            }
-
-            .corner-top-left::before,
-            .corner-top-right::before,
-            .corner-bottom-left::before,
-            .corner-bottom-right::before {
-                font-size: 1rem;
-            }
-
             h1 {
                 font-size: 3.5rem;
             }
 
             .signature-line {
-                width: 140px;
+                width: 160px;
             }
 
             .wax-seal {
-                bottom: 1.5rem;
-                right: 1.5rem;
                 width: 55px;
                 height: 55px;
-                font-size: 0.65rem;
             }
 
-            .wax-seal::after {
-                width: 60px;
+            .seal-mark {
+                font-size: 1.8rem;
             }
         }
     </style>
 </head>
 <body>
     <main class="container" aria-labelledby="greeting">
-        <section class="threshold-card">
-            <span class="corner-ornament corner-top-left"></span>
-            <span class="corner-ornament corner-top-right"></span>
-            <span class="corner-ornament corner-bottom-left"></span>
-            <span class="corner-ornament corner-bottom-right"></span>
-            
-            <span class="border-accent accent-top"></span>
-            <span class="border-accent accent-bottom"></span>
-            <span class="border-accent accent-left"></span>
-            <span class="border-accent accent-right"></span>
-            
-            <div class="content-center">
-                <h1 id="greeting">For Ruby</h1>
-                <div class="signature-line"></div>
-            </div>
-            
-            <a href="orientation.html" class="wax-seal" aria-label="Continue to Orientation">
-                <span class="seal-mark">R</span>
-            </a>
-        </section>
+        <div class="content-center">
+            <h1 id="greeting">For Ruby</h1>
+            <div class="signature-line"></div>
+        </div>
+        
+        <a href="orientation.html" class="wax-seal" aria-label="Continue to Orientation">
+            <span class="seal-mark">→</span>
+        </a>
     </main>
 </body>
 </html>
