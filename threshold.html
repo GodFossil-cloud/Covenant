@@ -142,10 +142,17 @@
 
         @keyframes goldGlow {
             0% {
+                background-color: transparent;
                 border-color: #c4a569;
                 box-shadow: none;
             }
+            50% {
+                background-color: rgba(196, 165, 105, 0.3);
+                border-color: #e8d19a;
+                box-shadow: 0 0 25px rgba(196, 165, 105, 0.8), 0 0 50px rgba(196, 165, 105, 0.4), inset 0 0 15px rgba(196, 165, 105, 0.3);
+            }
             100% {
+                background-color: rgba(196, 165, 105, 0.2);
                 border-color: #d4b579;
                 box-shadow: 0 0 20px rgba(196, 165, 105, 0.6), 0 0 40px rgba(196, 165, 105, 0.3);
             }
@@ -240,7 +247,8 @@
         }
 
         .arrow-button.clicked {
-            animation: goldGlow 0.3s ease-out forwards;
+            animation: goldGlow 0.35s ease-out forwards !important;
+            transition: none !important;
         }
 
         @media (max-width: 600px) {
@@ -290,12 +298,12 @@
             // Fade out page
             setTimeout(() => {
                 body.classList.add('fade-out');
-            }, 300);
+            }, 350);
             
             // Navigate after fade completes
             setTimeout(() => {
                 window.location.href = 'orientation.html';
-            }, 1500); // 300ms glow + 1200ms fade
+            }, 1550); // 350ms glow + 1200ms fade
         });
     </script>
 </body>
