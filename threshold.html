@@ -192,6 +192,7 @@
             opacity: 0;
             animation: arrowAppear 1s ease-out 6s forwards;
             z-index: 100;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .arrow-button::before {
@@ -278,11 +279,16 @@
     <script>
         const arrowBtn = document.getElementById('arrowBtn');
         const body = document.body;
+        let navigationTriggered = false;
 
-        arrowBtn.addEventListener('click', (e) => {
+        function handleNavigation(e) {
             e.preventDefault();
             
-            // Instant gold fill on click
+            // Prevent multiple triggers
+            if (navigationTriggered) return;
+            navigationTriggered = true;
+            
+            // Instant gold fill on click/touch
             arrowBtn.classList.add('clicked');
             
             // Fade out page after brief moment
@@ -294,7 +300,11 @@
             setTimeout(() => {
                 window.location.href = 'orientation.html';
             }, 1500);
-        });
+        }
+
+        // Handle both touch and click events
+        arrowBtn.addEventListener('touchstart', handleNavigation, { passive: false });
+        arrowBtn.addEventListener('click', handleNavigation);
     </script>
 </body>
 </html>
