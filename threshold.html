@@ -117,11 +117,18 @@
         }
 
         @keyframes writeText {
-            from {
+            0% {
                 width: 0;
             }
-            to {
+            99% {
                 width: 100%;
+                -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+                mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+            }
+            100% {
+                width: 100%;
+                -webkit-mask-image: none;
+                mask-image: none;
             }
         }
 
@@ -173,9 +180,6 @@
             overflow: hidden;
             white-space: nowrap;
             animation: writeText 2s ease-out 2.3s forwards;
-            /* Gradient mask for smooth fade on right edge */
-            -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
-            mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
         }
 
         h1 {
@@ -276,9 +280,20 @@
                 font-size: 3.5rem;
             }
 
-            h1::before {
-                -webkit-mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
-                mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
+            @keyframes writeText {
+                0% {
+                    width: 0;
+                }
+                99% {
+                    width: 100%;
+                    -webkit-mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
+                    mask-image: linear-gradient(to right, black calc(100% - 25px), transparent 100%);
+                }
+                100% {
+                    width: 100%;
+                    -webkit-mask-image: none;
+                    mask-image: none;
+                }
             }
 
             .signature-line {
