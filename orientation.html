@@ -62,7 +62,15 @@
             font-size: 1rem;
             margin-bottom: 1.5rem;
             color: #4a4a4a;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: paragraphReveal 0.7s ease-out forwards;
         }
+
+        p:nth-of-type(1) { animation-delay: 0.1s; }
+        p:nth-of-type(2) { animation-delay: 0.25s; }
+        p:nth-of-type(3) { animation-delay: 0.4s; }
+        p:nth-of-type(4) { animation-delay: 0.55s; }
 
         p:first-of-type::first-letter {
             float: left;
@@ -72,18 +80,37 @@
             margin-top: 0.1em;
             margin-bottom: -0.05em;
             font-weight: 400;
-            color: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a3520 50%, #1a1a1a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+            filter: drop-shadow(0 1px 2px rgba(74, 53, 32, 0.2));
         }
 
         .faithful-name {
             font-style: normal;
             font-weight: 500;
             color: #8b2e2e;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .faithful-name:hover {
+            color: #a83838;
+            text-shadow: 0 0 8px rgba(139, 46, 46, 0.3);
         }
 
         .emphasis {
             font-weight: 500;
             font-style: italic;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .emphasis:hover {
+            color: #1a1a1a;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
         }
 
         .possessive-be {
@@ -91,6 +118,13 @@
             letter-spacing: 0.08em;
             font-weight: 400;
             color: #5a400c;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .possessive-be:hover {
+            color: #7a5510;
+            text-shadow: 0 0 6px rgba(90, 64, 12, 0.25);
         }
 
         .possessive-my {
@@ -99,6 +133,13 @@
             font-weight: 500;
             font-size: 1.08em;
             color: #5a400c;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .possessive-my:hover {
+            color: #7a5510;
+            text-shadow: 0 0 8px rgba(90, 64, 12, 0.3);
         }
 
         .temporal {
@@ -116,34 +157,41 @@
             color: #1a1a1a;
             letter-spacing: 0.02em;
             font-style: italic;
-                        opacity: 0;
-                        transform: scale(0.96);
-                        animation: closingReveal 0.9s ease-out forwards;
-                        animation-delay: 0.6s;
+            opacity: 0;
+            transform: scale(0.96);
+            animation: closingReveal 0.9s ease-out forwards;
+            animation-delay: 0.75s;
         }
 
         .closing-declaration:first-of-type {
             margin-top: 1rem;
         }
 
-                .closing-declaration:hover {
-                                color: #111111;
-                                text-shadow: 0 0 6px rgba(0, 0, 0, 0.16);
-                            }
+        .closing-declaration:last-of-type {
+            animation-delay: 0.95s;
+        }
 
-        .signature-divider {
-            width: auto;
-            height: 1.5px;
-            background-color: #c0c0c0;
-            margin: 1.5rem;
+        .closing-declaration:hover {
+            color: #111111;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.16);
+        }
+
+        .signature-block {
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(139, 139, 139, 0.3);
+            border-bottom: 1px solid rgba(139, 139, 139, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            opacity: 0;
+            animation: fadeInDelayed 0.8s ease-out 1.2s forwards;
         }
 
         .signature-ornament {
             text-align: center;
             font-size: 1.5rem;
             color: #3a4a5a;
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .signature {
@@ -153,32 +201,12 @@
             font-variant: small-caps;
             letter-spacing: 0.15em;
             color: #9a9a9a;
-            margin-bottom: 4rem;
-        }
-
-        .divider {
-            width: auto;
-            height: 1px;
-            background-color: #8a8a8a;
-            margin: 1rem auto 1rem;
-        }
-
-        .footer-note {
-            text-align: center;
-            font-size: 0.75rem;                        
-            color: #4a4a4a;
-            margin-top: 1.75rem;        
-            letter-spacing: 0.08em;
-            opacity: 0;
-            animation: fadeInDelayed 0.8s ease-out 0.4s forwards;
-            font-style: thin;
-            line-height: -1.5;
         }
 
         .navigation {
             display: flex;
             justify-content: center;
-            margin-top: 0;
+            margin-top: auto;
             padding-top: 2rem;
             border-top: 1px solid #d0d0d0;
             gap: 1rem;
@@ -206,20 +234,43 @@
             color: #2c2c2c;
         }
 
+        .footer-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6a6a6a;
+            margin-top: 1.5rem;
+            letter-spacing: 0.08em;
+            opacity: 0;
+            animation: fadeInDelayed 0.8s ease-out 1.4s forwards;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
         @keyframes fadeInDelayed {
             to { opacity: 1; }
         }
 
-                    @keyframes closingReveal {
-                                    0% {
-                                                        opacity: 0;
-                                                        transform: scale(0.96);
-                                                    }
-                                    100% {
-                                                        opacity: 1;
-                                                        transform: scale(1);
-                                                    }
-                                }
+        @keyframes closingReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes paragraphReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         @media (max-width: 600px) {
             body {
@@ -242,6 +293,10 @@
             .nav-button {
                 width: 100%;
             }
+
+            .signature-block {
+                padding: 1.25rem 1.5rem;
+            }
         }
 
         @media (max-width: 400px) {
@@ -258,7 +313,9 @@
                 background: white !important;
                 color: #2c2c2c !important;
             }
-            .footer-note {
+            .footer-note,
+            .signature-block,
+            p {
                 opacity: 1 !important;
             }
         }
@@ -282,14 +339,16 @@
         <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
         <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
 
-        <div class="signature-ornament">⚘</div>
-        <p class="signature">Nobody</p>
-    
-        <nav>
-        <a href="covenant.html" class="nav-button">· PROCEED ·</a>
-        <div class="divider"></div>
-        <div class="footer-note">In order to become that which you are not, you have to go by the way of that which you are not.</div>
+        <div class="signature-block">
+            <div class="signature-ornament">⚘</div>
+            <p class="signature">Nobody</p>
+        </div>
+
+        <nav class="navigation">
+            <a href="covenant.html" class="nav-button">· PROCEED ·</a>
         </nav>
+
+        <div class="footer-note">In order to become that which you are not, you have to go by the way of that which you are not.</div>
     </main>
 
     <script>
