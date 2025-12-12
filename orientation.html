@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preface — For The Record</title>
+    <title>Preface — For the Record</title>
     <style>
         * {
             margin: 0;
@@ -45,19 +45,7 @@
         }
 
         header {
-            position: relative;
             margin-bottom: 2rem;
-        }
-
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: -0.5rem;
-            left: 0;
-            width: 60px;
-            height: 1px;
-            background: linear-gradient(to right, #7a7a7a, transparent);
-            opacity: 0.6;
         }
 
         .eyebrow {
@@ -136,17 +124,15 @@
         }
 
         .possessive-be {
-            font-variant: small-caps;
-            letter-spacing: 0.1em;
-            font-weight: 500;
-            color: #5a400c;
+            font-style: italic;
+            font-weight: 400;
+            color: #1a1a1a;
             transition: all 0.3s ease;
             cursor: default;
         }
 
         .possessive-be:hover {
-            color: #7a5510;
-            text-shadow: 0 0 6px rgba(90, 64, 12, 0.25);
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
         }
 
         .possessive-my {
@@ -165,9 +151,10 @@
         }
 
         .temporal {
-            font-style: normal;
-            font-weight: 600;
-            letter-spacing: 0.025em;
+            font-style: italic;
+            font-weight: 500;
+            letter-spacing: 0.015em;
+            color: #3a3a3a;
         }
 
         .closing-declaration {
@@ -222,7 +209,7 @@
             font-size: 0.95rem;
             font-style: normal;
             font-variant: small-caps;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.08em;
             color: #9a9a9a;
         }
 
@@ -231,7 +218,7 @@
             justify-content: center;
             margin-top: auto;
             padding-top: 2rem;
-            border-top: 1px solid #d0d0d0;
+            padding-bottom: 1.5rem;
             gap: 1rem;
         }
 
@@ -265,11 +252,17 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .footer-divider {
+            width: 100%;
+            height: 1px;
+            background-color: #d0d0d0;
+            margin-bottom: 1.5rem;
+        }
+
         .footer-note {
             text-align: center;
             font-size: 0.75rem;
             color: #6a6a6a;
-            margin-top: 1.5rem;
             letter-spacing: 0.1em;
             opacity: 0;
             animation: fadeInDelayed 0.8s ease-out 1.4s forwards;
@@ -409,7 +402,7 @@
     <main class="container" aria-labelledby="orientation-title">
         <header>
             <div class="eyebrow">Preface</div>
-            <h1 id="orientation-title">For The Record</h1>
+            <h1 id="orientation-title">For the Record</h1>
         </header>
 
         <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
@@ -432,6 +425,7 @@
             <a href="covenant.html" class="nav-button">· PROCEED ·</a>
         </nav>
 
+        <div class="footer-divider"></div>
         <div class="footer-note">In order to become that which you are not, you have to go by the way of that which you are not.</div>
     </main>
 
