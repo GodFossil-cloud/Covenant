@@ -20,7 +20,7 @@
         body {
             min-height: 100vh;
             font-family: "Georgia", serif;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.03"/></svg>');
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.05"/></svg>');
             color: #2c2c2c;
             line-height: 1.7;
             display: flex;
@@ -68,10 +68,22 @@
             float: left;
             font-size: 3.5rem;
             line-height: 0.85;
-            padding-right: 0.1em;
+            padding-right: 0.12em;
             margin-top: 0.1em;
+            margin-bottom: -0.05em;
             font-weight: 400;
             color: #1a1a1a;
+        }
+
+        .faithful-name {
+            font-style: normal;
+            font-weight: 500;
+            color: #8b2e2e;
+        }
+
+        .emphasis {
+            font-weight: 500;
+            font-style: italic;
         }
 
         .closing-declaration {
@@ -83,6 +95,10 @@
             color: #1a1a1a;
             letter-spacing: 0.02em;
             font-style: italic;
+        }
+
+        .closing-declaration:first-of-type {
+            margin-top: 2.5rem;
         }
 
         .signature-divider {
@@ -124,7 +140,7 @@
             color: #f5f5f0;
             text-decoration: none;
             font-size: 0.9rem;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -141,14 +157,20 @@
         .footer-note {
             text-align: center;
             font-size: 0.75rem;
-            color: #9a9a9a;
+            color: #8a8a8a;
             margin-top: 2rem;
             letter-spacing: 0.08em;
+            opacity: 0;
+            animation: fadeInDelayed 0.8s ease-out 0.4s forwards;
+        }
+
+        @keyframes fadeInDelayed {
+            to { opacity: 1; }
         }
 
         @media (max-width: 600px) {
             body {
-                padding: 1.5rem;
+                padding: 1.5rem 1.25rem;
             }
 
             h1 {
@@ -168,6 +190,25 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 1.25rem 1rem;
+            }
+        }
+
+        @media print {
+            html, body {
+                background: white !important;
+            }
+            .nav-button {
+                background: white !important;
+                color: #2c2c2c !important;
+            }
+            .footer-note {
+                opacity: 1 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -177,11 +218,11 @@
             <h1 id="orientation-title">For The Record</h1>
         </header>
 
-        <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: Ruby.</p>
+        <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
 
         <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacrament—one that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
 
-        <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectively—and formally—consecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. It binds. That is the point. Be aware of what you are doing.</p>
+        <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectively—and formally—consecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
 
         <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful.</p>
 
