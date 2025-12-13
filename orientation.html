@@ -20,10 +20,7 @@
         body {
             min-height: 100vh;
             font-family: "Georgia", serif;
-            background-image: url('assets/textures/paper-grain-tile.jpg');
-            background-repeat: repeat;
-            background-blend-mode: overlay;
-            background-color: transparent;
+            position: relative;
             color: #2c2c2c;
             line-height: 1.72;
             display: flex;
@@ -41,11 +38,25 @@
             left: 0;
             width: 100%;
             height: 100%;
+            background-image: url('assets/textures/paper-grain-tile.jpg');
+            background-repeat: repeat;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: url('assets/textures/paper-grain-overlay.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.03;
+            opacity: 0.02;
             pointer-events: none;
             z-index: 1;
         }
