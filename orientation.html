@@ -98,15 +98,33 @@
             position: relative;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
-            background: linear-gradient(to bottom, #f5f5f0 0%, #ebe8e0 100%);
+            margin-left: -2rem;
+            margin-right: -2rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at center, 
+                    rgba(245, 245, 240, 1) 0%,
+                    rgba(245, 245, 240, 0.8) 50%,
+                    rgba(245, 245, 240, 0) 100%);
+            z-index: -1;
         }
 
         header::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
-            right: 0;
+            left: 2rem;
+            right: 2rem;
             height: 1px;
             background: linear-gradient(to right, 
                 transparent 0%, 
@@ -492,7 +510,7 @@
         <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful—</p>
 
         <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
-        <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
+        <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Friendly.</p>
 
         <div class="signature-block">
             <div class="signature-ornament">⚘</div>
