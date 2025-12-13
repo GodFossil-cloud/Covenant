@@ -45,7 +45,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.06;
+            opacity: 0.03;
             pointer-events: none;
             z-index: 1;
         }
@@ -77,35 +77,38 @@
             left: 0;
             width: 60px;
             height: 1px;
-            background: linear-gradient(to right, #5a5a5a, transparent);
-            opacity: 0.7;
+            background: linear-gradient(to right, #4a4a4a, transparent);
+            opacity: 0.75;
         }
 
         .eyebrow {
             font-size: 0.8rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: #5a5a5a;
+            color: #3a3a3a;
             margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.3);
         }
 
         h1 {
             font-size: 2.2rem;
             font-weight: 300;
             letter-spacing: 0.06em;
-            color: #2a3a4a;
+            color: #1a2a3a;
             line-height: 1.3;
+            text-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.2);
         }
 
         p {
             font-size: 1rem;
             margin-bottom: 1.5rem;
-            color: #2a2a2a;
+            color: #1a1a1a;
             opacity: 0;
             transform: translateY(12px);
             animation: paragraphReveal 0.7s ease-out forwards;
             letter-spacing: 0.01em;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
         }
 
         p:nth-of-type(1) { animation-delay: 0.1s; }
@@ -121,26 +124,26 @@
             margin-top: 0.1em;
             margin-bottom: -0.05em;
             font-weight: 400;
-            background: linear-gradient(135deg, #0a0a0a 0%, #4a3520 50%, #0a0a0a 100%);
+            background: linear-gradient(135deg, #000000 0%, #4a3520 50%, #000000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-            filter: drop-shadow(0 1px 2px rgba(74, 53, 32, 0.2));
+            filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.2)) drop-shadow(0 1px 2px rgba(74, 53, 32, 0.2));
         }
 
         .faithful-name {
             font-style: normal;
             font-weight: 600;
-            color: #7b1e1e;
+            color: #6b1e1e;
             letter-spacing: 0.02em;
             transition: all 0.3s ease;
             cursor: default;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
         }
 
         .faithful-name:hover {
             color: #a83838;
-            text-shadow: 0 0 8px rgba(139, 46, 46, 0.3);
+            text-shadow: 0 0 8px rgba(139, 46, 46, 0.3), 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
         }
 
         .emphasis {
@@ -149,18 +152,18 @@
             transition: all 0.3s ease;
             cursor: default;
             letter-spacing: 0.015em;
-            color: #1a1a1a;
+            color: #0a0a0a;
         }
 
         .emphasis:hover {
-            color: #0a0a0a;
-            text-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+            color: #000000;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.15), 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
         }
 
         .possessive-be {
             font-style: italic;
             font-weight: 400;
-            color: #0a0a0a;
+            color: #000000;
             transition: all 0.3s ease;
             cursor: default;
         }
@@ -174,13 +177,13 @@
             letter-spacing: 0.12em;
             font-weight: 600;
             font-size: 1.1em;
-            color: #4a300c;
+            color: #3a200c;
             transition: all 0.3s ease;
             cursor: default;
         }
 
         .possessive-my:hover {
-            color: #7a5510;
+            color: #5a3510;
             text-shadow: 0 0 8px rgba(90, 64, 12, 0.3);
         }
 
@@ -188,7 +191,7 @@
             font-style: italic;
             font-weight: 500;
             letter-spacing: 0.015em;
-            color: #2a2a2a;
+            color: #1a1a1a;
         }
 
         .closing-declaration {
@@ -197,7 +200,7 @@
             text-align: center;
             margin-top: 1rem;
             margin-bottom: 1rem;
-            color: #0a0a0a;
+            color: #000000;
             letter-spacing: 0.025em;
             font-style: italic;
             line-height: 1.65;
@@ -205,6 +208,7 @@
             transform: scale(0.96);
             animation: closingReveal 0.9s ease-out forwards;
             animation-delay: 0.75s;
+            text-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.15);
         }
 
         .closing-declaration:first-of-type {
@@ -217,15 +221,15 @@
 
         .closing-declaration:hover {
             color: #000000;
-            text-shadow: 0 0 6px rgba(0, 0, 0, 0.16);
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.16), 0 0.5px 1px rgba(255, 255, 255, 0.15);
         }
 
         .signature-block {
             margin-top: 2rem;
             margin-bottom: 1.75rem;
             padding: 1.5rem 2rem;
-            border-top: 1px solid rgba(100, 100, 100, 0.4);
-            border-bottom: 1px solid rgba(100, 100, 100, 0.4);
+            border-top: 1px solid rgba(80, 80, 80, 0.5);
+            border-bottom: 1px solid rgba(80, 80, 80, 0.5);
             background: rgba(255, 255, 255, 0.15);
             opacity: 0;
             animation: fadeInDelayed 0.8s ease-out 1.2s forwards;
@@ -234,8 +238,9 @@
         .signature-ornament {
             text-align: center;
             font-size: 1.5rem;
-            color: #2a3a4a;
+            color: #1a2a3a;
             margin-bottom: 0.75rem;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
         }
 
         .signature {
@@ -246,7 +251,8 @@
             font-style: normal;
             text-transform: uppercase;
             letter-spacing: 0.2em;
-            color: #6a6a6a;
+            color: #3a3a3a;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.25);
         }
 
         .navigation {
@@ -291,7 +297,7 @@
         .footer-divider {
             width: 100%;
             height: 1px;
-            background-color: #a0a0a0;
+            background-color: #8a8a8a;
             margin-top: auto;
             margin-bottom: 1.5rem;
         }
@@ -299,13 +305,14 @@
         .footer-note {
             text-align: center;
             font-size: 0.75rem;
-            color: #4a4a4a;
+            color: #2a2a2a;
             letter-spacing: 0.1em;
             opacity: 0;
             animation: fadeInDelayed 0.8s ease-out 1.4s forwards;
             font-style: italic;
             line-height: 1.6;
-            font-weight: 400;
+            font-weight: 500;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
         }
 
         @keyframes fadeInDelayed {
