@@ -20,7 +20,10 @@
         body {
             min-height: 100vh;
             font-family: "Georgia", serif;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.05"/></svg>');
+            background-image: url('assets/textures/paper-grain-tile.jpg');
+            background-repeat: repeat;
+            background-blend-mode: multiply;
+            background-color: transparent;
             color: #2c2c2c;
             line-height: 1.72;
             display: flex;
@@ -29,6 +32,22 @@
             opacity: 0;
             transform: translateY(8px);
             transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/textures/paper-grain-overlay.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
         }
 
         body.fade-in {
@@ -42,6 +61,8 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            position: relative;
+            z-index: 2;
         }
 
         header {
@@ -200,7 +221,7 @@
 
         .signature-block {
             margin-top: 2rem;
-            margin-bottom: 3rem;
+            margin-bottom: 1.75rem;
             padding: 1.5rem 2rem;
             border-top: 1px solid rgba(139, 139, 139, 0.3);
             border-bottom: 1px solid rgba(139, 139, 139, 0.3);
@@ -230,9 +251,9 @@
         .navigation {
             display: flex;
             justify-content: center;
-            margin-top: auto;
-            padding-top: 2rem;
-            padding-bottom: 1.5rem;
+            margin-top: 0;
+            padding-top: 0.5rem;
+            padding-bottom: 1.25rem;
             gap: 1rem;
         }
 
@@ -270,6 +291,7 @@
             width: 100%;
             height: 1px;
             background-color: #d0d0d0;
+            margin-top: auto;
             margin-bottom: 1.5rem;
         }
 
