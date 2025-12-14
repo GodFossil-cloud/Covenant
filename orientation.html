@@ -97,7 +97,6 @@
         header {
             position: relative;
             margin-bottom: 2rem;
-            padding-bottom: 1rem;
             margin-left: -2rem;
             margin-right: -2rem;
             padding-left: 2rem;
@@ -119,20 +118,6 @@
             z-index: -1;
         }
 
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 2rem;
-            right: 2rem;
-            height: 1px;
-            background: linear-gradient(to right, 
-                transparent 0%, 
-                rgba(90, 90, 90, 0.3) 5%,
-                rgba(90, 90, 90, 0.3) 95%,
-                transparent 100%);
-        }
-
         .eyebrow {
             font-size: 0.8rem;
             letter-spacing: 0.2em;
@@ -150,6 +135,22 @@
             color: #2a3a4a;
             line-height: 1.3;
             text-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.2);
+            padding-bottom: 1rem;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, 
+                transparent 0%, 
+                rgba(90, 90, 90, 0.3) 5%,
+                rgba(90, 90, 90, 0.3) 95%,
+                transparent 100%);
         }
 
         p {
@@ -279,6 +280,8 @@
         .signature-block {
             margin-top: 2rem;
             margin-bottom: 1.75rem;
+            margin-left: -2rem;
+            margin-right: -2rem;
             padding: 1.5rem 2rem;
             border-top: 1px solid rgba(90, 90, 90, 0.45);
             border-bottom: 1px solid rgba(90, 90, 90, 0.45);
@@ -510,7 +513,7 @@
         <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful—</p>
 
         <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
-        <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Friendly.</p>
+        <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
 
         <div class="signature-block">
             <div class="signature-ornament">⚘</div>
