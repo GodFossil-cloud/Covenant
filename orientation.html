@@ -131,11 +131,14 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        main.container > header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        /* Ensure sticky header on small screens as before */
+        @media (max-width: 700px) {
+            main.container > header {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
         }
 
         .content-wrapper {
@@ -443,20 +446,6 @@
             }
         }
 
-        @media (max-width: 700px) {
-            h1 {
-                font-size: 1.9rem;
-            }
-
-            p:first-of-type::first-letter {
-                font-size: 3.2rem;
-            }
-
-            .closing-declaration {
-                font-size: 1.1rem;
-            }
-        }
-
         @media (max-width: 600px) {
             header {
                 padding-left: 1.5rem;
@@ -542,30 +531,30 @@
             </div>
             <div class="header-nav">
                 <button class="header-nav-button" id="headerProceedBtn" aria-label="Proceed to the Covenant" title="Proceed to the Covenant">
-                    
+                    ⇢
                 </button>
             </div>
         </header>
 
         <div class="content-wrapper">
-            <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worthand may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
+            <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
 
-            <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacramentone that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
+            <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacrament—one that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
 
-            <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectivelyand formallyconsecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
+            <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectively—and formally—consecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
 
-            <p>So proceed with discretion, and pleaseread all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful</p>
+            <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful—</p>
 
             <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
             <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
 
-            <div class="signature-ornament"></div>
+            <div class="signature-ornament">⚘</div>
             <div class="signature">Nobody</div>
         </div>
 
         <div class="action-section">
             <nav class="navigation">
-                <a href="covenant.html" class="nav-button" id="proceedBtn">  PROCEED  </a>
+                <a href="covenant.html" class="nav-button" id="proceedBtn">· PROCEED ·</a>
             </nav>
 
             <div class="footer-divider"></div>
