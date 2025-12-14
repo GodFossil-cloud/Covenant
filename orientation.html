@@ -66,6 +66,10 @@
             padding-bottom: 1rem;
             background: linear-gradient(to bottom, #f5f5f0 0%, #ebe8e0 100%);
             border-bottom: 1px solid rgba(90, 90, 90, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
         }
 
         header::before {
@@ -81,6 +85,57 @@
                     rgba(245, 245, 240, 0.8) 50%,
                     rgba(245, 245, 240, 0) 100%);
             z-index: -1;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .header-nav-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 999px;
+            border: 1px solid #2c2c2c;
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+            text-decoration: none;
+            font-size: 1.1rem;
+            line-height: 1;
+            letter-spacing: 0.05em;
+            transition: all 0.35s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .header-nav-button:hover,
+        .header-nav-button:focus-visible {
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+        }
+
+        .header-nav-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        main.container > header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .content-wrapper {
@@ -311,7 +366,6 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* White flash animation - matches index.html */
         @keyframes successFlash {
             0% { 
                 background-color: #2c2c2c;
@@ -327,7 +381,8 @@
             }
         }
 
-        .nav-button.success-flash {
+        .nav-button.success-flash,
+        .header-nav-button.success-flash {
             animation: successFlash 0.15s ease-out forwards;
         }
 
@@ -389,14 +444,6 @@
         }
 
         @media (max-width: 700px) {
-            /* Override conflicting position rule for sticky header to work */
-            main.container > header {
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            }
-
             h1 {
                 font-size: 1.9rem;
             }
@@ -411,6 +458,11 @@
         }
 
         @media (max-width: 600px) {
+            header {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
             h1 {
                 font-size: 1.75rem;
                 letter-spacing: 0.04em;
@@ -455,13 +507,20 @@
             .eyebrow {
                 font-size: 0.75rem;
             }
+
+            .header-nav-button {
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+            }
         }
 
         @media print {
             html, body {
                 background: white !important;
             }
-            .nav-button {
+            .nav-button,
+            .header-nav-button {
                 background: white !important;
                 color: #2c2c2c !important;
             }
@@ -477,29 +536,36 @@
 <body>
     <main class="container" aria-labelledby="orientation-title">
         <header>
-            <div class="eyebrow">Preface</div>
-            <h1 id="orientation-title">For the Record</h1>
+            <div class="header-text">
+                <div class="eyebrow">Preface</div>
+                <h1 id="orientation-title">For the Record</h1>
+            </div>
+            <div class="header-nav">
+                <button class="header-nav-button" id="headerProceedBtn" aria-label="Proceed to the Covenant" title="Proceed to the Covenant">
+                    
+                </button>
+            </div>
         </header>
 
         <div class="content-wrapper">
-            <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
+            <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worthand may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
 
-            <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacrament—one that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
+            <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacramentone that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
 
-            <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectively—and formally—consecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
+            <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectivelyand formallyconsecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
 
-            <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful—</p>
+            <p>So proceed with discretion, and pleaseread all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful</p>
 
             <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
             <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
 
-            <div class="signature-ornament">⚘</div>
+            <div class="signature-ornament"></div>
             <div class="signature">Nobody</div>
         </div>
 
         <div class="action-section">
             <nav class="navigation">
-                <a href="covenant.html" class="nav-button" id="proceedBtn">· PROCEED ·</a>
+                <a href="covenant.html" class="nav-button" id="proceedBtn">  PROCEED  </a>
             </nav>
 
             <div class="footer-divider"></div>
@@ -508,7 +574,6 @@
     </main>
 
     <script>
-        // Trigger fade-in after DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
@@ -517,35 +582,43 @@
             });
         });
 
-        // Navigation with white flash effect (like index.html)
         const proceedBtn = document.getElementById('proceedBtn');
+        const headerProceedBtn = document.getElementById('headerProceedBtn');
         const body = document.body;
         let navigationTriggered = false;
 
         function handleNavigation(e) {
-            e.preventDefault();
-            
-            // Prevent multiple triggers
+            if (e) {
+                e.preventDefault();
+            }
+
             if (navigationTriggered) return;
             navigationTriggered = true;
-            
-            // Flash the button bright white
-            proceedBtn.classList.add('success-flash');
-            
-            // After flash, fade out entire page
+
+            if (e && e.currentTarget === headerProceedBtn) {
+                headerProceedBtn.classList.add('success-flash');
+            } else if (proceedBtn) {
+                proceedBtn.classList.add('success-flash');
+            }
+
             setTimeout(() => {
                 body.classList.add('fade-out');
             }, 150);
-            
-            // Navigate after fade completes
+
             setTimeout(() => {
                 window.location.href = 'covenant.html';
-            }, 1050); // 150ms flash + 900ms fade
+            }, 1050);
         }
 
-        // Handle both touch and click events
-        proceedBtn.addEventListener('touchstart', handleNavigation, { passive: false });
-        proceedBtn.addEventListener('click', handleNavigation);
+        if (proceedBtn) {
+            proceedBtn.addEventListener('touchstart', handleNavigation, { passive: false });
+            proceedBtn.addEventListener('click', handleNavigation);
+        }
+
+        if (headerProceedBtn) {
+            headerProceedBtn.addEventListener('touchstart', handleNavigation, { passive: false });
+            headerProceedBtn.addEventListener('click', handleNavigation);
+        }
     </script>
 </body>
 </html>
