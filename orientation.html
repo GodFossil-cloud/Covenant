@@ -355,14 +355,24 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Clicked state - instant dark solid fill */
-        .nav-button.clicked {
-            background-color: #1a1a1a !important;
-            border-color: #1a1a1a !important;
-            color: #f5f5f0 !important;
-            box-shadow: 0 0 20px rgba(26, 26, 26, 0.5) !important;
-            transform: scale(1.02) !important;
-            transition: none !important;
+        /* White flash animation - matches index.html */
+        @keyframes successFlash {
+            0% { 
+                background-color: #2c2c2c;
+                border-color: #2c2c2c;
+                color: #f5f5f0;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            }
+            100% { 
+                background-color: #ffffff;
+                border-color: #ffffff;
+                color: #000000;
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        .nav-button.success-flash {
+            animation: successFlash 0.15s ease-out forwards;
         }
 
         .footer-divider {
@@ -550,7 +560,7 @@
             });
         });
 
-        // Navigation with visual feedback and smooth transition
+        // Navigation with white flash effect (like index.html)
         const proceedBtn = document.getElementById('proceedBtn');
         const body = document.body;
         let navigationTriggered = false;
@@ -562,18 +572,18 @@
             if (navigationTriggered) return;
             navigationTriggered = true;
             
-            // Instant dark fill on click/touch
-            proceedBtn.classList.add('clicked');
+            // Flash the button bright white
+            proceedBtn.classList.add('success-flash');
             
-            // Fade out page after brief moment
+            // After flash, fade out entire page
             setTimeout(() => {
                 body.classList.add('fade-out');
-            }, 300);
+            }, 150);
             
             // Navigate after fade completes
             setTimeout(() => {
                 window.location.href = 'covenant.html';
-            }, 1200);
+            }, 1050); // 150ms flash + 900ms fade
         }
 
         // Handle both touch and click events
