@@ -66,6 +66,11 @@
             transform: translateY(0);
         }
 
+        body.fade-out {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
         main.container {
             max-width: 700px;
             margin: 0 auto;
@@ -333,6 +338,8 @@
             text-align: center;
             white-space: nowrap;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
         }
 
         .nav-button:hover,
@@ -346,6 +353,16 @@
         .nav-button:active {
             transform: translateY(0);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Clicked state - instant dark solid fill */
+        .nav-button.clicked {
+            background-color: #1a1a1a !important;
+            border-color: #1a1a1a !important;
+            color: #f5f5f0 !important;
+            box-shadow: 0 0 20px rgba(26, 26, 26, 0.5) !important;
+            transform: scale(1.02) !important;
+            transition: none !important;
         }
 
         .footer-divider {
@@ -515,7 +532,7 @@
 
         <div class="action-section">
             <nav class="navigation">
-                <a href="covenant.html" class="nav-button">· PROCEED ·</a>
+                <a href="covenant.html" class="nav-button" id="proceedBtn">· PROCEED ·</a>
             </nav>
 
             <div class="footer-divider"></div>
@@ -525,7 +542,6 @@
 
     <script>
         // Trigger fade-in after DOM is ready
-        // Small delay ensures mobile browsers register the animation
         document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
@@ -533,6 +549,36 @@
                 });
             });
         });
+
+        // Navigation with visual feedback and smooth transition
+        const proceedBtn = document.getElementById('proceedBtn');
+        const body = document.body;
+        let navigationTriggered = false;
+
+        function handleNavigation(e) {
+            e.preventDefault();
+            
+            // Prevent multiple triggers
+            if (navigationTriggered) return;
+            navigationTriggered = true;
+            
+            // Instant dark fill on click/touch
+            proceedBtn.classList.add('clicked');
+            
+            // Fade out page after brief moment
+            setTimeout(() => {
+                body.classList.add('fade-out');
+            }, 300);
+            
+            // Navigate after fade completes
+            setTimeout(() => {
+                window.location.href = 'covenant.html';
+            }, 1200);
+        }
+
+        // Handle both touch and click events
+        proceedBtn.addEventListener('touchstart', handleNavigation, { passive: false });
+        proceedBtn.addEventListener('click', handleNavigation);
     </script>
 </body>
 </html>
