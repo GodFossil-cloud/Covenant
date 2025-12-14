@@ -269,6 +269,7 @@
 
         .closing-declaration:last-of-type {
             animation-delay: 0.95s;
+            margin-bottom: 2.5rem;
         }
 
         .closing-declaration:hover {
@@ -277,13 +278,13 @@
         }
 
         .signature-block {
-            margin-top: 2rem;
-            margin-bottom: 1.75rem;
+            margin-top: 0;
+            margin-bottom: 0;
             margin-left: -2rem;
             margin-right: -2rem;
-            padding: 0 2rem 1.5rem 2rem;
+            padding: 0 2rem 2rem 2rem;
             border-top: 1px solid rgba(90, 90, 90, 0.45);
-            background: linear-gradient(to bottom, #f5f5f0 0%, #ebe8e0 100());
+            background: linear-gradient(to bottom, #f5f5f0 0%, #ebe8e0 100%);
             opacity: 0;
             animation: fadeInDelayed 0.8s ease-out 1.2s forwards;
             position: relative;
@@ -293,10 +294,9 @@
             text-align: center;
             font-size: 1.5rem;
             color: #2a3a4a;
-            margin-bottom: 0.5rem;
             text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
             position: absolute;
-            top: -2.5rem;
+            top: -1.75rem;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -312,7 +312,7 @@
             color: #4a4a4a;
             text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.25);
             position: absolute;
-            top: -1rem;
+            top: -0.25rem;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -320,7 +320,7 @@
         .navigation {
             display: flex;
             justify-content: center;
-            margin-top: 0;
+            margin-top: 1.5rem;
             padding-top: 0.5rem;
             padding-bottom: 1.25rem;
             gap: 1rem;
@@ -525,14 +525,14 @@
         <div class="signature-block">
             <div class="signature-ornament">⚘</div>
             <div class="signature">Nobody</div>
+            
+            <nav class="navigation">
+                <a href="covenant.html" class="nav-button">· PROCEED ·</a>
+            </nav>
+
+            <div class="footer-divider"></div>
+            <div class="footer-note">In order to become that which you are not, you have to go by the way of that which you are not.</div>
         </div>
-
-        <nav class="navigation">
-            <a href="covenant.html" class="nav-button">· PROCEED ·</a>
-        </nav>
-
-        <div class="footer-divider"></div>
-        <div class="footer-note">In order to become that which you are not, you have to go by the way of that which you are not.</div>
     </main>
 
     <script>
