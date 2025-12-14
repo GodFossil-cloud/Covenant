@@ -25,40 +25,10 @@
             line-height: 1.72;
             display: flex;
             flex-direction: column;
-            padding: 2rem 2rem 1rem 2rem;
+            padding: 0;
             opacity: 0;
             transform: translateY(8px);
             transition: opacity 0.9s ease-out, transform 0.9s ease-out;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('assets/textures/paper-grain-tile.jpg');
-            background-repeat: repeat;
-            opacity: 0.08;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('assets/textures/paper-grain-overlay.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.10;
-            pointer-events: none;
-            z-index: 1;
         }
 
         body.fade-in {
@@ -81,19 +51,7 @@
             z-index: 2;
             border-left: 1px solid rgba(90, 90, 90, 0.45);
             border-right: 1px solid rgba(90, 90, 90, 0.45);
-        }
-
-        /* Texture mask wrapper - only shows texture in body text area */
-        main.container::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background: linear-gradient(to bottom, #f5f5f0 0%, #ebe8e0 100%);
-            z-index: 5;
-            pointer-events: none;
         }
 
         main.container > * {
@@ -104,9 +62,6 @@
         header {
             position: relative;
             margin-bottom: 2rem;
-            margin-left: -2rem;
-            margin-right: -2rem;
-            margin-top: -2rem;
             padding-left: 2rem;
             padding-right: 2rem;
             padding-top: 2rem;
@@ -128,6 +83,10 @@
                     rgba(245, 245, 240, 0.8) 50%,
                     rgba(245, 245, 240, 0) 100%);
             z-index: -1;
+        }
+
+        .content-wrapper {
+            padding: 0 2rem;
         }
 
         .eyebrow {
@@ -308,9 +267,6 @@
 
         .action-section {
             margin-top: 0.5rem;
-            margin-left: -2rem;
-            margin-right: -2rem;
-            margin-bottom: -1rem;
             padding: 1rem 2rem 1rem 2rem;
             background: linear-gradient(to bottom, #f5f5f0 0%, #ebe8e0 100%);
             border-top: 1px solid rgba(90, 90, 90, 0.45);
@@ -447,28 +403,6 @@
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 1.5rem 1.25rem 1rem 1.25rem;
-                line-height: 1.68;
-            }
-
-            header {
-                margin-top: -1.5rem;
-                margin-left: -1.25rem;
-                margin-right: -1.25rem;
-                padding-top: 1.5rem;
-                padding-left: 1.25rem;
-                padding-right: 1.25rem;
-            }
-
-            .action-section {
-                margin-left: -1.25rem;
-                margin-right: -1.25rem;
-                margin-bottom: -1rem;
-                padding-left: 1.25rem;
-                padding-right: 1.25rem;
-            }
-
             h1 {
                 font-size: 1.75rem;
                 letter-spacing: 0.04em;
@@ -502,27 +436,6 @@
         }
 
         @media (max-width: 400px) {
-            body {
-                padding: 1.25rem 1rem 1rem 1rem;
-            }
-
-            header {
-                margin-top: -1.25rem;
-                margin-left: -1rem;
-                margin-right: -1rem;
-                padding-top: 1.25rem;
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-
-            .action-section {
-                margin-left: -1rem;
-                margin-right: -1rem;
-                margin-bottom: -1rem;
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-
             h1 {
                 font-size: 1.6rem;
             }
@@ -560,19 +473,21 @@
             <h1 id="orientation-title">For the Record</h1>
         </header>
 
-        <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
+        <div class="content-wrapper">
+            <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
 
-        <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacrament—one that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
+            <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacrament—one that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
 
-        <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectively—and formally—consecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
+            <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectively—and formally—consecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
 
-        <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful—</p>
+            <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful—</p>
 
-        <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
-        <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
+            <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
+            <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
 
-        <div class="signature-ornament">⚘</div>
-        <div class="signature">Nobody</div>
+            <div class="signature-ornament">⚘</div>
+            <div class="signature">Nobody</div>
+        </div>
 
         <div class="action-section">
             <nav class="navigation">
