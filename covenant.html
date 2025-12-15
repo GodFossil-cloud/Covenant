@@ -703,22 +703,31 @@
                     body.style.opacity = '1';
                     if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
                     document.documentElement.style.backgroundColor = '';
-                } else {
-                    // Force layout/paint of black screen before starting animations
-                    setTimeout(function() {
-                        body.classList.add('fade-in');
-                        fadeOverlay.classList.add('fade-out');
-                        
-                        // After fade completes, restore parchment background on html
-                        setTimeout(function () {
-                            document.documentElement.style.backgroundColor = '';
-                            if (fadeOverlay && fadeOverlay.parentNode) {
-                                fadeOverlay.parentNode.removeChild(fadeOverlay);
-                            }
-                        }, 1200);
-                    }, 50);
-                }
-            }
+} else {
+            // Force browser to render the black overlay before starting fade
+            // Step 1: Ensure overlay is visible
+            fadeOverlay.style.opacity = '1';
+            
+            // Step 2: Force a reflow to commit the black screen
+            void fadeOverlay.offsetHeight;
+            
+            // Step 3: Use requestAnimationFrame to wait for paint
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    // Now start the fade animations
+                    body.classList.add('fade-in');
+                    fadeOverlay.classList.add('fade-out');
+                    
+                    // After fade completes, clean up
+                    setTimeout(function () {
+                        document.documentElement.style.backgroundColor = '';
+                        if (fadeOverlay && fadeOverlay.parentNode) {
+                            fadeOverlay.parentNode.removeChild(fadeOverlay);
+                        }
+                    }, 1200);
+                });
+            });
+        }            }
 
             // Lexicon panel logic
             var toggle = document.getElementById('lexiconToggle');
