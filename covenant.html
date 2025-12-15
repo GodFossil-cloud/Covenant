@@ -27,8 +27,10 @@
             font-size: 16px;
             scroll-behavior: smooth;
             background-color: #000000;
+            overflow-x: hidden;
         }
 
+        /* Force compositor layer and prevent FOUC */
         body {
             font-family: 'Lora', serif;
             color: var(--text-color);
@@ -38,62 +40,64 @@
             margin: 0 auto;
             padding: 40px 20px;
             opacity: 0;
-            visibility: hidden;
+            transform: translateZ(0);
+            will-change: opacity;
+            backface-visibility: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        body.ready {
-            visibility: visible;
-        }
-
-        body.fade-in {
-            animation: fadeInBody 1.5s ease forwards;
+        body.start-fade {
+            animation: fadeInBody 1.8s ease 0.5s forwards;
         }
 
         @keyframes fadeInBody {
-            from {
+            0% {
                 opacity: 0;
             }
-            to {
+            100% {
                 opacity: 1;
             }
         }
 
+        /* Black overlay that fades out */
         .fade-overlay {
             position: fixed;
             inset: 0;
             background: #000;
-            opacity: 1;
-            z-index: 9999;
+            z-index: 99999;
             pointer-events: none;
+            opacity: 1;
+            transform: translateZ(0);
+            will-change: opacity;
+            backface-visibility: hidden;
         }
 
-        .fade-overlay.fade-out {
-            animation: fadeOutOverlay 1.5s ease forwards;
+        .fade-overlay.start-fade {
+            animation: fadeOutOverlay 1.8s ease 0.5s forwards;
         }
 
         @keyframes fadeOutOverlay {
-            from {
+            0% {
                 opacity: 1;
             }
-            to {
+            100% {
                 opacity: 0;
+                visibility: hidden;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
             body {
-                visibility: visible !important;
                 opacity: 1 !important;
                 animation: none !important;
             }
             .fade-overlay {
-                display: none;
+                display: none !important;
             }
         }
 
         @media print {
             body {
-                visibility: visible;
                 opacity: 1;
             }
             .fade-overlay {
@@ -597,10 +601,6 @@
             visibility: visible;
         }
     </style>
-    <script>
-    // Record script load time IMMEDIATELY
-    window.covenantLoadStart = Date.now();
-    </script>
 </head>
 <body>
     <div id="fadeOverlay" class="fade-overlay" aria-hidden="true"></div>
@@ -689,59 +689,55 @@
         var fadeOverlay = document.getElementById('fadeOverlay');
         var body = document.body;
         var html = document.documentElement;
-        var loadStartTime = window.covenantLoadStart || Date.now();
         
         if (!fadeOverlay || !body) return;
         
         var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         
         if (reduceMotion) {
-            body.style.visibility = 'visible';
             body.style.opacity = '1';
             if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
             html.style.backgroundColor = '';
-        } else {
-            // Check navigation source
-            var fromOrientation = false;
-            try {
-                fromOrientation = sessionStorage.getItem('fromOrientation') === 'true';
-                sessionStorage.removeItem('fromOrientation');
-            } catch (e) {}
-            
-            // Minimum visible black duration
-            var minBlackDuration = fromOrientation ? 600 : 250;
-            
-            function triggerFade() {
-                var elapsed = Date.now() - loadStartTime;
-                var remainingWait = Math.max(0, minBlackDuration - elapsed);
+            return;
+        }
+        
+        // Check navigation source
+        var fromOrientation = false;
+        try {
+            fromOrientation = sessionStorage.getItem('fromOrientation') === 'true';
+            sessionStorage.removeItem('fromOrientation');
+        } catch (e) {}
+        
+        // Delay before starting fade animation (in CSS)
+        var blackDuration = fromOrientation ? 700 : 300;
+        
+        function triggerFade() {
+            setTimeout(function() {
+                body.classList.add('start-fade');
+                fadeOverlay.classList.add('start-fade');
                 
+                // Cleanup after animation completes
                 setTimeout(function() {
-                    body.classList.add('ready');
-                    body.classList.add('fade-in');
-                    fadeOverlay.classList.add('fade-out');
-                    
-                    setTimeout(function() {
-                        html.style.backgroundColor = '';
-                        if (fadeOverlay && fadeOverlay.parentNode) {
-                            fadeOverlay.parentNode.removeChild(fadeOverlay);
-                        }
-                    }, 1600);
-                }, remainingWait);
-            }
-            
-            // Load fonts
-            if ('fonts' in document) {
-                Promise.all([
-                    document.fonts.load('400 1em Lora'),
-                    document.fonts.load('600 1em "Crimson Text"'),
-                    document.fonts.load('400 1em "Cormorant Garamond"')
-                ]).then(triggerFade).catch(triggerFade);
+                    html.style.backgroundColor = '';
+                    if (fadeOverlay && fadeOverlay.parentNode) {
+                        fadeOverlay.parentNode.removeChild(fadeOverlay);
+                    }
+                }, 2500);
+            }, blackDuration);
+        }
+        
+        // Load fonts first
+        if ('fonts' in document) {
+            Promise.all([
+                document.fonts.load('400 1em Lora'),
+                document.fonts.load('600 1em "Crimson Text"'),
+                document.fonts.load('400 1em "Cormorant Garamond"')
+            ]).then(triggerFade).catch(triggerFade);
+        } else {
+            if (document.readyState === 'complete') {
+                triggerFade();
             } else {
-                if (document.readyState === 'complete') {
-                    triggerFade();
-                } else {
-                    window.addEventListener('load', triggerFade);
-                }
+                window.addEventListener('load', triggerFade);
             }
         }
         
