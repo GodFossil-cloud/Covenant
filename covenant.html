@@ -77,7 +77,7 @@
         .document-header {
             text-align: center;
             margin-bottom: 50px;
-            border-bottom: 2px solid var(--accent-color);
+            border-top: 2px solid var(--accent-color);
             padding-bottom: 30px;
         }
 
@@ -784,7 +784,7 @@
 
     <script>
         (function () {
-            // Fade IN from black on page load
+            // Fade IN from black on page load - fixed for desktop browsers
             var fadeOverlay = document.getElementById('fadeOverlay');
 
             if (fadeOverlay) {
@@ -792,18 +792,16 @@
 
                 if (reduceMotion) {
                     if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
-                    document.documentElement.style.backgroundColor = ''; // respect user setting
+                    document.documentElement.style.backgroundColor = '';
                 } else {
-                    // Ensure the black frame is painted before starting fade
-                    requestAnimationFrame(function () {
-                        requestAnimationFrame(function () {
-                            fadeOverlay.classList.add('is-hidden');
-                            // After fade completes, restore parchment background on html
-                            setTimeout(function () {
-                                document.documentElement.style.backgroundColor = '';
-                            }, 1100);
-                        });
-                    });
+                    // Use a small setTimeout to ensure the black frame is painted on desktop
+                    setTimeout(function () {
+                        fadeOverlay.classList.add('is-hidden');
+                        // After fade completes, restore parchment background on html
+                        setTimeout(function () {
+                            document.documentElement.style.backgroundColor = '';
+                        }, 1100);
+                    }, 50); // Small delay ensures first paint happens on desktop
 
                     var removed = false;
                     function removeOverlay() {
