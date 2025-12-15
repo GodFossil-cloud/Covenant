@@ -26,40 +26,13 @@
         html, body {
             height: 100%;
             font-family: 'Lora', serif;
-            background-color: var(--bg-color);
+            background-color: #000000;
             color: var(--text-color);
         }
 
         html {
             font-size: 16px;
             scroll-behavior: smooth;
-            background-color: #000000;
-        }
-
-        /* Fade in from black on page load */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #000;
-            pointer-events: none;
-            z-index: 10000;
-            animation: fadeFromBlack 3s ease-out forwards;
-        }
-
-        @keyframes fadeFromBlack {
-            0% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-            }
         }
 
         body {
@@ -69,17 +42,43 @@
             padding: 40px 20px;
             min-height: 100vh;
             position: relative;
+            background-color: var(--bg-color);
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            body::after {
-                animation: none;
+        /* Black overlay that fades out */
+        #blackFade {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000;
+            z-index: 99999;
+            pointer-events: none;
+            opacity: 1;
+        }
+
+        #blackFade.fade-out {
+            animation: fadeOut 1.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
                 opacity: 0;
             }
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            #blackFade {
+                display: none;
+            }
+        }
+
         @media print {
-            body::after {
+            #blackFade {
                 display: none;
             }
         }
@@ -581,6 +580,8 @@
     </style>
 </head>
 <body>
+    <div id="blackFade"></div>
+    
     <div class="container">
         <div class="document-header">
             <div class="ornament">✦ ✧ ✦</div>
@@ -661,6 +662,20 @@
 
     <script>
     (function () {
+        // Trigger black fade immediately
+        var blackFade = document.getElementById('blackFade');
+        if (blackFade) {
+            blackFade.classList.add('fade-out');
+            
+            // Remove after animation completes
+            setTimeout(function() {
+                if (blackFade.parentNode) {
+                    blackFade.parentNode.removeChild(blackFade);
+                }
+                document.documentElement.style.backgroundColor = '';
+            }, 1600);
+        }
+        
         // Lexicon panel logic
         var toggle = document.getElementById('lexiconToggle');
         var panel = document.getElementById('lexiconPanel');
