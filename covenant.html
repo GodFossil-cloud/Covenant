@@ -26,13 +26,13 @@
         html, body {
             height: 100%;
             font-family: 'Lora', serif;
+            background-color: #000000;
             color: var(--text-color);
         }
 
         html {
             font-size: 16px;
             scroll-behavior: smooth;
-            background-color: #000000;
         }
 
         body {
@@ -44,7 +44,7 @@
             position: relative;
         }
 
-        /* Fade in from black on page load */
+        /* FADE IN FROM BLACK - EXACTLY LIKE THRESHOLD.HTML */
         body::after {
             content: '';
             position: fixed;
@@ -576,8 +576,6 @@
     </style>
 </head>
 <body>
-    
-    
     <div class="container">
         <div class="document-header">
             <div class="ornament">✦ ✧ ✦</div>
@@ -658,7 +656,6 @@
 
     <script>
     (function () {
-        // Trigger black fade immediately
         // Lexicon panel logic
         var toggle = document.getElementById('lexiconToggle');
         var panel = document.getElementById('lexiconPanel');
