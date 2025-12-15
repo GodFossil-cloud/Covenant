@@ -46,23 +46,23 @@
         }
 
         /* Black overlay that fades out */
-        #blackFade {
+          
+
+        /* Fade in from black on page load */
+        body::after {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background-color: #000;
-            z-index: 99999;
             pointer-events: none;
-            opacity: 1;
+            z-index: 10000;
+            animation: fadeFromBlack 1.5s ease-out forwards;
         }
 
-        #blackFade.fade-out {
-            animation: fadeOut 1.5s ease-out forwards;
-        }
-
-        @keyframes fadeOut {
+        @keyframes fadeFromBlack {
             from {
                 opacity: 1;
             }
@@ -72,15 +72,15 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            #blackFade {
+            body::after {
                 display: none;
             }
         }
 
         @media print {
-            #blackFade {
+            body::after {
                 display: none;
-            }
+            }  }
         }
 
         .container {
@@ -580,7 +580,7 @@
     </style>
 </head>
 <body>
-    <div id="blackFade"></div>
+    
     
     <div class="container">
         <div class="document-header">
@@ -663,19 +663,6 @@
     <script>
     (function () {
         // Trigger black fade immediately
-        var blackFade = document.getElementById('blackFade');
-        if (blackFade) {
-            blackFade.classList.add('fade-out');
-            
-            // Remove after animation completes
-            setTimeout(function() {
-                if (blackFade.parentNode) {
-                    blackFade.parentNode.removeChild(blackFade);
-                }
-                document.documentElement.style.backgroundColor = '';
-            }, 1600);
-        }
-        
         // Lexicon panel logic
         var toggle = document.getElementById('lexiconToggle');
         var panel = document.getElementById('lexiconPanel');
