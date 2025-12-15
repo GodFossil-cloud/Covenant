@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-color: #000;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,12 +24,10 @@
         html {
             font-size: 16px;
             scroll-behavior: smooth;
-            background-color: #000; /* Start black */
         }
 
-        /* Fade in from black on page load - CRITICAL: must be visible above all content */
-        html::before {
-            content: '';
+        /* Critical: Black screen overlay - starts visible, fades out */
+        #fadeOverlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -38,36 +36,25 @@
             width: 100%;
             height: 100%;
             background-color: #000;
+            z-index: 999999;
             pointer-events: none;
-            z-index: 99999;
-            animation: fadeFromBlack 1.1s ease-out forwards;
+            opacity: 1;
+            transition: opacity 1.1s ease-out;
         }
 
-        @keyframes fadeFromBlack {
-            0% {
-                opacity: 1;
-                visibility: visible;
-            }
-            99% {
-                opacity: 0;
-                visibility: visible;
-            }
-            100% {
-                opacity: 0;
-                visibility: hidden;
-            }
+        #fadeOverlay.fade-out {
+            opacity: 0;
         }
 
         @media (prefers-reduced-motion: reduce) {
-            html::before {
-                animation: none;
+            #fadeOverlay {
+                transition: none;
                 opacity: 0;
-                visibility: hidden;
             }
         }
 
         @media print {
-            html::before {
+            #fadeOverlay {
                 display: none !important;
             }
         }
@@ -87,8 +74,6 @@
             padding: 60px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             border-radius: 2px;
-            position: relative;
-            z-index: 1;
         }
 
         /* Header and Title */
@@ -451,7 +436,7 @@
         /* Print Styles */
         @media print {
             html {
-                background-color: white;
+                background-color: white !important;
             }
 
             body {
@@ -718,6 +703,9 @@
     </style>
 </head>
 <body>
+    <!-- CRITICAL: Black overlay div in HTML for guaranteed visibility -->
+    <div id="fadeOverlay"></div>
+
     <div class="container">
         <!-- Header -->
         <div class="document-header">
@@ -805,27 +793,54 @@
 
     <script>
         (function () {
+            // Fade from black - inline script for maximum reliability
+            var overlay = document.getElementById('fadeOverlay');
+            
+            if (overlay) {
+                // Check for reduced motion preference
+                var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                
+                if (reduceMotion) {
+                    // Skip animation for accessibility
+                    overlay.style.display = 'none';
+                    document.documentElement.style.backgroundColor = '';
+                } else {
+                    // Start fade after a tiny delay to ensure black is painted
+                    setTimeout(function() {
+                        overlay.classList.add('fade-out');
+                    }, 16); // One frame delay
+                    
+                    // Remove overlay after animation completes
+                    setTimeout(function() {
+                        if (overlay.parentNode) {
+                            overlay.parentNode.removeChild(overlay);
+                        }
+                        document.documentElement.style.backgroundColor = '';
+                    }, 1200);
+                }
+            }
+
             // Lexicon panel logic
             var toggle = document.getElementById('lexiconToggle');
             var panel = document.getElementById('lexiconPanel');
-            var overlay = document.getElementById('lexiconOverlay');
+            var lexOverlay = document.getElementById('lexiconOverlay');
             var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
 
             function openPanel() {
                 panel.classList.add('is-open');
-                overlay.classList.add('is-open');
+                lexOverlay.classList.add('is-open');
                 panel.setAttribute('aria-hidden', 'false');
-                overlay.setAttribute('aria-hidden', 'false');
+                lexOverlay.setAttribute('aria-hidden', 'false');
             }
 
             function closePanel() {
                 panel.classList.remove('is-open');
-                overlay.classList.remove('is-open');
+                lexOverlay.classList.remove('is-open');
                 panel.setAttribute('aria-hidden', 'true');
-                overlay.setAttribute('aria-hidden', 'true');
+                lexOverlay.setAttribute('aria-hidden', 'true');
             }
 
-            if (toggle && panel && overlay) {
+            if (toggle && panel && lexOverlay) {
                 toggle.addEventListener('click', function () {
                     if (panel.classList.contains('is-open')) {
                         closePanel();
@@ -834,7 +849,7 @@
                     }
                 });
 
-                overlay.addEventListener('click', closePanel);
+                lexOverlay.addEventListener('click', closePanel);
 
                 closeButtons.forEach(function (btn) {
                     btn.addEventListener('click', closePanel);
