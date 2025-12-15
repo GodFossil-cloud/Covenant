@@ -691,30 +691,22 @@
     <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
 
     <script>
-        (function () {
-            // Fade IN from black on page load
-            var fadeOverlay = document.getElementById('fadeOverlay');
-            var body = document.body;
+    (function () {
+        // Fade IN from black on page load
+        var fadeOverlay = document.getElementById('fadeOverlay');
+        var body = document.body;
 
-            if (fadeOverlay && body) {
-                var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (fadeOverlay && body) {
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                if (reduceMotion) {
-                    body.style.opacity = '1';
-                    if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
-                    document.documentElement.style.backgroundColor = '';
-} else {
-            // Force browser to render the black overlay before starting fade
-            // Step 1: Ensure overlay is visible
-            fadeOverlay.style.opacity = '1';
-            
-            // Step 2: Force a reflow to commit the black screen
-            void fadeOverlay.offsetHeight;
-            
-            // Step 3: Use requestAnimationFrame to wait for paint
-            requestAnimationFrame(function() {
-                requestAnimationFrame(function() {
-                    // Now start the fade animations
+            if (reduceMotion) {
+                body.style.opacity = '1';
+                if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
+                document.documentElement.style.backgroundColor = '';
+            } else {
+                // Ensure black overlay is painted before fade begins
+                // Use a setTimeout to guarantee the initial state is rendered
+                setTimeout(function() {
                     body.classList.add('fade-in');
                     fadeOverlay.classList.add('fade-out');
                     
@@ -725,52 +717,52 @@
                             fadeOverlay.parentNode.removeChild(fadeOverlay);
                         }
                     }, 1200);
-                });
+                }, 50); // 50ms delay ensures the black screen is painted
+            }
+        }
+
+        // Lexicon panel logic (unchanged)
+        var toggle = document.getElementById('lexiconToggle');
+        var panel = document.getElementById('lexiconPanel');
+        var overlay = document.getElementById('lexiconOverlay');
+        var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
+
+        function openPanel() {
+            panel.classList.add('is-open');
+            overlay.classList.add('is-open');
+            panel.setAttribute('aria-hidden', 'false');
+            overlay.setAttribute('aria-hidden', 'false');
+        }
+
+        function closePanel() {
+            panel.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+            panel.setAttribute('aria-hidden', 'true');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+
+        if (toggle && panel && overlay) {
+            toggle.addEventListener('click', function () {
+                if (panel.classList.contains('is-open')) {
+                    closePanel();
+                } else {
+                    openPanel();
+                }
             });
-        }            }
 
-            // Lexicon panel logic
-            var toggle = document.getElementById('lexiconToggle');
-            var panel = document.getElementById('lexiconPanel');
-            var overlay = document.getElementById('lexiconOverlay');
-            var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
+            overlay.addEventListener('click', closePanel);
 
-            function openPanel() {
-                panel.classList.add('is-open');
-                overlay.classList.add('is-open');
-                panel.setAttribute('aria-hidden', 'false');
-                overlay.setAttribute('aria-hidden', 'false');
-            }
+            closeButtons.forEach(function (btn) {
+                btn.addEventListener('click', closePanel);
+            });
 
-            function closePanel() {
-                panel.classList.remove('is-open');
-                overlay.classList.remove('is-open');
-                panel.setAttribute('aria-hidden', 'true');
-                overlay.setAttribute('aria-hidden', 'true');
-            }
-
-            if (toggle && panel && overlay) {
-                toggle.addEventListener('click', function () {
-                    if (panel.classList.contains('is-open')) {
-                        closePanel();
-                    } else {
-                        openPanel();
-                    }
-                });
-
-                overlay.addEventListener('click', closePanel);
-
-                closeButtons.forEach(function (btn) {
-                    btn.addEventListener('click', closePanel);
-                });
-
-                document.addEventListener('keydown', function (event) {
-                    if (event.key === 'Escape' && panel.classList.contains('is-open')) {
-                        closePanel();
-                    }
-                });
-            }
-        })();
-    </script>
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && panel.classList.contains('is-open')) {
+                    closePanel();
+                }
+            });
+        }
+    })();
+</script>
 </body>
 </html>
