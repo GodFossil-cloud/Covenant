@@ -44,62 +44,34 @@
             position: relative;
         }
 
-        /* Black overlay that fades out */
-        body::after {
-            content: '';
+        /* Black fade overlay - real DOM element instead of pseudo-element */
+        #blackFadeOverlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background-color: #000;
-            pointer-events: none;
             z-index: 10000;
-            animation: fadeFromBlack 1.5s ease-out forwards;
+            pointer-events: none;
+            transition: opacity 1.5s ease-out;
         }
 
-        @keyframes fadeFromBlack {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-            }
+        #blackFadeOverlay.fade-out {
+            opacity: 0;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            body::after {
-                display: none;
-            }
-            .container {
-                opacity: 1 !important;
-                animation: none !important;
-            }
-        }
-
-        @media print {
-            body::after {
-                display: none;
-            }
-            .container {
-                opacity: 1 !important;
-            }
-        }
-
-        /* Container starts invisible and fades in AFTER black fade completes */
         .container {
             background: var(--bg-color);
             padding: 60px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             border-radius: 2px;
             opacity: 0;
-            animation: fadeIn 1s ease-in 1.5s forwards;
+            transition: opacity 1s ease-in;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+        .container.fade-in {
+            opacity: 1;
         }
 
         .document-header {
@@ -336,6 +308,10 @@
         }
 
         @media print {
+            #blackFadeOverlay {
+                display: none !important;
+            }
+
             body {
                 padding: 0;
                 background-color: white;
@@ -344,6 +320,7 @@
             .container {
                 box-shadow: none;
                 padding: 0;
+                opacity: 1 !important;
             }
 
             button {
@@ -462,7 +439,11 @@
             bottom: 24px;
             z-index: 1000;
             opacity: 0;
-            animation: fadeIn 1s ease-in 1.5s forwards;
+            transition: opacity 1s ease-in;
+        }
+
+        .lexicon-glyph-toggle.fade-in {
+            opacity: 1;
         }
 
         .lexicon-glyph-toggle button {
@@ -594,6 +575,9 @@
     </style>
 </head>
 <body>
+    <!-- Real black fade overlay element -->
+    <div id="blackFadeOverlay"></div>
+
     <div class="container">
         <div class="document-header">
             <div class="ornament">✦ ✧ ✦</div>
@@ -674,29 +658,55 @@
 
     <script>
     (function () {
+        // Black fade-in animation
+        var overlay = document.getElementById('blackFadeOverlay');
+        var container = document.querySelector('.container');
+        var lexiconToggle = document.querySelector('.lexicon-glyph-toggle');
+        
+        // Start the fade sequence immediately
+        setTimeout(function() {
+            // Fade out black overlay
+            overlay.classList.add('fade-out');
+            
+            // After black fades, fade in content
+            setTimeout(function() {
+                container.classList.add('fade-in');
+                if (lexiconToggle) {
+                    lexiconToggle.classList.add('fade-in');
+                }
+                
+                // Remove overlay from DOM after fade completes
+                setTimeout(function() {
+                    if (overlay && overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                    }
+                }, 1500);
+            }, 1500);
+        }, 50);
+        
         // Lexicon panel logic
         var toggle = document.getElementById('lexiconToggle');
         var panel = document.getElementById('lexiconPanel');
-        var overlay = document.getElementById('lexiconOverlay');
+        var lexOverlay = document.getElementById('lexiconOverlay');
         var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
         
         function openPanel() {
-            if (!panel || !overlay) return;
+            if (!panel || !lexOverlay) return;
             panel.classList.add('is-open');
-            overlay.classList.add('is-open');
+            lexOverlay.classList.add('is-open');
             panel.setAttribute('aria-hidden', 'false');
-            overlay.setAttribute('aria-hidden', 'false');
+            lexOverlay.setAttribute('aria-hidden', 'false');
         }
         
         function closePanel() {
-            if (!panel || !overlay) return;
+            if (!panel || !lexOverlay) return;
             panel.classList.remove('is-open');
-            overlay.classList.remove('is-open');
+            lexOverlay.classList.remove('is-open');
             panel.setAttribute('aria-hidden', 'true');
-            overlay.setAttribute('aria-hidden', 'true');
+            lexOverlay.setAttribute('aria-hidden', 'true');
         }
         
-        if (toggle && panel && overlay) {
+        if (toggle && panel && lexOverlay) {
             toggle.addEventListener('click', function () {
                 if (panel.classList.contains('is-open')) {
                     closePanel();
@@ -705,7 +715,7 @@
                 }
             });
             
-            overlay.addEventListener('click', closePanel);
+            lexOverlay.addEventListener('click', closePanel);
             
             closeButtons.forEach(function (btn) {
                 btn.addEventListener('click', closePanel);
