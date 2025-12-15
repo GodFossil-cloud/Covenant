@@ -35,6 +35,20 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
+            opacity: 0;
+        }
+
+        body.fade-in {
+            animation: fadeInBody 1.1s ease forwards;
+        }
+
+        @keyframes fadeInBody {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         /* Seamless transition: Covenant fades IN from black (matches Orientation fade-to-black) */
@@ -43,24 +57,37 @@
             inset: 0;
             background: #000;
             opacity: 1;
-            transition: opacity 1.1s ease;
             z-index: 5000;
             pointer-events: none;
-            visibility: visible;
-            will-change: opacity;
         }
 
-        .fade-overlay.is-hidden {
-            opacity: 0;
+        .fade-overlay.fade-out {
+            animation: fadeOutOverlay 1.1s ease forwards;
+        }
+
+        @keyframes fadeOutOverlay {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
+            body {
+                opacity: 1;
+                animation: none;
+            }
             .fade-overlay {
-                transition: none;
+                display: none;
             }
         }
 
         @media print {
+            body {
+                opacity: 1;
+            }
             .fade-overlay {
                 display: none !important;
             }
@@ -265,123 +292,6 @@
             visibility: visible;
         }
 
-        /* Signature Area */
-        .signature-section {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 2px solid var(--accent-color);
-        }
-
-        .signature-section h2 {
-            font-size: 1.4em;
-            margin-top: 0;
-        }
-
-        .signature-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin: 30px 0;
-        }
-
-        .signature-box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .signature-label {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 0.95em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        canvas {
-            border: 2px solid var(--border-color);
-            background-color: white;
-            cursor: crosshair;
-            border-radius: 2px;
-            width: 100%;
-            height: 150px;
-        }
-
-        canvas:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .signature-image {
-            border: 2px solid var(--border-color);
-            background-color: white;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 2px;
-            min-height: 150px;
-        }
-
-        .signature-image img {
-            max-width: 100%;
-            max-height: 140px;
-            object-fit: contain;
-        }
-
-        .timestamp {
-            margin-top: 10px;
-            font-size: 0.85em;
-            color: #666;
-            font-style: italic;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        button {
-            padding: 12px 24px;
-            font-size: 1em;
-            font-family: 'Lora', serif;
-            border: 2px solid var(--accent-color);
-            background-color: white;
-            color: var(--primary-color);
-            cursor: pointer;
-            border-radius: 2px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        button:hover:not(:disabled) {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .signed-state {
-            background-color: #f0f8f0;
-            border: 2px solid #28a745;
-            padding: 20px;
-            border-radius: 2px;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .signed-state p {
-            color: #28a745;
-            font-weight: 600;
-            margin: 0;
-        }
-
         /* Glossary Section */
         .glossary-section {
             margin-top: 60px;
@@ -435,6 +345,7 @@
             body {
                 padding: 0;
                 background-color: white;
+                opacity: 1;
             }
 
             .container {
@@ -443,10 +354,6 @@
             }
 
             button {
-                display: none;
-            }
-
-            .button-group {
                 display: none;
             }
 
@@ -486,21 +393,8 @@
                 font-size: 1.4em;
             }
 
-            .signature-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
             .toc ul {
                 columns: 1;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
             }
         }
 
@@ -593,6 +487,11 @@
             justify-content: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
             transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            padding: 0;
+            margin: 0;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: normal;
         }
 
         .lexicon-glyph-toggle button:hover,
@@ -642,9 +541,18 @@
         .lexicon-panel-close {
             border: none;
             background: transparent;
-            font-size: 1.2rem;
+            font-size: 1.8rem;
             cursor: pointer;
             color: var(--primary-color);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: normal;
         }
 
         .lexicon-panel-body {
@@ -786,36 +694,29 @@
         (function () {
             // Fade IN from black on page load
             var fadeOverlay = document.getElementById('fadeOverlay');
+            var body = document.body;
 
-            if (fadeOverlay) {
+            if (fadeOverlay && body) {
                 var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
                 if (reduceMotion) {
+                    body.style.opacity = '1';
                     if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
-                    document.documentElement.style.backgroundColor = ''; // respect user setting
+                    document.documentElement.style.backgroundColor = '';
                 } else {
-                    // Ensure the black frame is painted before starting fade
-                    requestAnimationFrame(function () {
-                        requestAnimationFrame(function () {
-                            fadeOverlay.classList.add('is-hidden');
-                            // After fade completes, restore parchment background on html
-                            setTimeout(function () {
-                                document.documentElement.style.backgroundColor = '';
-                            }, 1100);
-                        });
-                    });
-
-                    var removed = false;
-                    function removeOverlay() {
-                        if (removed) return;
-                        removed = true;
-                        if (fadeOverlay && fadeOverlay.parentNode) {
-                            fadeOverlay.parentNode.removeChild(fadeOverlay);
-                        }
-                    }
-
-                    fadeOverlay.addEventListener('transitionend', removeOverlay, { once: true });
-                    setTimeout(removeOverlay, 1500); // fallback
+                    // Force layout/paint of black screen before starting animations
+                    setTimeout(function() {
+                        body.classList.add('fade-in');
+                        fadeOverlay.classList.add('fade-out');
+                        
+                        // After fade completes, restore parchment background on html
+                        setTimeout(function () {
+                            document.documentElement.style.backgroundColor = '';
+                            if (fadeOverlay && fadeOverlay.parentNode) {
+                                fadeOverlay.parentNode.removeChild(fadeOverlay);
+                            }
+                        }, 1200);
+                    }, 50);
                 }
             }
 
