@@ -690,23 +690,37 @@
             if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
             document.documentElement.style.backgroundColor = '';
         } else {
+            // Check if coming from orientation.html
+            var fromOrientation = false;
+            try {
+                fromOrientation = sessionStorage.getItem('fromOrientation') === 'true';
+                sessionStorage.removeItem('fromOrientation');
+            } catch (e) {
+                // sessionStorage not available
+            }
+
             // Wait for fonts to load before fading in
             function startFade() {
                 body.classList.add('fonts-loaded');
                 
-                requestAnimationFrame(function() {
+                // If coming from orientation, add extra delay for dramatic black screen
+                var fadeDelay = fromOrientation ? 400 : 0;
+                
+                setTimeout(function() {
                     requestAnimationFrame(function() {
-                        body.classList.add('fade-in');
-                        fadeOverlay.classList.add('fade-out');
-                        
-                        setTimeout(function () {
-                            document.documentElement.style.backgroundColor = '';
-                            if (fadeOverlay && fadeOverlay.parentNode) {
-                                fadeOverlay.parentNode.removeChild(fadeOverlay);
-                            }
-                        }, 1200);
+                        requestAnimationFrame(function() {
+                            body.classList.add('fade-in');
+                            fadeOverlay.classList.add('fade-out');
+                            
+                            setTimeout(function () {
+                                document.documentElement.style.backgroundColor = '';
+                                if (fadeOverlay && fadeOverlay.parentNode) {
+                                    fadeOverlay.parentNode.removeChild(fadeOverlay);
+                                }
+                            }, 1200);
+                        });
                     });
-                });
+                }, fadeDelay);
             }
 
             // Use Font Loading API if available

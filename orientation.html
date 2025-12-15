@@ -142,7 +142,6 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Ensure sticky header on small screens as before */
         @media (max-width: 700px) {
             main.container > header {
                 position: sticky;
@@ -596,6 +595,13 @@
 
             if (navigationTriggered) return;
             navigationTriggered = true;
+
+            // Set session flag for covenant.html to detect
+            try {
+                sessionStorage.setItem('fromOrientation', 'true');
+            } catch (e) {
+                // sessionStorage not available
+            }
 
             // Flash the appropriate button
             if (e && e.currentTarget === headerProceedBtn) {
