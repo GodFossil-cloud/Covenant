@@ -35,10 +35,12 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
+            visibility: hidden;
             opacity: 0;
         }
 
         body.fade-in {
+            visibility: visible;
             animation: fadeInBody 1.1s ease forwards;
         }
 
@@ -76,6 +78,7 @@
 
         @media (prefers-reduced-motion: reduce) {
             body {
+                visibility: visible;
                 opacity: 1;
                 animation: none;
             }
@@ -86,6 +89,7 @@
 
         @media print {
             body {
+                visibility: visible;
                 opacity: 1;
             }
             .fade-overlay {
@@ -700,28 +704,31 @@
             var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             if (reduceMotion) {
+                body.style.visibility = 'visible';
                 body.style.opacity = '1';
                 if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
                 document.documentElement.style.backgroundColor = '';
             } else {
-                // Ensure black overlay is painted before fade begins
-                // Use a setTimeout to guarantee the initial state is rendered
-                setTimeout(function() {
-                    body.classList.add('fade-in');
-                    fadeOverlay.classList.add('fade-out');
-                    
-                    // After fade completes, clean up
-                    setTimeout(function () {
-                        document.documentElement.style.backgroundColor = '';
-                        if (fadeOverlay && fadeOverlay.parentNode) {
-                            fadeOverlay.parentNode.removeChild(fadeOverlay);
-                        }
-                    }, 1200);
-                }, 50); // 50ms delay ensures the black screen is painted
+                // Wait for page to be fully loaded and rendered
+                window.addEventListener('load', function() {
+                    // Small delay to ensure everything is painted
+                    setTimeout(function() {
+                        body.classList.add('fade-in');
+                        fadeOverlay.classList.add('fade-out');
+                        
+                        // After fade completes, clean up
+                        setTimeout(function () {
+                            document.documentElement.style.backgroundColor = '';
+                            if (fadeOverlay && fadeOverlay.parentNode) {
+                                fadeOverlay.parentNode.removeChild(fadeOverlay);
+                            }
+                        }, 1200);
+                    }, 100);
+                });
             }
         }
 
-        // Lexicon panel logic (unchanged)
+        // Lexicon panel logic
         var toggle = document.getElementById('lexiconToggle');
         var panel = document.getElementById('lexiconPanel');
         var overlay = document.getElementById('lexiconOverlay');
