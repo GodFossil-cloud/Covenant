@@ -77,7 +77,7 @@
         .document-header {
             text-align: center;
             margin-bottom: 50px;
-            border-top: 2px solid var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
             padding-bottom: 30px;
         }
 
@@ -784,7 +784,7 @@
 
     <script>
         (function () {
-            // Fade IN from black on page load - fixed for desktop browsers
+            // Fade IN from black on page load - desktop fix with forced reflow
             var fadeOverlay = document.getElementById('fadeOverlay');
 
             if (fadeOverlay) {
@@ -794,14 +794,22 @@
                     if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
                     document.documentElement.style.backgroundColor = '';
                 } else {
-                    // Use a small setTimeout to ensure the black frame is painted on desktop
-                    setTimeout(function () {
-                        fadeOverlay.classList.add('is-hidden');
-                        // After fade completes, restore parchment background on html
-                        setTimeout(function () {
-                            document.documentElement.style.backgroundColor = '';
-                        }, 1100);
-                    }, 50); // Small delay ensures first paint happens on desktop
+                    // Wait for DOM to be fully ready
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Force a reflow to ensure the black state is painted
+                        void fadeOverlay.offsetHeight;
+                        
+                        // Use requestAnimationFrame for smooth transition start
+                        requestAnimationFrame(function () {
+                            requestAnimationFrame(function () {
+                                fadeOverlay.classList.add('is-hidden');
+                                // After fade completes, restore parchment background on html
+                                setTimeout(function () {
+                                    document.documentElement.style.backgroundColor = '';
+                                }, 1100);
+                            });
+                        });
+                    });
 
                     var removed = false;
                     function removeOverlay() {
