@@ -27,10 +27,8 @@
             font-size: 16px;
             scroll-behavior: smooth;
             background-color: #000000;
-            overflow-x: hidden;
         }
 
-        /* Force compositor layer and prevent FOUC */
         body {
             font-family: 'Lora', serif;
             color: var(--text-color);
@@ -39,69 +37,41 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
-            opacity: 0;
-            transform: translateZ(0);
-            will-change: opacity;
-            backface-visibility: hidden;
-            -webkit-font-smoothing: antialiased;
         }
 
-        body.start-fade {
-            animation: fadeInBody 1.8s ease 0.5s forwards;
-        }
-
-        @keyframes fadeInBody {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
-        /* Black overlay that fades out */
-        .fade-overlay {
+        /* Fade in from black on page load - SAME AS THRESHOLD.HTML */
+        body::after {
+            content: '';
             position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 99999;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000;
             pointer-events: none;
-            opacity: 1;
-            transform: translateZ(0);
-            will-change: opacity;
-            backface-visibility: hidden;
+            z-index: 10000;
+            animation: fadeFromBlack 1.5s ease-out forwards;
         }
 
-        .fade-overlay.start-fade {
-            animation: fadeOutOverlay 1.8s ease 0.5s forwards;
-        }
-
-        @keyframes fadeOutOverlay {
-            0% {
+        @keyframes fadeFromBlack {
+            from {
                 opacity: 1;
             }
-            100% {
+            to {
                 opacity: 0;
-                visibility: hidden;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            body {
-                opacity: 1 !important;
-                animation: none !important;
-            }
-            .fade-overlay {
-                display: none !important;
+            body::after {
+                animation: none;
+                opacity: 0;
             }
         }
 
         @media print {
-            body {
-                opacity: 1;
-            }
-            .fade-overlay {
-                display: none !important;
+            body::after {
+                display: none;
             }
         }
 
@@ -349,7 +319,6 @@
             body {
                 padding: 0;
                 background-color: white;
-                opacity: 1;
             }
 
             .container {
@@ -603,7 +572,6 @@
     </style>
 </head>
 <body>
-    <div id="fadeOverlay" class="fade-overlay" aria-hidden="true"></div>
     <div class="container">
         <div class="document-header">
             <div class="ornament">✦ ✧ ✦</div>
@@ -684,64 +652,7 @@
 
     <script>
     (function () {
-        'use strict';
-        
-        var fadeOverlay = document.getElementById('fadeOverlay');
-        var body = document.body;
-        var html = document.documentElement;
-        
-        if (!fadeOverlay || !body) return;
-        
-        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        
-        if (reduceMotion) {
-            body.style.opacity = '1';
-            if (fadeOverlay.parentNode) fadeOverlay.parentNode.removeChild(fadeOverlay);
-            html.style.backgroundColor = '';
-            return;
-        }
-        
-        // Check navigation source
-        var fromOrientation = false;
-        try {
-            fromOrientation = sessionStorage.getItem('fromOrientation') === 'true';
-            sessionStorage.removeItem('fromOrientation');
-        } catch (e) {}
-        
-        // Delay before starting fade animation (in CSS)
-        var blackDuration = fromOrientation ? 700 : 300;
-        
-        function triggerFade() {
-            setTimeout(function() {
-                body.classList.add('start-fade');
-                fadeOverlay.classList.add('start-fade');
-                
-                // Cleanup after animation completes
-                setTimeout(function() {
-                    html.style.backgroundColor = '';
-                    if (fadeOverlay && fadeOverlay.parentNode) {
-                        fadeOverlay.parentNode.removeChild(fadeOverlay);
-                    }
-                }, 2500);
-            }, blackDuration);
-        }
-        
-        // Load fonts first
-        if ('fonts' in document) {
-            Promise.all([
-                document.fonts.load('400 1em Lora'),
-                document.fonts.load('600 1em "Crimson Text"'),
-                document.fonts.load('400 1em "Cormorant Garamond"')
-            ]).then(triggerFade).catch(triggerFade);
-        } else {
-            if (document.readyState === 'complete') {
-                triggerFade();
-            } else {
-                window.addEventListener('load', triggerFade);
-            }
-        }
-        
-        // Lexicon panel
+        // Lexicon panel logic
         var toggle = document.getElementById('lexiconToggle');
         var panel = document.getElementById('lexiconPanel');
         var overlay = document.getElementById('lexiconOverlay');
