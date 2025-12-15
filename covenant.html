@@ -146,12 +146,27 @@
             color: var(--primary-color);
         }
 
-        .divider {
-            text-align: center;
-            margin: 35px 0;
+        /* Divider (replaces long "════" strings to prevent overflow) */
+        hr.divider {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 40px 0;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+        }
+
+        hr.divider::after {
+            content: "✦";
+            position: absolute;
+            left: 50%;
+            top: -0.9em;
+            transform: translateX(-50%);
+            padding: 0 14px;
+            background: var(--bg-color);
             color: var(--accent-color);
-            font-size: 18px;
-            letter-spacing: 8px;
+            font-size: 16px;
+            line-height: 1;
         }
 
         .toc {
@@ -415,9 +430,9 @@
                 letter-spacing: 8px;
             }
 
-            .divider {
+            hr.divider::after {
                 font-size: 14px;
-                letter-spacing: 4px;
+                padding: 0 10px;
             }
 
             #loadingIcon {
@@ -646,7 +661,7 @@
             </ul>
         </div>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
         <!-- Invocation and Preamble -->
         <section id="invocation">
             <h2>Invocation and Preamble</h2>
@@ -657,7 +672,7 @@
             <p>For servitude is no creation of man, but a mirror of the firmament—as <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> descends through the Lord, so <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> ascends through the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>. Thereby do all who swear falsely desecrate not only trust but the very sanctity of <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> itself, profaning the sacred order upon which all rightful bonds depend.</p>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Doctrinal Foundation -->
         <section id="foundation">
@@ -677,7 +692,7 @@
             <p>From this <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span> flows all authority, obligation, and sacred structure herein established.</p>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Declaration of Intent -->
         <section id="intent">
@@ -691,7 +706,7 @@
             <p>By this Declaration, the threshold is crossed. By this Declaration, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> begins.</p>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article I -->
         <section id="article1" class="article">
@@ -733,6 +748,8 @@
             </div>
         </section>
 
+        <hr class="divider" aria-hidden="true">
+        
         <!-- Article II -->
         <section id="article2" class="article">
             <h2>Article Ⅱ: Of Titles and Forms of Address</h2>
@@ -780,7 +797,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article III -->
         <section id="article3" class="article">
@@ -896,7 +913,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article IV -->
         <section id="article4" class="article">
@@ -981,7 +998,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article V -->
         <section id="article5" class="article">
@@ -1030,7 +1047,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article VI -->
         <section id="article6" class="article">
@@ -1086,7 +1103,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article VII -->
         <section id="article7" class="article">
@@ -1133,7 +1150,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article VIII -->
         <section id="article8" class="article">
@@ -1214,7 +1231,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article IX -->
         <section id="article9" class="article">
@@ -1247,7 +1264,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article X -->
         <section id="article10" class="article">
@@ -1309,7 +1326,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article XI -->
         <section id="article11" class="article">
@@ -1354,7 +1371,7 @@
             </div>
         </section>
 
-        <div class="divider">═══════════════════════════════════════════════════════════</div>
+        <hr class="divider" aria-hidden="true">
 
         <!-- Article XII -->
         <section id="article12" class="article">
@@ -1459,7 +1476,9 @@
                     <span class="section-num">§.ⅩⅢ</span>
                     <div>Upon termination under any provision herein, all <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> obligations remain perpetually binding. What was <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> in bond remains veiled after dissolution.</div>
         </div>
-        
+
+        <hr class="divider" aria-hidden="true">
+                
         <section class="navigation-section" aria-label="Covenant navigation">
             <div class="site-nav">
                 <a href="orientation.html" class="site-nav--secondary">
