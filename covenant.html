@@ -26,13 +26,13 @@
         html, body {
             height: 100%;
             font-family: 'Lora', serif;
-            background-color: #000000;
             color: var(--text-color);
         }
 
         html {
             font-size: 16px;
             scroll-behavior: smooth;
+            background-color: #000000;
         }
 
         body {
@@ -42,11 +42,7 @@
             padding: 40px 20px;
             min-height: 100vh;
             position: relative;
-            background-color: var(--bg-color);
         }
-
-        /* Black overlay that fades out */
-          
 
         /* Fade in from black on page load */
         body::after {
@@ -80,11 +76,11 @@
         @media print {
             body::after {
                 display: none;
-            }  }
+            }
         }
 
         .container {
-            background: white;
+            background: var(--bg-color);
             padding: 60px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             border-radius: 2px;
