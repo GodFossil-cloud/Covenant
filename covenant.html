@@ -24,41 +24,50 @@
         html {
             font-size: 16px;
             scroll-behavior: smooth;
-            background-color: var(--bg-color);
+            background-color: #000; /* Start black */
         }
 
-        /* Fade in from black on page load - CSS only like threshold.html */
-        body::after {
+        /* Fade in from black on page load - CRITICAL: must be visible above all content */
+        html::before {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
+            width: 100%;
+            height: 100%;
             background-color: #000;
             pointer-events: none;
-            z-index: 10000;
+            z-index: 99999;
             animation: fadeFromBlack 1.1s ease-out forwards;
         }
 
         @keyframes fadeFromBlack {
-            from {
+            0% {
                 opacity: 1;
+                visibility: visible;
             }
-            to {
+            99% {
                 opacity: 0;
+                visibility: visible;
+            }
+            100% {
+                opacity: 0;
+                visibility: hidden;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            body::after {
+            html::before {
                 animation: none;
                 opacity: 0;
+                visibility: hidden;
             }
         }
 
         @media print {
-            body::after {
+            html::before {
                 display: none !important;
             }
         }
@@ -78,6 +87,8 @@
             padding: 60px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             border-radius: 2px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Header and Title */
@@ -439,6 +450,10 @@
 
         /* Print Styles */
         @media print {
+            html {
+                background-color: white;
+            }
+
             body {
                 padding: 0;
                 background-color: white;
