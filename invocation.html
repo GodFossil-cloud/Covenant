@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invocation and Preamble - Covenant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #8b7355;
+            --text-color: #1a1a1a;
+            --bg-color: #fafaf8;
+            --border-color: #d4c5b9;
+            --highlight-color: #f5f1ed;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Lora', serif;
+            background-color: #000000;
+            color: var(--text-color);
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Loading icon */
+        #loadingIcon {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #8b7355;
+            z-index: 10001;
+            animation: rotateGlyph 2s linear infinite;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #loadingIcon.fade-out {
+            opacity: 0;
+        }
+
+        @keyframes rotateGlyph {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Black fade overlay */
+        #blackFadeOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000;
+            z-index: 10000;
+            pointer-events: none;
+            transition: opacity 1.5s ease-out;
+        }
+
+        #blackFadeOverlay.fade-out {
+            opacity: 0;
+        }
+
+        .container {
+            background: var(--bg-color);
+            padding: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .container.fade-in {
+            opacity: 1;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 30px;
+        }
+
+        .ornament {
+            font-size: 28px;
+            letter-spacing: 12px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.5em;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin: 20px 0;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        p.preamble {
+            font-style: italic;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .glossary-term {
+            cursor: help;
+            border-bottom: 1px dotted var(--accent-color);
+            position: relative;
+            color: var(--primary-color);
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .glossary-term:hover {
+            background-color: rgba(139, 115, 85, 0.1);
+        }
+
+        .glossary-ref {
+            vertical-align: super;
+            font-size: 0.75em;
+            margin-left: 2px;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-style: normal;
+            font-weight: 400;
+            border-bottom: 1px dotted transparent;
+            max-width: 250px;
+            white-space: normal;
+            line-height: 1.4;
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--primary-color) transparent transparent transparent;
+        }
+
+        .glossary-term:hover .tooltip {
+            visibility: visible;
+        }
+
+        .navigation-section {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .site-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .site-nav a {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border: 1px solid var(--primary-color);
+            background-color: var(--primary-color);
+            color: #f5f5f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .site-nav a:hover,
+        .site-nav a:focus-visible {
+            background-color: #f5f5f0;
+            color: var(--primary-color);
+        }
+
+        .site-nav a.site-nav--secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+        }
+
+        .site-nav a.site-nav--secondary:hover,
+        .site-nav a.site-nav--secondary:focus-visible {
+            background-color: var(--primary-color);
+            color: #f5f5f0;
+        }
+
+        .lexicon-glyph-toggle {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .lexicon-glyph-toggle.fade-in {
+            opacity: 1;
+        }
+
+        .lexicon-glyph-toggle button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--accent-color);
+            background-color: #fff;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            padding: 0;
+            margin: 0;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: normal;
+        }
+
+        .lexicon-glyph-toggle button:hover,
+        .lexicon-glyph-toggle button:focus-visible {
+            background-color: var(--accent-color);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .lexicon-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: min(360px, 90vw);
+            background-color: #fdfaf6;
+            border-left: 1px solid var(--border-color);
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.12);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 20px;
+        }
+
+        .lexicon-panel.is-open {
+            transform: translateX(0);
+        }
+
+        .lexicon-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .lexicon-panel-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        .lexicon-panel-close {
+            border: none;
+            background: transparent;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--primary-color);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: normal;
+        }
+
+        .lexicon-panel-body {
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .lexicon-panel-body p + p {
+            margin-top: 0.9rem;
+        }
+
+        .lexicon-link {
+            display: inline-block;
+            margin-top: 1.4rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2px;
+            border: 1px solid var(--accent-color);
+            color: var(--primary-color);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            background-color: #f9f3ec;
+        }
+
+        .lexicon-link:hover,
+        .lexicon-link:focus-visible {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+
+        .lexicon-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease;
+            z-index: 1050;
+        }
+
+        .lexicon-overlay.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media print {
+            #loadingIcon,
+            #blackFadeOverlay,
+            .lexicon-glyph-toggle,
+            .lexicon-panel,
+            .lexicon-overlay {
+                display: none !important;
+            }
+
+            body {
+                padding: 0;
+                background-color: white;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 0;
+                opacity: 1 !important;
+            }
+
+            .tooltip {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+                font-size: 15px;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            #loadingIcon {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                letter-spacing: 1px;
+            }
+
+            .ornament {
+                font-size: 20px;
+                letter-spacing: 8px;
+            }
+
+            #loadingIcon {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading icon -->
+    <div id="loadingIcon">✦</div>
+
+    <!-- Black fade overlay -->
+    <div id="blackFadeOverlay"></div>
+
+    <div class="container">
+        <div class="section-header">
+            <div class="ornament">✦ ✧ ✦</div>
+            <h1>Invocation and Preamble</h1>
+            <div class="ornament">✦ ✧ ✦</div>
+        </div>
+
+        <section id="invocation">
+            <p class="preamble">Let silence bear witness before the first word is spoken. Before the order of the stars and beneath the witness of the Earth, the Lord and the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> enter into this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, swearing to uphold the consecrated and everlasting order wherein <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>, and <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> are made sacred.</p>
+            
+            <p>Their duties are bound in orderly correspondence, for reciprocity sustains the order, and provision descends as grace from the Lord. Let deceit remain unspoken, avarice be cast into the void, and word and spirit become one. Thus shall this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> endure as a divine reflection of sanctified allegiance.</p>
+            
+            <p>For servitude is no creation of man, but a mirror of the firmament—as <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> descends through the Lord, so <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> ascends through the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>. Thereby do all who swear falsely desecrate not only trust but the very sanctity of <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> itself, profaning the sacred order upon which all rightful bonds depend.</p>
+        </section>
+
+        <section class="navigation-section" aria-label="Page navigation">
+            <div class="site-nav">
+                <a href="orientation.html" class="site-nav--secondary">
+                    ← Back to Orientation
+                </a>
+                <a href="foundation.html">
+                    Forward to Foundation →
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <div class="lexicon-glyph-toggle">
+        <button id="lexiconToggle"
+                type="button"
+                aria-label="Open Covenant Lexicon panel">
+            ✶
+        </button>
+    </div>
+
+    <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
+        <div class="lexicon-panel-header">
+            <div class="lexicon-panel-title">Lexicon</div>
+            <button class="lexicon-panel-close"
+                    type="button"
+                    aria-label="Close Lexicon panel">
+                ×
+            </button>
+        </div>
+        <div class="lexicon-panel-body">
+            <p>
+                Throughout this Covenant, highlighted terms carry precise meanings
+                within the sacred structure of hierarchy, command, and obedience.
+            </p>
+            <p>
+                Use this panel when you need deeper context. It opens the full
+                Lexicon in a separate view so that you may consult definitions
+                without leaving this document or altering the linear progression.
+            </p>
+            <a href="lexicon.html"
+               target="_blank"
+               rel="noopener"
+               class="lexicon-link">
+                Open Full Lexicon
+            </a>
+        </div>
+    </div>
+
+    <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
+
+    <script>
+    (function () {
+        var loadingIcon = document.getElementById('loadingIcon');
+        var overlay = document.getElementById('blackFadeOverlay');
+        var container = document.querySelector('.container');
+        var lexiconToggle = document.querySelector('.lexicon-glyph-toggle');
+        
+        // Animation sequence:
+        // 1. Loading icon rotates for ~1.8 seconds
+        // 2. Loading icon fades out (0.5s)
+        // 3. Black overlay fades out (1.5s)
+        // 4. Content fades in (1s)
+        
+        setTimeout(function() {
+            // Fade out loading icon
+            if (loadingIcon) {
+                loadingIcon.classList.add('fade-out');
+            }
+            
+            // After loading icon fades, start black overlay fade
+            setTimeout(function() {
+                overlay.classList.add('fade-out');
+                
+                // After black fades, fade in content
+                setTimeout(function() {
+                    container.classList.add('fade-in');
+                    if (lexiconToggle) {
+                        lexiconToggle.classList.add('fade-in');
+                    }
+                    
+                    // Clean up DOM
+                    setTimeout(function() {
+                        if (loadingIcon && loadingIcon.parentNode) {
+                            loadingIcon.parentNode.removeChild(loadingIcon);
+                        }
+                        if (overlay && overlay.parentNode) {
+                            overlay.parentNode.removeChild(overlay);
+                        }
+                    }, 1500);
+                }, 1500);
+            }, 500);
+        }, 1800);
+        
+        // Lexicon panel logic
+        var toggle = document.getElementById('lexiconToggle');
+        var panel = document.getElementById('lexiconPanel');
+        var lexOverlay = document.getElementById('lexiconOverlay');
+        var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
+        
+        function openPanel() {
+            if (!panel || !lexOverlay) return;
+            panel.classList.add('is-open');
+            lexOverlay.classList.add('is-open');
+            panel.setAttribute('aria-hidden', 'false');
+            lexOverlay.setAttribute('aria-hidden', 'false');
+        }
+        
+        function closePanel() {
+            if (!panel || !lexOverlay) return;
+            panel.classList.remove('is-open');
+            lexOverlay.classList.remove('is-open');
+            panel.setAttribute('aria-hidden', 'true');
+            lexOverlay.setAttribute('aria-hidden', 'true');
+        }
+        
+        if (toggle && panel && lexOverlay) {
+            toggle.addEventListener('click', function () {
+                if (panel.classList.contains('is-open')) {
+                    closePanel();
+                } else {
+                    openPanel();
+                }
+            });
+            
+            lexOverlay.addEventListener('click', closePanel);
+            
+            closeButtons.forEach(function (btn) {
+                btn.addEventListener('click', closePanel);
+            });
+            
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && panel.classList.contains('is-open')) {
+                    closePanel();
+                }
+            });
+        }
+    })();
+    </script>
+</body>
+</html>
