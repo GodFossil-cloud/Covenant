@@ -17,6 +17,8 @@
             --highlight-color: #f5f1ed;
             --glyph-active-glow: 0 0 12px rgba(139, 115, 85, 0.9);
             --sentence-highlight: #f0e3d4;
+            --glyph-red: #8b2f2f;
+            --glyph-gold: #c9a961;
         }
 
         * {
@@ -50,8 +52,7 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
+            transform: translate(-50%, -50%);            font-size: 48px;
             color: #8b7355;
             z-index: 10001;
             animation: rotateGlyph 2s linear infinite;
@@ -263,15 +264,15 @@
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            border: 1px solid var(--accent-color);
-            background-color: #fff;
-            color: var(--accent-color);
+            border: 1px solid var(--glyph-red);
+            background-color: var(--glyph-red);
+            color: var(--glyph-gold);
             font-size: 1.3rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 2px 8px rgba(139, 47, 47, 0.35);
             transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
             padding: 0;
             margin: 0;
@@ -282,15 +283,16 @@
 
         .lexicon-glyph-toggle button:hover,
         .lexicon-glyph-toggle button:focus-visible {
-            background-color: var(--accent-color);
-            color: #fff;
+            background-color: #a23737;
+            color: #e0bf7a;
             transform: translateY(-1px);
+            box-shadow: 0 3px 12px rgba(139, 47, 47, 0.45);
         }
 
         .lexicon-glyph-toggle button.is-active {
-            background-color: #f8efe5;
-            color: var(--accent-color);
-            box-shadow: var(--glyph-active-glow);
+            background-color: #6b1f1f;
+            color: #f5d98c;
+            box-shadow: 0 0 16px rgba(201, 169, 97, 0.6);
             transform: translateY(-1px);
         }
 
@@ -300,9 +302,9 @@
             right: 0;
             height: 100vh;
             width: min(360px, 90vw);
-            background-color: #fdfaf6;
-            border-left: 1px solid var(--border-color);
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.12);
+            background-color: #1a1a1a;
+            border-left: 1px solid #3a3a3a;
+            box-shadow: -2px 0 12px rgba(0, 0, 0, 0.5);
             transform: translateX(100%);
             transition: transform 0.3s ease;
             z-index: 1100;
@@ -327,14 +329,14 @@
             font-size: 1.4rem;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: var(--primary-color);
+            color: var(--glyph-gold);
         }
 
         .lexicon-panel-mode {
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.12em;
-            color: #8b7355;
+            color: #b8986a;
             margin-top: 4px;
         }
 
@@ -343,7 +345,7 @@
             background: transparent;
             font-size: 1.8rem;
             cursor: pointer;
-            color: var(--primary-color);
+            color: var(--glyph-gold);
             padding: 0;
             width: 32px;
             height: 32px;
@@ -353,11 +355,17 @@
             text-transform: none;
             letter-spacing: 0;
             font-weight: normal;
+            transition: color 0.2s ease;
+        }
+
+        .lexicon-panel-close:hover,
+        .lexicon-panel-close:focus-visible {
+            color: #e0bf7a;
         }
 
         .lexicon-panel-body {
             font-size: 0.95rem;
-            color: #444;
+            color: #d4d4d4;
             line-height: 1.6;
             flex: 1 1 auto;
             overflow-y: auto;
@@ -371,11 +379,11 @@
         .lexicon-sentence-quote {
             font-size: 0.88rem;
             font-style: italic;
-            color: #666;
+            color: #a8a8a8;
             margin-bottom: 1rem;
             padding: 0.6rem 1rem;
-            background: #f7f3ef;
-            border-left: 2px solid var(--accent-color);
+            background: #262626;
+            border-left: 2px solid var(--glyph-gold);
             line-height: 1.5;
         }
 
@@ -384,26 +392,26 @@
             margin-top: 1.2rem;
             padding: 0.5rem 1.2rem;
             border-radius: 2px;
-            border: 1px solid var(--accent-color);
-            color: var(--primary-color);
+            border: 1px solid var(--glyph-gold);
+            color: var(--glyph-gold);
             text-decoration: none;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             font-size: 0.8rem;
             transition: background-color 0.2s ease, color 0.2s ease;
-            background-color: #f9f3ec;
+            background-color: #262626;
         }
 
         .lexicon-link:hover,
         .lexicon-link:focus-visible {
-            background-color: var(--accent-color);
-            color: #fff;
+            background-color: var(--glyph-gold);
+            color: #1a1a1a;
         }
 
         .lexicon-glossary-footer {
             margin-top: 1.6rem;
             padding-top: 1rem;
-            border-top: 1px solid #e1d6c6;
+            border-top: 1px solid #3a3a3a;
             font-size: 0.85rem;
         }
 
@@ -413,7 +421,7 @@
             letter-spacing: 0.12em;
             text-transform: uppercase;
             margin-bottom: 0.6rem;
-            color: var(--primary-color);
+            color: var(--glyph-gold);
         }
 
         .lexicon-term-list {
@@ -426,20 +434,20 @@
 
         .lexicon-term-label {
             font-weight: 600;
-            color: #2c3e50;
+            color: #e0bf7a;
         }
 
         .lexicon-term-ref {
             font-size: 0.75rem;
             vertical-align: super;
-            color: #8b7355;
+            color: var(--glyph-gold);
             margin-left: 2px;
         }
 
         .lexicon-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.5);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.25s ease;
