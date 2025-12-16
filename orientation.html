@@ -564,7 +564,7 @@
 
         <div class="action-section">
             <nav class="navigation">
-                <a href="covenant.html" class="nav-button" id="proceedBtn">· PROCEED ·</a>
+                <a href="invocation.html" class="nav-button" id="proceedBtn">· PROCEED ·</a>
             </nav>
 
             <div class="footer-divider"></div>
@@ -596,7 +596,7 @@
             if (navigationTriggered) return;
             navigationTriggered = true;
 
-            // Set session flag for covenant.html to detect
+            // Set session flag for invocation.html to detect
             try {
                 sessionStorage.setItem('fromOrientation', 'true');
             } catch (e) {
@@ -621,7 +621,7 @@
 
             // Navigate after full fade
             setTimeout(() => {
-                window.location.href = 'covenant.html';
+                window.location.href = 'invocation.html';
             }, 1050);
         }
 
