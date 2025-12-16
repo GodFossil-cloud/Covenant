@@ -15,6 +15,8 @@
             --bg-color: #fafaf8;
             --border-color: #d4c5b9;
             --highlight-color: #f5f1ed;
+            --glyph-active-glow: 0 0 12px rgba(139, 115, 85, 0.9);
+            --sentence-highlight: #f0e3d4;
         }
 
         * {
@@ -274,7 +276,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
             padding: 0;
             margin: 0;
             text-transform: none;
@@ -286,6 +288,13 @@
         .lexicon-glyph-toggle button:focus-visible {
             background-color: var(--accent-color);
             color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .lexicon-glyph-toggle button.is-active {
+            background-color: #f8efe5;
+            color: var(--accent-color);
+            box-shadow: var(--glyph-active-glow);
             transform: translateY(-1px);
         }
 
@@ -325,6 +334,14 @@
             color: var(--primary-color);
         }
 
+        .lexicon-panel-mode {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #8b7355;
+            margin-top: 4px;
+        }
+
         .lexicon-panel-close {
             border: none;
             background: transparent;
@@ -346,6 +363,9 @@
             font-size: 0.95rem;
             color: #444;
             line-height: 1.6;
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding-right: 4px;
         }
 
         .lexicon-panel-body p + p {
@@ -354,7 +374,7 @@
 
         .lexicon-link {
             display: inline-block;
-            margin-top: 1.4rem;
+            margin-top: 1.2rem;
             padding: 0.5rem 1.2rem;
             border-radius: 2px;
             border: 1px solid var(--accent-color);
@@ -373,6 +393,42 @@
             color: #fff;
         }
 
+        .lexicon-glossary-footer {
+            margin-top: 1.6rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e1d6c6;
+            font-size: 0.85rem;
+        }
+
+        .lexicon-glossary-footer h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+            color: var(--primary-color);
+        }
+
+        .lexicon-term-list {
+            list-style: none;
+        }
+
+        .lexicon-term-list li + li {
+            margin-top: 0.5rem;
+        }
+
+        .lexicon-term-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .lexicon-term-ref {
+            font-size: 0.75rem;
+            vertical-align: super;
+            color: #8b7355;
+            margin-left: 2px;
+        }
+
         .lexicon-overlay {
             position: fixed;
             inset: 0;
@@ -386,6 +442,29 @@
         .lexicon-overlay.is-open {
             opacity: 1;
             visibility: visible;
+        }
+
+        .sentence {
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .sentence.is-selected {
+            background-color: var(--sentence-highlight);
+            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
+        }
+
+        .sentence[data-lexicon-key] {
+            position: relative;
+        }
+
+        .sentence[data-lexicon-key]::after {
+            content: attr(data-lexicon-key);
+            position: absolute;
+            right: -0.75em;
+            top: -0.2em;
+            font-size: 0.7em;
+            color: #b79a76;
         }
 
         @media print {
@@ -476,11 +555,51 @@
         </div>
 
         <section id="invocation">
-            <p class="preamble">Let silence bear witness before the first word is spoken. Before the order of the stars and beneath the witness of the Earth, the Lord and the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> enter into this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, swearing to uphold the consecrated and everlasting order wherein <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>, and <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> are made sacred.</p>
-            
-            <p>Their duties are bound in orderly correspondence, for reciprocity sustains the order, and provision descends as grace from the Lord. Let deceit remain unspoken, avarice be cast into the void, and word and spirit become one. Thus shall this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> endure as a divine reflection of sanctified allegiance.</p>
-            
-            <p>For servitude is no creation of man, but a mirror of the firmament—as <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> descends through the Lord, so <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> ascends through the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>. Thereby do all who swear falsely desecrate not only trust but the very sanctity of <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> itself, profaning the sacred order upon which all rightful bonds depend.</p>
+            <p class="preamble">
+                <span class="sentence" data-lexicon-key="I.1">
+                    Let silence bear witness before the first word is spoken.
+                </span>
+                <span class="sentence" data-lexicon-key="I.2">
+                    Before the order of the stars and beneath the witness of the Earth, the Lord and the
+                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                    enter into this
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>, swearing to uphold the consecrated and everlasting order wherein
+                    <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>,
+                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>, and
+                    <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>
+                    are made sacred.
+                </span>
+            </p>
+
+            <p>
+                <span class="sentence" data-lexicon-key="I.3">
+                    Their duties are bound in orderly correspondence, for reciprocity sustains the order, and provision descends as grace from the Lord.
+                </span>
+                <span class="sentence" data-lexicon-key="I.4">
+                    Let deceit remain unspoken, avarice be cast into the void, and word and spirit become one.
+                </span>
+                <span class="sentence" data-lexicon-key="I.5">
+                    Thus shall this
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    endure as a divine reflection of sanctified allegiance.
+                </span>
+            </p>
+
+            <p>
+                <span class="sentence" data-lexicon-key="I.6">
+                    For servitude is no creation of man, but a mirror of the firmament—as
+                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
+                    descends through the Lord, so
+                    <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>
+                    ascends through the
+                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>.
+                </span>
+                <span class="sentence" data-lexicon-key="I.7">
+                    Thereby do all who swear falsely desecrate not only trust but the very sanctity of
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    itself, profaning the sacred order upon which all rightful bonds depend.
+                </span>
+            </p>
         </section>
 
         <section class="navigation-section" aria-label="Page navigation">
@@ -505,7 +624,10 @@
 
     <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
         <div class="lexicon-panel-header">
-            <div class="lexicon-panel-title">Lexicon</div>
+            <div>
+                <div class="lexicon-panel-title">Lexicon</div>
+                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation Overview</div>
+            </div>
             <button class="lexicon-panel-close"
                     type="button"
                     aria-label="Close Lexicon panel">
@@ -513,21 +635,55 @@
             </button>
         </div>
         <div class="lexicon-panel-body">
-            <p>
-                Throughout this Covenant, highlighted terms carry precise meanings
-                within the sacred structure of hierarchy, command, and obedience.
-            </p>
-            <p>
-                Use this panel when you need deeper context. It opens the full
-                Lexicon in a separate view so that you may consult definitions
-                without leaving this document or altering the linear progression.
-            </p>
+            <div id="lexiconDynamicContent">
+                <!-- Default overview content -->
+                <p>
+                    The Invocation and Preamble call the Covenant into sacred awareness. Here, silence, witness,
+                    and sworn structure gather the Lord and the Faithful into a consecrated order.
+                </p>
+                <p>
+                    These opening lines do not yet legislate duties in detail; they consecrate the atmosphere in which
+                    every later Article must be heard—hierarchy as sacred, command as rightful, obedience as offered devotion.
+                </p>
+            </div>
+
             <a href="lexicon.html"
                target="_blank"
                rel="noopener"
                class="lexicon-link">
                 Open Full Lexicon
             </a>
+
+            <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
+                <h3>Terms in this section</h3>
+                <ul class="lexicon-term-list">
+                    <li>
+                        <span class="lexicon-term-label">Faithful</span>
+                        <span class="lexicon-term-ref">[1]</span>
+                        – The devoted servant and obedient instrument within this sacred bond.
+                    </li>
+                    <li>
+                        <span class="lexicon-term-label">Covenant</span>
+                        <span class="lexicon-term-ref">[2]</span>
+                        – A sacred, binding agreement between the Lord and the Faithful.
+                    </li>
+                    <li>
+                        <span class="lexicon-term-label">Hierarchy</span>
+                        <span class="lexicon-term-ref">[3]</span>
+                        – The sacred ordering of authority and obedience.
+                    </li>
+                    <li>
+                        <span class="lexicon-term-label">Command</span>
+                        <span class="lexicon-term-ref">[4]</span>
+                        – An authoritative directive given by the Lord.
+                    </li>
+                    <li>
+                        <span class="lexicon-term-label">Obedience</span>
+                        <span class="lexicon-term-ref">[5]</span>
+                        – The willing submission and faithful execution of commands.
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -538,32 +694,24 @@
         var loadingIcon = document.getElementById('loadingIcon');
         var overlay = document.getElementById('blackFadeOverlay');
         var container = document.querySelector('.container');
-        var lexiconToggle = document.querySelector('.lexicon-glyph-toggle');
-        
-        // Animation sequence:
-        // 1. Loading icon rotates for ~1.8 seconds
-        // 2. Loading icon fades out (0.5s)
-        // 3. Black overlay fades out (1.5s)
-        // 4. Content fades in (1s)
-        
+        var lexiconToggleWrap = document.querySelector('.lexicon-glyph-toggle');
+        var glyphButton = document.getElementById('lexiconToggle');
+
+        // Animation sequence
         setTimeout(function() {
-            // Fade out loading icon
             if (loadingIcon) {
                 loadingIcon.classList.add('fade-out');
             }
-            
-            // After loading icon fades, start black overlay fade
+
             setTimeout(function() {
                 overlay.classList.add('fade-out');
-                
-                // After black fades, fade in content
+
                 setTimeout(function() {
                     container.classList.add('fade-in');
-                    if (lexiconToggle) {
-                        lexiconToggle.classList.add('fade-in');
+                    if (lexiconToggleWrap) {
+                        lexiconToggleWrap.classList.add('fade-in');
                     }
-                    
-                    // Clean up DOM
+
                     setTimeout(function() {
                         if (loadingIcon && loadingIcon.parentNode) {
                             loadingIcon.parentNode.removeChild(loadingIcon);
@@ -575,13 +723,37 @@
                 }, 1500);
             }, 500);
         }, 1800);
-        
+
         // Lexicon panel logic
-        var toggle = document.getElementById('lexiconToggle');
         var panel = document.getElementById('lexiconPanel');
         var lexOverlay = document.getElementById('lexiconOverlay');
         var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
-        
+        var modeLabel = document.getElementById('lexiconModeLabel');
+        var dynamicContent = document.getElementById('lexiconDynamicContent');
+
+        var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
+
+        var sentenceExplanations = {
+            'I.1': '<p>This opening line establishes Sacred Silence as the first act of devotion. Before any word is spoken, the Faithful and the Lord acknowledge that what is about to be invoked is not casual speech but consecrated utterance.</p>',
+            'I.2': '<p>This sentence places the Covenant within a cosmic frame—beneath the stars and upon the Earth—while naming the two parties and the sacred structure they enter. It declares that hierarchy, command, and obedience are not inventions of control, but elements made sacred within this bond.</p>',
+            'I.3': '<p>Here the mutuality of the bond is affirmed: the Lord provides and the Faithful responds. Duties are reciprocal, not symmetrical—the Lord gives provision and guidance, the Faithful answers with ordered obedience.</p>',
+            'I.4': '<p>This line purges what cannot coexist with a sacred bond: deceit, greed, and divided self. Word and spirit becoming one means that what is spoken in the Covenant must match inward intention.</p>',
+            'I.5': '<p>This declares that the Covenant is not merely functional but iconic, meant to reflect a deeper, sanctified allegiance. The bond itself becomes a sign of devotion that points beyond both parties to the sacred pattern it imitates.</p>',
+            'I.6': '<p>Servitude is framed as a reflection of the heavens rather than a human invention. Command flows downward through the Lord; obedience rises upward through the Faithful, forming a living circuit of will and response.</p>',
+            'I.7': '<p>This final sentence warns that false oaths attack more than trust between persons; they violate the sacred order that undergirds all rightful bonds. To swear falsely is to profane the very structure the Covenant exists to honor.</p>'
+        };
+
+        var currentlySelectedSentence = null;
+
+        function setGlyphActiveState(isActive) {
+            if (!glyphButton) return;
+            if (isActive) {
+                glyphButton.classList.add('is-active');
+            } else {
+                glyphButton.classList.remove('is-active');
+            }
+        }
+
         function openPanel() {
             if (!panel || !lexOverlay) return;
             panel.classList.add('is-open');
@@ -589,7 +761,7 @@
             panel.setAttribute('aria-hidden', 'false');
             lexOverlay.setAttribute('aria-hidden', 'false');
         }
-        
+
         function closePanel() {
             if (!panel || !lexOverlay) return;
             panel.classList.remove('is-open');
@@ -597,68 +769,156 @@
             panel.setAttribute('aria-hidden', 'true');
             lexOverlay.setAttribute('aria-hidden', 'true');
         }
-        
-        if (toggle && panel && lexOverlay) {
-            toggle.addEventListener('click', function () {
+
+        function renderOverview() {
+            if (!dynamicContent) return;
+            dynamicContent.style.opacity = '0';
+            setTimeout(function () {
+                dynamicContent.innerHTML = defaultOverviewHTML;
+                dynamicContent.style.opacity = '1';
+            }, 150);
+            if (modeLabel) {
+                modeLabel.textContent = 'Invocation Overview';
+            }
+        }
+
+        function renderSentenceExplanation(key) {
+            if (!dynamicContent) return;
+            var html = sentenceExplanations[key];
+            if (!html) {
+                renderOverview();
+                return;
+            }
+            dynamicContent.style.opacity = '0';
+            setTimeout(function () {
+                dynamicContent.innerHTML = html;
+                dynamicContent.style.opacity = '1';
+            }, 150);
+            if (modeLabel) {
+                modeLabel.textContent = 'Sentence Note ' + key;
+            }
+        }
+
+        if (glyphButton && panel && lexOverlay) {
+            glyphButton.addEventListener('click', function () {
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
+                    if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
+                        renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey);
+                    } else {
+                        renderOverview();
+                    }
                     openPanel();
                 }
             });
-            
+
             lexOverlay.addEventListener('click', closePanel);
-            
+
             closeButtons.forEach(function (btn) {
                 btn.addEventListener('click', closePanel);
             });
-            
+
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape' && panel.classList.contains('is-open')) {
                     closePanel();
                 }
             });
         }
-        
-        // Touch-friendly tooltip handling for mobile
-        var glossaryTerms = document.querySelectorAll('.glossary-term');
-        var currentlyActive = null;
-        
-        glossaryTerms.forEach(function(term) {
-            term.addEventListener('touchstart', function(e) {
-                // Prevent default to avoid triggering mouse events
-                e.preventDefault();
-                
-                // If this term is already active, do nothing (keep it open)
-                if (this === currentlyActive) {
-                    return;
+
+        // Sentence selection logic
+        var sentenceNodes = document.querySelectorAll('.sentence');
+
+        function clearSentenceSelection() {
+            if (currentlySelectedSentence) {
+                currentlySelectedSentence.classList.remove('is-selected');
+                currentlySelectedSentence = null;
+                setGlyphActiveState(false);
+            }
+        }
+
+        sentenceNodes.forEach(function (node) {
+            // Desktop: double-click
+            node.addEventListener('dblclick', function (event) {
+                event.stopPropagation();
+                if (currentlySelectedSentence === node) {
+                    clearSentenceSelection();
+                } else {
+                    clearSentenceSelection();
+                    currentlySelectedSentence = node;
+                    node.classList.add('is-selected');
+                    setGlyphActiveState(true);
                 }
-                
-                // Close previously active tooltip
-                if (currentlyActive) {
-                    currentlyActive.classList.remove('tooltip-active');
+            });
+
+            // Mobile: double-tap fallback using timestamp
+            var lastTapTime = 0;
+            node.addEventListener('touchend', function (event) {
+                var currentTime = new Date().getTime();
+                var tapLength = currentTime - lastTapTime;
+                if (tapLength < 300 && tapLength > 0) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (currentlySelectedSentence === node) {
+                        clearSentenceSelection();
+                    } else {
+                        clearSentenceSelection();
+                        currentlySelectedSentence = node;
+                        node.classList.add('is-selected');
+                        setGlyphActiveState(true);
+                    }
                 }
-                
-                // Open this tooltip
-                this.classList.add('tooltip-active');
-                currentlyActive = this;
+                lastTapTime = currentTime;
             });
         });
-        
-        // Close tooltip when touching anywhere else
+
+        // Deselect when clicking/tapping elsewhere
+        document.addEventListener('click', function (event) {
+            var isSentence = event.target.closest('.sentence');
+            var isGlyph = event.target.closest('#lexiconToggle');
+            var isPanel = event.target.closest('#lexiconPanel');
+            if (!isSentence && !isGlyph && !isPanel) {
+                clearSentenceSelection();
+            }
+        });
+
+        document.addEventListener('touchend', function (event) {
+            var isSentence = event.target.closest('.sentence');
+            var isGlyph = event.target.closest('#lexiconToggle');
+            var isPanel = event.target.closest('#lexiconPanel');
+            if (!isSentence && !isGlyph && !isPanel) {
+                clearSentenceSelection();
+            }
+        });
+
+        // Touch-friendly tooltip handling for glossary terms
+        var glossaryTerms = document.querySelectorAll('.glossary-term');
+        var currentlyActiveTooltip = null;
+
+        glossaryTerms.forEach(function(term) {
+            term.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                if (this === currentlyActiveTooltip) {
+                    return;
+                }
+                if (currentlyActiveTooltip) {
+                    currentlyActiveTooltip.classList.remove('tooltip-active');
+                }
+                this.classList.add('tooltip-active');
+                currentlyActiveTooltip = this;
+            });
+        });
+
         document.addEventListener('touchstart', function(e) {
-            // Check if the touch is outside any glossary term
             var touchedGlossaryTerm = false;
             glossaryTerms.forEach(function(term) {
                 if (term.contains(e.target)) {
                     touchedGlossaryTerm = true;
                 }
             });
-            
-            // If touched outside, close active tooltip
-            if (!touchedGlossaryTerm && currentlyActive) {
-                currentlyActive.classList.remove('tooltip-active');
-                currentlyActive = null;
+            if (!touchedGlossaryTerm && currentlyActiveTooltip) {
+                currentlyActiveTooltip.classList.remove('tooltip-active');
+                currentlyActiveTooltip = null;
             }
         });
     })();
