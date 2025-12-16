@@ -270,7 +270,7 @@
             border: 1px solid var(--accent-color);
             background-color: #fff;
             color: var(--accent-color);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -454,17 +454,12 @@
             box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
         }
 
-        .sentence[data-lexicon-key] {
-            position: relative;
-        }
-
-        .sentence[data-lexicon-key]::after {
-            content: attr(data-lexicon-key);
-            position: absolute;
-            right: -0.75em;
-            top: -0.2em;
+        .sentence-label {
             font-size: 0.7em;
+            vertical-align: super;
             color: #b79a76;
+            margin-right: 0.2em;
+            user-select: none;
         }
 
         @media print {
@@ -560,6 +555,7 @@
                     Let silence bear witness before the first word is spoken.
                 </span>
                 <span class="sentence" data-lexicon-key="I.2">
+                    <span class="sentence-label">2</span>
                     Before the order of the stars and beneath the witness of the Earth, the Lord and the
                     <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
                     enter into this
@@ -573,12 +569,15 @@
 
             <p>
                 <span class="sentence" data-lexicon-key="I.3">
+                    <span class="sentence-label">3</span>
                     Their duties are bound in orderly correspondence, for reciprocity sustains the order, and provision descends as grace from the Lord.
                 </span>
                 <span class="sentence" data-lexicon-key="I.4">
+                    <span class="sentence-label">4</span>
                     Let deceit remain unspoken, avarice be cast into the void, and word and spirit become one.
                 </span>
                 <span class="sentence" data-lexicon-key="I.5">
+                    <span class="sentence-label">5</span>
                     Thus shall this
                     <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
                     endure as a divine reflection of sanctified allegiance.
@@ -587,6 +586,7 @@
 
             <p>
                 <span class="sentence" data-lexicon-key="I.6">
+                    <span class="sentence-label">6</span>
                     For servitude is no creation of man, but a mirror of the firmament—as
                     <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
                     descends through the Lord, so
@@ -595,6 +595,7 @@
                     <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>.
                 </span>
                 <span class="sentence" data-lexicon-key="I.7">
+                    <span class="sentence-label">7</span>
                     Thereby do all who swear falsely desecrate not only trust but the very sanctity of
                     <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
                     itself, profaning the sacred order upon which all rightful bonds depend.
@@ -618,7 +619,7 @@
         <button id="lexiconToggle"
                 type="button"
                 aria-label="Open Covenant Lexicon panel">
-            ✶
+            𖤓
         </button>
     </div>
 
@@ -795,7 +796,7 @@
                 dynamicContent.style.opacity = '1';
             }, 150);
             if (modeLabel) {
-                modeLabel.textContent = 'Sentence Note ' + key;
+                modeLabel.textContent = 'Sentence Note ' + key.replace('I.','');
             }
         }
 
@@ -838,8 +839,8 @@
         }
 
         sentenceNodes.forEach(function (node) {
-            // Desktop: double-click
-            node.addEventListener('dblclick', function (event) {
+            // Desktop: single click toggle
+            node.addEventListener('click', function (event) {
                 event.stopPropagation();
                 if (currentlySelectedSentence === node) {
                     clearSentenceSelection();
