@@ -169,17 +169,17 @@
             background-color: var(--primary-color);
             color: white;
             text-align: center;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 4px;
             font-size: 0.85em;
-            white-space: nowrap;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             font-style: normal;
             font-weight: 400;
-            border-bottom: 1px dotted transparent;
-            max-width: 250px;
-            white-space: normal;
-            line-height: 1.4;
+            min-width: 200px;
+            max-width: 320px;
+            width: max-content;
+            line-height: 1.3;
+            white-space: nowrap;
         }
 
         .tooltip::after {
@@ -449,6 +449,11 @@
 
             #loadingIcon {
                 font-size: 32px;
+            }
+
+            .tooltip {
+                min-width: 180px;
+                max-width: 280px;
             }
         }
     </style>
