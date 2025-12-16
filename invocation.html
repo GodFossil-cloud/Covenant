@@ -193,7 +193,13 @@
             border-color: var(--primary-color) transparent transparent transparent;
         }
 
+        /* Desktop hover behavior */
         .glossary-term:hover .tooltip {
+            visibility: visible;
+        }
+
+        /* Mobile touch behavior */
+        .glossary-term.tooltip-active .tooltip {
             visibility: visible;
         }
 
@@ -605,6 +611,48 @@
                 }
             });
         }
+        
+        // Touch-friendly tooltip handling for mobile
+        var glossaryTerms = document.querySelectorAll('.glossary-term');
+        var currentlyActive = null;
+        
+        glossaryTerms.forEach(function(term) {
+            term.addEventListener('touchstart', function(e) {
+                // Prevent default to avoid triggering mouse events
+                e.preventDefault();
+                
+                // If this term is already active, do nothing (keep it open)
+                if (this === currentlyActive) {
+                    return;
+                }
+                
+                // Close previously active tooltip
+                if (currentlyActive) {
+                    currentlyActive.classList.remove('tooltip-active');
+                }
+                
+                // Open this tooltip
+                this.classList.add('tooltip-active');
+                currentlyActive = this;
+            });
+        });
+        
+        // Close tooltip when touching anywhere else
+        document.addEventListener('touchstart', function(e) {
+            // Check if the touch is outside any glossary term
+            var touchedGlossaryTerm = false;
+            glossaryTerms.forEach(function(term) {
+                if (term.contains(e.target)) {
+                    touchedGlossaryTerm = true;
+                }
+            });
+            
+            // If touched outside, close active tooltip
+            if (!touchedGlossaryTerm && currentlyActive) {
+                currentlyActive.classList.remove('tooltip-active');
+                currentlyActive = null;
+            }
+        });
     })();
     </script>
 </body>
