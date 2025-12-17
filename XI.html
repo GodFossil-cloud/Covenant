@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invocation and Preamble - Covenant</title>
+    <title>Article XI: Of Amendments and Renewal - Covenant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
@@ -52,7 +52,8 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);            font-size: 48px;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
             color: #8b7355;
             z-index: 10001;
             animation: rotateGlyph 2s linear infinite;
@@ -127,16 +128,55 @@
             text-transform: uppercase;
         }
 
-        p {
-            margin-bottom: 18px;
-            text-align: justify;
-            hyphens: auto;
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            text-align: center;
         }
 
-        p.preamble {
-            font-style: italic;
-            color: #555;
+        .subsection {
+            margin-bottom: 28px;
+            padding: 16px 20px;
+            background: var(--highlight-color);
+            border-left: 3px solid var(--accent-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .subsection.is-selected {
+            background-color: var(--sentence-highlight);
+            box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.3);
+        }
+
+        .subsection-header {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .subsection-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-right: 12px;
+            min-width: 40px;
+        }
+
+        .subsection-title {
+            font-weight: 600;
             font-size: 0.95em;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        .subsection-text {
+            text-align: justify;
+            hyphens: auto;
         }
 
         .glossary-term {
@@ -459,24 +499,6 @@
             visibility: visible;
         }
 
-        .sentence {
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sentence.is-selected {
-            background-color: var(--sentence-highlight);
-            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
-        }
-
-        .sentence-label {
-            font-size: 0.7em;
-            vertical-align: super;
-            color: #b79a76;
-            margin-right: 0.2em;
-            user-select: none;
-        }
-
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
@@ -516,12 +538,20 @@
                 font-size: 1.8em;
             }
 
+            h2 {
+                font-size: 1.3em;
+            }
+
             #loadingIcon {
                 font-size: 36px;
             }
 
             .tooltip {
                 max-width: 240px;
+            }
+
+            .subsection {
+                padding: 12px 16px;
             }
         }
 
@@ -533,6 +563,10 @@
             h1 {
                 font-size: 1.5em;
                 letter-spacing: 1px;
+            }
+
+            h2 {
+                font-size: 1.1em;
             }
 
             .ornament {
@@ -547,6 +581,10 @@
             .tooltip {
                 max-width: 200px;
             }
+
+            .subsection {
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
@@ -557,50 +595,78 @@
     <div class="container">
         <div class="section-header">
             <div class="ornament">✦ ✧ ✦</div>
-            <h1>Doctrinal Foundation</h1>
+            <h1>Article Ⅺ: Of Amendments and Renewal</h1>
             <div class="ornament">✦ ✧ ✦</div>
         </div>
 
-        <!-- Article XI -->
-        <section id="article11" class="article">
-            <h2>Article Ⅺ: Of Amendments and Renewal</h2>
+        <section id="article11">
+            <h2>Of Amendments and Renewal</h2>
             
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅰ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">PETITION AND RATIFICATION</p>
+            <div class="subsection" data-lexicon-key="XI.1" data-section-text="§.I: Petition and Ratification">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅰ</span>
+                    <span class="subsection-title">Petition and Ratification</span>
                 </div>
-                <div style="margin-left: 20px;">
-                    <p>Either party may petition for revision, clarification, or repeal. All ratification rests with the Lord's authority. Upon ratification, both parties shall acknowledge acceptance in writing.</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅱ</span>
-                    <div>The <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> shall be reviewed at periodic intervals ordained by the Lord to ensure lasting harmony and stability.</div>
+                <div class="subsection-text">
+                    Either party may petition for revision, clarification, or repeal. All ratification rests with the Lord's authority. Upon ratification, both parties shall acknowledge acceptance in writing.
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅲ</span>
-                    <div>No amendment may contradict the Doctrinal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>. Any proposed change undermining <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>, <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> order, or mutual <span class="glossary-term">consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> shall be rejected.</div>
+            <div class="subsection" data-lexicon-key="XI.2" data-section-text="§.II: The Covenant shall be reviewed at periodic intervals ordained by the Lord.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅱ</span>
+                    <span class="subsection-text">
+                        The
+                        <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                        shall be reviewed at periodic intervals ordained by the Lord to ensure lasting harmony and stability.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅳ</span>
-                    <div>Significant amendments shall be recorded in a Codex of Amendments, noting nature of change, date enacted, rationale, and both parties' acknowledgment.</div>
+            <div class="subsection" data-lexicon-key="XI.3" data-section-text="§.III: No amendment may contradict the Doctrinal Foundation.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅲ</span>
+                    <span class="subsection-text">
+                        No amendment may contradict the Doctrinal
+                        <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>. Any proposed change undermining
+                        <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>,
+                        <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
+                        order, or mutual
+                        <span class="glossary-term">consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
+                        shall be rejected.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.V</span>
-                    <div>Should extensive revision be required, the Lord may declare <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> Renewal, wherein the entire document is reviewed, refined, and re-<span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.</div>
+            <div class="subsection" data-lexicon-key="XI.4" data-section-text="§.IV: Significant amendments shall be recorded in a Codex of Amendments.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅳ</span>
+                    <span class="subsection-text">
+                        Significant amendments shall be recorded in a Codex of Amendments, noting nature of change, date enacted, rationale, and both parties' acknowledgment.
+                    </span>
                 </div>
+            </div>
+
+            <div class="subsection" data-lexicon-key="XI.5" data-section-text="§.V: Should extensive revision be required, the Lord may declare Covenant Renewal.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅴ</span>
+                    <span class="subsection-text">
+                        Should extensive revision be required, the Lord may declare
+                        <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                        Renewal, wherein the entire document is reviewed, refined, and re-<span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="navigation-section" aria-label="Page navigation">
+            <div class="site-nav">
+                <a href="X.html" class="site-nav--secondary">
+                    ← Back to Article X
+                </a>
+                <a href="XII.html">
+                    Forward to Article XII →
+                </a>
             </div>
         </section>
     </div>
@@ -615,7 +681,7 @@
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
+                <div class="lexicon-panel-mode" id="lexiconModeLabel">Article Ⅺ: Of Amendments and Renewal</div>
             </div>
             <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">
                 ×
@@ -624,12 +690,10 @@
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent">
                 <p>
-                    The Invocation and Preamble call the Covenant into sacred awareness. Here, silence, witness,
-                    and sworn structure gather the Lord and the Faithful into a consecrated order.
+                    Article XI establishes the amendment framework: either party may petition for changes (revision, clarification, repeal), but all ratification rests with the Lord. Periodic reviews ensure harmony and stability. Critically, no amendment may contradict the Doctrinal Foundation—changes undermining hierarchy, consecrated order, or mutual consecration are rejected.
                 </p>
                 <p>
-                    These opening lines do not yet legislate duties in detail; they consecrate the atmosphere in which
-                    every later Article must be heard—hierarchy as sacred, command as rightful, obedience as offered devotion.
+                    The Article provides for institutional memory via the Codex of Amendments (recording nature, date, rationale, acknowledgments) and allows for comprehensive Covenant Renewal when extensive revision is required. This balances flexibility with stability, ensuring the Foundation remains inviolate while allowing adaptation.
                 </p>
             </div>
 
@@ -641,11 +705,6 @@
                 <h3>Terms in this section</h3>
                 <ul class="lexicon-term-list">
                     <li>
-                        <span class="lexicon-term-label">Faithful</span>
-                        <span class="lexicon-term-ref">[1]</span>
-                        – The devoted servant and obedient instrument within this sacred bond.
-                    </li>
-                    <li>
                         <span class="lexicon-term-label">Covenant</span>
                         <span class="lexicon-term-ref">[2]</span>
                         – A sacred, binding agreement between the Lord and the Faithful.
@@ -656,14 +715,14 @@
                         – The sacred ordering of authority and obedience.
                     </li>
                     <li>
-                        <span class="lexicon-term-label">Command</span>
-                        <span class="lexicon-term-ref">[4]</span>
-                        – An authoritative directive given by the Lord.
+                        <span class="lexicon-term-label">Consecrated</span>
+                        <span class="lexicon-term-ref">[6]</span>
+                        – Sacred blessing and binding force that seals this Covenant.
                     </li>
                     <li>
-                        <span class="lexicon-term-label">Obedience</span>
-                        <span class="lexicon-term-ref">[5]</span>
-                        – The willing submission and faithful execution of commands.
+                        <span class="lexicon-term-label">Foundation</span>
+                        <span class="lexicon-term-ref">[7]</span>
+                        – The three indivisible principles of the Covenant.
                     </li>
                 </ul>
             </div>
@@ -702,15 +761,15 @@
         var dynamicContent = document.getElementById('lexiconDynamicContent');
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
 
-        var sentenceExplanations = {
-            'I.1': 'This opening line establishes Sacred Silence as the first act of devotion. Before any word is spoken, the Faithful and the Lord acknowledge that what is about to be invoked is not casual speech but consecrated utterance.',
-            'I.2': 'This sentence places the Covenant within a cosmic frame—beneath the stars and upon the Earth—while naming the two parties and the sacred structure they enter. It declares that hierarchy, command, and obedience are not inventions of control, but elements made sacred within this bond.',
-            'I.3': 'This line purges what cannot coexist with a sacred bond: deceit, greed, and divided self. Word and spirit becoming one means that what is spoken in the Covenant must match inward intention.',
-            'I.4': 'This declares that the Covenant is not merely functional but iconic, meant to reflect a deeper, sanctified allegiance. The bond itself becomes a sign of devotion that points beyond both parties to the sacred pattern it imitates.',
-            'I.5': 'Hierarchy is framed as a reflection of the heavens rather than a human invention. Command flows downward through the Lord; obedience rises upward through the Faithful, forming a living circuit of will and response. The final clause warns that false oaths attack more than trust between persons; they violate the sacred order that undergirds all rightful bonds.'
+        var sectionExplanations = {
+            'XI.1': '§.I establishes petition and ratification procedures: either party may petition for revision, clarification, or repeal (bottom-up input allowed), but all ratification rests with the Lord\'s authority (top-down finalization). Upon ratification, both parties acknowledge acceptance in writing (creates record and mutual commitment).',
+            'XI.2': '§.II mandates periodic review at intervals ordained by the Lord. This ensures the Covenant remains relevant and harmonious over time rather than becoming ossified. The Lord controls timing.',
+            'XI.3': '§.III establishes the Foundation as inviolate: no amendment may contradict the Doctrinal Foundation. Any proposed change undermining hierarchy, consecrated order, or mutual consecration shall be rejected. This is the Covenant\'s constitutional limit—some things are beyond amendment.',
+            'XI.4': '§.IV creates institutional memory via the Codex of Amendments: significant amendments recorded with nature of change, date enacted, rationale, and both parties\' acknowledgment. This prevents disputes over what changed and why.',
+            'XI.5': '§.V provides for comprehensive Covenant Renewal: when extensive revision is required, the Lord may declare Covenant Renewal, wherein the entire document is reviewed, refined, and re-consecrated. This is a full reset/rededication process.'
         };
 
-        var currentlySelectedSentence = null;
+        var currentlySelectedSection = null;
 
         function setGlyphActiveState(isActive) {
             if (!glyphButton) return;
@@ -746,16 +805,16 @@
             }, 150);
         }
 
-        function renderSentenceExplanation(key, sentenceText) {
+        function renderSectionExplanation(key, sectionText) {
             if (!dynamicContent) return;
-            var explanation = sentenceExplanations[key];
+            var explanation = sectionExplanations[key];
             if (!explanation) {
                 renderOverview();
                 return;
             }
             dynamicContent.style.opacity = '0';
             setTimeout(function () {
-                var html = '<div class="lexicon-sentence-quote">“' + sentenceText + '”</div><p>' + explanation + '</p>';
+                var html = '<div class="lexicon-sentence-quote">“' + sectionText + '”</div><p>' + explanation + '</p>';
                 dynamicContent.innerHTML = html;
                 dynamicContent.style.opacity = '1';
             }, 150);
@@ -766,10 +825,10 @@
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
-                    if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                        renderSentenceExplanation(
-                            currentlySelectedSentence.dataset.lexiconKey,
-                            currentlySelectedSentence.dataset.sentenceText
+                    if (currentlySelectedSection && currentlySelectedSection.dataset.lexiconKey) {
+                        renderSectionExplanation(
+                            currentlySelectedSection.dataset.lexiconKey,
+                            currentlySelectedSection.dataset.sectionText
                         );
                     } else {
                         renderOverview();
@@ -789,24 +848,24 @@
             });
         }
 
-        var sentenceNodes = document.querySelectorAll('.sentence');
+        var subsectionNodes = document.querySelectorAll('.subsection');
 
-        function clearSentenceSelection() {
-            if (currentlySelectedSentence) {
-                currentlySelectedSentence.classList.remove('is-selected');
-                currentlySelectedSentence = null;
+        function clearSectionSelection() {
+            if (currentlySelectedSection) {
+                currentlySelectedSection.classList.remove('is-selected');
+                currentlySelectedSection = null;
                 setGlyphActiveState(false);
             }
         }
 
-        sentenceNodes.forEach(function (node) {
+        subsectionNodes.forEach(function (node) {
             node.addEventListener('click', function (event) {
                 event.stopPropagation();
-                if (currentlySelectedSentence === node) {
-                    clearSentenceSelection();
+                if (currentlySelectedSection === node) {
+                    clearSectionSelection();
                 } else {
-                    clearSentenceSelection();
-                    currentlySelectedSentence = node;
+                    clearSectionSelection();
+                    currentlySelectedSection = node;
                     node.classList.add('is-selected');
                     setGlyphActiveState(true);
                 }
@@ -819,11 +878,11 @@
                 if (tapLength < 300 && tapLength > 0) {
                     event.preventDefault();
                     event.stopPropagation();
-                    if (currentlySelectedSentence === node) {
-                        clearSentenceSelection();
+                    if (currentlySelectedSection === node) {
+                        clearSectionSelection();
                     } else {
-                        clearSentenceSelection();
-                        currentlySelectedSentence = node;
+                        clearSectionSelection();
+                        currentlySelectedSection = node;
                         node.classList.add('is-selected');
                         setGlyphActiveState(true);
                     }
@@ -833,20 +892,20 @@
         });
 
         document.addEventListener('click', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
         document.addEventListener('touchend', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
