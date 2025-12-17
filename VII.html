@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invocation and Preamble - Covenant</title>
+    <title>Article VII: Of Interpretation and Counsel - Covenant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
@@ -52,7 +52,8 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);            font-size: 48px;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
             color: #8b7355;
             z-index: 10001;
             animation: rotateGlyph 2s linear infinite;
@@ -127,16 +128,69 @@
             text-transform: uppercase;
         }
 
-        p {
-            margin-bottom: 18px;
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .subsection {
+            margin-bottom: 28px;
+            padding: 16px 20px;
+            background: var(--highlight-color);
+            border-left: 3px solid var(--accent-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .subsection.is-selected {
+            background-color: var(--sentence-highlight);
+            box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.3);
+        }
+
+        .subsection-header {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .subsection-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-right: 12px;
+            min-width: 40px;
+        }
+
+        .subsection-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        .subsection-text {
             text-align: justify;
             hyphens: auto;
         }
 
-        p.preamble {
-            font-style: italic;
-            color: #555;
-            font-size: 0.95em;
+        .subpart {
+            margin-bottom: 12px;
+        }
+
+        .subpart:last-child {
+            margin-bottom: 0;
+        }
+
+        .subpart-marker {
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-right: 8px;
         }
 
         .glossary-term {
@@ -459,24 +513,6 @@
             visibility: visible;
         }
 
-        .sentence {
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sentence.is-selected {
-            background-color: var(--sentence-highlight);
-            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
-        }
-
-        .sentence-label {
-            font-size: 0.7em;
-            vertical-align: super;
-            color: #b79a76;
-            margin-right: 0.2em;
-            user-select: none;
-        }
-
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
@@ -516,12 +552,20 @@
                 font-size: 1.8em;
             }
 
+            h2 {
+                font-size: 1.3em;
+            }
+
             #loadingIcon {
                 font-size: 36px;
             }
 
             .tooltip {
                 max-width: 240px;
+            }
+
+            .subsection {
+                padding: 12px 16px;
             }
         }
 
@@ -533,6 +577,10 @@
             h1 {
                 font-size: 1.5em;
                 letter-spacing: 1px;
+            }
+
+            h2 {
+                font-size: 1.1em;
             }
 
             .ornament {
@@ -547,6 +595,10 @@
             .tooltip {
                 max-width: 200px;
             }
+
+            .subsection {
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
@@ -557,52 +609,95 @@
     <div class="container">
         <div class="section-header">
             <div class="ornament">✦ ✧ ✦</div>
-            <h1>Doctrinal Foundation</h1>
+            <h1>Article Ⅶ: Of Interpretation and Counsel</h1>
             <div class="ornament">✦ ✧ ✦</div>
         </div>
 
-        <!-- Article VII -->
-        <section id="article7" class="article">
-            <h2>Article Ⅶ: Of Interpretation and Counsel</h2>
+        <section id="article7">
+            <h2>Of Interpretation and Counsel</h2>
             
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅰ</span>
-                    <div>Resolution shall be sought with justice and proper remembrance of station. Counsel rises upward from <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> to Lord; it flows not laterally nor descends unbidden.</div>
+            <div class="subsection" data-lexicon-key="VII.1" data-section-text="§.I: Resolution shall be sought with justice and proper remembrance of station.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅰ</span>
+                    <span class="subsection-text">
+                        Resolution shall be sought with justice and proper remembrance of station. Counsel rises upward from
+                        <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                        to Lord; it flows not laterally nor descends unbidden.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅱ</span>
-                    <div>Where perception falters or judgment grows uncertain, recourse may be had to this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s text, contemplation, sacred texts consonant with the <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>, or appointed witness if both parties consent.</div>
+            <div class="subsection" data-lexicon-key="VII.2" data-section-text="§.II: Where perception falters or judgment grows uncertain, recourse may be had to this Covenant's text, contemplation, sacred texts consonant with the Foundation, or appointed witness if both parties consent.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅱ</span>
+                    <span class="subsection-text">
+                        Where perception falters or judgment grows uncertain, recourse may be had to this
+                        <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s text, contemplation, sacred texts consonant with the
+                        <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>, or appointed witness if both parties consent.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅲ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">PRINCIPLES OF INTERPRETATION</p>
+            <div class="subsection" data-lexicon-key="VII.3" data-section-text="§.III: Principles of Interpretation">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅲ</span>
+                    <span class="subsection-title">Principles of Interpretation</span>
                 </div>
-                <div style="margin-left: 20px;">
-                    <p><strong>Ⓐ</strong> The Lord's intent guides understanding.</p>
-                    <p><strong>Ⓑ</strong> Where ambiguity yields multiple interpretations of equitable merit, let interpretation favor that which most harmoniously fulfills the intent of the Lord.</p>
-                    <p><strong>Ⓒ</strong> Literal reading serves as baseline, but context and purpose prevail where ambiguity exists.</p>
-                    <p><strong>Ⓓ</strong> All interpretations must align with the Doctrinal <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>'s principles.</p>
-                    <p><strong>Ⓔ</strong> Prior sanctioned interpretations guide present questions.</p>
-                    <p><strong>Ⓕ</strong> Where conflicts arise, the most recent explicit statement takes precedence.</p>
-                    <p><strong>Ⓖ</strong> Good faith effort shall weigh in mitigation of corrective judgment for misunderstandings.</p>
+                <div class="subsection-text">
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓐ</span>
+                        The Lord's intent guides understanding.
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓑ</span>
+                        Where ambiguity yields multiple interpretations of equitable merit, let interpretation favor that which most harmoniously fulfills the intent of the Lord.
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓒ</span>
+                        Literal reading serves as baseline, but context and purpose prevail where ambiguity exists.
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓓ</span>
+                        All interpretations must align with the Doctrinal
+                        <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>'s principles.
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓔ</span>
+                        Prior sanctioned interpretations guide present questions.
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓕ</span>
+                        Where conflicts arise, the most recent explicit statement takes precedence.
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓖ</span>
+                        Good faith effort shall weigh in mitigation of corrective judgment for misunderstandings.
+                    </div>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅳ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">DISPUTES OF FACT</p>
+            <div class="subsection" data-lexicon-key="VII.4" data-section-text="§.IV: Disputes of Fact">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅳ</span>
+                    <span class="subsection-title">Disputes of Fact</span>
                 </div>
-                <div style="margin-left: 20px;">
-                    <p>Where disagreement exists regarding whether a <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> was issued, completed, or what was specifically commanded, resolution proceeds with mutual recitation of facts and consultation of any recorded <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>.</p>
+                <div class="subsection-text">
+                    Where disagreement exists regarding whether a
+                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
+                    was issued, completed, or what was specifically commanded, resolution proceeds with mutual recitation of facts and consultation of any recorded
+                    <span class="glossary-term">commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>.
                 </div>
+            </div>
+        </section>
+
+        <section class="navigation-section" aria-label="Page navigation">
+            <div class="site-nav">
+                <a href="VI.html" class="site-nav--secondary">
+                    ← Back to Article VI
+                </a>
+                <a href="VIII.html">
+                    Forward to Article VIII →
+                </a>
             </div>
         </section>
     </div>
@@ -617,7 +712,7 @@
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
+                <div class="lexicon-panel-mode" id="lexiconModeLabel">Article Ⅶ: Of Interpretation and Counsel</div>
             </div>
             <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">
                 ×
@@ -626,12 +721,10 @@
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent">
                 <p>
-                    The Invocation and Preamble call the Covenant into sacred awareness. Here, silence, witness,
-                    and sworn structure gather the Lord and the Faithful into a consecrated order.
+                    Article VII establishes interpretive rules and dispute resolution procedures. It preserves hierarchy while providing mechanisms for clarity: counsel rises from Faithful to Lord, and interpretation prioritizes the Lord's intent while maintaining safeguards like good faith mitigation and consultation processes.
                 </p>
                 <p>
-                    These opening lines do not yet legislate duties in detail; they consecrate the atmosphere in which
-                    every later Article must be heard—hierarchy as sacred, command as rightful, obedience as offered devotion.
+                    The Article includes seven principles of interpretation (Lord's intent, harmonious fulfillment, context over literalism, alignment with Foundation, precedent, recency, and good faith mitigation) and procedures for factual disputes through mutual recitation and consultation of records.
                 </p>
             </div>
 
@@ -653,19 +746,14 @@
                         – A sacred, binding agreement between the Lord and the Faithful.
                     </li>
                     <li>
-                        <span class="lexicon-term-label">Hierarchy</span>
-                        <span class="lexicon-term-ref">[3]</span>
-                        – The sacred ordering of authority and obedience.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Command</span>
+                        <span class="lexicon-term-label">Commands</span>
                         <span class="lexicon-term-ref">[4]</span>
-                        – An authoritative directive given by the Lord.
+                        – Authoritative directives given by the Lord.
                     </li>
                     <li>
-                        <span class="lexicon-term-label">Obedience</span>
-                        <span class="lexicon-term-ref">[5]</span>
-                        – The willing submission and faithful execution of commands.
+                        <span class="lexicon-term-label">Foundation</span>
+                        <span class="lexicon-term-ref">[7]</span>
+                        – The three indivisible principles of the Covenant.
                     </li>
                 </ul>
             </div>
@@ -704,15 +792,14 @@
         var dynamicContent = document.getElementById('lexiconDynamicContent');
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
 
-        var sentenceExplanations = {
-            'I.1': 'This opening line establishes Sacred Silence as the first act of devotion. Before any word is spoken, the Faithful and the Lord acknowledge that what is about to be invoked is not casual speech but consecrated utterance.',
-            'I.2': 'This sentence places the Covenant within a cosmic frame—beneath the stars and upon the Earth—while naming the two parties and the sacred structure they enter. It declares that hierarchy, command, and obedience are not inventions of control, but elements made sacred within this bond.',
-            'I.3': 'This line purges what cannot coexist with a sacred bond: deceit, greed, and divided self. Word and spirit becoming one means that what is spoken in the Covenant must match inward intention.',
-            'I.4': 'This declares that the Covenant is not merely functional but iconic, meant to reflect a deeper, sanctified allegiance. The bond itself becomes a sign of devotion that points beyond both parties to the sacred pattern it imitates.',
-            'I.5': 'Hierarchy is framed as a reflection of the heavens rather than a human invention. Command flows downward through the Lord; obedience rises upward through the Faithful, forming a living circuit of will and response. The final clause warns that false oaths attack more than trust between persons; they violate the sacred order that undergirds all rightful bonds.'
+        var sectionExplanations = {
+            'VII.1': '§.I establishes directional flow for counsel and dispute resolution. Resolution must be sought with justice and remembrance of station. Critically, counsel rises upward from Faithful to Lord—it does not flow laterally (peer-to-peer) nor descend unbidden (Lord imposing unsolicited counsel on self). This preserves hierarchy while allowing the Faithful to raise concerns.',
+            'VII.2': '§.II provides resources for uncertainty: Covenant text (literal reference), contemplation (internal reflection), sacred texts consonant with the Foundation (external wisdom aligned with principles), or appointed witness if both parties consent (third-party mediation). This creates pathways for resolution without undermining hierarchy.',
+            'VII.3': '§.III establishes seven principles of interpretation: (Ⓐ) Lord\'s intent guides understanding—subjective purpose matters; (Ⓑ) where ambiguity yields equitable options, favor harmonious fulfillment of Lord\'s intent; (Ⓒ) literal reading is baseline, but context/purpose prevail in ambiguity; (Ⓓ) all interpretations must align with Doctrinal Foundation—prevents incoherent readings; (Ⓔ) prior sanctioned interpretations guide present questions—precedent matters; (Ⓕ) most recent explicit statement takes precedence in conflicts—allows updating; (Ⓖ) good faith effort mitigates corrective judgment for misunderstandings—protects sincere failures.',
+            'VII.4': '§.IV addresses disputes of fact (not interpretation). Where disagreement exists about whether a command was issued, completed, or what was commanded, resolution proceeds via mutual recitation of facts and consultation of recorded commands. This is factual reconstruction, not interpretive judgment.'
         };
 
-        var currentlySelectedSentence = null;
+        var currentlySelectedSection = null;
 
         function setGlyphActiveState(isActive) {
             if (!glyphButton) return;
@@ -748,16 +835,16 @@
             }, 150);
         }
 
-        function renderSentenceExplanation(key, sentenceText) {
+        function renderSectionExplanation(key, sectionText) {
             if (!dynamicContent) return;
-            var explanation = sentenceExplanations[key];
+            var explanation = sectionExplanations[key];
             if (!explanation) {
                 renderOverview();
                 return;
             }
             dynamicContent.style.opacity = '0';
             setTimeout(function () {
-                var html = '<div class="lexicon-sentence-quote">“' + sentenceText + '”</div><p>' + explanation + '</p>';
+                var html = '<div class="lexicon-sentence-quote">“' + sectionText + '”</div><p>' + explanation + '</p>';
                 dynamicContent.innerHTML = html;
                 dynamicContent.style.opacity = '1';
             }, 150);
@@ -768,10 +855,10 @@
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
-                    if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                        renderSentenceExplanation(
-                            currentlySelectedSentence.dataset.lexiconKey,
-                            currentlySelectedSentence.dataset.sentenceText
+                    if (currentlySelectedSection && currentlySelectedSection.dataset.lexiconKey) {
+                        renderSectionExplanation(
+                            currentlySelectedSection.dataset.lexiconKey,
+                            currentlySelectedSection.dataset.sectionText
                         );
                     } else {
                         renderOverview();
@@ -791,24 +878,24 @@
             });
         }
 
-        var sentenceNodes = document.querySelectorAll('.sentence');
+        var subsectionNodes = document.querySelectorAll('.subsection');
 
-        function clearSentenceSelection() {
-            if (currentlySelectedSentence) {
-                currentlySelectedSentence.classList.remove('is-selected');
-                currentlySelectedSentence = null;
+        function clearSectionSelection() {
+            if (currentlySelectedSection) {
+                currentlySelectedSection.classList.remove('is-selected');
+                currentlySelectedSection = null;
                 setGlyphActiveState(false);
             }
         }
 
-        sentenceNodes.forEach(function (node) {
+        subsectionNodes.forEach(function (node) {
             node.addEventListener('click', function (event) {
                 event.stopPropagation();
-                if (currentlySelectedSentence === node) {
-                    clearSentenceSelection();
+                if (currentlySelectedSection === node) {
+                    clearSectionSelection();
                 } else {
-                    clearSentenceSelection();
-                    currentlySelectedSentence = node;
+                    clearSectionSelection();
+                    currentlySelectedSection = node;
                     node.classList.add('is-selected');
                     setGlyphActiveState(true);
                 }
@@ -821,11 +908,11 @@
                 if (tapLength < 300 && tapLength > 0) {
                     event.preventDefault();
                     event.stopPropagation();
-                    if (currentlySelectedSentence === node) {
-                        clearSentenceSelection();
+                    if (currentlySelectedSection === node) {
+                        clearSectionSelection();
                     } else {
-                        clearSentenceSelection();
-                        currentlySelectedSentence = node;
+                        clearSectionSelection();
+                        currentlySelectedSection = node;
                         node.classList.add('is-selected');
                         setGlyphActiveState(true);
                     }
@@ -835,20 +922,20 @@
         });
 
         document.addEventListener('click', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
         document.addEventListener('touchend', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
