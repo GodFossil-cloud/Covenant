@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invocation and Preamble - Covenant</title>
+    <title>Article XII: Of Suspension, Succession, and Termination - Covenant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
@@ -52,7 +52,8 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);            font-size: 48px;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
             color: #8b7355;
             z-index: 10001;
             animation: rotateGlyph 2s linear infinite;
@@ -127,16 +128,55 @@
             text-transform: uppercase;
         }
 
-        p {
-            margin-bottom: 18px;
-            text-align: justify;
-            hyphens: auto;
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            text-align: center;
         }
 
-        p.preamble {
-            font-style: italic;
-            color: #555;
+        .subsection {
+            margin-bottom: 28px;
+            padding: 16px 20px;
+            background: var(--highlight-color);
+            border-left: 3px solid var(--accent-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .subsection.is-selected {
+            background-color: var(--sentence-highlight);
+            box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.3);
+        }
+
+        .subsection-header {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .subsection-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-right: 12px;
+            min-width: 40px;
+        }
+
+        .subsection-title {
+            font-weight: 600;
             font-size: 0.95em;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        .subsection-text {
+            text-align: justify;
+            hyphens: auto;
         }
 
         .glossary-term {
@@ -459,24 +499,6 @@
             visibility: visible;
         }
 
-        .sentence {
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sentence.is-selected {
-            background-color: var(--sentence-highlight);
-            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
-        }
-
-        .sentence-label {
-            font-size: 0.7em;
-            vertical-align: super;
-            color: #b79a76;
-            margin-right: 0.2em;
-            user-select: none;
-        }
-
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
@@ -516,12 +538,20 @@
                 font-size: 1.8em;
             }
 
+            h2 {
+                font-size: 1.3em;
+            }
+
             #loadingIcon {
                 font-size: 36px;
             }
 
             .tooltip {
                 max-width: 240px;
+            }
+
+            .subsection {
+                padding: 12px 16px;
             }
         }
 
@@ -533,6 +563,10 @@
             h1 {
                 font-size: 1.5em;
                 letter-spacing: 1px;
+            }
+
+            h2 {
+                font-size: 1.1em;
             }
 
             .ornament {
@@ -547,6 +581,10 @@
             .tooltip {
                 max-width: 200px;
             }
+
+            .subsection {
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
@@ -557,112 +595,154 @@
     <div class="container">
         <div class="section-header">
             <div class="ornament">✦ ✧ ✦</div>
-            <h1>Doctrinal Foundation</h1>
+            <h1>Article Ⅻ: Of Suspension, Succession, and Termination</h1>
             <div class="ornament">✦ ✧ ✦</div>
         </div>
 
-        <!-- Article XII -->
-        <section id="article12" class="article">
-            <h2>Article Ⅻ: Of Suspension, Succession, and Termination</h2>
+        <section id="article12">
+            <h2>Of Suspension, Succession, and Termination</h2>
             
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅰ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">EXTENDED ABSENCE</p>
+            <div class="subsection" data-lexicon-key="XII.1" data-section-text="§.I: Extended Absence">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅰ</span>
+                    <span class="subsection-title">Extended Absence</span>
                 </div>
-                <div style="margin-left: 20px;">
-                    <p>Should either party face necessity of extended absence (more than one week) wherein regular communion cannot be maintained, notice shall be given in advance where possible, stating expected duration and reason.</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅱ</span>
-                    <div>During absence, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> remains in force but observances are suspended with the Lord's express permission.</div>
+                <div class="subsection-text">
+                    Should either party face necessity of extended absence (more than one week) wherein regular communion cannot be maintained, notice shall be given in advance where possible, stating expected duration and reason.
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅲ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">TEMPORARY SUSPENSION BY MUTUAL ACCORD</p>
-                </div>
-                <div style="margin-left: 20px;">
-                    <p>Where both parties determine that temporary suspension would serve the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s preservation, the Lord may decree such suspension for a specified duration. During temporary suspension, daily and weekly observances are released, but the <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> of Article Ⅰ remains absolute and standing decrees remain in force.</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅳ</span>
-                    <div><span class="glossary-term">Commands<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> given before absence remain binding unless explicitly released by the Lord.</div>
+            <div class="subsection" data-lexicon-key="XII.2" data-section-text="§.II: During absence, the Covenant remains in force but observances are suspended with the Lord's express permission.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅱ</span>
+                    <span class="subsection-text">
+                        During absence, the
+                        <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                        remains in force but observances are suspended with the Lord's express permission.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.V</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">EMERGENCY ABSENCE</p>
+            <div class="subsection" data-lexicon-key="XII.3" data-section-text="§.III: Temporary Suspension by Mutual Accord">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅲ</span>
+                    <span class="subsection-title">Temporary Suspension by Mutual Accord</span>
                 </div>
-                <div style="margin-left: 20px;">
-                    <p>Should necessity demand immediate absence without opportunity for prior notice, the absent party shall send word at the earliest moment fate and means permit. Upon return, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> shall state: "My Lord, I have returned from absence. I reaffirm my devotion and stand ready to resume service."</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅷ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">SUCCESSION</p>
-                </div>
-                <div style="margin-left: 20px;">
-                    <p>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> binds exclusively to the Lord presently entering into it. No succession, inheritance, or transfer exists. Upon the Lord's cessation, this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> ends absolutely.</p>
+                <div class="subsection-text">
+                    Where both parties determine that temporary suspension would serve the
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s preservation, the Lord may decree such suspension for a specified duration. During temporary suspension, daily and weekly observances are released, but the
+                    <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span>
+                    of Article Ⅰ remains absolute and standing decrees remain in force.
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅸ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">INCAPACITY</p>
-                </div>
-                <div style="margin-left: 20px;">
-                    <p>Should either party fall into madness, grievous illness, or diminishment of wit such that the duties herein cannot be fulfilled, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> suspends until restoration is achieved. Should incapacity persist beyond six months without prospect of restoration, either party may invoke termination.</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅹ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">DORMANCY AND LAPSE</p>
-                </div>
-                <div style="margin-left: 20px;">
-                    <p>Should communion cease for thirty days without formal notice of absence or suspension, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> shall be deemed to have lapsed into dormancy. Either party may restore a dormant <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> by sending notice; should the other party consent within thirty days, restoration proceeds with mutual acknowledgment in writing.</p>
+            <div class="subsection" data-lexicon-key="XII.4" data-section-text="§.IV: Commands given before absence remain binding unless explicitly released by the Lord.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅳ</span>
+                    <span class="subsection-text">
+                        <span class="glossary-term">Commands<span class="glossary-ref">[4]</span><span class="tooltip">Authoritative directives given by the Lord.</span></span>
+                        given before absence remain binding unless explicitly released by the Lord.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅺ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">TERMINATION BY PETITION</p>
+            <div class="subsection" data-lexicon-key="XII.5" data-section-text="§.V: Emergency Absence">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅴ</span>
+                    <span class="subsection-title">Emergency Absence</span>
                 </div>
-                <div style="margin-left: 20px;">
-                    <p>The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> may petition for termination on grounds of persistent unremedied violation of the Lord's duties or circumstances making continued service impossible. The Lord may grant or deny such petition.</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅻ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">TERMINATION BY MUTUAL ACCORD</p>
-                </div>
-                <div style="margin-left: 20px;">
-                    <p>Where both parties determine that this <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s purpose has reached completion, termination may proceed by mutual accord. Such termination requires acknowledgment in writing from both parties.</p>
+                <div class="subsection-text">
+                    Should necessity demand immediate absence without opportunity for prior notice, the absent party shall send word at the earliest moment fate and means permit. Upon return, the
+                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                    shall state: "My Lord, I have returned from absence. I reaffirm my devotion and stand ready to resume service."
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.ⅩⅢ</span>
-                    <div>Upon termination under any provision herein, all <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span> obligations remain perpetually binding. What was <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> in bond remains veiled after dissolution.</div>
+            <div class="subsection" data-lexicon-key="XII.8" data-section-text="§.VIII: Succession">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅷ</span>
+                    <span class="subsection-title">Succession</span>
+                </div>
+                <div class="subsection-text">
+                    This
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    binds exclusively to the Lord presently entering into it. No succession, inheritance, or transfer exists. Upon the Lord's cessation, this
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    ends absolutely.
+                </div>
+            </div>
+
+            <div class="subsection" data-lexicon-key="XII.9" data-section-text="§.IX: Incapacity">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅸ</span>
+                    <span class="subsection-title">Incapacity</span>
+                </div>
+                <div class="subsection-text">
+                    Should either party fall into madness, grievous illness, or diminishment of wit such that the duties herein cannot be fulfilled, the
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    suspends until restoration is achieved. Should incapacity persist beyond six months without prospect of restoration, either party may invoke termination.
+                </div>
+            </div>
+
+            <div class="subsection" data-lexicon-key="XII.10" data-section-text="§.X: Dormancy and Lapse">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅹ</span>
+                    <span class="subsection-title">Dormancy and Lapse</span>
+                </div>
+                <div class="subsection-text">
+                    Should communion cease for thirty days without formal notice of absence or suspension, the
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    shall be deemed to have lapsed into dormancy. Either party may restore a dormant
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    by sending notice; should the other party consent within thirty days, restoration proceeds with mutual acknowledgment in writing.
+                </div>
+            </div>
+
+            <div class="subsection" data-lexicon-key="XII.11" data-section-text="§.XI: Termination by Petition">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅺ</span>
+                    <span class="subsection-title">Termination by Petition</span>
+                </div>
+                <div class="subsection-text">
+                    The
+                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                    may petition for termination on grounds of persistent unremedied violation of the Lord's duties or circumstances making continued service impossible. The Lord may grant or deny such petition.
+                </div>
+            </div>
+
+            <div class="subsection" data-lexicon-key="XII.12" data-section-text="§.XII: Termination by Mutual Accord">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅻ</span>
+                    <span class="subsection-title">Termination by Mutual Accord</span>
+                </div>
+                <div class="subsection-text">
+                    Where both parties determine that this
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>'s purpose has reached completion, termination may proceed by mutual accord. Such termination requires acknowledgment in writing from both parties.
+                </div>
+            </div>
+
+            <div class="subsection" data-lexicon-key="XII.13" data-section-text="§.XIII: Upon termination under any provision herein, all Sacred Silence obligations remain perpetually binding.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.ⅩⅢ</span>
+                    <span class="subsection-text">
+                        Upon termination under any provision herein, all
+                        <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span>
+                        obligations remain perpetually binding. What was
+                        <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
+                        in bond remains veiled after dissolution.
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="navigation-section" aria-label="Page navigation">
+            <div class="site-nav">
+                <a href="XI.html" class="site-nav--secondary">
+                    ← Back to Article XI
+                </a>
+                <a href="rituals.html">
+                    Forward to Rituals →
+                </a>
             </div>
         </section>
     </div>
@@ -677,7 +757,7 @@
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
+                <div class="lexicon-panel-mode" id="lexiconModeLabel">Article Ⅻ: Of Suspension, Succession, and Termination</div>
             </div>
             <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">
                 ×
@@ -686,12 +766,10 @@
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent">
                 <p>
-                    The Invocation and Preamble call the Covenant into sacred awareness. Here, silence, witness,
-                    and sworn structure gather the Lord and the Faithful into a consecrated order.
+                    Article XII governs the Covenant's end-of-life scenarios: suspension (extended/emergency absence, mutual accord), succession (none—Covenant is personal to this Lord), incapacity (suspends until restoration or 6-month termination trigger), dormancy (30 days no communion = dormant; restoration requires mutual consent), and termination (by petition, by mutual accord, or via succession/incapacity rules).
                 </p>
                 <p>
-                    These opening lines do not yet legislate duties in detail; they consecrate the atmosphere in which
-                    every later Article must be heard—hierarchy as sacred, command as rightful, obedience as offered devotion.
+                    Critically, §.XIII establishes perpetual Sacred Silence post-termination: what was consecrated in bond remains veiled after dissolution. The Covenant can end, but its confidentiality never does. This final provision ensures that even in dissolution, the sacred nature of what was shared remains protected forever.
                 </p>
             </div>
 
@@ -713,19 +791,19 @@
                         – A sacred, binding agreement between the Lord and the Faithful.
                     </li>
                     <li>
-                        <span class="lexicon-term-label">Hierarchy</span>
-                        <span class="lexicon-term-ref">[3]</span>
-                        – The sacred ordering of authority and obedience.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Command</span>
+                        <span class="lexicon-term-label">Commands</span>
                         <span class="lexicon-term-ref">[4]</span>
-                        – An authoritative directive given by the Lord.
+                        – Authoritative directives given by the Lord.
                     </li>
                     <li>
-                        <span class="lexicon-term-label">Obedience</span>
-                        <span class="lexicon-term-ref">[5]</span>
-                        – The willing submission and faithful execution of commands.
+                        <span class="lexicon-term-label">Consecrated</span>
+                        <span class="lexicon-term-ref">[6]</span>
+                        – Sacred blessing and binding force that seals this Covenant.
+                    </li>
+                    <li>
+                        <span class="lexicon-term-label">Sacred Silence</span>
+                        <span class="lexicon-term-ref">[8]</span>
+                        – The principle that all Covenant matters remain veiled from profane sight.
                     </li>
                 </ul>
             </div>
@@ -764,15 +842,21 @@
         var dynamicContent = document.getElementById('lexiconDynamicContent');
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
 
-        var sentenceExplanations = {
-            'I.1': 'This opening line establishes Sacred Silence as the first act of devotion. Before any word is spoken, the Faithful and the Lord acknowledge that what is about to be invoked is not casual speech but consecrated utterance.',
-            'I.2': 'This sentence places the Covenant within a cosmic frame—beneath the stars and upon the Earth—while naming the two parties and the sacred structure they enter. It declares that hierarchy, command, and obedience are not inventions of control, but elements made sacred within this bond.',
-            'I.3': 'This line purges what cannot coexist with a sacred bond: deceit, greed, and divided self. Word and spirit becoming one means that what is spoken in the Covenant must match inward intention.',
-            'I.4': 'This declares that the Covenant is not merely functional but iconic, meant to reflect a deeper, sanctified allegiance. The bond itself becomes a sign of devotion that points beyond both parties to the sacred pattern it imitates.',
-            'I.5': 'Hierarchy is framed as a reflection of the heavens rather than a human invention. Command flows downward through the Lord; obedience rises upward through the Faithful, forming a living circuit of will and response. The final clause warns that false oaths attack more than trust between persons; they violate the sacred order that undergirds all rightful bonds.'
+        var sectionExplanations = {
+            'XII.1': '§.I establishes extended absence protocol: more than one week where regular communion cannot be maintained requires notice (advance when possible) stating expected duration and reason. This prevents misinterpretation of prolonged silence.',
+            'XII.2': '§.II clarifies that during absence, the Covenant remains in force (the bond exists) but observances are suspended with the Lord\'s express permission (daily/weekly duties paused). The relationship endures but active service pauses.',
+            'XII.3': '§.III provides for temporary suspension by mutual accord: when both parties determine suspension would serve the Covenant\'s preservation (e.g., crisis, overwhelming life circumstances), the Lord may decree suspension for specified duration. During suspension: daily/weekly observances released, but Sacred Silence (Article I) remains absolute and standing decrees remain in force. This is a pressure valve that preserves the Covenant rather than breaking it.',
+            'XII.4': '§.IV establishes that commands given before absence remain binding unless explicitly released by the Lord. Absence doesn\'t create an automatic reset—standing orders persist.',
+            'XII.5': '§.V governs emergency absence: immediate necessity without prior notice. Absent party sends word at earliest moment. Upon return, Faithful states: "My Lord, I have returned from absence. I reaffirm my devotion and stand ready to resume service." This formal reaffirmation restores active service.',
+            'XII.8': '§.VIII (Succession) establishes that this Covenant binds exclusively to the Lord presently entering into it. No succession, inheritance, or transfer exists. Upon the Lord\'s cessation (death), this Covenant ends absolutely. The bond is personal and non-transferable.',
+            'XII.9': '§.IX (Incapacity) handles madness, grievous illness, or diminishment of wit such that duties cannot be fulfilled. Covenant suspends until restoration is achieved. If incapacity persists beyond 6 months without prospect of restoration, either party may invoke termination. This is humane—prevents permanent limbo.',
+            'XII.10': '§.X (Dormancy and Lapse) establishes that 30 days communion cessation without formal notice = dormant Covenant. Either party may restore dormant Covenant by sending notice; if other party consents within 30 days, restoration proceeds with mutual acknowledgment in writing. This is a formal reactivation process.',
+            'XII.11': '§.XI (Termination by Petition) allows Faithful to petition for termination on grounds of persistent unremedied violation of the Lord\'s duties or circumstances making continued service impossible. The Lord may grant or deny such petition. This gives Faithful an exit pathway when Lord fails duties.',
+            'XII.12': '§.XII (Termination by Mutual Accord) allows termination when both parties determine the Covenant\'s purpose has reached completion. Requires acknowledgment in writing from both parties. This is a dignified exit when the purpose has been fulfilled.',
+            'XII.13': '§.XIII establishes perpetual Sacred Silence post-termination: upon termination under any provision herein, all Sacred Silence obligations remain perpetually binding. What was consecrated in bond remains veiled after dissolution. This is the eternal seal—even if the Covenant ends, its confidentiality never does.'
         };
 
-        var currentlySelectedSentence = null;
+        var currentlySelectedSection = null;
 
         function setGlyphActiveState(isActive) {
             if (!glyphButton) return;
@@ -808,16 +892,16 @@
             }, 150);
         }
 
-        function renderSentenceExplanation(key, sentenceText) {
+        function renderSectionExplanation(key, sectionText) {
             if (!dynamicContent) return;
-            var explanation = sentenceExplanations[key];
+            var explanation = sectionExplanations[key];
             if (!explanation) {
                 renderOverview();
                 return;
             }
             dynamicContent.style.opacity = '0';
             setTimeout(function () {
-                var html = '<div class="lexicon-sentence-quote">“' + sentenceText + '”</div><p>' + explanation + '</p>';
+                var html = '<div class="lexicon-sentence-quote">“' + sectionText + '”</div><p>' + explanation + '</p>';
                 dynamicContent.innerHTML = html;
                 dynamicContent.style.opacity = '1';
             }, 150);
@@ -828,10 +912,10 @@
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
-                    if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                        renderSentenceExplanation(
-                            currentlySelectedSentence.dataset.lexiconKey,
-                            currentlySelectedSentence.dataset.sentenceText
+                    if (currentlySelectedSection && currentlySelectedSection.dataset.lexiconKey) {
+                        renderSectionExplanation(
+                            currentlySelectedSection.dataset.lexiconKey,
+                            currentlySelectedSection.dataset.sectionText
                         );
                     } else {
                         renderOverview();
@@ -851,24 +935,24 @@
             });
         }
 
-        var sentenceNodes = document.querySelectorAll('.sentence');
+        var subsectionNodes = document.querySelectorAll('.subsection');
 
-        function clearSentenceSelection() {
-            if (currentlySelectedSentence) {
-                currentlySelectedSentence.classList.remove('is-selected');
-                currentlySelectedSentence = null;
+        function clearSectionSelection() {
+            if (currentlySelectedSection) {
+                currentlySelectedSection.classList.remove('is-selected');
+                currentlySelectedSection = null;
                 setGlyphActiveState(false);
             }
         }
 
-        sentenceNodes.forEach(function (node) {
+        subsectionNodes.forEach(function (node) {
             node.addEventListener('click', function (event) {
                 event.stopPropagation();
-                if (currentlySelectedSentence === node) {
-                    clearSentenceSelection();
+                if (currentlySelectedSection === node) {
+                    clearSectionSelection();
                 } else {
-                    clearSentenceSelection();
-                    currentlySelectedSentence = node;
+                    clearSectionSelection();
+                    currentlySelectedSection = node;
                     node.classList.add('is-selected');
                     setGlyphActiveState(true);
                 }
@@ -881,11 +965,11 @@
                 if (tapLength < 300 && tapLength > 0) {
                     event.preventDefault();
                     event.stopPropagation();
-                    if (currentlySelectedSentence === node) {
-                        clearSentenceSelection();
+                    if (currentlySelectedSection === node) {
+                        clearSectionSelection();
                     } else {
-                        clearSentenceSelection();
-                        currentlySelectedSentence = node;
+                        clearSectionSelection();
+                        currentlySelectedSection = node;
                         node.classList.add('is-selected');
                         setGlyphActiveState(true);
                     }
@@ -895,20 +979,20 @@
         });
 
         document.addEventListener('click', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
         document.addEventListener('touchend', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
