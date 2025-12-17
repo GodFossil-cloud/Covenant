@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invocation and Preamble - Covenant</title>
+    <title>Article IX: Of Appeals and Resolution - Covenant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
@@ -52,7 +52,8 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);            font-size: 48px;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
             color: #8b7355;
             z-index: 10001;
             animation: rotateGlyph 2s linear infinite;
@@ -127,16 +128,69 @@
             text-transform: uppercase;
         }
 
-        p {
-            margin-bottom: 18px;
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .subsection {
+            margin-bottom: 28px;
+            padding: 16px 20px;
+            background: var(--highlight-color);
+            border-left: 3px solid var(--accent-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .subsection.is-selected {
+            background-color: var(--sentence-highlight);
+            box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.3);
+        }
+
+        .subsection-header {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .subsection-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-right: 12px;
+            min-width: 40px;
+        }
+
+        .subsection-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        .subsection-text {
             text-align: justify;
             hyphens: auto;
         }
 
-        p.preamble {
-            font-style: italic;
-            color: #555;
-            font-size: 0.95em;
+        .subpart {
+            margin-bottom: 12px;
+        }
+
+        .subpart:last-child {
+            margin-bottom: 0;
+        }
+
+        .subpart-marker {
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-right: 8px;
         }
 
         .glossary-term {
@@ -459,24 +513,6 @@
             visibility: visible;
         }
 
-        .sentence {
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sentence.is-selected {
-            background-color: var(--sentence-highlight);
-            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
-        }
-
-        .sentence-label {
-            font-size: 0.7em;
-            vertical-align: super;
-            color: #b79a76;
-            margin-right: 0.2em;
-            user-select: none;
-        }
-
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
@@ -516,12 +552,20 @@
                 font-size: 1.8em;
             }
 
+            h2 {
+                font-size: 1.3em;
+            }
+
             #loadingIcon {
                 font-size: 36px;
             }
 
             .tooltip {
                 max-width: 240px;
+            }
+
+            .subsection {
+                padding: 12px 16px;
             }
         }
 
@@ -533,6 +577,10 @@
             h1 {
                 font-size: 1.5em;
                 letter-spacing: 1px;
+            }
+
+            h2 {
+                font-size: 1.1em;
             }
 
             .ornament {
@@ -547,6 +595,10 @@
             .tooltip {
                 max-width: 200px;
             }
+
+            .subsection {
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
@@ -557,38 +609,61 @@
     <div class="container">
         <div class="section-header">
             <div class="ornament">✦ ✧ ✦</div>
-            <h1>Doctrinal Foundation</h1>
+            <h1>Article Ⅸ: Of Appeals and Resolution</h1>
             <div class="ornament">✦ ✧ ✦</div>
         </div>
 
-        <!-- Article IX -->
-        <section id="article9" class="article">
-            <h2>Article Ⅸ: Of Appeals and Resolution</h2>
+        <section id="article9">
+            <h2>Of Appeals and Resolution</h2>
             
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅰ</span>
-                    <div>All disputes shall be addressed promptly ere discord take root.</div>
+            <div class="subsection" data-lexicon-key="IX.1" data-section-text="§.I: All disputes shall be addressed promptly ere discord take root.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅰ</span>
+                    <span class="subsection-text">
+                        All disputes shall be addressed promptly ere discord take root.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅱ</span>
-                    <div>The Lord holds final authority in interpretation and arbitration. His determinations stand unless mercy or reflection cause Him to revise them.</div>
+            <div class="subsection" data-lexicon-key="IX.2" data-section-text="§.II: The Lord holds final authority in interpretation and arbitration.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅱ</span>
+                    <span class="subsection-text">
+                        The Lord holds final authority in interpretation and arbitration. His determinations stand unless mercy or reflection cause Him to revise them.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅲ</span>
-                    <p style="font-weight: 600; margin-bottom: 10px;">FORMAL APPEALS PROCESS</p>
+            <div class="subsection" data-lexicon-key="IX.3" data-section-text="§.III: Formal Appeals Process">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅲ</span>
+                    <span class="subsection-title">Formal Appeals Process</span>
                 </div>
-                <div style="margin-left: 20px;">
-                    <p><strong>Ⓐ</strong> Appeals shall be concise and composed, opening with "This is a petition for reconsideration, not defiance."</p>
-                    <p><strong>Ⓑ</strong> Permissible Grounds: Misinterpretation, impossibility, conflict of decrees, unforeseen consequence. Not permitted: preference, reluctance, discomfort.</p>
-                    <p><strong>Ⓒ</strong> The Lord's judgment upon an appeal ends the matter with absolute finality. Re-arguing constitutes defiant dissent.</p>
+                <div class="subsection-text">
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓐ</span>
+                        Appeals shall be concise and composed, opening with “This is a petition for reconsideration, not defiance.”
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓑ</span>
+                        Permissible Grounds: Misinterpretation, impossibility, conflict of decrees, unforeseen consequence. Not permitted: preference, reluctance, discomfort.
+                    </div>
+                    <div class="subpart">
+                        <span class="subpart-marker">Ⓒ</span>
+                        The Lord's judgment upon an appeal ends the matter with absolute finality. Re-arguing constitutes defiant dissent.
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <section class="navigation-section" aria-label="Page navigation">
+            <div class="site-nav">
+                <a href="VIII.html" class="site-nav--secondary">
+                    ← Back to Article VIII
+                </a>
+                <a href="X.html">
+                    Forward to Article X →
+                </a>
             </div>
         </section>
     </div>
@@ -603,7 +678,7 @@
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
+                <div class="lexicon-panel-mode" id="lexiconModeLabel">Article Ⅸ: Of Appeals and Resolution</div>
             </div>
             <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">
                 ×
@@ -612,12 +687,10 @@
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent">
                 <p>
-                    The Invocation and Preamble call the Covenant into sacred awareness. Here, silence, witness,
-                    and sworn structure gather the Lord and the Faithful into a consecrated order.
+                    Article IX establishes the appeals and dispute resolution framework. It mandates prompt dispute resolution to prevent discord from festering, affirms the Lord's final interpretive and arbitrative authority (subject to His own mercy or reflection), and provides a formal appeals process with specific requirements and boundaries.
                 </p>
                 <p>
-                    These opening lines do not yet legislate duties in detail; they consecrate the atmosphere in which
-                    every later Article must be heard—hierarchy as sacred, command as rightful, obedience as offered devotion.
+                    The formal appeals process requires specific language (“petition for reconsideration, not defiance”), permits only objective grounds (misinterpretation, impossibility, conflict of decrees, unforeseen consequence), and excludes subjective grounds (preference, reluctance, discomfort). Once the Lord judges an appeal, the matter ends with absolute finality—re-arguing becomes defiant dissent.
                 </p>
             </div>
 
@@ -627,33 +700,7 @@
 
             <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
                 <h3>Terms in this section</h3>
-                <ul class="lexicon-term-list">
-                    <li>
-                        <span class="lexicon-term-label">Faithful</span>
-                        <span class="lexicon-term-ref">[1]</span>
-                        – The devoted servant and obedient instrument within this sacred bond.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Covenant</span>
-                        <span class="lexicon-term-ref">[2]</span>
-                        – A sacred, binding agreement between the Lord and the Faithful.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Hierarchy</span>
-                        <span class="lexicon-term-ref">[3]</span>
-                        – The sacred ordering of authority and obedience.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Command</span>
-                        <span class="lexicon-term-ref">[4]</span>
-                        – An authoritative directive given by the Lord.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Obedience</span>
-                        <span class="lexicon-term-ref">[5]</span>
-                        – The willing submission and faithful execution of commands.
-                    </li>
-                </ul>
+                <p style="color: #a8a8a8; font-size: 0.9rem; margin-top: 0.5rem;">No glossary terms are used in this Article.</p>
             </div>
         </div>
     </div>
@@ -690,15 +737,13 @@
         var dynamicContent = document.getElementById('lexiconDynamicContent');
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
 
-        var sentenceExplanations = {
-            'I.1': 'This opening line establishes Sacred Silence as the first act of devotion. Before any word is spoken, the Faithful and the Lord acknowledge that what is about to be invoked is not casual speech but consecrated utterance.',
-            'I.2': 'This sentence places the Covenant within a cosmic frame—beneath the stars and upon the Earth—while naming the two parties and the sacred structure they enter. It declares that hierarchy, command, and obedience are not inventions of control, but elements made sacred within this bond.',
-            'I.3': 'This line purges what cannot coexist with a sacred bond: deceit, greed, and divided self. Word and spirit becoming one means that what is spoken in the Covenant must match inward intention.',
-            'I.4': 'This declares that the Covenant is not merely functional but iconic, meant to reflect a deeper, sanctified allegiance. The bond itself becomes a sign of devotion that points beyond both parties to the sacred pattern it imitates.',
-            'I.5': 'Hierarchy is framed as a reflection of the heavens rather than a human invention. Command flows downward through the Lord; obedience rises upward through the Faithful, forming a living circuit of will and response. The final clause warns that false oaths attack more than trust between persons; they violate the sacred order that undergirds all rightful bonds.'
+        var sectionExplanations = {
+            'IX.1': '§.I mandates promptness: all disputes shall be addressed promptly ere discord take root. This prevents festering resentment or confusion from compounding. Speed matters—don\'t let issues linger.',
+            'IX.2': '§.II affirms the Lord\'s final authority in interpretation and arbitration. His determinations stand unless mercy or reflection cause Him to revise them. This preserves hierarchy while allowing the Lord to change His mind—it\'s not capriciousness but sovereign prerogative.',
+            'IX.3': '§.III establishes the formal appeals process with three rules: (Ⓐ) appeals must be concise and composed, opening with "This is a petition for reconsideration, not defiance"—this frames appeals as respectful, not rebellious; (Ⓑ) permissible grounds are objective (misinterpretation, impossibility, conflict of decrees, unforeseen consequence), not subjective (preference, reluctance, discomfort)—this prevents appeals from becoming mere complaints; (Ⓒ) the Lord\'s judgment upon an appeal ends the matter with absolute finality, re-arguing becomes defiant dissent—this enforces closure and prevents endless litigation.'
         };
 
-        var currentlySelectedSentence = null;
+        var currentlySelectedSection = null;
 
         function setGlyphActiveState(isActive) {
             if (!glyphButton) return;
@@ -734,16 +779,16 @@
             }, 150);
         }
 
-        function renderSentenceExplanation(key, sentenceText) {
+        function renderSectionExplanation(key, sectionText) {
             if (!dynamicContent) return;
-            var explanation = sentenceExplanations[key];
+            var explanation = sectionExplanations[key];
             if (!explanation) {
                 renderOverview();
                 return;
             }
             dynamicContent.style.opacity = '0';
             setTimeout(function () {
-                var html = '<div class="lexicon-sentence-quote">“' + sentenceText + '”</div><p>' + explanation + '</p>';
+                var html = '<div class="lexicon-sentence-quote">“' + sectionText + '”</div><p>' + explanation + '</p>';
                 dynamicContent.innerHTML = html;
                 dynamicContent.style.opacity = '1';
             }, 150);
@@ -754,10 +799,10 @@
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
-                    if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                        renderSentenceExplanation(
-                            currentlySelectedSentence.dataset.lexiconKey,
-                            currentlySelectedSentence.dataset.sentenceText
+                    if (currentlySelectedSection && currentlySelectedSection.dataset.lexiconKey) {
+                        renderSectionExplanation(
+                            currentlySelectedSection.dataset.lexiconKey,
+                            currentlySelectedSection.dataset.sectionText
                         );
                     } else {
                         renderOverview();
@@ -777,24 +822,24 @@
             });
         }
 
-        var sentenceNodes = document.querySelectorAll('.sentence');
+        var subsectionNodes = document.querySelectorAll('.subsection');
 
-        function clearSentenceSelection() {
-            if (currentlySelectedSentence) {
-                currentlySelectedSentence.classList.remove('is-selected');
-                currentlySelectedSentence = null;
+        function clearSectionSelection() {
+            if (currentlySelectedSection) {
+                currentlySelectedSection.classList.remove('is-selected');
+                currentlySelectedSection = null;
                 setGlyphActiveState(false);
             }
         }
 
-        sentenceNodes.forEach(function (node) {
+        subsectionNodes.forEach(function (node) {
             node.addEventListener('click', function (event) {
                 event.stopPropagation();
-                if (currentlySelectedSentence === node) {
-                    clearSentenceSelection();
+                if (currentlySelectedSection === node) {
+                    clearSectionSelection();
                 } else {
-                    clearSentenceSelection();
-                    currentlySelectedSentence = node;
+                    clearSectionSelection();
+                    currentlySelectedSection = node;
                     node.classList.add('is-selected');
                     setGlyphActiveState(true);
                 }
@@ -807,11 +852,11 @@
                 if (tapLength < 300 && tapLength > 0) {
                     event.preventDefault();
                     event.stopPropagation();
-                    if (currentlySelectedSentence === node) {
-                        clearSentenceSelection();
+                    if (currentlySelectedSection === node) {
+                        clearSectionSelection();
                     } else {
-                        clearSentenceSelection();
-                        currentlySelectedSentence = node;
+                        clearSectionSelection();
+                        currentlySelectedSection = node;
                         node.classList.add('is-selected');
                         setGlyphActiveState(true);
                     }
@@ -821,20 +866,20 @@
         });
 
         document.addEventListener('click', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
         document.addEventListener('touchend', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
