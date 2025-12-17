@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invocation and Preamble - Covenant</title>
+    <title>Article V: Of Interdependence and Mutual Consecration - Covenant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
@@ -52,7 +52,8 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);            font-size: 48px;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
             color: #8b7355;
             z-index: 10001;
             animation: rotateGlyph 2s linear infinite;
@@ -127,16 +128,46 @@
             text-transform: uppercase;
         }
 
-        p {
-            margin-bottom: 18px;
-            text-align: justify;
-            hyphens: auto;
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            text-align: center;
         }
 
-        p.preamble {
-            font-style: italic;
-            color: #555;
-            font-size: 0.95em;
+        .subsection {
+            margin-bottom: 28px;
+            padding: 16px 20px;
+            background: var(--highlight-color);
+            border-left: 3px solid var(--accent-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .subsection.is-selected {
+            background-color: var(--sentence-highlight);
+            box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.3);
+        }
+
+        .subsection-header {
+            display: flex;
+            align-items: baseline;
+        }
+
+        .subsection-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-right: 12px;
+            min-width: 40px;
+        }
+
+        .subsection-text {
+            text-align: justify;
+            hyphens: auto;
         }
 
         .glossary-term {
@@ -459,24 +490,6 @@
             visibility: visible;
         }
 
-        .sentence {
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sentence.is-selected {
-            background-color: var(--sentence-highlight);
-            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
-        }
-
-        .sentence-label {
-            font-size: 0.7em;
-            vertical-align: super;
-            color: #b79a76;
-            margin-right: 0.2em;
-            user-select: none;
-        }
-
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
@@ -516,12 +529,20 @@
                 font-size: 1.8em;
             }
 
+            h2 {
+                font-size: 1.3em;
+            }
+
             #loadingIcon {
                 font-size: 36px;
             }
 
             .tooltip {
                 max-width: 240px;
+            }
+
+            .subsection {
+                padding: 12px 16px;
             }
         }
 
@@ -533,6 +554,10 @@
             h1 {
                 font-size: 1.5em;
                 letter-spacing: 1px;
+            }
+
+            h2 {
+                font-size: 1.1em;
             }
 
             .ornament {
@@ -547,6 +572,10 @@
             .tooltip {
                 max-width: 200px;
             }
+
+            .subsection {
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
@@ -557,54 +586,104 @@
     <div class="container">
         <div class="section-header">
             <div class="ornament">✦ ✧ ✦</div>
-            <h1>Doctrinal Foundation</h1>
+            <h1>Article Ⅴ: Of Interdependence and Mutual Consecration</h1>
             <div class="ornament">✦ ✧ ✦</div>
         </div>
 
-        <!-- Article V -->
-        <section id="article5" class="article">
-            <h2>Article Ⅴ: Of Interdependence and Mutual <span class="glossary-term">Consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span></h2>
+        <section id="article5">
+            <h2>Of Interdependence and Mutual <span class="glossary-term">Consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span></h2>
             
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅰ</span>
-                    <div>This <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> establishes binding interdependence whereby each party becomes essential to the other's purpose. The Lord's authority is made manifest through the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>; the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> finds meaning through the Lord's righteous <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>.</div>
+            <div class="subsection" data-lexicon-key="V.1" data-section-text="§.I: This Covenant establishes binding interdependence whereby each party becomes essential to the other's purpose.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅰ</span>
+                    <span class="subsection-text">
+                        This
+                        <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                        establishes binding interdependence whereby each party becomes essential to the other's purpose. The Lord's authority is made manifest through the
+                        <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s
+                        <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>; the
+                        <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>'s
+                        <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>
+                        finds meaning through the Lord's righteous
+                        <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅱ</span>
-                    <div>The bond is reciprocal in function though asymmetric in rank. Duty flows both ways; station does not.</div>
+            <div class="subsection" data-lexicon-key="V.2" data-section-text="§.II: The bond is reciprocal in function though asymmetric in rank. Duty flows both ways; station does not.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅱ</span>
+                    <span class="subsection-text">
+                        The bond is reciprocal in function though asymmetric in rank. Duty flows both ways; station does not.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅲ</span>
-                    <div>The Lord is <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> to guide with wisdom, uphold order with justice, and preserve the <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>. The <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> is <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span> to serve with devotion, receive instruction with humility, and enact the Lord's will with precision.</div>
+            <div class="subsection" data-lexicon-key="V.3" data-section-text="§.III: The Lord is consecrated to guide with wisdom, uphold order with justice, and preserve the consecrated hierarchy.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅲ</span>
+                    <span class="subsection-text">
+                        The Lord is
+                        <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
+                        to guide with wisdom, uphold order with justice, and preserve the
+                        <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
+                        <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>. The
+                        <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                        is
+                        <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
+                        to serve with devotion, receive instruction with humility, and enact the Lord's will with precision.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅳ</span>
-                    <div>Each becomes the necessary counterpart of the other: the Lord without the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> lacks means to enact what wisdom conceives; the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> without the Lord wanders without direction.</div>
+            <div class="subsection" data-lexicon-key="V.4" data-section-text="§.IV: Each becomes the necessary counterpart of the other: the Lord without the Faithful lacks means to enact what wisdom conceives; the Faithful without the Lord wanders without direction.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅳ</span>
+                    <span class="subsection-text">
+                        Each becomes the necessary counterpart of the other: the Lord without the
+                        <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                        lacks means to enact what wisdom conceives; the
+                        <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                        without the Lord wanders without direction.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅴ</span>
-                    <div>Let none mistake shared devotion for equality of station, nor interdependence for dilution of <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>. The order remains inviolate even as the bond strengthens both.</div>
+            <div class="subsection" data-lexicon-key="V.5" data-section-text="§.V: Let none mistake shared devotion for equality of station, nor interdependence for dilution of hierarchy.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅴ</span>
+                    <span class="subsection-text">
+                        Let none mistake shared devotion for equality of station, nor interdependence for dilution of
+                        <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>. The order remains inviolate even as the bond strengthens both.
+                    </span>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-heading">
-                    <span class="section-num">§.Ⅵ</span>
-                    <div>Through this mutual <span class="glossary-term">consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>, the <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span> transcends mere words upon parchment and becomes a living flame—continuously fed by righteous conduct, sanctified through devoted service, and made eternal through daily renewal. This flame burns brightest when both tend it faithfully: the Lord through wisdom and care, the <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span> through <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> and devotion.</div>
+            <div class="subsection" data-lexicon-key="V.6" data-section-text="§.VI: Through mutual consecration, the Covenant transcends mere words upon parchment and becomes a living flame.">
+                <div class="subsection-header">
+                    <span class="subsection-num">§.Ⅵ</span>
+                    <span class="subsection-text">
+                        Through this mutual
+                        <span class="glossary-term">consecration<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>, the
+                        <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                        transcends mere words upon parchment and becomes a living flame—continuously fed by righteous conduct, sanctified through devoted service, and made eternal through daily renewal. This flame burns brightest when both tend it faithfully: the Lord through wisdom and care, the
+                        <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                        through
+                        <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>
+                        and devotion.
+                    </span>
                 </div>
+            </div>
+        </section>
+
+        <section class="navigation-section" aria-label="Page navigation">
+            <div class="site-nav">
+                <a href="IV.html" class="site-nav--secondary">
+                    ← Back to Article IV
+                </a>
+                <a href="VI.html">
+                    Forward to Article VI →
+                </a>
             </div>
         </section>
     </div>
@@ -619,7 +698,7 @@
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
+                <div class="lexicon-panel-mode" id="lexiconModeLabel">Article Ⅴ: Of Interdependence and Mutual Consecration</div>
             </div>
             <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">
                 ×
@@ -628,12 +707,10 @@
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent">
                 <p>
-                    The Invocation and Preamble call the Covenant into sacred awareness. Here, silence, witness,
-                    and sworn structure gather the Lord and the Faithful into a consecrated order.
+                    Article V establishes the philosophical heart of the Covenant: mutual interdependence within maintained hierarchy. This Article argues that the bond is reciprocal in function while remaining asymmetric in rank—both parties need each other, yet station is not equalized.
                 </p>
                 <p>
-                    These opening lines do not yet legislate duties in detail; they consecrate the atmosphere in which
-                    every later Article must be heard—hierarchy as sacred, command as rightful, obedience as offered devotion.
+                    The Article frames the Covenant as a "living flame" requiring continuous tending by both parties. Through mutual consecration, Lord and Faithful become necessary counterparts: wisdom finds expression through obedience, obedience finds meaning through righteous command. This interdependence strengthens rather than dilutes the sacred order.
                 </p>
             </div>
 
@@ -668,6 +745,11 @@
                         <span class="lexicon-term-label">Obedience</span>
                         <span class="lexicon-term-ref">[5]</span>
                         – The willing submission and faithful execution of commands.
+                    </li>
+                    <li>
+                        <span class="lexicon-term-label">Consecrated</span>
+                        <span class="lexicon-term-ref">[6]</span>
+                        – Sacred blessing and binding force that seals this Covenant.
                     </li>
                 </ul>
             </div>
@@ -706,15 +788,16 @@
         var dynamicContent = document.getElementById('lexiconDynamicContent');
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
 
-        var sentenceExplanations = {
-            'I.1': 'This opening line establishes Sacred Silence as the first act of devotion. Before any word is spoken, the Faithful and the Lord acknowledge that what is about to be invoked is not casual speech but consecrated utterance.',
-            'I.2': 'This sentence places the Covenant within a cosmic frame—beneath the stars and upon the Earth—while naming the two parties and the sacred structure they enter. It declares that hierarchy, command, and obedience are not inventions of control, but elements made sacred within this bond.',
-            'I.3': 'This line purges what cannot coexist with a sacred bond: deceit, greed, and divided self. Word and spirit becoming one means that what is spoken in the Covenant must match inward intention.',
-            'I.4': 'This declares that the Covenant is not merely functional but iconic, meant to reflect a deeper, sanctified allegiance. The bond itself becomes a sign of devotion that points beyond both parties to the sacred pattern it imitates.',
-            'I.5': 'Hierarchy is framed as a reflection of the heavens rather than a human invention. Command flows downward through the Lord; obedience rises upward through the Faithful, forming a living circuit of will and response. The final clause warns that false oaths attack more than trust between persons; they violate the sacred order that undergirds all rightful bonds.'
+        var sectionExplanations = {
+            'V.1': '§.I establishes binding interdependence. Each party becomes essential to the other\'s purpose. The Lord\'s authority manifests through the Faithful\'s obedience; the Faithful\'s obedience finds meaning through the Lord\'s righteous command. This is mutual necessity, not mutual equality.',
+            'V.2': '§.II clarifies the structure: reciprocal in function, asymmetric in rank. Duty flows both ways—each has obligations to the other. But station does not flow both ways—hierarchy remains fixed. Interdependence does not imply equality.',
+            'V.3': '§.III describes mutual consecration. The Lord is consecrated to guide, uphold justice, and preserve hierarchy. The Faithful is consecrated to serve, receive instruction, and enact will. Both are bound by sacred purpose within their respective roles.',
+            'V.4': '§.IV frames necessity. The Lord without the Faithful lacks means to enact wisdom. The Faithful without the Lord wanders without direction. Each completes the other functionally, though not in rank.',
+            'V.5': '§.V warns against misinterpretation. Shared devotion is not equality of station. Interdependence is not dilution of hierarchy. The order remains inviolate even as the bond strengthens both. This prevents the bond from collapsing into mere egalitarian partnership.',
+            'V.6': '§.VI elevates the Covenant to a living flame. Through mutual consecration, the bond transcends static text and becomes dynamic, continuously fed by righteous conduct and devoted service. Both tend it: the Lord through wisdom and care, the Faithful through obedience and devotion. Daily renewal makes it eternal.'
         };
 
-        var currentlySelectedSentence = null;
+        var currentlySelectedSection = null;
 
         function setGlyphActiveState(isActive) {
             if (!glyphButton) return;
@@ -750,16 +833,16 @@
             }, 150);
         }
 
-        function renderSentenceExplanation(key, sentenceText) {
+        function renderSectionExplanation(key, sectionText) {
             if (!dynamicContent) return;
-            var explanation = sentenceExplanations[key];
+            var explanation = sectionExplanations[key];
             if (!explanation) {
                 renderOverview();
                 return;
             }
             dynamicContent.style.opacity = '0';
             setTimeout(function () {
-                var html = '<div class="lexicon-sentence-quote">“' + sentenceText + '”</div><p>' + explanation + '</p>';
+                var html = '<div class="lexicon-sentence-quote">“' + sectionText + '”</div><p>' + explanation + '</p>';
                 dynamicContent.innerHTML = html;
                 dynamicContent.style.opacity = '1';
             }, 150);
@@ -770,10 +853,10 @@
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
-                    if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                        renderSentenceExplanation(
-                            currentlySelectedSentence.dataset.lexiconKey,
-                            currentlySelectedSentence.dataset.sentenceText
+                    if (currentlySelectedSection && currentlySelectedSection.dataset.lexiconKey) {
+                        renderSectionExplanation(
+                            currentlySelectedSection.dataset.lexiconKey,
+                            currentlySelectedSection.dataset.sectionText
                         );
                     } else {
                         renderOverview();
@@ -793,24 +876,24 @@
             });
         }
 
-        var sentenceNodes = document.querySelectorAll('.sentence');
+        var subsectionNodes = document.querySelectorAll('.subsection');
 
-        function clearSentenceSelection() {
-            if (currentlySelectedSentence) {
-                currentlySelectedSentence.classList.remove('is-selected');
-                currentlySelectedSentence = null;
+        function clearSectionSelection() {
+            if (currentlySelectedSection) {
+                currentlySelectedSection.classList.remove('is-selected');
+                currentlySelectedSection = null;
                 setGlyphActiveState(false);
             }
         }
 
-        sentenceNodes.forEach(function (node) {
+        subsectionNodes.forEach(function (node) {
             node.addEventListener('click', function (event) {
                 event.stopPropagation();
-                if (currentlySelectedSentence === node) {
-                    clearSentenceSelection();
+                if (currentlySelectedSection === node) {
+                    clearSectionSelection();
                 } else {
-                    clearSentenceSelection();
-                    currentlySelectedSentence = node;
+                    clearSectionSelection();
+                    currentlySelectedSection = node;
                     node.classList.add('is-selected');
                     setGlyphActiveState(true);
                 }
@@ -823,11 +906,11 @@
                 if (tapLength < 300 && tapLength > 0) {
                     event.preventDefault();
                     event.stopPropagation();
-                    if (currentlySelectedSentence === node) {
-                        clearSentenceSelection();
+                    if (currentlySelectedSection === node) {
+                        clearSectionSelection();
                     } else {
-                        clearSentenceSelection();
-                        currentlySelectedSentence = node;
+                        clearSectionSelection();
+                        currentlySelectedSection = node;
                         node.classList.add('is-selected');
                         setGlyphActiveState(true);
                     }
@@ -837,20 +920,20 @@
         });
 
         document.addEventListener('click', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
         document.addEventListener('touchend', function (event) {
-            var isSentence = event.target.closest('.sentence');
+            var isSubsection = event.target.closest('.subsection');
             var isGlyph = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
+            if (!isSubsection && !isGlyph && !isPanel) {
+                clearSectionSelection();
             }
         });
 
