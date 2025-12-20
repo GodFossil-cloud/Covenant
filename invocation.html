@@ -265,14 +265,13 @@
             background-color: transparent;
         }
 
-        /* Diamond frame around the lexicon glyph */
+        /* Square frame around the lexicon glyph */
         .nav-btn.center::before {
             content: '';
             position: absolute;
             inset: 10px;
             border: 2px solid rgba(245, 217, 140, 0.3);
             border-radius: 4px;
-            transform: rotate(45deg);
             transition: all 0.3s ease;
             pointer-events: none;
         }
@@ -296,11 +295,11 @@
 
         @keyframes pulseBorder {
             0%, 100% { 
-                transform: rotate(45deg) scale(1);
+                transform: scale(1);
                 opacity: 1;
             }
             50% { 
-                transform: rotate(45deg) scale(1.06);
+                transform: scale(1.06);
                 opacity: 0.9;
             }
         }
