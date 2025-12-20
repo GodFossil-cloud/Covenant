@@ -36,16 +36,25 @@
         }
 
         body {
-            background: linear-gradient(to bottom, 
-                var(--bg-color) 0%, 
-                var(--bg-color) calc(100% - 100px), 
-                #000000 100%);
+            background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.7;
             margin: 0 auto;
             padding: 40px 20px 100px 20px;
             min-height: 100vh;
             position: relative;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100px;
+            background-color: #000000;
+            transform: translateY(100%);
+            z-index: -1;
         }
 
         #loadingIcon {
@@ -575,6 +584,10 @@
             body {
                 padding: 0;
                 background-color: white;
+            }
+
+            body::after {
+                display: none;
             }
 
             .container {
