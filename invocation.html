@@ -33,18 +33,6 @@
             background-color: #000000;
             font-size: 16px;
             scroll-behavior: smooth;
-            position: relative;
-        }
-
-        html::before {
-            content: '';
-            position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 100vh;
-            background-color: var(--bg-color);
-            z-index: -2;
         }
 
         body {
@@ -55,18 +43,6 @@
             padding: 40px 20px 100px 20px;
             min-height: 100vh;
             position: relative;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 100px;
-            background-color: #000000;
-            transform: translateY(100%);
-            z-index: -1;
         }
 
         #loadingIcon {
@@ -598,17 +574,9 @@
                 background-color: white;
             }
 
-            html::before {
-                display: none;
-            }
-
             body {
                 padding: 0;
                 background-color: white;
-            }
-
-            body::after {
-                display: none;
             }
 
             .container {
