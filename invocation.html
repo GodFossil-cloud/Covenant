@@ -217,6 +217,18 @@
             transition: opacity 1s ease-in;
         }
 
+        /* Black extension below footer for mobile browsers */
+        .nav-footer::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background-color: #000;
+            pointer-events: none;
+        }
+
         .nav-footer.fade-in {
             opacity: 1;
         }
@@ -227,6 +239,8 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .nav-btn {
