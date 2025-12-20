@@ -275,6 +275,41 @@
             border-color: rgba(139, 115, 85, 0.1);
         }
 
+        /* Background fills for arrow buttons */
+        .nav-btn:not(.center)::after {
+            content: '';
+            position: absolute;
+            inset: 12px;
+            border-radius: 4px;
+            z-index: -1;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* Left arrow button background */
+        .nav-btn:first-child::after {
+            background-color: #4a1515;
+        }
+
+        .nav-btn:first-child:hover::after,
+        .nav-btn:first-child:focus-visible::after {
+            background-color: #3d1111;
+        }
+
+        .nav-btn:first-child:disabled::after {
+            background-color: #3a1010;
+        }
+
+        /* Right arrow button background */
+        .nav-btn:last-child::after {
+            background-color: #5c1a1a;
+        }
+
+        .nav-btn:last-child:hover::after,
+        .nav-btn:last-child:focus-visible::after {
+            background-color: #4d1515;
+        }
+
         .nav-btn.center {
             font-size: 2rem;
         }
