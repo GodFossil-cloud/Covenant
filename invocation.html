@@ -45,6 +45,18 @@
             position: relative;
         }
 
+        body::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 100px;
+            background-color: #000000;
+            transform: translateY(-100%);
+            z-index: -1;
+        }
+
         body::after {
             content: '';
             position: absolute;
@@ -587,6 +599,7 @@
                 background-color: white;
             }
 
+            body::before,
             body::after {
                 display: none;
             }
