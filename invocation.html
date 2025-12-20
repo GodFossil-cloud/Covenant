@@ -279,13 +279,24 @@
             font-size: 2rem;
         }
 
-        /* Remove background glow on hover for center button */
-        .nav-btn.center:hover,
-        .nav-btn.center:focus-visible {
-            background-color: transparent;
+        /* Background fill inside lexicon button border */
+        .nav-btn.center::after {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            background-color: #6b1f1f;
+            border-radius: 4px;
+            z-index: -1;
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
 
-        /* Square frame around the lexicon glyph */
+        .nav-btn.center:hover::after,
+        .nav-btn.center:focus-visible::after {
+            background-color: #5a1818;
+        }
+
+        /* Square frame/border around the lexicon glyph */
         .nav-btn.center::before {
             content: '';
             position: absolute;
@@ -662,7 +673,7 @@
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
             <button class="nav-btn" disabled aria-label="Previous section">⪦</button>
-            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">𚤍</button>
+            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">𖤍</button>
             <a href="foundation.html" class="nav-btn" aria-label="Next: Foundation">⪧</a>
         </div>
     </nav>
