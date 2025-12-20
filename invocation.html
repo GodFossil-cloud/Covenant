@@ -30,13 +30,16 @@
         html {
             height: 100%;
             font-family: 'Lora', serif;
-            background-color: #000000;
+            background-color: var(--bg-color);
             font-size: 16px;
             scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg-color);
+            background: linear-gradient(to bottom, 
+                var(--bg-color) 0%, 
+                var(--bg-color) calc(100% - 100px), 
+                #000000 100%);
             color: var(--text-color);
             line-height: 1.7;
             margin: 0 auto;
