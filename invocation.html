@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
     <title>Invocation and Preamble - Covenant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,6 +44,7 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px 80px 20px;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
             min-height: 100vh;
             position: relative;
         }
@@ -209,12 +210,13 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: var(--glyph-red);
+            background: linear-gradient(to bottom, var(--glyph-red) 0%, var(--glyph-red) 100%, #000000 100%);
             border-top: 1px solid #6b1f1f;
-            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.4), 0 100px 0 100px #000000;
             z-index: 900;
             opacity: 0;
             transition: opacity 1s ease-in;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         .nav-footer.fade-in {
@@ -227,6 +229,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             align-items: center;
+            background-color: var(--glyph-red);
         }
 
         .nav-btn {
@@ -489,6 +492,7 @@
         @media (max-width: 768px) {
             body {
                 padding: 20px 10px 70px 10px;
+                padding-bottom: calc(70px + env(safe-area-inset-bottom));
                 font-size: 15px;
             }
 
