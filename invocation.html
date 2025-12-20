@@ -275,34 +275,44 @@
         }
 
         .nav-btn:not(.center):disabled::before {
-            border-color: rgba(107, 31, 31, 0.4);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+            border-color: rgba(107, 31, 31, 0.15);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
-        /* Background fills for arrow buttons */
+        /* Background fills for arrow buttons - default base style */
         .nav-btn:not(.center)::after {
             content: '';
             position: absolute;
             inset: 12px;
             border-radius: 4px;
-            background-color: #6d3b2a;
+            background-color: #8D8278;
             z-index: -1;
             transition: all 0.3s ease;
             pointer-events: none;
         }
 
+        /* Left button (disabled) - transparent ghost variant */
+        .nav-btn:first-child::after {
+            background-color: rgba(141, 130, 120, 0.15);
+        }
+
         .nav-btn:first-child:hover::after,
         .nav-btn:first-child:focus-visible::after {
-            background-color: #7e4532;
+            background-color: rgba(141, 130, 120, 0.2);
         }
 
         .nav-btn:first-child:disabled::after {
-            background-color: rgba(109, 59, 42, 0.4);
+            background-color: rgba(141, 130, 120, 0.08);
+        }
+
+        /* Right button (active) - solid greige */
+        .nav-btn:last-child::after {
+            background-color: #8D8278;
         }
 
         .nav-btn:last-child:hover::after,
         .nav-btn:last-child:focus-visible::after {
-            background-color: #7e4532;
+            background-color: #9d9288;
         }
 
         .nav-btn.center {
