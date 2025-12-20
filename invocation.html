@@ -19,6 +19,7 @@
             --sentence-highlight: #f0e3d4;
             --glyph-red: #8b2f2f;
             --glyph-gold: #c9a961;
+            --footer-bg: #f5f1ed;
         }
 
         * {
@@ -43,7 +44,7 @@
             line-height: 1.7;
             max-width: 900px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 40px 20px 80px 20px;
             min-height: 100vh;
             position: relative;
         }
@@ -203,87 +204,73 @@
             visibility: visible;
         }
 
-        .navigation-section {
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .site-nav {
-            display: flex;
-            justify-content: flex-end;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .site-nav a {
-            display: inline-block;
-            padding: 0.75rem 1.75rem;
-            border: 1px solid var(--primary-color);
-            background-color: var(--primary-color);
-            color: #f5f5f0;
-            text-decoration: none;
-            font-size: 0.9rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .site-nav a:hover,
-        .site-nav a:focus-visible {
-            background-color: #f5f5f0;
-            color: var(--primary-color);
-        }
-
-        .lexicon-glyph-toggle {
+        /* Sticky Footer Navigation */
+        .nav-footer {
             position: fixed;
-            right: 24px;
-            bottom: 24px;
-            z-index: 1000;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+            z-index: 900;
             opacity: 0;
             transition: opacity 1s ease-in;
         }
 
-        .lexicon-glyph-toggle.fade-in {
+        .nav-footer.fade-in {
             opacity: 1;
         }
 
-        .lexicon-glyph-toggle button {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 1px solid var(--glyph-red);
-            background-color: var(--glyph-red);
-            color: var(--glyph-gold);
-            font-size: 1.3rem;
-            cursor: pointer;
+        .nav-footer-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+        }
+
+        .nav-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(139, 47, 47, 0.35);
-            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            padding: 0;
-            margin: 0;
-            text-transform: none;
-            letter-spacing: 0;
-            font-weight: normal;
+            padding: 20px;
+            border: none;
+            background: transparent;
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .lexicon-glyph-toggle button:hover,
-        .lexicon-glyph-toggle button:focus-visible {
-            background-color: #a23737;
-            color: #e0bf7a;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 12px rgba(139, 47, 47, 0.45);
+        .nav-btn:hover:not(:disabled),
+        .nav-btn:focus-visible:not(:disabled) {
+            background-color: rgba(139, 115, 85, 0.1);
+            color: var(--primary-color);
+            transform: scale(1.1);
         }
 
-        .lexicon-glyph-toggle button.is-active {
-            background-color: #6b1f1f;
-            color: #f5d98c;
-            box-shadow: 0 0 16px rgba(201, 169, 97, 0.6);
-            transform: translateY(-1px);
+        .nav-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.center {
+            font-size: 2rem;
+            color: var(--glyph-red);
+        }
+
+        .nav-btn.center:hover,
+        .nav-btn.center:focus-visible {
+            color: var(--glyph-gold);
+            transform: scale(1.15);
+        }
+
+        .nav-btn.center.is-active {
+            color: var(--glyph-gold);
+            background-color: rgba(139, 47, 47, 0.1);
         }
 
         .lexicon-panel {
@@ -478,7 +465,7 @@
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
-            .lexicon-glyph-toggle,
+            .nav-footer,
             .lexicon-panel,
             .lexicon-overlay {
                 display: none !important;
@@ -502,7 +489,7 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 20px 10px;
+                padding: 20px 10px 70px 10px;
                 font-size: 15px;
             }
 
@@ -520,6 +507,15 @@
 
             .tooltip {
                 max-width: 240px;
+            }
+
+            .nav-btn {
+                padding: 16px;
+                font-size: 1.5rem;
+            }
+
+            .nav-btn.center {
+                font-size: 1.7rem;
             }
         }
 
@@ -545,11 +541,20 @@
             .tooltip {
                 max-width: 200px;
             }
+
+            .nav-btn {
+                padding: 14px;
+                font-size: 1.3rem;
+            }
+
+            .nav-btn.center {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="loadingIcon">𖢻</div>
+    <div id="loadingIcon">⨕</div>
     <div id="blackFadeOverlay"></div>
 
     <div class="container">
@@ -600,21 +605,16 @@
                 </span>
             </p>
         </section>
-
-        <section class="navigation-section" aria-label="Page navigation">
-            <div class="site-nav">
-                <a href="foundation.html">
-                    Forward to Foundation →
-                </a>
-            </div>
-        </section>
     </div>
 
-    <div class="lexicon-glyph-toggle">
-        <button id="lexiconToggle" type="button" aria-label="Open Covenant Lexicon panel">
-            𖤓
-        </button>
-    </div>
+    <!-- Sticky Footer Navigation -->
+    <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
+        <div class="nav-footer-inner">
+            <button class="nav-btn" disabled aria-label="Previous section">⪦</button>
+            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">𖤍</button>
+            <a href="foundation.html" class="nav-btn" aria-label="Next: Foundation">⪧</a>
+        </div>
+    </nav>
 
     <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
         <div class="lexicon-panel-header">
@@ -681,8 +681,8 @@
         var loadingIcon = document.getElementById('loadingIcon');
         var overlay = document.getElementById('blackFadeOverlay');
         var container = document.querySelector('.container');
-        var lexiconToggleWrap = document.querySelector('.lexicon-glyph-toggle');
-        var glyphButton = document.getElementById('lexiconToggle');
+        var navFooter = document.getElementById('navFooter');
+        var lexiconToggle = document.getElementById('lexiconToggle');
 
         setTimeout(function() {
             if (loadingIcon) loadingIcon.classList.add('fade-out');
@@ -690,7 +690,7 @@
                 overlay.classList.add('fade-out');
                 setTimeout(function() {
                     container.classList.add('fade-in');
-                    if (lexiconToggleWrap) lexiconToggleWrap.classList.add('fade-in');
+                    if (navFooter) navFooter.classList.add('fade-in');
                     setTimeout(function() {
                         if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
                         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
@@ -718,12 +718,12 @@
         };
         var currentlySelectedSentence = null;
 
-        function setGlyphActiveState(isActive) {
-            if (!glyphButton) return;
+        function setLexiconActiveState(isActive) {
+            if (!lexiconToggle) return;
             if (isActive) {
-                glyphButton.classList.add('is-active');
+                lexiconToggle.classList.add('is-active');
             } else {
-                glyphButton.classList.remove('is-active');
+                lexiconToggle.classList.remove('is-active');
             }
         }
 
@@ -733,6 +733,7 @@
             lexOverlay.classList.add('is-open');
             panel.setAttribute('aria-hidden', 'false');
             lexOverlay.setAttribute('aria-hidden', 'false');
+            setLexiconActiveState(true);
         }
 
         function closePanel() {
@@ -741,6 +742,7 @@
             lexOverlay.classList.remove('is-open');
             panel.setAttribute('aria-hidden', 'true');
             lexOverlay.setAttribute('aria-hidden', 'true');
+            setLexiconActiveState(false);
         }
 
         function renderOverview() {
@@ -767,8 +769,8 @@
             }, 150);
         }
 
-        if (glyphButton && panel && lexOverlay) {
-            glyphButton.addEventListener('click', function () {
+        if (lexiconToggle && panel && lexOverlay) {
+            lexiconToggle.addEventListener('click', function () {
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
@@ -801,7 +803,6 @@
             if (currentlySelectedSentence) {
                 currentlySelectedSentence.classList.remove('is-selected');
                 currentlySelectedSentence = null;
-                setGlyphActiveState(false);
             }
         }
 
@@ -814,7 +815,6 @@
                     clearSentenceSelection();
                     currentlySelectedSentence = node;
                     node.classList.add('is-selected');
-                    setGlyphActiveState(true);
                 }
             });
 
@@ -831,7 +831,6 @@
                         clearSentenceSelection();
                         currentlySelectedSentence = node;
                         node.classList.add('is-selected');
-                        setGlyphActiveState(true);
                     }
                 }
                 lastTapTime = currentTime;
@@ -840,18 +839,18 @@
 
         document.addEventListener('click', function (event) {
             var isSentence = event.target.closest('.sentence');
-            var isGlyph = event.target.closest('#lexiconToggle');
+            var isLexicon = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
+            if (!isSentence && !isLexicon && !isPanel) {
                 clearSentenceSelection();
             }
         });
 
         document.addEventListener('touchend', function (event) {
             var isSentence = event.target.closest('.sentence');
-            var isGlyph = event.target.closest('#lexiconToggle');
+            var isLexicon = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
+            if (!isSentence && !isLexicon && !isPanel) {
                 clearSentenceSelection();
             }
         });
