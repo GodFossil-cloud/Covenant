@@ -52,6 +52,19 @@
             position: relative;
         }
 
+        /* Black background extender for mobile Safari address bar */
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background-color: #000000;
+            z-index: 899;
+            pointer-events: none;
+        }
+
         #loadingIcon {
             position: fixed;
             top: 50%;
@@ -220,18 +233,6 @@
             opacity: 0;
             transition: opacity 1s ease-in;
             padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .nav-footer::after {
-            content: '';
-            position: fixed;
-            top: 100%;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background-color: #000000;
-            pointer-events: none;
-            z-index: -1;
         }
 
         .nav-footer.fade-in {
@@ -487,6 +488,10 @@
             .lexicon-panel,
             .lexicon-overlay {
                 display: none !important;
+            }
+
+            body::after {
+                display: none;
             }
 
             body {
