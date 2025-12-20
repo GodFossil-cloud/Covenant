@@ -19,7 +19,6 @@
             --sentence-highlight: #f0e3d4;
             --glyph-red: #8b2f2f;
             --glyph-gold: #c9a961;
-            --footer-bg: #f5f1ed;
         }
 
         * {
@@ -210,9 +209,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--footer-bg);
-            border-top: 1px solid var(--border-color);
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+            background-color: var(--glyph-red);
+            border-top: 1px solid #6b1f1f;
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.4);
             z-index: 900;
             opacity: 0;
             transition: opacity 1s ease-in;
@@ -238,7 +237,7 @@
             border: none;
             background: transparent;
             font-size: 1.8rem;
-            color: var(--accent-color);
+            color: var(--glyph-gold);
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -247,30 +246,30 @@
 
         .nav-btn:hover:not(:disabled),
         .nav-btn:focus-visible:not(:disabled) {
-            background-color: rgba(139, 115, 85, 0.1);
-            color: var(--primary-color);
+            background-color: rgba(201, 169, 97, 0.15);
+            color: #f5d98c;
             transform: scale(1.1);
         }
 
         .nav-btn:disabled {
-            opacity: 0.2;
+            opacity: 0.25;
             cursor: not-allowed;
         }
 
         .nav-btn.center {
             font-size: 2rem;
-            color: var(--glyph-red);
         }
 
         .nav-btn.center:hover,
         .nav-btn.center:focus-visible {
-            color: var(--glyph-gold);
+            color: #f5d98c;
             transform: scale(1.15);
+            box-shadow: 0 0 16px rgba(201, 169, 97, 0.4);
         }
 
         .nav-btn.center.is-active {
-            color: var(--glyph-gold);
-            background-color: rgba(139, 47, 47, 0.1);
+            color: #f5d98c;
+            box-shadow: 0 0 16px rgba(201, 169, 97, 0.6);
         }
 
         .lexicon-panel {
