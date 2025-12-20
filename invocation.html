@@ -27,19 +27,18 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html {
             height: 100%;
             font-family: 'Lora', serif;
             background-color: #000000;
-            color: var(--text-color);
-        }
-
-        html {
             font-size: 16px;
             scroll-behavior: smooth;
         }
 
         body {
+            height: 100%;
+            background: linear-gradient(to bottom, #000000 0%, #000000 calc(100% - 100px), #000000 100%);
+            color: var(--text-color);
             line-height: 1.7;
             max-width: 900px;
             margin: 0 auto;
@@ -217,18 +216,6 @@
             transition: opacity 1s ease-in;
         }
 
-        /* Black extension below footer for mobile browsers */
-        .nav-footer::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background-color: #000;
-            pointer-events: none;
-        }
-
         .nav-footer.fade-in {
             opacity: 1;
         }
@@ -239,8 +226,6 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             align-items: center;
-            position: relative;
-            z-index: 1;
         }
 
         .nav-btn {
