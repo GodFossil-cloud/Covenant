@@ -211,11 +211,21 @@
             right: 0;
             background-color: var(--glyph-red);
             border-top: 1px solid #6b1f1f;
-            border-bottom: 50px solid #000000;
             box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.4);
             z-index: 900;
             opacity: 0;
             transition: opacity 1s ease-in;
+        }
+
+        .nav-footer::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background-color: #000000;
+            pointer-events: none;
         }
 
         .nav-footer.fade-in {
