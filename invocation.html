@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#8b2f2f">
+    <meta name="theme-color" content="#000000">
     <title>Invocation and Preamble - Covenant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@
             min-height: 100%;
             min-height: -webkit-fill-available;
             font-family: 'Lora', serif;
-            background-color: #000000;
+            background: linear-gradient(to bottom, #000000 0%, #000000 calc(100% - 100px), #000000 100%);
             font-size: 16px;
             scroll-behavior: smooth;
         }
@@ -42,7 +42,7 @@
             height: 100%;
             min-height: 100vh;
             min-height: -webkit-fill-available;
-            background-color: #000000;
+            background-color: transparent;
             color: var(--text-color);
             line-height: 1.7;
             max-width: 900px;
@@ -205,24 +205,6 @@
 
         .glossary-term.tooltip-active .tooltip {
             visibility: visible;
-        }
-
-        /* Black background extender below footer */
-        #footerBlackBg {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 200px;
-            background: linear-gradient(to bottom, var(--glyph-red) 0%, #000000 40%, #000000 100%);
-            z-index: 899;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s ease-in;
-        }
-
-        #footerBlackBg.fade-in {
-            opacity: 1;
         }
 
         /* Sticky Footer Navigation */
@@ -489,7 +471,6 @@
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
-            #footerBlackBg,
             .nav-footer,
             .lexicon-panel,
             .lexicon-overlay {
@@ -633,9 +614,6 @@
         </section>
     </div>
 
-    <!-- Black background extender for mobile Safari -->
-    <div id="footerBlackBg"></div>
-
     <!-- Sticky Footer Navigation -->
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
@@ -711,7 +689,6 @@
         var overlay = document.getElementById('blackFadeOverlay');
         var container = document.querySelector('.container');
         var navFooter = document.getElementById('navFooter');
-        var footerBlackBg = document.getElementById('footerBlackBg');
         var lexiconToggle = document.getElementById('lexiconToggle');
 
         setTimeout(function() {
@@ -721,7 +698,6 @@
                 setTimeout(function() {
                     container.classList.add('fade-in');
                     if (navFooter) navFooter.classList.add('fade-in');
-                    if (footerBlackBg) footerBlackBg.classList.add('fade-in');
                     setTimeout(function() {
                         if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
                         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
