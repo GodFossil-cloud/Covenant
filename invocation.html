@@ -207,19 +207,37 @@
             visibility: visible;
         }
 
+        /* Black background extender below footer */
+        #footerBlackBg {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 200px;
+            background: linear-gradient(to bottom, var(--glyph-red) 0%, #000000 40%, #000000 100%);
+            z-index: 899;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        #footerBlackBg.fade-in {
+            opacity: 1;
+        }
+
         /* Sticky Footer Navigation */
         .nav-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to bottom, var(--glyph-red) 0%, var(--glyph-red) 70%, #000000 100%);
+            background-color: var(--glyph-red);
             border-top: 1px solid #6b1f1f;
             box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.4);
             z-index: 900;
             opacity: 0;
             transition: opacity 1s ease-in;
-            padding-bottom: calc(env(safe-area-inset-bottom) + 150px);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .nav-footer.fade-in {
@@ -471,6 +489,7 @@
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
+            #footerBlackBg,
             .nav-footer,
             .lexicon-panel,
             .lexicon-overlay {
@@ -614,6 +633,9 @@
         </section>
     </div>
 
+    <!-- Black background extender for mobile Safari -->
+    <div id="footerBlackBg"></div>
+
     <!-- Sticky Footer Navigation -->
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
@@ -689,6 +711,7 @@
         var overlay = document.getElementById('blackFadeOverlay');
         var container = document.querySelector('.container');
         var navFooter = document.getElementById('navFooter');
+        var footerBlackBg = document.getElementById('footerBlackBg');
         var lexiconToggle = document.getElementById('lexiconToggle');
 
         setTimeout(function() {
@@ -698,6 +721,7 @@
                 setTimeout(function() {
                     container.classList.add('fade-in');
                     if (navFooter) navFooter.classList.add('fade-in');
+                    if (footerBlackBg) footerBlackBg.classList.add('fade-in');
                     setTimeout(function() {
                         if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
                         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
