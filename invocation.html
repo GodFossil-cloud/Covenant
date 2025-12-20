@@ -208,8 +208,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: var(--glyph-red);
-            border-top: 1px solid #6b1f1f;
+            background-color: #5a1d1d;
+            border-top: 1px solid #4a1515;
             box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.4);
             z-index: 900;
             opacity: 0;
@@ -241,6 +241,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             -webkit-tap-highlight-color: transparent;
+            position: relative;
         }
 
         .nav-btn:hover:not(:disabled),
@@ -254,9 +255,28 @@
             cursor: not-allowed;
         }
 
+        /* Arrow button borders */
+        .nav-btn:not(.center)::before {
+            content: '';
+            position: absolute;
+            inset: 12px;
+            border: 2px solid rgba(139, 115, 85, 0.25);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .nav-btn:not(.center):hover::before,
+        .nav-btn:not(.center):focus-visible::before {
+            border-color: rgba(139, 115, 85, 0.5);
+        }
+
+        .nav-btn:not(.center):disabled::before {
+            border-color: rgba(139, 115, 85, 0.1);
+        }
+
         .nav-btn.center {
             font-size: 2rem;
-            position: relative;
         }
 
         /* Remove background glow on hover for center button */
