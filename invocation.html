@@ -245,7 +245,6 @@
 
         .nav-btn:hover:not(:disabled),
         .nav-btn:focus-visible:not(:disabled) {
-            background-color: rgba(201, 169, 97, 0.15);
             color: #f5d98c;
             transform: scale(1.1);
         }
@@ -260,46 +259,49 @@
             position: relative;
         }
 
+        /* Remove background glow on hover for center button */
+        .nav-btn.center:hover,
+        .nav-btn.center:focus-visible {
+            background-color: transparent;
+        }
+
         /* Circular frame around the lexicon glyph */
         .nav-btn.center::before {
             content: '';
             position: absolute;
-            inset: 8px;
-            border: 1.5px solid var(--glyph-gold);
+            inset: 10px;
+            border: 2px solid rgba(245, 217, 140, 0.3);
             border-radius: 50%;
-            opacity: 0.4;
             transition: all 0.3s ease;
+            pointer-events: none;
         }
 
         .nav-btn.center:hover::before,
         .nav-btn.center:focus-visible::before {
-            opacity: 0.7;
-            box-shadow: inset 0 0 12px rgba(201, 169, 97, 0.3);
+            border-color: rgba(245, 217, 140, 0.6);
         }
 
-        .nav-btn.center.is-active::before {
-            opacity: 1;
+        /* Active state when sentence is selected */
+        .nav-btn.center.has-selection::before {
             border-color: #f5d98c;
-            box-shadow: inset 0 0 16px rgba(201, 169, 97, 0.5),
-                        0 0 20px rgba(201, 169, 97, 0.4);
+            box-shadow: inset 0 0 20px rgba(245, 217, 140, 0.4),
+                        0 0 24px rgba(245, 217, 140, 0.35);
             animation: pulseBorder 2s ease-in-out infinite;
         }
 
+        .nav-btn.center.has-selection {
+            color: #f5d98c;
+        }
+
         @keyframes pulseBorder {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .nav-btn.center:hover,
-        .nav-btn.center:focus-visible {
-            color: #f5d98c;
-            transform: scale(1.15);
-            box-shadow: 0 0 16px rgba(201, 169, 97, 0.4);
-        }
-
-        .nav-btn.center.is-active {
-            color: #f5d98c;
-            box-shadow: 0 0 16px rgba(201, 169, 97, 0.6);
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.06);
+                opacity: 0.9;
+            }
         }
 
         .lexicon-panel {
@@ -747,12 +749,12 @@
         };
         var currentlySelectedSentence = null;
 
-        function setLexiconActiveState(isActive) {
+        function updateLexiconButtonState() {
             if (!lexiconToggle) return;
-            if (isActive) {
-                lexiconToggle.classList.add('is-active');
+            if (currentlySelectedSentence) {
+                lexiconToggle.classList.add('has-selection');
             } else {
-                lexiconToggle.classList.remove('is-active');
+                lexiconToggle.classList.remove('has-selection');
             }
         }
 
@@ -762,7 +764,6 @@
             lexOverlay.classList.add('is-open');
             panel.setAttribute('aria-hidden', 'false');
             lexOverlay.setAttribute('aria-hidden', 'false');
-            setLexiconActiveState(true);
         }
 
         function closePanel() {
@@ -771,7 +772,6 @@
             lexOverlay.classList.remove('is-open');
             panel.setAttribute('aria-hidden', 'true');
             lexOverlay.setAttribute('aria-hidden', 'true');
-            setLexiconActiveState(false);
         }
 
         function renderOverview() {
@@ -832,6 +832,7 @@
             if (currentlySelectedSentence) {
                 currentlySelectedSentence.classList.remove('is-selected');
                 currentlySelectedSentence = null;
+                updateLexiconButtonState();
             }
         }
 
@@ -844,6 +845,7 @@
                     clearSentenceSelection();
                     currentlySelectedSentence = node;
                     node.classList.add('is-selected');
+                    updateLexiconButtonState();
                 }
             });
 
@@ -860,6 +862,7 @@
                         clearSentenceSelection();
                         currentlySelectedSentence = node;
                         node.classList.add('is-selected');
+                        updateLexiconButtonState();
                     }
                 }
                 lastTapTime = currentTime;
