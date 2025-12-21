@@ -403,6 +403,22 @@
             transform: translateY(-1px);
         }
 
+        /* Lexicon Overlay */
+        .lexicon-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease;
+            z-index: 700;
+        }
+
+        .lexicon-overlay.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* Lexicon Panel */
         .lexicon-panel {
             position: fixed;
@@ -573,22 +589,6 @@
             vertical-align: super;
             color: var(--glyph-gold);
             margin-left: 2px;
-        }
-
-        /* Lexicon Overlay */
-        .lexicon-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.25s ease;
-            z-index: 1050;
-        }
-
-        .lexicon-overlay.is-open {
-            opacity: 1;
-            visibility: visible;
         }
 
         /* Media Queries */
@@ -772,6 +772,8 @@
         </div>
     </nav>
 
+    <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
+
     <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
         <div class="lexicon-panel-header">
             <div>
@@ -805,8 +807,6 @@
             </div>
         </div>
     </div>
-
-    <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
 
     <script>
     (function () {
