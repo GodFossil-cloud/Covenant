@@ -362,26 +362,14 @@
         }
 
         /* Active state when sentence is selected */
-        .nav-btn.center.has-selection::before {
-            border-color: #f5d98c;
-            box-shadow: inset 0 0 20px rgba(245, 217, 140, 0.4),
-                        0 0 24px rgba(245, 217, 140, 0.35);
-            animation: pulseBorder 2s ease-in-out infinite;
+        .nav-btn.center.has-selection::after {
+            background-color: #6b1f1f;
         }
 
         .nav-btn.center.has-selection {
             color: #f5d98c;
-        }
-
-        @keyframes pulseBorder {
-            0%, 100% { 
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% { 
-                transform: scale(1.06);
-                opacity: 0.9;
-            }
+            transform: translateY(-1px);
+            box-shadow: 0 0 16px rgba(201, 169, 97, 0.6);
         }
 
         .lexicon-panel {
