@@ -13,9 +13,6 @@
             --accent-color: #8b7355;
             --text-color: #1a1a1a;
             --bg-color: #fafaf8;
-            --border-color: #d4c5b9;
-            --highlight-color: #f5f1ed;
-            --glyph-active-glow: 0 0 12px rgba(139, 115, 85, 0.9);
             --sentence-highlight: #f0e3d4;
             --glyph-red: #8b2f2f;
             --glyph-gold: #c9a961;
@@ -30,7 +27,7 @@
         html {
             height: 100%;
             font-family: 'Lora', serif;
-            background-color: #000000;
+            background-color: #000;
             font-size: 16px;
             scroll-behavior: smooth;
         }
@@ -40,11 +37,12 @@
             color: var(--text-color);
             line-height: 1.7;
             margin: 0 auto;
-            padding: 40px 20px 100px 20px;
+            padding: 40px 20px 100px;
             min-height: 100vh;
             position: relative;
         }
 
+        /* Loading Overlay */
         #loadingIcon {
             position: fixed;
             top: 50%;
@@ -64,20 +62,13 @@
         }
 
         @keyframes rotateGlyph {
-            from {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         #blackFadeOverlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             background-color: #000;
             z-index: 10000;
             pointer-events: none;
@@ -88,6 +79,7 @@
             opacity: 0;
         }
 
+        /* Main Content Container */
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -102,6 +94,7 @@
             opacity: 1;
         }
 
+        /* Section Header */
         .section-header {
             text-align: center;
             margin-bottom: 50px;
@@ -126,6 +119,7 @@
             text-transform: uppercase;
         }
 
+        /* Text Content */
         p {
             margin-bottom: 18px;
             text-align: justify;
@@ -138,6 +132,15 @@
             font-size: 0.95em;
         }
 
+        .section-divider {
+            text-align: center;
+            color: var(--glyph-gold);
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            user-select: none;
+        }
+
+        /* Glossary Terms & Tooltips */
         .glossary-term {
             cursor: help;
             border-bottom: 1px dotted var(--accent-color);
@@ -183,7 +186,7 @@
         }
 
         .tooltip::after {
-            content: "";
+            content: '';
             position: absolute;
             top: 100%;
             left: 50%;
@@ -193,12 +196,28 @@
             border-color: var(--primary-color) transparent transparent transparent;
         }
 
-        .glossary-term:hover .tooltip {
+        .glossary-term:hover .tooltip,
+        .glossary-term.tooltip-active .tooltip {
             visibility: visible;
         }
 
-        .glossary-term.tooltip-active .tooltip {
-            visibility: visible;
+        /* Sentence Selection */
+        .sentence {
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .sentence.is-selected {
+            background-color: var(--sentence-highlight);
+            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
+        }
+
+        .sentence-label {
+            font-size: 0.7em;
+            vertical-align: super;
+            color: #b79a76;
+            margin-right: 0.2em;
+            user-select: none;
         }
 
         /* Sticky Footer Navigation */
@@ -236,6 +255,7 @@
             align-items: center;
         }
 
+        /* Navigation Buttons - Base Styles */
         .nav-btn {
             display: flex;
             align-items: center;
@@ -263,7 +283,7 @@
             cursor: not-allowed;
         }
 
-        /* Arrow button borders */
+        /* Arrow Buttons - Borders */
         .nav-btn:not(.center)::before {
             content: '';
             position: absolute;
@@ -286,7 +306,7 @@
             box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
         }
 
-        /* Background fills for arrow buttons - default base style */
+        /* Arrow Buttons - Backgrounds */
         .nav-btn:not(.center)::after {
             content: '';
             position: absolute;
@@ -298,7 +318,6 @@
             pointer-events: none;
         }
 
-        /* Left button (disabled) - transparent ghost variant */
         .nav-btn:first-child::after {
             background-color: rgba(141, 130, 120, 0.15);
         }
@@ -312,7 +331,6 @@
             background-color: rgba(141, 130, 120, 0.08);
         }
 
-        /* Right button (active) - solid greige */
         .nav-btn:last-child::after {
             background-color: #8D8278;
         }
@@ -322,28 +340,11 @@
             background-color: #9d9288;
         }
 
+        /* Lexicon Button - Center */
         .nav-btn.center {
             font-size: 2rem;
         }
 
-        /* Background fill inside lexicon button border */
-        .nav-btn.center::after {
-            content: '';
-            position: absolute;
-            inset: 10px;
-            background-color: var(--glyph-red);
-            border-radius: 4px;
-            z-index: -1;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-
-        .nav-btn.center:hover::after,
-        .nav-btn.center:focus-visible::after {
-            background-color: #7a2929;
-        }
-
-        /* Square frame/border around the lexicon glyph */
         .nav-btn.center::before {
             content: '';
             position: absolute;
@@ -361,24 +362,39 @@
             box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95);
         }
 
-        /* Active state when sentence is selected - applied to background */
-        .nav-btn.center.has-selection::after {
-            background-color: #6b1f1f;
-            transform: translateY(-1px);
+        .nav-btn.center::after {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            background-color: var(--glyph-red);
+            border-radius: 4px;
+            z-index: -1;
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
 
-        /* Active state when sentence is selected - applied to border/frame with glow */
+        .nav-btn.center:hover::after,
+        .nav-btn.center:focus-visible::after {
+            background-color: #7a2929;
+        }
+
+        /* Lexicon Button - Active State */
+        .nav-btn.center.has-selection {
+            color: #f5d98c;
+        }
+
         .nav-btn.center.has-selection::before {
             transform: translateY(-1px);
             box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
                         0 0 16px rgba(201, 169, 97, 0.6);
         }
 
-        /* Active state when sentence is selected - brighter gold glyph */
-        .nav-btn.center.has-selection {
-            color: #f5d98c;
+        .nav-btn.center.has-selection::after {
+            background-color: #6b1f1f;
+            transform: translateY(-1px);
         }
 
+        /* Lexicon Panel */
         .lexicon-panel {
             position: fixed;
             top: 0;
@@ -436,9 +452,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            text-transform: none;
-            letter-spacing: 0;
-            font-weight: normal;
             transition: color 0.2s ease;
         }
 
@@ -528,6 +541,7 @@
             margin-left: 2px;
         }
 
+        /* Lexicon Overlay */
         .lexicon-overlay {
             position: fixed;
             inset: 0;
@@ -543,32 +557,7 @@
             visibility: visible;
         }
 
-        .sentence {
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sentence.is-selected {
-            background-color: var(--sentence-highlight);
-            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
-        }
-
-        .sentence-label {
-            font-size: 0.7em;
-            vertical-align: super;
-            color: #b79a76;
-            margin-right: 0.2em;
-            user-select: none;
-        }
-
-        .section-divider {
-            text-align: center;
-            color: var(--glyph-gold);
-            font-size: 0.9rem;
-            margin: 1rem 0;
-            user-select: none;
-        }
-
+        /* Media Queries */
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
@@ -578,13 +567,13 @@
                 display: none !important;
             }
 
-            html {
+            html,
+            body {
                 background-color: white;
             }
 
             body {
                 padding: 0;
-                background-color: white;
             }
 
             .container {
@@ -599,7 +588,7 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 20px 10px 90px 10px;
+                padding: 20px 10px 90px;
                 font-size: 15px;
             }
 
@@ -715,7 +704,7 @@
                 </span>
             </p>
 
-                    <div class="section-divider">✦ ✧ ✦</div>
+            <div class="section-divider">✦ ✧ ✦</div>
         </section>
     </div>
 
@@ -734,9 +723,7 @@
                 <div class="lexicon-panel-title">Lexicon</div>
                 <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
             </div>
-            <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">
-                ×
-            </button>
+            <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
         </div>
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent">
@@ -749,38 +736,16 @@
                 </p>
             </div>
 
-            <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">
-                Open Full Lexicon
-            </a>
+            <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
 
             <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
                 <h3>Terms in this section</h3>
                 <ul class="lexicon-term-list">
-                    <li>
-                        <span class="lexicon-term-label">Faithful</span>
-                        <span class="lexicon-term-ref">[1]</span>
-                        – The devoted servant and obedient instrument within this sacred bond.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Covenant</span>
-                        <span class="lexicon-term-ref">[2]</span>
-                        – A sacred, binding agreement between the Lord and the Faithful.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Hierarchy</span>
-                        <span class="lexicon-term-ref">[3]</span>
-                        – The sacred ordering of authority and obedience.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Command</span>
-                        <span class="lexicon-term-ref">[4]</span>
-                        – An authoritative directive given by the Lord.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Obedience</span>
-                        <span class="lexicon-term-ref">[5]</span>
-                        – The willing submission and faithful execution of commands.
-                    </li>
+                    <li><span class="lexicon-term-label">Faithful</span><span class="lexicon-term-ref">[1]</span> – The devoted servant and obedient instrument within this sacred bond.</li>
+                    <li><span class="lexicon-term-label">Covenant</span><span class="lexicon-term-ref">[2]</span> – A sacred, binding agreement between the Lord and the Faithful.</li>
+                    <li><span class="lexicon-term-label">Hierarchy</span><span class="lexicon-term-ref">[3]</span> – The sacred ordering of authority and obedience.</li>
+                    <li><span class="lexicon-term-label">Command</span><span class="lexicon-term-ref">[4]</span> – An authoritative directive given by the Lord.</li>
+                    <li><span class="lexicon-term-label">Obedience</span><span class="lexicon-term-ref">[5]</span> – The willing submission and faithful execution of commands.</li>
                 </ul>
             </div>
         </div>
@@ -790,12 +755,29 @@
 
     <script>
     (function () {
+        'use strict';
+        
         var loadingIcon = document.getElementById('loadingIcon');
         var overlay = document.getElementById('blackFadeOverlay');
         var container = document.querySelector('.container');
         var navFooter = document.getElementById('navFooter');
         var lexiconToggle = document.getElementById('lexiconToggle');
+        var panel = document.getElementById('lexiconPanel');
+        var lexOverlay = document.getElementById('lexiconOverlay');
+        var dynamicContent = document.getElementById('lexiconDynamicContent');
+        var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
+        var currentlySelectedSentence = null;
 
+        // Sentence explanations data
+        var sentenceExplanations = {
+            'I.1': 'The Invocation solves a structural problem: how to establish hierarchy without reducing it to human claim. Three authorities are summoned in descending order—silence (void above all), stars (celestial pattern), Earth (terrestrial witness)—embodying the vertical structure before naming it. This makes ordination, admonition, purification, and declaration possible: each operates within cosmic framework already enacted. Without this opening, the preamble begins with assertion requiring justification. With witness invoked, subsequent language becomes ritual recognition within pre-existing sacred order.',
+            'I.2': 'This passage ordains the structure of the Covenant in reflection of the invocation. "Mirror of the firmament" refers to the celestial order in the opening passage—the hierarchy as an existing architecture is directly called to witness before any declarations are made. The hierarchy is already sanctified: the void (Lord), the firmament (Covenant as mediator), the Earth (Faithful). No judge can assert what a witness has proclaimed, because it is already established as-it-is. This transforms the bond from temporal contract into holy sacrament within a pre-existing cosmic order.',
+            'I.3': 'This passage of admonition outlines the toll of swearing falsely. "Thereby" creates logical chain: because the structure mirrors the firmament, fabricating oath is desecration of the cosmic plane itself. The passage escalates—betrayal of bond, violation of oath, profanation of order. To swear falsely is to weaponize the fulcrum keeping everything intact. Because witness was invoked and the order sanctified, oath-breaking becomes spiritual transgression, not merely breach of contract.',
+            'I.4': 'Purification responds to Admonition\'s warning by expelling corruption from the threshold. Three corruptions are cast out in sequence: deceit must remain unspoken (false speech banned from the sacred space), avarice must be cast into the void (greed expelled entirely), and word and spirit must become one (interior intention matched to exterior utterance). This is the positive counterpart to the warning—where Admonition says "false oaths desecrate," Purification says "therefore let corruption be expelled and truth unified." The passage ensures that what was invoked, ordained, and protected can now endure. Without purification, the bond rests on contaminated ground; with it, the threshold is sanctified for Declaration.',
+            'I.5': 'This passage of declaration seals what the four prior movements have prepared. "Thus" binds the logic: witness invoked, order ordained, profanation warned, corruption expelled—therefore the Covenant may endure by right, sustained within the order as established. In calling the Covenant "an everlasting reflection of divine allegiance," the bond is rendered sacred—not a mere arrangement, but something not to be extinguished.'
+        };
+
+        // Loading sequence
         setTimeout(function() {
             if (loadingIcon) loadingIcon.classList.add('fade-out');
             setTimeout(function() {
@@ -811,34 +793,13 @@
             }, 500);
         }, 1800);
 
-        var panel = document.getElementById('lexiconPanel');
-        var lexOverlay = document.getElementById('lexiconOverlay');
-        var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
-        var dynamicContent = document.getElementById('lexiconDynamicContent');
-        var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
-
-        var sentenceExplanations = {
-            'I.1': 'The Invocation solves a structural problem: how to establish hierarchy without reducing it to human claim. Three authorities are summoned in descending order—silence (void above all), stars (celestial pattern), Earth (terrestrial witness)—embodying the vertical structure before naming it. This makes ordination, admonition, purification, and declaration possible: each operates within cosmic framework already enacted. Without this opening, the preamble begins with assertion requiring justification. With witness invoked, subsequent language becomes ritual recognition within pre-existing sacred order.',
-
-        'I.2': 'This passage ordains the structure of the Covenant in reflection of the invocation. "Mirror of the firmament" refers to the celestial order in the opening passage—the hierarchy as an existing architecture is directly called to witness before any declarations are made. The hierarchy is already sanctified: the void (Lord), the firmament (Covenant as mediator), the Earth (Faithful). No judge can assert what a witness has proclaimed, because it is already established as-it-is. This transforms the bond from temporal contract into holy sacrament within a pre-existing cosmic order.',
-
-        'I.3': 'This passage of admonition outlines the toll of swearing falsely. "Thereby" creates logical chain: because the structure mirrors the firmament, fabricating oath is desecration of the cosmic plane itself. The passage escalates—betrayal of bond, violation of oath, profanation of order. To swear falsely is to weaponize the fulcrum keeping everything intact. Because witness was invoked and the order sanctified, oath-breaking becomes spiritual transgression, not merely breach of contract.',
-
-        'I.4': 'Purification responds to Admonition\'s warning by expelling corruption from the threshold. Three corruptions are cast out in sequence: deceit must remain unspoken (false speech banned from the sacred space), avarice must be cast into the void (greed expelled entirely), and word and spirit must become one (interior intention matched to exterior utterance). This is the positive counterpart to the warning—where Admonition says "false oaths desecrate," Purification says "therefore let corruption be expelled and truth unified." The passage ensures that what was invoked, ordained, and protected can now endure. Without purification, the bond rests on contaminated ground; with it, the threshold is sanctified for Declaration.',
-
-        'I.5': 'This passage of declaration seals what the four prior movements have prepared. "Thus" binds the logic: witness invoked, order ordained, profanation warned, corruption expelled—therefore the Covenant may endure by right, sustained within the order as established. In calling the Covenant "an everlasting reflection of divine allegiance," the bond is rendered sacred—not a mere arrangement, but something not to be extinguished.'
-        };
-        var currentlySelectedSentence = null;
-
+        // Lexicon button state
         function updateLexiconButtonState() {
             if (!lexiconToggle) return;
-            if (currentlySelectedSentence) {
-                lexiconToggle.classList.add('has-selection');
-            } else {
-                lexiconToggle.classList.remove('has-selection');
-            }
+            lexiconToggle.classList.toggle('has-selection', !!currentlySelectedSentence);
         }
 
+        // Panel controls
         function openPanel() {
             if (!panel || !lexOverlay) return;
             panel.classList.add('is-open');
@@ -873,22 +834,19 @@
             }
             dynamicContent.style.opacity = '0';
             setTimeout(function () {
-                var html = '<div class="lexicon-sentence-quote">"' + sentenceText + '"</div><p>' + explanation + '</p>';
-                dynamicContent.innerHTML = html;
+                dynamicContent.innerHTML = '<div class="lexicon-sentence-quote">"' + sentenceText + '"</div><p>' + explanation + '</p>';
                 dynamicContent.style.opacity = '1';
             }, 150);
         }
 
+        // Lexicon toggle
         if (lexiconToggle && panel && lexOverlay) {
             lexiconToggle.addEventListener('click', function () {
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
                     if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                        renderSentenceExplanation(
-                            currentlySelectedSentence.dataset.lexiconKey,
-                            currentlySelectedSentence.dataset.sentenceText
-                        );
+                        renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey, currentlySelectedSentence.dataset.sentenceText);
                     } else {
                         renderOverview();
                     }
@@ -897,9 +855,12 @@
             });
 
             lexOverlay.addEventListener('click', closePanel);
+            
+            var closeButtons = panel.querySelectorAll('.lexicon-panel-close');
             closeButtons.forEach(function (btn) {
                 btn.addEventListener('click', closePanel);
             });
+            
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape' && panel.classList.contains('is-open')) {
                     closePanel();
@@ -907,8 +868,7 @@
             });
         }
 
-        var sentenceNodes = document.querySelectorAll('.sentence');
-
+        // Sentence selection
         function clearSentenceSelection() {
             if (currentlySelectedSentence) {
                 currentlySelectedSentence.classList.remove('is-selected');
@@ -917,57 +877,52 @@
             }
         }
 
+        function handleSentenceClick(node) {
+            if (currentlySelectedSentence === node) {
+                clearSentenceSelection();
+            } else {
+                clearSentenceSelection();
+                currentlySelectedSentence = node;
+                node.classList.add('is-selected');
+                updateLexiconButtonState();
+            }
+        }
+
+        var sentenceNodes = document.querySelectorAll('.sentence');
         sentenceNodes.forEach(function (node) {
             node.addEventListener('click', function (event) {
                 event.stopPropagation();
-                if (currentlySelectedSentence === node) {
-                    clearSentenceSelection();
-                } else {
-                    clearSentenceSelection();
-                    currentlySelectedSentence = node;
-                    node.classList.add('is-selected');
-                    updateLexiconButtonState();
-                }
+                handleSentenceClick(node);
             });
 
+            // Touch handling for double-tap
             var lastTapTime = 0;
             node.addEventListener('touchend', function (event) {
-                var currentTime = new Date().getTime();
+                var currentTime = Date.now();
                 var tapLength = currentTime - lastTapTime;
                 if (tapLength < 300 && tapLength > 0) {
                     event.preventDefault();
                     event.stopPropagation();
-                    if (currentlySelectedSentence === node) {
-                        clearSentenceSelection();
-                    } else {
-                        clearSentenceSelection();
-                        currentlySelectedSentence = node;
-                        node.classList.add('is-selected');
-                        updateLexiconButtonState();
-                    }
+                    handleSentenceClick(node);
                 }
                 lastTapTime = currentTime;
             });
         });
 
-        document.addEventListener('click', function (event) {
+        // Clear selection on outside click
+        function handleOutsideInteraction(event) {
             var isSentence = event.target.closest('.sentence');
             var isLexicon = event.target.closest('#lexiconToggle');
             var isPanel = event.target.closest('#lexiconPanel');
             if (!isSentence && !isLexicon && !isPanel) {
                 clearSentenceSelection();
             }
-        });
+        }
 
-        document.addEventListener('touchend', function (event) {
-            var isSentence = event.target.closest('.sentence');
-            var isLexicon = event.target.closest('#lexiconToggle');
-            var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isLexicon && !isPanel) {
-                clearSentenceSelection();
-            }
-        });
+        document.addEventListener('click', handleOutsideInteraction);
+        document.addEventListener('touchend', handleOutsideInteraction);
 
+        // Glossary tooltip touch handling
         var glossaryTerms = document.querySelectorAll('.glossary-term');
         var currentlyActiveTooltip = null;
 
@@ -984,9 +939,8 @@
         });
 
         document.addEventListener('touchstart', function(e) {
-            var touchedGlossaryTerm = false;
-            glossaryTerms.forEach(function(term) {
-                if (term.contains(e.target)) touchedGlossaryTerm = true;
+            var touchedGlossaryTerm = Array.from(glossaryTerms).some(function(term) {
+                return term.contains(e.target);
             });
             if (!touchedGlossaryTerm && currentlyActiveTooltip) {
                 currentlyActiveTooltip.classList.remove('tooltip-active');
