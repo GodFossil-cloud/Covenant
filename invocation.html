@@ -45,18 +45,6 @@
             position: relative;
         }
 
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background-color: #000000;
-            z-index: 100;
-            pointer-events: none;
-        }
-
         #loadingIcon {
             position: fixed;
             top: 50%;
@@ -591,8 +579,7 @@
             #blackFadeOverlay,
             .nav-footer,
             .lexicon-panel,
-            .lexicon-overlay,
-            body::after {
+            .lexicon-overlay {
                 display: none !important;
             }
 
@@ -618,10 +605,6 @@
         @media (max-width: 768px) {
             body {
                 padding: 20px 10px 90px 10px;
-            }
-
-            body::after {
-                height: 180px;
             }
 
             .container {
