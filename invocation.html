@@ -1012,8 +1012,8 @@
             });
         });
 
-        // Hide tooltip when touching elsewhere, but prevent other actions
-        document.addEventListener('touchstart', function(e) {
+        // Hide tooltip when touching elsewhere, and block sentence selection on that touch
+        document.addEventListener('touchend', function(e) {
             if (!currentlyActiveTooltip) return;
 
             var touchedGlossaryTerm = Array.from(glossaryTerms).some(function(term) {
@@ -1023,7 +1023,7 @@
             if (!touchedGlossaryTerm) {
                 // Touched outside any glossary term while tooltip is active
                 e.preventDefault();
-                e.stopPropagation();
+                e.stopImmediatePropagation();
                 currentlyActiveTooltip.classList.remove('tooltip-active');
                 currentlyActiveTooltip = null;
             }
