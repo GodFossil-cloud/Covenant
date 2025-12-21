@@ -980,31 +980,54 @@
         document.addEventListener('click', handleOutsideInteraction);
         document.addEventListener('touchend', handleOutsideInteraction);
 
-        // Glossary tooltip touch handling
+        // Glossary tooltip touch handling with improved mobile UX
         var glossaryTerms = document.querySelectorAll('.glossary-term');
         var currentlyActiveTooltip = null;
 
         glossaryTerms.forEach(function(term) {
+            var touchCount = 0;
+            var lastTouchTime = 0;
+
             term.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                if (this === currentlyActiveTooltip) return;
-                if (currentlyActiveTooltip) {
-                    currentlyActiveTooltip.classList.remove('tooltip-active');
+                var currentTime = Date.now();
+
+                // Check if this is a second touch on the same term within 500ms
+                if (this === currentlyActiveTooltip && (currentTime - lastTouchTime) < 500) {
+                    // Second touch: allow sentence selection to proceed
+                    // The tooltip stays visible, and the parent sentence can now be selected
+                    return;
                 }
-                this.classList.add('tooltip-active');
-                currentlyActiveTooltip = this;
+
+                // First touch: show tooltip and prevent sentence selection
+                if (this !== currentlyActiveTooltip) {
+                    if (currentlyActiveTooltip) {
+                        currentlyActiveTooltip.classList.remove('tooltip-active');
+                    }
+                    this.classList.add('tooltip-active');
+                    currentlyActiveTooltip = this;
+                }
+
+                lastTouchTime = currentTime;
             });
         });
 
+        // Hide tooltip when touching elsewhere, but prevent other actions
         document.addEventListener('touchstart', function(e) {
+            if (!currentlyActiveTooltip) return;
+
             var touchedGlossaryTerm = Array.from(glossaryTerms).some(function(term) {
                 return term.contains(e.target);
             });
-            if (!touchedGlossaryTerm && currentlyActiveTooltip) {
+
+            if (!touchedGlossaryTerm) {
+                // Touched outside any glossary term while tooltip is active
+                e.preventDefault();
+                e.stopPropagation();
                 currentlyActiveTooltip.classList.remove('tooltip-active');
                 currentlyActiveTooltip = null;
             }
-        });
+        }, true); // Use capture phase to intercept early
     })();
     </script>
 </body>
