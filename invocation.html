@@ -652,7 +652,7 @@
         @media (max-width: 600px) {
             .lexicon-panel {
                 top: auto;
-                bottom: 70px;
+                bottom: 0;
                 right: 0;
                 left: 0;
                 width: 100vw;
@@ -665,7 +665,7 @@
             }
 
             .lexicon-panel.is-open {
-                transform: translateY(0);
+                transform: translateY(calc(-100% + 75vh));
                 box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.5);
             }
         }
