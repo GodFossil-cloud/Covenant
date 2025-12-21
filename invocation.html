@@ -19,7 +19,6 @@
             --sentence-highlight: #f0e3d4;
             --glyph-red: #8b2f2f;
             --glyph-gold: #c9a961;
-            --footer-height: 73px;
         }
 
         * {
@@ -40,8 +39,8 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.7;
-            margin: 0;
-            padding: 40px 0 0 0;
+            margin: 0 auto;
+            padding: 40px 20px 100px 20px;
             min-height: 100vh;
             position: relative;
         }
@@ -200,15 +199,6 @@
 
         .glossary-term.tooltip-active .tooltip {
             visibility: visible;
-        }
-
-        /* Black space below content - starts where footer ends */
-        .black-space {
-            width: 100vw;
-            height: 200px;
-            background-color: #000000;
-            margin-left: calc(-50vw + 50%);
-            margin-top: var(--footer-height);
         }
 
         /* Sticky Footer Navigation */
@@ -589,8 +579,7 @@
             #blackFadeOverlay,
             .nav-footer,
             .lexicon-panel,
-            .lexicon-overlay,
-            .black-space {
+            .lexicon-overlay {
                 display: none !important;
             }
 
@@ -614,12 +603,9 @@
         }
 
         @media (max-width: 768px) {
-            :root {
-                --footer-height: 65px;
-            }
-
             body {
-                padding: 20px 0 0 0;
+                padding: 20px 10px 90px 10px;
+                font-size: 15px;
             }
 
             .container {
@@ -737,9 +723,6 @@
                     <div class="section-divider">✦ ✧ ✦</div>
         </section>
     </div>
-
-    <!-- Black space below all content - starts after footer height -->
-    <div class="black-space"></div>
 
     <!-- Sticky Footer Navigation -->
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
