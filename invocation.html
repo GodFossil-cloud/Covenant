@@ -430,7 +430,7 @@
             border-left: 1px solid #3a3a3a;
             box-shadow: none;
             transform: translateX(100%);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 1s ease-in;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 1.2s ease-in;
             z-index: 1100;
             display: flex;
             flex-direction: column;
@@ -850,7 +850,10 @@
                 setTimeout(function() {
                     container.classList.add('fade-in');
                     if (navFooter) navFooter.classList.add('fade-in');
-                                        if (panel) panel.classList.add('fade-in');
+                    // Delay lexicon panel fade-in by 300ms
+                    setTimeout(function() {
+                        if (panel) panel.classList.add('fade-in');
+                    }, 300);
                     setTimeout(function() {
                         if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
                         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
