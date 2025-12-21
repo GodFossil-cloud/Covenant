@@ -35,6 +35,18 @@
             scroll-behavior: smooth;
         }
 
+        html::after {
+            content: '';
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background-color: #000000;
+            z-index: -1;
+            pointer-events: none;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -42,7 +54,6 @@
             margin: 0 auto;
             padding: 40px 20px 100px 20px;
             min-height: 100vh;
-            max-height: fit-content;
             position: relative;
         }
 
@@ -580,7 +591,8 @@
             #blackFadeOverlay,
             .nav-footer,
             .lexicon-panel,
-            .lexicon-overlay {
+            .lexicon-overlay,
+            html::after {
                 display: none !important;
             }
 
@@ -606,6 +618,10 @@
         @media (max-width: 768px) {
             body {
                 padding: 20px 10px 90px 10px;
+            }
+
+            html::after {
+                height: 90px;
             }
 
             .container {
@@ -728,7 +744,7 @@
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
             <button class="nav-btn" disabled aria-label="Previous section">⪦</button>
-            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">𖤍</button>
+            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">𚄍</button>
             <a href="foundation.html" class="nav-btn" aria-label="Next: Foundation">⪧</a>
         </div>
     </nav>
