@@ -50,7 +50,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 48px;
-            color: #8b7355;
+            color: var(--accent-color);
             z-index: 10001;
             animation: rotateGlyph 2s linear infinite;
             pointer-events: none;
@@ -248,7 +248,7 @@
                         inset 0 -8px 16px -10px rgba(0, 0, 0, 0.6);
             z-index: 1200;
             opacity: 0;
-            transition: opacity 0.6s ease-in;
+            transition: opacity 0.5s ease-in;
         }
 
         .nav-footer.fade-in {
@@ -321,7 +321,6 @@
             position: absolute;
             inset: 12px;
             border-radius: 4px;
-            background-color: #8D8278;
             z-index: -1;
             transition: all 0.3s ease;
             pointer-events: none;
@@ -497,10 +496,6 @@
             flex: 1 1 auto;
             overflow-y: auto;
             padding-right: 12px;
-        }
-
-        /* Lexicon Panel Scrollbar Styling */
-        .lexicon-panel-body {
             scrollbar-width: thin;
             scrollbar-color: var(--glyph-gold) #555;
         }
@@ -511,19 +506,16 @@
 
         .lexicon-panel-body::-webkit-scrollbar-track {
             background: #555;
-            border-radius: 0;
         }
 
         .lexicon-panel-body::-webkit-scrollbar-thumb {
             background: var(--glyph-gold);
-            border-radius: 0;
         }
 
         .lexicon-panel-body::-webkit-scrollbar-thumb:hover {
             background: #d4b070;
         }
 
-        /* Lexicon panel body paragraphs - add matching right padding */
         .lexicon-panel-body p {
             padding-right: 20px;
         }
@@ -537,7 +529,7 @@
             font-style: italic;
             color: #a8a8a8;
             margin-bottom: 1rem;
-            padding: 0.6rem 1rem 0.6rem 1rem;
+            padding: 0.6rem 1rem;
             padding-right: 20px;
             background: #262626;
             border-left: 2px solid var(--glyph-gold);
@@ -833,7 +825,7 @@
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
         var currentlySelectedSentence = null;
 
-        // Sentence explanations data
+        // Sentence explanations
         var sentenceExplanations = {
             'I.1': 'The Invocation solves a structural problem: how to establish hierarchy without reducing it to human claim. Three authorities are summoned in descending order—silence (void above all), stars (celestial pattern), Earth (terrestrial witness)—embodying the vertical structure before naming it. This makes ordination, admonition, purification, and declaration possible: each operates within cosmic framework already enacted. Without this opening, the preamble begins with assertion requiring justification. With witness invoked, subsequent language becomes ritual recognition within pre-existing sacred order.',
             'I.2': 'This passage ordains the structure of the Covenant in reflection of the invocation. "Mirror of the firmament" refers to the celestial order in the opening passage—the hierarchy as an existing architecture is directly called to witness before any declarations are made. The hierarchy is already sanctified: the void (Lord), the firmament (Covenant as mediator), the Earth (Faithful). No judge can assert what a witness has proclaimed, because it is already established as-it-is. This transforms the bond from temporal contract into holy sacrament within a pre-existing cosmic order.',
@@ -961,7 +953,7 @@
                 handleSentenceClick(node);
             });
 
-            // Touch handling for double-tap
+            // Touch handling
             var lastTapTime = 0;
             node.addEventListener('touchend', function (event) {
                 var currentTime = Date.now();
