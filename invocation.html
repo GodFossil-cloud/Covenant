@@ -850,10 +850,7 @@
                 setTimeout(function() {
                     container.classList.add('fade-in');
                     if (navFooter) navFooter.classList.add('fade-in');
-                    // Delay lexicon panel fade-in by 300ms after footer
-                    setTimeout(function() {
-                        if (panel) panel.classList.add('fade-in');
-                    }, 300);
+                                        if (panel) panel.classList.add('fade-in');
                     setTimeout(function() {
                         if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
                         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
