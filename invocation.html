@@ -967,7 +967,7 @@
             });
         });
 
-        // Clear selection on outside click
+        // Clear selection on outside click/touch
         function handleOutsideInteraction(event) {
             var isSentence = event.target.closest('.sentence');
             var isLexicon = event.target.closest('#lexiconToggle');
@@ -985,30 +985,21 @@
         var currentlyActiveTooltip = null;
 
         glossaryTerms.forEach(function(term) {
-            var touchCount = 0;
-            var lastTouchTime = 0;
-
             term.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                var currentTime = Date.now();
 
-                // Check if this is a second touch on the same term within 500ms
-                if (this === currentlyActiveTooltip && (currentTime - lastTouchTime) < 500) {
-                    // Second touch: allow sentence selection to proceed
-                    // The tooltip stays visible, and the parent sentence can now be selected
+                // If this is already the active tooltip, allow sentence selection to proceed
+                if (this === currentlyActiveTooltip) {
+                    // Second touch on same glossary term: let it pass through to select the sentence
                     return;
                 }
 
                 // First touch: show tooltip and prevent sentence selection
-                if (this !== currentlyActiveTooltip) {
-                    if (currentlyActiveTooltip) {
-                        currentlyActiveTooltip.classList.remove('tooltip-active');
-                    }
-                    this.classList.add('tooltip-active');
-                    currentlyActiveTooltip = this;
+                if (currentlyActiveTooltip) {
+                    currentlyActiveTooltip.classList.remove('tooltip-active');
                 }
-
-                lastTouchTime = currentTime;
+                this.classList.add('tooltip-active');
+                currentlyActiveTooltip = this;
             });
         });
 
@@ -1026,6 +1017,22 @@
                 e.stopImmediatePropagation();
                 currentlyActiveTooltip.classList.remove('tooltip-active');
                 currentlyActiveTooltip = null;
+            }
+        }, true); // Use capture phase to intercept early
+
+        // Block sentence selection when deselecting
+        document.addEventListener('touchend', function(e) {
+            if (!currentlySelectedSentence) return;
+
+            var touchedCurrentSentence = currentlySelectedSentence.contains(e.target);
+            var touchedLexicon = e.target.closest('#lexiconToggle');
+            var touchedPanel = e.target.closest('#lexiconPanel');
+
+            // If touching outside the selected sentence (and not lexicon/panel), block other selections
+            if (!touchedCurrentSentence && !touchedLexicon && !touchedPanel) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                clearSentenceSelection();
             }
         }, true); // Use capture phase to intercept early
     })();
