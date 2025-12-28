@@ -387,6 +387,34 @@
             background: linear-gradient(to bottom, rgba(255, 232, 180, 0.06) 0%, rgba(0, 0, 0, 0.26) 100%);
         }
 
+        /* Next button label stack */
+        .nav-btn.stack {
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .nav-btn-label {
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(230, 205, 150, 0.82);
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+            line-height: 1;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .nav-btn-icon {
+            font-size: 1.55rem;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .nav-btn:hover:not(:disabled) .nav-btn-label,
+        .nav-btn:focus-visible:not(:disabled) .nav-btn-label {
+            color: rgba(245, 217, 140, 0.95);
+        }
+
         /* Lexicon Button - Center */
         .nav-btn.center {
             font-size: 2rem;
@@ -752,6 +780,15 @@
                 font-size: 0.58rem;
                 letter-spacing: 0.16em;
             }
+
+            .nav-btn-icon {
+                font-size: 1.4rem;
+            }
+
+            .nav-btn-label {
+                font-size: 0.58rem;
+                letter-spacing: 0.16em;
+            }
         }
 
         @media (max-width: 600px) {
@@ -829,6 +866,15 @@
                 font-size: 0.56rem;
                 letter-spacing: 0.14em;
             }
+
+            .nav-btn-icon {
+                font-size: 1.25rem;
+            }
+
+            .nav-btn-label {
+                font-size: 0.56rem;
+                letter-spacing: 0.14em;
+            }
         }
 
         @media (max-width: 360px) {
@@ -836,7 +882,8 @@
                 grid-template-columns: 78px 1fr 78px;
             }
 
-            .nav-section-indicator {
+            .nav-section-indicator,
+            .nav-btn-label {
                 letter-spacing: 0.1em;
             }
         }
@@ -905,11 +952,14 @@
             <button class="nav-btn" disabled aria-label="Previous section">＜</button>
 
             <div class="nav-center">
-                <div class="nav-section-indicator" aria-hidden="true">Invocation → Foundation</div>
+                <div class="nav-section-indicator" aria-hidden="true">Invocation</div>
                 <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel">⌯⊚⌯</button>
             </div>
 
-            <a href="foundation.html" class="nav-btn" aria-label="Next: Foundation">＞</a>
+            <a href="foundation.html" class="nav-btn stack" aria-label="Next: Foundation">
+                <span class="nav-btn-label">Foundation</span>
+                <span class="nav-btn-icon" aria-hidden="true">＞</span>
+            </a>
         </div>
     </nav>
 
