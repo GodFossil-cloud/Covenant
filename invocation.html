@@ -17,6 +17,11 @@
             --glyph-red: #8b2f2f;
             --glyph-gold: #c9a961;
             --footer-height: 70px;
+
+            /* Footer gradient tuning */
+            --footer-top: var(--accent-color);
+            --footer-highlight: #d7c39a;
+            --footer-bottom: #5f4b38;
         }
 
         * {
@@ -235,13 +240,11 @@
             right: 0;
             height: var(--footer-height);
             background: linear-gradient(to bottom,
-                #8b7355 0%,
-                #6f5b43 28%,
-                #473828 55%,
-                #231a12 78%,
-                #0a0a0a 100%);
-            border-top: 1px solid #6f5b43;
-            border-bottom: 1px solid #0a0a0a;
+                var(--footer-top) 0%,
+                var(--footer-highlight) 45%,
+                var(--footer-bottom) 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.85);
             box-shadow: 0 -12px 20px -8px rgba(0, 0, 0, 0.8),
                         inset 0 -8px 16px -10px rgba(0, 0, 0, 0.6);
             z-index: 1200;
