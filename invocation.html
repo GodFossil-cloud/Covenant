@@ -17,8 +17,6 @@
             --glyph-red: #8b2f2f;
             --glyph-gold: #c9a961;
             --footer-height: 70px;
-
-            /* Footer gradient tuning */
             --footer-top: var(--accent-color);
             --footer-highlight: #d2bf96;
             --footer-bottom: #3f2f23;
@@ -130,7 +128,6 @@
             margin-bottom: 18px;
             text-align: justify;
             hyphens: none;
-            text-wrap: balance;
         }
 
         p.preamble {
@@ -239,14 +236,10 @@
             left: 0;
             right: 0;
             height: var(--footer-height);
-            background: linear-gradient(to bottom,
-                var(--footer-top) 0%,
-                var(--footer-highlight) 45%,
-                var(--footer-bottom) 100%);
+            background: linear-gradient(to bottom, var(--footer-top) 0%, var(--footer-highlight) 45%, var(--footer-bottom) 100%);
             border-top: 1px solid rgba(210, 191, 150, 0.18);
             border-bottom: 1px solid rgba(0, 0, 0, 0.85);
-            box-shadow: 0 -12px 20px -8px rgba(0, 0, 0, 0.8),
-                        inset 0 -8px 16px -10px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 -12px 20px -8px rgba(0, 0, 0, 0.8), inset 0 -8px 16px -10px rgba(0, 0, 0, 0.6);
             z-index: 1200;
             opacity: 0;
             transition: opacity 0.5s ease-in;
@@ -280,14 +273,12 @@
             text-decoration: none;
             -webkit-tap-highlight-color: transparent;
             position: relative;
-            transform: none;
         }
 
         .nav-btn:hover:not(:disabled),
         .nav-btn:focus-visible:not(:disabled) {
             color: #f5d98c;
             text-shadow: 0 0 8px rgba(201, 169, 97, 0.28);
-            transform: none;
         }
 
         .nav-btn:active:not(:disabled) {
@@ -347,7 +338,7 @@
         }
 
         .nav-btn:last-child::after {
-            background-color: #8D8278;
+            background-color: #8d8278;
         }
 
         .nav-btn:last-child:hover::after,
@@ -399,8 +390,7 @@
         /* Lexicon Button - Active State */
         .nav-btn.center.has-selection {
             color: #e8c782;
-            text-shadow: 0 0 8px rgba(201, 169, 97, 0.32),
-                         0 0 14px rgba(201, 169, 97, 0.18);
+            text-shadow: 0 0 8px rgba(201, 169, 97, 0.32), 0 0 14px rgba(201, 169, 97, 0.18);
         }
 
         .nav-btn.center.has-selection::before {
@@ -408,7 +398,7 @@
             box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
                         inset 0 0 10px rgba(201, 169, 97, 0.22),
                         inset 0 0 20px 3px rgba(201, 169, 97, 0.22),
-                        inset 0 0 32px 8px rgba(201, 169, 97, 0.10),
+                        inset 0 0 32px 8px rgba(201, 169, 97, 0.1),
                         0 0 14px rgba(0, 0, 0, 0.82);
         }
 
@@ -483,8 +473,7 @@
             border-radius: 999px;
             background: rgba(210, 191, 150, 0.58);
             transform: translateY(-2px);
-            box-shadow: 0 0 8px rgba(201, 169, 97, 0.14),
-                        0 0 16px rgba(0, 0, 0, 0.75);
+            box-shadow: 0 0 8px rgba(201, 169, 97, 0.14), 0 0 16px rgba(0, 0, 0, 0.75);
         }
 
         .lexicon-panel-header {
@@ -570,8 +559,7 @@
             font-style: italic;
             color: #a8a8a8;
             margin-bottom: 1rem;
-            padding: 0.6rem 1rem;
-            padding-right: 20px;
+            padding: 0.6rem 1rem 0.6rem 1rem;
             background: #262626;
             border-left: 2px solid var(--glyph-gold);
             line-height: 1.5;
@@ -860,7 +848,7 @@
     </div>
 
     <script>
-    (function () {
+    (function() {
         'use strict';
         
         var loadingIcon = document.getElementById('loadingIcon');
@@ -874,15 +862,10 @@
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
         var currentlySelectedSentence = null;
 
-        // If the device can't truly hover (touch / coarse pointer), keep lexicon glyph behavior simple.
-        var isMobileGlyphMode = false;
-        if (window.matchMedia) {
-            isMobileGlyphMode = window.matchMedia('(hover: none), (pointer: coarse)').matches;
-        }
+        var isMobileGlyphMode = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)').matches : false;
 
         function isBottomSheetMode() {
-            if (!window.matchMedia) return false;
-            return window.matchMedia('(max-width: 600px)').matches;
+            return window.matchMedia ? window.matchMedia('(max-width: 600px)').matches : false;
         }
 
         var lexiconHovering = false;
@@ -903,30 +886,20 @@
             var isOpen = panel.classList.contains('is-open');
             var hasSelection = !!currentlySelectedSentence;
 
-            // Mobile/touch: simplified mapping
             if (isMobileGlyphMode) {
-                lexiconToggle.textContent = isOpen
-                    ? LEX_GLYPHS.mobileOpen
-                    : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+                lexiconToggle.textContent = isOpen ? LEX_GLYPHS.mobileOpen : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
                 return;
             }
 
-            // Desktop: full mapping
             var glyph;
             if (isOpen) {
-                glyph = lexiconHovering
-                    ? LEX_GLYPHS.openHover
-                    : (hasSelection ? LEX_GLYPHS.openSelected : LEX_GLYPHS.openSummary);
+                glyph = lexiconHovering ? LEX_GLYPHS.openHover : (hasSelection ? LEX_GLYPHS.openSelected : LEX_GLYPHS.openSummary);
             } else {
-                glyph = lexiconHovering
-                    ? (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover)
-                    : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+                glyph = lexiconHovering ? (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover) : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
             }
-
             lexiconToggle.textContent = glyph;
         }
 
-        // Sentence explanations
         var sentenceExplanations = {
             'I.1': 'The Invocation solves a structural problem: how to establish hierarchy without reducing it to human claim. Three authorities are summoned in descending order—silence (void above all), stars (celestial pattern), Earth (terrestrial witness)—embodying the vertical structure before naming it. This makes ordination, admonition, purification, and declaration possible: each operates within cosmic framework already enacted. Without this opening, the preamble begins with assertion requiring justification. With witness invoked, subsequent language becomes ritual recognition within pre-existing sacred order.',
             'I.2': 'This passage ordains the structure of the Covenant in reflection of the invocation. "Mirror of the firmament" refers to the celestial order in the opening passage—the hierarchy as an existing architecture is directly called to witness before any declarations are made. The hierarchy is already sanctified: the void (Lord), the firmament (Covenant as mediator), the Earth (Faithful). No judge can assert what a witness has proclaimed, because it is already established as-it-is. This transforms the bond from temporal contract into holy sacrament within a pre-existing cosmic order.',
@@ -935,7 +908,6 @@
             'I.5': 'This passage of declaration seals what the four prior movements have prepared. "Thus" binds the logic: witness invoked, order ordained, profanation warned, corruption expelled—therefore the Covenant may endure by right, sustained within the order as established. In calling the Covenant "an everlasting reflection of divine allegiance," the bond is rendered sacred—not a mere arrangement, but something not to be extinguished.'
         };
 
-        // Loading sequence
         setTimeout(function() {
             if (loadingIcon) loadingIcon.classList.add('fade-out');
             setTimeout(function() {
@@ -952,7 +924,6 @@
             }, 500);
         }, 1800);
 
-        // Lexicon button state
         function updateLexiconButtonState() {
             if (!lexiconToggle) return;
             lexiconToggle.classList.toggle('has-selection', !!currentlySelectedSentence);
@@ -964,13 +935,9 @@
             panel.classList.remove('is-dragging');
             panel.style.transform = '';
             panel.style.transition = '';
-
-            if (lexOverlay) {
-                lexOverlay.style.opacity = '';
-            }
+            if (lexOverlay) lexOverlay.style.opacity = '';
         }
 
-        // Panel controls
         function openPanel() {
             if (!panel || !lexOverlay) return;
             resetPanelInlineMotion();
@@ -994,7 +961,7 @@
         function renderOverview() {
             if (!dynamicContent) return;
             dynamicContent.style.opacity = '0';
-            setTimeout(function () {
+            setTimeout(function() {
                 dynamicContent.innerHTML = defaultOverviewHTML;
                 dynamicContent.style.opacity = '1';
             }, 150);
@@ -1008,34 +975,31 @@
                 return;
             }
             dynamicContent.style.opacity = '0';
-            setTimeout(function () {
+            setTimeout(function() {
                 dynamicContent.innerHTML = '<div class="lexicon-sentence-quote">"' + sentenceText + '"</div><p>' + explanation + '</p>';
                 dynamicContent.style.opacity = '1';
             }, 150);
         }
 
-        // Lexicon toggle
         if (lexiconToggle && panel && lexOverlay) {
             setLexiconGlyph();
 
-            // Desktop-only hover/focus glyph behavior
             if (!isMobileGlyphMode) {
-                ['pointerenter', 'mouseenter', 'focus'].forEach(function (evt) {
-                    lexiconToggle.addEventListener(evt, function () {
+                ['pointerenter', 'mouseenter', 'focus'].forEach(function(evt) {
+                    lexiconToggle.addEventListener(evt, function() {
                         lexiconHovering = true;
                         setLexiconGlyph();
                     });
                 });
-
-                ['pointerleave', 'mouseleave', 'blur'].forEach(function (evt) {
-                    lexiconToggle.addEventListener(evt, function () {
+                ['pointerleave', 'mouseleave', 'blur'].forEach(function(evt) {
+                    lexiconToggle.addEventListener(evt, function() {
                         lexiconHovering = false;
                         setLexiconGlyph();
                     });
                 });
             }
 
-            lexiconToggle.addEventListener('click', function () {
+            lexiconToggle.addEventListener('click', function() {
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
@@ -1049,20 +1013,16 @@
             });
 
             lexOverlay.addEventListener('click', closePanel);
-            
-            var closeButtons = panel.querySelectorAll('.lexicon-panel-close');
-            closeButtons.forEach(function (btn) {
+            panel.querySelectorAll('.lexicon-panel-close').forEach(function(btn) {
                 btn.addEventListener('click', closePanel);
             });
-            
-            document.addEventListener('keydown', function (event) {
+            document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' && panel.classList.contains('is-open')) {
                     closePanel();
                 }
             });
         }
 
-        // Mobile drag-to-close (handle only)
         var dragRegion = document.getElementById('lexiconDragRegion');
         if (dragRegion && panel && lexOverlay) {
             var isDragging = false;
@@ -1078,52 +1038,40 @@
             }
 
             function beginDrag(clientY) {
-                if (!panel.classList.contains('is-open')) return;
-                if (!isBottomSheetMode()) return;
-
+                if (!panel.classList.contains('is-open') || !isBottomSheetMode()) return;
                 isDragging = true;
                 startY = clientY;
                 lastY = clientY;
-                lastT = (window.performance && performance.now) ? performance.now() : Date.now();
+                lastT = window.performance && performance.now ? performance.now() : Date.now();
                 velocity = 0;
                 currentDelta = 0;
-
                 panel.classList.add('is-dragging');
                 panel.style.transition = 'none';
             }
 
             function updateDrag(clientY) {
                 if (!isDragging) return;
-
                 currentDelta = clientY - startY;
                 if (currentDelta < 0) currentDelta = 0;
-
                 panel.style.transform = 'translateY(' + currentDelta + 'px)';
-
                 var h = getPanelHeight();
                 var fade = 1 - (currentDelta / (h * 0.9));
                 if (fade < 0) fade = 0;
                 if (fade > 1) fade = 1;
                 lexOverlay.style.opacity = String(fade);
-
-                var now = (window.performance && performance.now) ? performance.now() : Date.now();
+                var now = window.performance && performance.now ? performance.now() : Date.now();
                 var dt = now - lastT;
-                if (dt > 0) {
-                    velocity = (clientY - lastY) / dt; // px per ms
-                }
+                if (dt > 0) velocity = (clientY - lastY) / dt;
                 lastY = clientY;
                 lastT = now;
             }
 
             function endDrag() {
                 if (!isDragging) return;
-
                 var h = getPanelHeight();
                 var threshold = Math.max(120, h * 0.25);
                 var shouldClose = (currentDelta > threshold) || (velocity > 0.9);
-
                 isDragging = false;
-
                 if (shouldClose) {
                     closePanel();
                 } else {
@@ -1134,40 +1082,30 @@
                 }
             }
 
-            // Prefer Pointer Events when available
             if (window.PointerEvent) {
-                dragRegion.addEventListener('pointerdown', function (e) {
-                    if (e.pointerType === 'mouse') {
-                        // Still allow desktop testing, but only engages in bottom-sheet mode
-                    }
+                dragRegion.addEventListener('pointerdown', function(e) {
                     beginDrag(e.clientY);
                     try { dragRegion.setPointerCapture(e.pointerId); } catch (err) {}
                 });
-
-                dragRegion.addEventListener('pointermove', function (e) {
+                dragRegion.addEventListener('pointermove', function(e) {
                     updateDrag(e.clientY);
                 });
-
                 dragRegion.addEventListener('pointerup', endDrag);
                 dragRegion.addEventListener('pointercancel', endDrag);
             } else {
-                // Fallback
-                dragRegion.addEventListener('touchstart', function (e) {
+                dragRegion.addEventListener('touchstart', function(e) {
                     if (!e.touches || !e.touches[0]) return;
                     beginDrag(e.touches[0].clientY);
-                }, { passive: true });
-
-                dragRegion.addEventListener('touchmove', function (e) {
+                }, {passive: true});
+                dragRegion.addEventListener('touchmove', function(e) {
                     if (!e.touches || !e.touches[0]) return;
                     updateDrag(e.touches[0].clientY);
-                }, { passive: true });
-
+                }, {passive: true});
                 dragRegion.addEventListener('touchend', endDrag);
                 dragRegion.addEventListener('touchcancel', endDrag);
             }
         }
 
-        // Sentence selection
         function clearSentenceSelection() {
             if (currentlySelectedSentence) {
                 currentlySelectedSentence.classList.remove('is-selected');
@@ -1188,15 +1126,14 @@
         }
 
         var sentenceNodes = document.querySelectorAll('.sentence');
-        sentenceNodes.forEach(function (node) {
-            node.addEventListener('click', function (event) {
+        sentenceNodes.forEach(function(node) {
+            node.addEventListener('click', function(event) {
                 event.stopPropagation();
                 handleSentenceClick(node);
             });
 
-            // Touch handling
             var lastTapTime = 0;
-            node.addEventListener('touchend', function (event) {
+            node.addEventListener('touchend', function(event) {
                 var currentTime = Date.now();
                 var tapLength = currentTime - lastTapTime;
                 if (tapLength < 300 && tapLength > 0) {
@@ -1208,7 +1145,6 @@
             });
         });
 
-        // Clear selection on outside click/touch
         function handleOutsideInteraction(event) {
             var isSentence = event.target.closest('.sentence');
             var isLexicon = event.target.closest('#lexiconToggle');
@@ -1221,62 +1157,43 @@
         document.addEventListener('click', handleOutsideInteraction);
         document.addEventListener('touchend', handleOutsideInteraction);
 
-        // Glossary tooltip touch handling with improved mobile UX
         var glossaryTerms = document.querySelectorAll('.glossary-term');
         var currentlyActiveTooltip = null;
 
         glossaryTerms.forEach(function(term) {
             term.addEventListener('touchstart', function(e) {
-                // If this is already the active tooltip:
-                // - DO NOT preventDefault
-                // - allow the tap/click to bubble and select the parent sentence
-                if (this === currentlyActiveTooltip) {
-                    return;
-                }
-
-                // First touch: show tooltip and prevent sentence selection
+                if (this === currentlyActiveTooltip) return;
                 e.preventDefault();
-
-                if (currentlyActiveTooltip) {
-                    currentlyActiveTooltip.classList.remove('tooltip-active');
-                }
+                if (currentlyActiveTooltip) currentlyActiveTooltip.classList.remove('tooltip-active');
                 this.classList.add('tooltip-active');
                 currentlyActiveTooltip = this;
             });
         });
 
-        // Hide tooltip when touching elsewhere, and block sentence selection on that touch
         document.addEventListener('touchend', function(e) {
             if (!currentlyActiveTooltip) return;
-
             var touchedGlossaryTerm = Array.from(glossaryTerms).some(function(term) {
                 return term.contains(e.target);
             });
-
             if (!touchedGlossaryTerm) {
-                // Touched outside any glossary term while tooltip is active
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 currentlyActiveTooltip.classList.remove('tooltip-active');
                 currentlyActiveTooltip = null;
             }
-        }, true); // Use capture phase to intercept early
+        }, true);
 
-        // Block sentence selection when deselecting
         document.addEventListener('touchend', function(e) {
             if (!currentlySelectedSentence) return;
-
             var touchedCurrentSentence = currentlySelectedSentence.contains(e.target);
             var touchedLexicon = e.target.closest('#lexiconToggle');
             var touchedPanel = e.target.closest('#lexiconPanel');
-
-            // If touching outside the selected sentence (and not lexicon/panel), block other selections
             if (!touchedCurrentSentence && !touchedLexicon && !touchedPanel) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 clearSentenceSelection();
             }
-        }, true); // Use capture phase to intercept early
+        }, true);
     })();
     </script>
 </body>
