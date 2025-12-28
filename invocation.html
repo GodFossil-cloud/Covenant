@@ -881,6 +881,7 @@
         var dynamicContent = document.getElementById('lexiconDynamicContent');
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
         var currentlySelectedSentence = null;
+        var currentlyActiveTooltip = null;
         var focusReturnEl = null;
         var scrollLockY = 0;
 
@@ -904,6 +905,12 @@
             document.body.classList.remove('lexicon-scroll-lock');
             document.body.style.top = '';
             window.scrollTo(0, scrollLockY);
+        }
+
+        function clearActiveTooltip() {
+            if (!currentlyActiveTooltip) return;
+            currentlyActiveTooltip.classList.remove('tooltip-active');
+            currentlyActiveTooltip = null;
         }
 
         var lexiconHovering = false;
@@ -988,6 +995,7 @@
 
         function openPanel() {
             if (!panel || !lexOverlay) return;
+            clearActiveTooltip();
             resetPanelInlineMotion();
             focusReturnEl = lexiconToggle;
             panel.classList.add('is-open');
@@ -1002,6 +1010,7 @@
 
         function closePanel() {
             if (!panel || !lexOverlay) return;
+            clearActiveTooltip();
             resetPanelInlineMotion();
             panel.classList.remove('is-open');
             lexOverlay.classList.remove('is-open');
@@ -1218,42 +1227,41 @@
         document.addEventListener('touchend', handleOutsideInteraction);
 
         var glossaryTerms = document.querySelectorAll('.glossary-term');
-        var currentlyActiveTooltip = null;
 
         glossaryTerms.forEach(function(term) {
             term.addEventListener('touchstart', function(e) {
                 if (this === currentlyActiveTooltip) return;
                 e.preventDefault();
-                if (currentlyActiveTooltip) currentlyActiveTooltip.classList.remove('tooltip-active');
+                clearActiveTooltip();
                 this.classList.add('tooltip-active');
                 currentlyActiveTooltip = this;
             });
         });
 
-        document.addEventListener('touchend', function(e) {
+        /*
+            IMPORTANT (iOS): Do not call preventDefault/stopPropagation on a global touchend handler.
+            It can suppress the synthetic "click" event, making Lexicon close controls feel dead.
+            Instead, clear tooltip/selection early on touchstart (capture) without blocking the event.
+        */
+        document.addEventListener('touchstart', function(e) {
             if (!currentlyActiveTooltip) return;
             var touchedGlossaryTerm = Array.from(glossaryTerms).some(function(term) {
                 return term.contains(e.target);
             });
             if (!touchedGlossaryTerm) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                currentlyActiveTooltip.classList.remove('tooltip-active');
-                currentlyActiveTooltip = null;
+                clearActiveTooltip();
             }
-        }, true);
+        }, {capture: true, passive: true});
 
-        document.addEventListener('touchend', function(e) {
+        document.addEventListener('touchstart', function(e) {
             if (!currentlySelectedSentence) return;
             var touchedCurrentSentence = currentlySelectedSentence.contains(e.target);
             var touchedLexicon = e.target.closest('#lexiconToggle');
             var touchedPanel = e.target.closest('#lexiconPanel');
             if (!touchedCurrentSentence && !touchedLexicon && !touchedPanel) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
                 clearSentenceSelection();
             }
-        }, true);
+        }, {capture: true, passive: true});
     })();
     </script>
 </body>
