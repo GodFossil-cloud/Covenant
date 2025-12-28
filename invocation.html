@@ -351,6 +351,9 @@
         /* Lexicon Button - Center */
         .nav-btn.center {
             font-size: 2rem;
+            white-space: nowrap;
+            line-height: 1;
+            font-family: 'Segoe UI Symbol', 'Apple Symbols', 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Lora', serif;
         }
 
         .nav-btn.center::before {
@@ -769,7 +772,7 @@
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
             <button class="nav-btn" disabled aria-label="Previous section">＜</button>
-            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">𖤍</button>
+            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">⌯⊚⌯</button>
             <a href="foundation.html" class="nav-btn" aria-label="Next: Foundation">＞</a>
         </div>
     </nav>
@@ -825,6 +828,37 @@
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
         var currentlySelectedSentence = null;
 
+        var lexiconHovering = false;
+        var LEX_GLYPHS = {
+            default: '⌯⊚⌯',
+            defaultHover: '↿◌↾',
+            selected: '▻⊚◅',
+            selectedHover: '▻◌◅',
+            openSummary: '≡⦿≡',
+            openSelected: '▸⦿◂',
+            openHover: '⇃⌵⇂'
+        };
+
+        function setLexiconGlyph() {
+            if (!lexiconToggle || !panel) return;
+
+            var isOpen = panel.classList.contains('is-open');
+            var hasSelection = !!currentlySelectedSentence;
+
+            var glyph;
+            if (isOpen) {
+                glyph = lexiconHovering
+                    ? LEX_GLYPHS.openHover
+                    : (hasSelection ? LEX_GLYPHS.openSelected : LEX_GLYPHS.openSummary);
+            } else {
+                glyph = lexiconHovering
+                    ? (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover)
+                    : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+            }
+
+            lexiconToggle.textContent = glyph;
+        }
+
         // Sentence explanations
         var sentenceExplanations = {
             'I.1': 'The Invocation solves a structural problem: how to establish hierarchy without reducing it to human claim. Three authorities are summoned in descending order—silence (void above all), stars (celestial pattern), Earth (terrestrial witness)—embodying the vertical structure before naming it. This makes ordination, admonition, purification, and declaration possible: each operates within cosmic framework already enacted. Without this opening, the preamble begins with assertion requiring justification. With witness invoked, subsequent language becomes ritual recognition within pre-existing sacred order.',
@@ -855,6 +889,7 @@
         function updateLexiconButtonState() {
             if (!lexiconToggle) return;
             lexiconToggle.classList.toggle('has-selection', !!currentlySelectedSentence);
+            setLexiconGlyph();
         }
 
         // Panel controls
@@ -864,6 +899,7 @@
             lexOverlay.classList.add('is-open');
             panel.setAttribute('aria-hidden', 'false');
             lexOverlay.setAttribute('aria-hidden', 'false');
+            setLexiconGlyph();
         }
 
         function closePanel() {
@@ -872,6 +908,7 @@
             lexOverlay.classList.remove('is-open');
             panel.setAttribute('aria-hidden', 'true');
             lexOverlay.setAttribute('aria-hidden', 'true');
+            setLexiconGlyph();
         }
 
         function renderOverview() {
@@ -899,6 +936,22 @@
 
         // Lexicon toggle
         if (lexiconToggle && panel && lexOverlay) {
+            setLexiconGlyph();
+
+            ['pointerenter', 'mouseenter', 'focus'].forEach(function (evt) {
+                lexiconToggle.addEventListener(evt, function () {
+                    lexiconHovering = true;
+                    setLexiconGlyph();
+                });
+            });
+
+            ['pointerleave', 'mouseleave', 'blur'].forEach(function (evt) {
+                lexiconToggle.addEventListener(evt, function () {
+                    lexiconHovering = false;
+                    setLexiconGlyph();
+                });
+            });
+
             lexiconToggle.addEventListener('click', function () {
                 if (panel.classList.contains('is-open')) {
                     closePanel();
