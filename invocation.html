@@ -46,6 +46,18 @@
             position: relative;
         }
 
+        /* Scroll lock (prevents iOS pull-to-refresh behind Lexicon) */
+        html.lexicon-scroll-lock,
+        body.lexicon-scroll-lock {
+            overflow: hidden;
+            height: 100%;
+        }
+
+        body.lexicon-scroll-lock {
+            position: fixed;
+            width: 100%;
+        }
+
         /* Loading Overlay */
         #loadingIcon {
             position: fixed;
@@ -440,6 +452,7 @@
             flex-direction: column;
             padding: 24px 20px;
             opacity: 0;
+            overscroll-behavior: contain;
         }
 
         .lexicon-panel.fade-in {
@@ -528,6 +541,9 @@
             padding-right: 12px;
             scrollbar-width: thin;
             scrollbar-color: var(--glyph-gold) #555;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
         }
 
         .lexicon-panel-body::-webkit-scrollbar {
@@ -864,11 +880,28 @@
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
         var currentlySelectedSentence = null;
         var focusReturnEl = null;
+        var scrollLockY = 0;
 
         var isMobileGlyphMode = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)').matches : false;
 
         function isBottomSheetMode() {
             return window.matchMedia ? window.matchMedia('(max-width: 600px)').matches : false;
+        }
+
+        function lockBodyScroll() {
+            if (document.documentElement.classList.contains('lexicon-scroll-lock')) return;
+            scrollLockY = window.scrollY || window.pageYOffset || 0;
+            document.documentElement.classList.add('lexicon-scroll-lock');
+            document.body.classList.add('lexicon-scroll-lock');
+            document.body.style.top = (-scrollLockY) + 'px';
+        }
+
+        function unlockBodyScroll() {
+            if (!document.documentElement.classList.contains('lexicon-scroll-lock')) return;
+            document.documentElement.classList.remove('lexicon-scroll-lock');
+            document.body.classList.remove('lexicon-scroll-lock');
+            document.body.style.top = '';
+            window.scrollTo(0, scrollLockY);
         }
 
         var lexiconHovering = false;
@@ -960,6 +993,7 @@
             panel.setAttribute('aria-hidden', 'false');
             lexOverlay.setAttribute('aria-hidden', 'false');
             if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'true');
+            lockBodyScroll();
             setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
         }
@@ -972,6 +1006,7 @@
             panel.setAttribute('aria-hidden', 'true');
             lexOverlay.setAttribute('aria-hidden', 'true');
             if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
+            unlockBodyScroll();
             setLexiconGlyph();
 
             setTimeout(function() {
