@@ -690,11 +690,12 @@
 
             .lexicon-panel {
                 top: auto;
-                bottom: var(--footer-height);
+                bottom: calc(var(--footer-height) + env(safe-area-inset-bottom, 0px));
                 right: 0;
                 left: 0;
                 width: 100vw;
-                height: 70vh;
+                height: 82vh;
+                max-height: calc(100vh - var(--footer-height) - env(safe-area-inset-bottom, 0px));
                 border-left: none;
                 border-top: 1px solid #3a3a3a;
                 border-radius: 12px 12px 0 0;
