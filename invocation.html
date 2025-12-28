@@ -461,6 +461,31 @@
             box-shadow: -2px 0 12px rgba(0, 0, 0, 0.5);
         }
 
+        .lexicon-panel.is-dragging {
+            transition: none !important;
+        }
+
+        .lexicon-drag-region {
+            display: none;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            padding: 6px 0 12px;
+            margin: -6px 0 8px;
+            user-select: none;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .lexicon-drag-pill {
+            width: 56px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(210, 191, 150, 0.62);
+            box-shadow: 0 0 10px rgba(201, 169, 97, 0.18),
+                        0 0 18px rgba(0, 0, 0, 0.7);
+        }
+
         .lexicon-panel-header {
             display: flex;
             justify-content: space-between;
@@ -670,6 +695,10 @@
         }
 
         @media (max-width: 600px) {
+            .lexicon-drag-region {
+                display: flex;
+            }
+
             .lexicon-panel {
                 top: auto;
                 bottom: var(--footer-height);
@@ -792,6 +821,10 @@
     <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
 
     <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
+        <div class="lexicon-drag-region" id="lexiconDragRegion" aria-hidden="true">
+            <div class="lexicon-drag-pill"></div>
+        </div>
+
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
@@ -844,6 +877,11 @@
         var isMobileGlyphMode = false;
         if (window.matchMedia) {
             isMobileGlyphMode = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+        }
+
+        function isBottomSheetMode() {
+            if (!window.matchMedia) return false;
+            return window.matchMedia('(max-width: 600px)').matches;
         }
 
         var lexiconHovering = false;
@@ -920,9 +958,21 @@
             setLexiconGlyph();
         }
 
+        function resetPanelInlineMotion() {
+            if (!panel) return;
+            panel.classList.remove('is-dragging');
+            panel.style.transform = '';
+            panel.style.transition = '';
+
+            if (lexOverlay) {
+                lexOverlay.style.opacity = '';
+            }
+        }
+
         // Panel controls
         function openPanel() {
             if (!panel || !lexOverlay) return;
+            resetPanelInlineMotion();
             panel.classList.add('is-open');
             lexOverlay.classList.add('is-open');
             panel.setAttribute('aria-hidden', 'false');
@@ -932,6 +982,7 @@
 
         function closePanel() {
             if (!panel || !lexOverlay) return;
+            resetPanelInlineMotion();
             panel.classList.remove('is-open');
             lexOverlay.classList.remove('is-open');
             panel.setAttribute('aria-hidden', 'true');
@@ -1008,6 +1059,111 @@
                     closePanel();
                 }
             });
+        }
+
+        // Mobile drag-to-close (handle only)
+        var dragRegion = document.getElementById('lexiconDragRegion');
+        if (dragRegion && panel && lexOverlay) {
+            var isDragging = false;
+            var startY = 0;
+            var lastY = 0;
+            var lastT = 0;
+            var velocity = 0;
+            var currentDelta = 0;
+
+            function getPanelHeight() {
+                var rect = panel.getBoundingClientRect();
+                return rect && rect.height ? rect.height : 1;
+            }
+
+            function beginDrag(clientY) {
+                if (!panel.classList.contains('is-open')) return;
+                if (!isBottomSheetMode()) return;
+
+                isDragging = true;
+                startY = clientY;
+                lastY = clientY;
+                lastT = (window.performance && performance.now) ? performance.now() : Date.now();
+                velocity = 0;
+                currentDelta = 0;
+
+                panel.classList.add('is-dragging');
+                panel.style.transition = 'none';
+            }
+
+            function updateDrag(clientY) {
+                if (!isDragging) return;
+
+                currentDelta = clientY - startY;
+                if (currentDelta < 0) currentDelta = 0;
+
+                panel.style.transform = 'translateY(' + currentDelta + 'px)';
+
+                var h = getPanelHeight();
+                var fade = 1 - (currentDelta / (h * 0.9));
+                if (fade < 0) fade = 0;
+                if (fade > 1) fade = 1;
+                lexOverlay.style.opacity = String(fade);
+
+                var now = (window.performance && performance.now) ? performance.now() : Date.now();
+                var dt = now - lastT;
+                if (dt > 0) {
+                    velocity = (clientY - lastY) / dt; // px per ms
+                }
+                lastY = clientY;
+                lastT = now;
+            }
+
+            function endDrag() {
+                if (!isDragging) return;
+
+                var h = getPanelHeight();
+                var threshold = Math.max(120, h * 0.25);
+                var shouldClose = (currentDelta > threshold) || (velocity > 0.9);
+
+                isDragging = false;
+
+                if (shouldClose) {
+                    closePanel();
+                } else {
+                    panel.classList.remove('is-dragging');
+                    panel.style.transition = '';
+                    panel.style.transform = '';
+                    lexOverlay.style.opacity = '';
+                }
+            }
+
+            // Prefer Pointer Events when available
+            if (window.PointerEvent) {
+                dragRegion.addEventListener('pointerdown', function (e) {
+                    if (e.pointerType === 'mouse') {
+                        // Still allow desktop testing, but only engages in bottom-sheet mode
+                    }
+                    beginDrag(e.clientY);
+                    try { dragRegion.setPointerCapture(e.pointerId); } catch (err) {}
+                });
+
+                dragRegion.addEventListener('pointermove', function (e) {
+                    updateDrag(e.clientY);
+                });
+
+                dragRegion.addEventListener('pointerup', endDrag);
+                dragRegion.addEventListener('pointercancel', endDrag);
+            } else {
+                // Fallback
+                dragRegion.addEventListener('touchstart', function (e) {
+                    if (!e.touches || !e.touches[0]) return;
+                    beginDrag(e.touches[0].clientY);
+                }, { passive: true });
+
+                dragRegion.addEventListener('touchmove', function (e) {
+                    if (!e.touches || !e.touches[0]) return;
+                    updateDrag(e.touches[0].clientY);
+                }, { passive: true });
+
+                dragRegion.addEventListener('touchend', endDrag);
+                dragRegion.addEventListener('touchcancel', endDrag);
+            }
         }
 
         // Sentence selection
