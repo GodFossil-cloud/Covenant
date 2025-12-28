@@ -24,6 +24,9 @@
             --footer-top: #6b5a4a;
             --footer-mid: #4a372b;
             --footer-bottom: #23160f;
+
+            --footer-label: rgba(236, 216, 176, 0.78);
+            --footer-label-hover: rgba(245, 217, 140, 0.96);
         }
 
         * {
@@ -301,7 +304,7 @@
             font-size: 0.62rem;
             letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: rgba(230, 205, 150, 0.82);
+            color: var(--footer-label);
             text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
             user-select: none;
             pointer-events: none;
@@ -390,18 +393,23 @@
         /* Next button label stack */
         .nav-btn.stack {
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
+            padding: 8px 0 6px;
         }
 
         .nav-btn-label {
-            font-size: 0.62rem;
-            letter-spacing: 0.18em;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.70rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: rgba(230, 205, 150, 0.82);
-            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+            color: var(--footer-label);
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
             line-height: 1;
             user-select: none;
             pointer-events: none;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
 
         .nav-btn-icon {
@@ -412,7 +420,7 @@
 
         .nav-btn:hover:not(:disabled) .nav-btn-label,
         .nav-btn:focus-visible:not(:disabled) .nav-btn-label {
-            color: rgba(245, 217, 140, 0.95);
+            color: var(--footer-label-hover);
         }
 
         /* Lexicon Button - Center */
@@ -786,8 +794,12 @@
             }
 
             .nav-btn-label {
-                font-size: 0.58rem;
-                letter-spacing: 0.16em;
+                font-size: 0.64rem;
+                letter-spacing: 0.11em;
+            }
+
+            .nav-btn.stack {
+                padding: 8px 0 6px;
             }
         }
 
@@ -872,8 +884,12 @@
             }
 
             .nav-btn-label {
-                font-size: 0.56rem;
-                letter-spacing: 0.14em;
+                font-size: 0.62rem;
+                letter-spacing: 0.10em;
+            }
+
+            .nav-btn.stack {
+                padding: 8px 0 6px;
             }
         }
 
@@ -882,9 +898,12 @@
                 grid-template-columns: 78px 1fr 78px;
             }
 
-            .nav-section-indicator,
-            .nav-btn-label {
+            .nav-section-indicator {
                 letter-spacing: 0.1em;
+            }
+
+            .nav-btn-label {
+                letter-spacing: 0.09em;
             }
         }
     </style>
