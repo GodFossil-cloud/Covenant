@@ -828,6 +828,12 @@
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
         var currentlySelectedSentence = null;
 
+        // If the device can't truly hover (touch / coarse pointer), keep lexicon glyph behavior simple.
+        var isMobileGlyphMode = false;
+        if (window.matchMedia) {
+            isMobileGlyphMode = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+        }
+
         var lexiconHovering = false;
         var LEX_GLYPHS = {
             default: '⌯⊚⌯',
@@ -836,7 +842,8 @@
             selectedHover: '▻◌◅',
             openSummary: '≡⦿≡',
             openSelected: '▸⦿◂',
-            openHover: '⇃⌵⇂'
+            openHover: '⇃⌵⇂',
+            mobileOpen: '⇃⌵⇂'
         };
 
         function setLexiconGlyph() {
@@ -845,6 +852,15 @@
             var isOpen = panel.classList.contains('is-open');
             var hasSelection = !!currentlySelectedSentence;
 
+            // Mobile/touch: simplified mapping
+            if (isMobileGlyphMode) {
+                lexiconToggle.textContent = isOpen
+                    ? LEX_GLYPHS.mobileOpen
+                    : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+                return;
+            }
+
+            // Desktop: full mapping
             var glyph;
             if (isOpen) {
                 glyph = lexiconHovering
@@ -938,19 +954,22 @@
         if (lexiconToggle && panel && lexOverlay) {
             setLexiconGlyph();
 
-            ['pointerenter', 'mouseenter', 'focus'].forEach(function (evt) {
-                lexiconToggle.addEventListener(evt, function () {
-                    lexiconHovering = true;
-                    setLexiconGlyph();
+            // Desktop-only hover/focus glyph behavior
+            if (!isMobileGlyphMode) {
+                ['pointerenter', 'mouseenter', 'focus'].forEach(function (evt) {
+                    lexiconToggle.addEventListener(evt, function () {
+                        lexiconHovering = true;
+                        setLexiconGlyph();
+                    });
                 });
-            });
 
-            ['pointerleave', 'mouseleave', 'blur'].forEach(function (evt) {
-                lexiconToggle.addEventListener(evt, function () {
-                    lexiconHovering = false;
-                    setLexiconGlyph();
+                ['pointerleave', 'mouseleave', 'blur'].forEach(function (evt) {
+                    lexiconToggle.addEventListener(evt, function () {
+                        lexiconHovering = false;
+                        setLexiconGlyph();
+                    });
                 });
-            });
+            }
 
             lexiconToggle.addEventListener('click', function () {
                 if (panel.classList.contains('is-open')) {
@@ -1039,15 +1058,16 @@
 
         glossaryTerms.forEach(function(term) {
             term.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-
-                // If this is already the active tooltip, allow sentence selection to proceed
+                // If this is already the active tooltip:
+                // - DO NOT preventDefault
+                // - allow the tap/click to bubble and select the parent sentence
                 if (this === currentlyActiveTooltip) {
-                    // Second touch on same glossary term: let it pass through to select the sentence
                     return;
                 }
 
                 // First touch: show tooltip and prevent sentence selection
+                e.preventDefault();
+
                 if (currentlyActiveTooltip) {
                     currentlyActiveTooltip.classList.remove('tooltip-active');
                 }
