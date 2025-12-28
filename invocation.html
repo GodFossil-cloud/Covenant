@@ -489,6 +489,15 @@
             background: rgba(210, 191, 150, 0.58);
             transform: translateY(-2px);
             box-shadow: 0 0 8px rgba(201, 169, 97, 0.14), 0 0 16px rgba(0, 0, 0, 0.75);
+            transition: box-shadow 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+        }
+
+        .lexicon-drag-pill.is-pressed {
+            background: rgba(210, 191, 150, 0.82);
+            box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.38),
+                        0 0 18px rgba(201, 169, 97, 0.22),
+                        0 0 22px rgba(0, 0, 0, 0.85);
+            transform: translateY(-2px) scaleX(1.02);
         }
 
         .lexicon-panel-header {
@@ -526,12 +535,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.2s ease;
+            border-radius: 8px;
+            transition: color 0.2s ease, background-color 0.18s ease, box-shadow 0.18s ease, text-shadow 0.18s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .lexicon-panel-close:hover,
         .lexicon-panel-close:focus-visible {
             color: #e0bf7a;
+        }
+
+        .lexicon-panel-close.is-pressed {
+            color: #f5d98c;
+            background: rgba(201, 169, 97, 0.10);
+            box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.28),
+                        0 0 16px rgba(201, 169, 97, 0.18);
+            text-shadow: 0 0 10px rgba(201, 169, 97, 0.22);
         }
 
         .lexicon-panel-body {
@@ -704,6 +723,20 @@
         @media (max-width: 600px) {
             .lexicon-drag-region {
                 display: flex;
+                padding: 12px 0 14px;
+                margin: -14px 0 6px;
+                min-height: 44px;
+            }
+
+            .lexicon-drag-pill {
+                width: 86px;
+                height: 5px;
+            }
+
+            .lexicon-panel-close {
+                width: 44px;
+                height: 44px;
+                font-size: 2rem;
             }
 
             .lexicon-panel {
@@ -913,6 +946,44 @@
             currentlyActiveTooltip = null;
         }
 
+        function bindActivate(el, handler) {
+            if (!el) return;
+            var lastPointerUpAt = 0;
+
+            el.addEventListener('pointerup', function(e) {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                lastPointerUpAt = Date.now();
+                handler(e);
+            });
+
+            el.addEventListener('click', function(e) {
+                if (Date.now() - lastPointerUpAt < 700) return;
+                handler(e);
+            });
+        }
+
+        function applyPressFeedback(el) {
+            if (!el) return;
+
+            function add() { el.classList.add('is-pressed'); }
+            function remove() { el.classList.remove('is-pressed'); }
+
+            if (window.PointerEvent) {
+                el.addEventListener('pointerdown', add);
+                el.addEventListener('pointerup', function() {
+                    setTimeout(remove, 160);
+                });
+                el.addEventListener('pointercancel', remove);
+                el.addEventListener('pointerleave', remove);
+            } else {
+                el.addEventListener('touchstart', add, {passive: true});
+                el.addEventListener('touchend', function() {
+                    setTimeout(remove, 160);
+                }, {passive: true});
+                el.addEventListener('touchcancel', remove, {passive: true});
+            }
+        }
+
         var lexiconHovering = false;
         var LEX_GLYPHS = {
             default: '⌯⊚⌯',
@@ -1068,7 +1139,9 @@
                 });
             }
 
-            lexiconToggle.addEventListener('click', function() {
+            applyPressFeedback(lexiconToggle);
+
+            bindActivate(lexiconToggle, function(e) {
                 if (panel.classList.contains('is-open')) {
                     closePanel();
                 } else {
@@ -1081,10 +1154,18 @@
                 }
             });
 
-            lexOverlay.addEventListener('click', closePanel);
-            panel.querySelectorAll('.lexicon-panel-close').forEach(function(btn) {
-                btn.addEventListener('click', closePanel);
+            bindActivate(lexOverlay, function() {
+                closePanel();
             });
+
+            panel.querySelectorAll('.lexicon-panel-close').forEach(function(btn) {
+                applyPressFeedback(btn);
+                bindActivate(btn, function(e) {
+                    if (e && e.preventDefault) e.preventDefault();
+                    closePanel();
+                });
+            });
+
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' && panel.classList.contains('is-open')) {
                     closePanel();
@@ -1093,6 +1174,8 @@
         }
 
         var dragRegion = document.getElementById('lexiconDragRegion');
+        var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
+
         if (dragRegion && panel && lexOverlay) {
             var isDragging = false;
             var startY = 0;
@@ -1100,6 +1183,11 @@
             var lastT = 0;
             var velocity = 0;
             var currentDelta = 0;
+
+            function setPillPressed(on) {
+                if (!dragPill) return;
+                dragPill.classList.toggle('is-pressed', !!on);
+            }
 
             function getPanelHeight() {
                 var rect = panel.getBoundingClientRect();
@@ -1109,6 +1197,7 @@
             function beginDrag(clientY) {
                 if (!panel.classList.contains('is-open') || !isBottomSheetMode()) return;
                 isDragging = true;
+                setPillPressed(true);
                 startY = clientY;
                 lastY = clientY;
                 lastT = window.performance && performance.now ? performance.now() : Date.now();
@@ -1137,6 +1226,7 @@
 
             function endDrag() {
                 if (!isDragging) return;
+                setPillPressed(false);
                 var h = getPanelHeight();
                 var threshold = Math.max(120, h * 0.25);
                 var shouldClose = (currentDelta > threshold) || (velocity > 0.9);
@@ -1151,6 +1241,11 @@
                 }
             }
 
+            function cancelDrag() {
+                setPillPressed(false);
+                isDragging = false;
+            }
+
             if (window.PointerEvent) {
                 dragRegion.addEventListener('pointerdown', function(e) {
                     beginDrag(e.clientY);
@@ -1160,7 +1255,10 @@
                     updateDrag(e.clientY);
                 });
                 dragRegion.addEventListener('pointerup', endDrag);
-                dragRegion.addEventListener('pointercancel', endDrag);
+                dragRegion.addEventListener('pointercancel', function() {
+                    cancelDrag();
+                    endDrag();
+                });
             } else {
                 dragRegion.addEventListener('touchstart', function(e) {
                     if (!e.touches || !e.touches[0]) return;
@@ -1171,7 +1269,10 @@
                     updateDrag(e.touches[0].clientY);
                 }, {passive: true});
                 dragRegion.addEventListener('touchend', endDrag);
-                dragRegion.addEventListener('touchcancel', endDrag);
+                dragRegion.addEventListener('touchcancel', function() {
+                    cancelDrag();
+                    endDrag();
+                });
             }
         }
 
