@@ -394,20 +394,27 @@
         .nav-btn.stack {
             flex-direction: column;
             gap: 2px;
-            padding: 8px 0 6px;
+            padding: 9px 0 6px;
+        }
+
+        /* Give the stacked Next a slightly wider "inner frame" so long labels don't touch the border. */
+        .nav-btn.stack::before,
+        .nav-btn.stack::after {
+            inset: 9px;
         }
 
         .nav-btn-label {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 0.70rem;
+            font-size: 0.62rem;
             font-weight: 600;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.09em;
             text-transform: uppercase;
             color: var(--footer-label);
             text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
             line-height: 1;
             user-select: none;
             pointer-events: none;
+            white-space: nowrap;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
         }
@@ -794,12 +801,12 @@
             }
 
             .nav-btn-label {
-                font-size: 0.64rem;
-                letter-spacing: 0.11em;
+                font-size: 0.60rem;
+                letter-spacing: 0.085em;
             }
 
             .nav-btn.stack {
-                padding: 8px 0 6px;
+                padding: 9px 0 6px;
             }
         }
 
@@ -884,12 +891,12 @@
             }
 
             .nav-btn-label {
-                font-size: 0.62rem;
-                letter-spacing: 0.10em;
+                font-size: 0.58rem;
+                letter-spacing: 0.08em;
             }
 
             .nav-btn.stack {
-                padding: 8px 0 6px;
+                padding: 9px 0 6px;
             }
         }
 
@@ -903,7 +910,7 @@
             }
 
             .nav-btn-label {
-                letter-spacing: 0.09em;
+                letter-spacing: 0.075em;
             }
         }
     </style>
