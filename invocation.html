@@ -803,14 +803,14 @@
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
             <button class="nav-btn" disabled aria-label="Previous section">＜</button>
-            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon">⌯⊚⌯</button>
+            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel">⌯⊚⌯</button>
             <a href="foundation.html" class="nav-btn" aria-label="Next: Foundation">＞</a>
         </div>
     </nav>
 
     <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
 
-    <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
+    <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1">
         <div class="lexicon-drag-region" id="lexiconDragRegion" aria-hidden="true">
             <div class="lexicon-drag-pill"></div>
         </div>
@@ -862,6 +862,7 @@
         var dynamicContent = document.getElementById('lexiconDynamicContent');
         var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
         var currentlySelectedSentence = null;
+        var focusReturnEl = null;
 
         var isMobileGlyphMode = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)').matches : false;
 
@@ -939,14 +940,27 @@
             if (lexOverlay) lexOverlay.style.opacity = '';
         }
 
+        function focusIntoPanel() {
+            if (!panel) return;
+            var closeBtn = panel.querySelector('.lexicon-panel-close');
+            if (closeBtn && closeBtn.focus) {
+                closeBtn.focus();
+            } else if (panel.focus) {
+                panel.focus();
+            }
+        }
+
         function openPanel() {
             if (!panel || !lexOverlay) return;
             resetPanelInlineMotion();
+            focusReturnEl = lexiconToggle;
             panel.classList.add('is-open');
             lexOverlay.classList.add('is-open');
             panel.setAttribute('aria-hidden', 'false');
             lexOverlay.setAttribute('aria-hidden', 'false');
+            if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'true');
             setLexiconGlyph();
+            setTimeout(focusIntoPanel, 0);
         }
 
         function closePanel() {
@@ -956,7 +970,14 @@
             lexOverlay.classList.remove('is-open');
             panel.setAttribute('aria-hidden', 'true');
             lexOverlay.setAttribute('aria-hidden', 'true');
+            if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
             setLexiconGlyph();
+
+            setTimeout(function() {
+                var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : lexiconToggle;
+                if (target && target.focus) target.focus();
+                focusReturnEl = null;
+            }, 0);
         }
 
         function renderOverview() {
