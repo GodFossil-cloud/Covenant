@@ -527,6 +527,27 @@
             white-space: nowrap;
         }
 
+        .nav-btn.center .lexicon-glyph-mid {
+            display: inline-block;
+            transform-origin: 50% 50%;
+            will-change: transform;
+        }
+
+        @keyframes lexiconStarSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .nav-btn.center.has-selection .lexicon-glyph-mid {
+            animation: lexiconStarSpin 6s linear infinite;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .nav-btn.center.has-selection .lexicon-glyph-mid {
+                animation: none;
+            }
+        }
+
         .nav-btn.center::before {
             content: '';
             position: absolute;
@@ -1335,6 +1356,33 @@
             mobileOpen: '⇃⌵⇂'
         };
 
+        function setGlyphMarkup(target, glyph) {
+            if (!target) return;
+
+            while (target.firstChild) {
+                target.removeChild(target.firstChild);
+            }
+
+            var star = '𖤓';
+            var idx = glyph.indexOf(star);
+            if (idx === -1) {
+                target.textContent = glyph;
+                return;
+            }
+
+            var left = glyph.slice(0, idx);
+            var right = glyph.slice(idx + star.length);
+
+            target.appendChild(document.createTextNode(left));
+
+            var mid = document.createElement('span');
+            mid.className = 'lexicon-glyph-mid';
+            mid.textContent = star;
+            target.appendChild(mid);
+
+            target.appendChild(document.createTextNode(right));
+        }
+
         function setLexiconGlyph() {
             if (!lexiconToggle || !panel) return;
 
@@ -1343,7 +1391,8 @@
             var glyphTarget = lexiconToggle.querySelector('.lexicon-glyph') || lexiconToggle;
 
             if (isMobileGlyphMode) {
-                glyphTarget.textContent = isOpen ? LEX_GLYPHS.mobileOpen : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+                var mobileGlyph = isOpen ? LEX_GLYPHS.mobileOpen : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+                setGlyphMarkup(glyphTarget, mobileGlyph);
                 return;
             }
 
@@ -1353,7 +1402,8 @@
             } else {
                 glyph = lexiconHovering ? (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover) : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
             }
-            glyphTarget.textContent = glyph;
+
+            setGlyphMarkup(glyphTarget, glyph);
         }
 
         var sentenceExplanations = {
