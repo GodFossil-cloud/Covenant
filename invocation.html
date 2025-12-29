@@ -30,6 +30,17 @@
             --footer-label-hover: rgba(245, 217, 140, 0.96);
 
             --lexicon-frame-raise: 7px;
+
+            /* Reliquary / mechanical refinements */
+            --focus-ring: rgba(201, 169, 97, 0.48);
+            --focus-ring-outer: rgba(0, 0, 0, 0.72);
+
+            --specular-soft: rgba(255, 242, 210, 0.18);
+            --specular-bright: rgba(255, 242, 210, 0.28);
+
+            --plate-border: rgba(201, 169, 97, 0.22);
+            --plate-hi: rgba(255, 235, 195, 0.10);
+            --plate-lo: rgba(0, 0, 0, 0.38);
         }
 
         * {
@@ -551,6 +562,133 @@
         .nav-btn.center.has-selection::after {
             background-color: #5f1b1b;
             transform: translateY(-1px);
+        }
+
+        /* Reliquary / mechanical refinements (invocation only) */
+        .nav-btn {
+            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
+        }
+
+        .nav-next-frame {
+            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
+        }
+
+        /* Focus-visible “inspection ring” */
+        .nav-btn:focus-visible:not(:disabled) {
+            outline: none;
+        }
+
+        .nav-btn:focus-visible:not(:disabled)::before {
+            box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
+                        0 0 0 2px var(--focus-ring),
+                        0 0 0 4px var(--focus-ring-outer);
+        }
+
+        .nav-next:focus-visible {
+            outline: none;
+        }
+
+        .nav-next:focus-visible .nav-next-frame::before {
+            box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
+                        0 0 0 2px var(--focus-ring),
+                        0 0 0 4px var(--focus-ring-outer);
+        }
+
+        /* Specular edge highlight on framed controls (hover = sharper edge, not bigger glow) */
+        .nav-btn:not(.center)::after {
+            background:
+                linear-gradient(to bottom, var(--specular-soft) 0%, rgba(255, 242, 210, 0) 14px),
+                linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
+        }
+
+        .nav-btn:not(.center):hover::after,
+        .nav-btn:not(.center):focus-visible::after {
+            background:
+                linear-gradient(to bottom, var(--specular-bright) 0%, rgba(255, 242, 210, 0) 14px),
+                linear-gradient(to bottom, rgba(255, 232, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
+        }
+
+        .nav-next-frame::after {
+            background:
+                linear-gradient(to bottom, var(--specular-soft) 0%, rgba(255, 242, 210, 0) 14px),
+                linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
+        }
+
+        .nav-next:hover .nav-next-frame::after,
+        .nav-next:focus-visible .nav-next-frame::after {
+            background:
+                linear-gradient(to bottom, var(--specular-bright) 0%, rgba(255, 242, 210, 0) 14px),
+                linear-gradient(to bottom, rgba(255, 232, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
+        }
+
+        /* Mechanical press: 1px travel + deeper inset shadow */
+        .nav-btn:not(.center):active:not(:disabled) {
+            transform: translateY(1px);
+            filter: brightness(0.96);
+        }
+
+        .nav-btn:not(.center):active:not(:disabled)::before {
+            border-color: #4f1618;
+            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.98),
+                        inset 0 2px 10px rgba(0, 0, 0, 0.55);
+        }
+
+        .nav-next:active .nav-next-frame {
+            transform: translateY(1px);
+            filter: brightness(0.96);
+        }
+
+        .nav-next:active .nav-next-frame::before {
+            border-color: #4f1618;
+            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.98),
+                        inset 0 2px 10px rgba(0, 0, 0, 0.55);
+        }
+
+        .nav-btn.center:active:not(:disabled) {
+            transform: translateY(calc(-1 * var(--lexicon-frame-raise) + 1px));
+            filter: brightness(0.98);
+        }
+
+        /* Engraved label bed under Next */
+        .nav-next-label {
+            position: relative;
+            display: inline-block;
+            padding: 5px 12px 4px;
+            border-radius: 3px;
+
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+
+            text-transform: none;
+            font-variant-caps: all-small-caps;
+
+            color: var(--footer-label);
+            line-height: 1;
+            user-select: none;
+            white-space: nowrap;
+
+            text-shadow:
+                0 1px 0 rgba(0, 0, 0, 0.92),
+                0 -1px 0 rgba(255, 255, 255, 0.08);
+
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+
+            border: 1px solid var(--plate-border);
+            background: linear-gradient(to bottom, var(--plate-hi) 0%, var(--plate-lo) 100%);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.70),
+                0 10px 14px -14px rgba(0, 0, 0, 0.90);
+        }
+
+        .nav-next:hover .nav-next-label,
+        .nav-next:focus-visible .nav-next-label {
+            color: var(--footer-label-hover);
+            border-color: rgba(201, 169, 97, 0.34);
+            background: linear-gradient(to bottom, rgba(255, 235, 195, 0.13) 0%, rgba(0, 0, 0, 0.34) 100%);
         }
 
         /* Lexicon Overlay */
