@@ -423,7 +423,7 @@
         .nav-next-frame {
             position: relative;
             width: 74px;
-            height: 44px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -503,7 +503,7 @@
         .nav-btn.center {
             width: 92px;
             height: 52px;
-            padding: 1px 14px 0;
+            padding: 0 14px;
             max-width: none;
             font-size: 1.62rem;
             white-space: nowrap;
@@ -512,6 +512,15 @@
             letter-spacing: 0.04em;
             font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
             transform: none;
+        }
+
+        .nav-btn.center .lexicon-glyph {
+            display: inline-block;
+            line-height: 1;
+            transform: translateY(0.5px);
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
         }
 
         .nav-btn.center::before {
@@ -991,7 +1000,7 @@
             .nav-btn.center {
                 width: 82px;
                 height: 46px;
-                padding: 1px 12px 0;
+                padding: 0 12px;
                 font-size: 1.48rem;
             }
 
@@ -1001,7 +1010,7 @@
 
             .nav-next-frame {
                 width: 66px;
-                height: 40px;
+                height: 46px;
             }
 
             .nav-next-label {
@@ -1080,7 +1089,7 @@
             .nav-btn.center {
                 width: 78px;
                 height: 44px;
-                padding: 1px 12px 0;
+                padding: 0 12px;
                 font-size: 1.34rem;
             }
 
@@ -1090,7 +1099,7 @@
 
             .nav-next-frame {
                 width: 62px;
-                height: 38px;
+                height: 44px;
             }
 
             .nav-next-label {
@@ -1106,13 +1115,13 @@
 
             .nav-next-frame {
                 width: 58px;
-                height: 36px;
+                height: 42px;
             }
 
             .nav-btn.center {
                 width: 72px;
                 height: 42px;
-                padding: 1px 10px 0;
+                padding: 0 10px;
                 font-size: 1.26rem;
             }
         }
@@ -1180,7 +1189,7 @@
             <button class="nav-btn" disabled aria-label="Previous section"><span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span></button>
 
             <div class="nav-center">
-                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel">𓐆 𖤓 𓐆</button>
+                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𓐆 𖤓 𓐆</span></button>
             </div>
 
             <a href="foundation.html" class="nav-next" aria-label="Next: Foundation">
@@ -1333,9 +1342,10 @@
 
             var isOpen = panel.classList.contains('is-open');
             var hasSelection = !!currentlySelectedSentence;
+            var glyphTarget = lexiconToggle.querySelector('.lexicon-glyph') || lexiconToggle;
 
             if (isMobileGlyphMode) {
-                lexiconToggle.textContent = isOpen ? LEX_GLYPHS.mobileOpen : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+                glyphTarget.textContent = isOpen ? LEX_GLYPHS.mobileOpen : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
                 return;
             }
 
@@ -1345,7 +1355,7 @@
             } else {
                 glyph = lexiconHovering ? (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover) : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
             }
-            lexiconToggle.textContent = glyph;
+            glyphTarget.textContent = glyph;
         }
 
         var sentenceExplanations = {
