@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=block" rel="stylesheet">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -535,7 +534,6 @@
             font-size: 2rem;
             white-space: nowrap;
             line-height: 1;
-            font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
             max-width: 220px;
             width: auto;
             padding: 0 18px;
@@ -574,12 +572,21 @@
             background-color: #7a2929;
         }
 
-        /* Lexicon Button - Active State */
-        .nav-btn.center.has-selection {
-            color: #e8c782;
-            text-shadow: 0 0 8px rgba(201, 169, 97, 0.32), 0 0 14px rgba(201, 169, 97, 0.18);
+        /* Lexicon SVG icon */
+        .lexicon-icon {
+            width: 28px;
+            height: 28px;
+            pointer-events: none;
+            transition: fill 0.2s ease, filter 0.2s ease;
         }
 
+        .nav-btn.center:hover .lexicon-icon,
+        .nav-btn.center:focus-visible .lexicon-icon {
+            fill: #f5d98c;
+            filter: drop-shadow(0 0 4px rgba(201, 169, 97, 0.22));
+        }
+
+        /* Lexicon Button - Active State */
         .nav-btn.center.has-selection::before {
             transform: translateY(-1px);
             box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
@@ -592,6 +599,11 @@
         .nav-btn.center.has-selection::after {
             background-color: #5f1b1b;
             transform: translateY(-1px);
+        }
+
+        .nav-btn.center.has-selection .lexicon-icon {
+            fill: #e8c782;
+            filter: drop-shadow(0 0 5px rgba(201, 169, 97, 0.24)) drop-shadow(0 0 8px rgba(201, 169, 97, 0.14));
         }
 
         /* Lexicon Overlay */
@@ -891,6 +903,11 @@
                 font-size: 1.7rem;
             }
 
+            .lexicon-icon {
+                width: 24px;
+                height: 24px;
+            }
+
             .nav-section-indicator {
                 font-size: 0.58rem;
                 letter-spacing: 0.16em;
@@ -989,6 +1006,11 @@
 
             .nav-btn.center {
                 font-size: 1.5rem;
+            }
+
+            .lexicon-icon {
+                width: 22px;
+                height: 22px;
             }
 
             .nav-section-indicator {
@@ -1103,7 +1125,12 @@
             <button class="nav-btn" disabled aria-label="Previous section"><span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⟢</span></button>
 
             <div class="nav-center">
-                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel">𖤓</button>
+                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel">
+                    <svg class="lexicon-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="12" cy="12" r="2.5"/>
+                    </svg>
+                </button>
             </div>
 
             <a href="foundation.html" class="nav-next" aria-label="Next: Foundation">
@@ -1173,8 +1200,6 @@
         var focusReturnEl = null;
         var scrollLockY = 0;
 
-        var isMobileGlyphMode = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)').matches : false;
-
         function isBottomSheetMode() {
             return window.matchMedia ? window.matchMedia('(max-width: 600px)').matches : false;
         }
@@ -1239,38 +1264,6 @@
             }
         }
 
-        var lexiconHovering = false;
-        var LEX_GLYPHS = {
-            default: '𖤓',
-            defaultHover: '↿◌↾',
-            selected: '▻⊚◅',
-            selectedHover: '▻◌◅',
-            openSummary: '≡⦿≡',
-            openSelected: '▸⦿◂',
-            openHover: '⇃⌵⇂',
-            mobileOpen: '⇃⌵⇂'
-        };
-
-        function setLexiconGlyph() {
-            if (!lexiconToggle || !panel) return;
-
-            var isOpen = panel.classList.contains('is-open');
-            var hasSelection = !!currentlySelectedSentence;
-
-            if (isMobileGlyphMode) {
-                lexiconToggle.textContent = isOpen ? LEX_GLYPHS.mobileOpen : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
-                return;
-            }
-
-            var glyph;
-            if (isOpen) {
-                glyph = lexiconHovering ? LEX_GLYPHS.openHover : (hasSelection ? LEX_GLYPHS.openSelected : LEX_GLYPHS.openSummary);
-            } else {
-                glyph = lexiconHovering ? (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover) : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
-            }
-            lexiconToggle.textContent = glyph;
-        }
-
         var sentenceExplanations = {
             'I.1': 'The Invocation solves a structural problem: how to establish hierarchy without reducing it to human claim. Three authorities are summoned in descending order—silence (void above all), stars (celestial pattern), Earth (terrestrial witness)—embodying the vertical structure before naming it. This makes ordination, admonition, purification, and declaration possible: each operates within cosmic framework already enacted. Without this opening, the preamble begins with assertion requiring justification. With witness invoked, subsequent language becomes ritual recognition within pre-existing sacred order.',
             'I.2': 'This passage ordains the structure of the Covenant in reflection of the invocation. "Mirror of the firmament" refers to the celestial order in the opening passage—the hierarchy as an existing architecture is directly called to witness before any declarations are made. The hierarchy is already sanctified: the void (Lord), the firmament (Covenant as mediator), the Earth (Faithful). No judge can assert what a witness has proclaimed, because it is already established as-it-is. This transforms the bond from temporal contract into holy sacrament within a pre-existing cosmic order.',
@@ -1298,7 +1291,6 @@
         function updateLexiconButtonState() {
             if (!lexiconToggle) return;
             lexiconToggle.classList.toggle('has-selection', !!currentlySelectedSentence);
-            setLexiconGlyph();
         }
 
         function resetPanelInlineMotion() {
@@ -1330,7 +1322,6 @@
             lexOverlay.setAttribute('aria-hidden', 'false');
             if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'true');
             lockBodyScroll();
-            setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
         }
 
@@ -1344,7 +1335,6 @@
             lexOverlay.setAttribute('aria-hidden', 'true');
             if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
             unlockBodyScroll();
-            setLexiconGlyph();
 
             setTimeout(function() {
                 var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : lexiconToggle;
@@ -1377,23 +1367,6 @@
         }
 
         if (lexiconToggle && panel && lexOverlay) {
-            setLexiconGlyph();
-
-            if (!isMobileGlyphMode) {
-                ['pointerenter', 'mouseenter', 'focus'].forEach(function(evt) {
-                    lexiconToggle.addEventListener(evt, function() {
-                        lexiconHovering = true;
-                        setLexiconGlyph();
-                    });
-                });
-                ['pointerleave', 'mouseleave', 'blur'].forEach(function(evt) {
-                    lexiconToggle.addEventListener(evt, function() {
-                        lexiconHovering = false;
-                        setLexiconGlyph();
-                    });
-                });
-            }
-
             applyPressFeedback(lexiconToggle);
 
             bindActivate(lexiconToggle, function(e) {
