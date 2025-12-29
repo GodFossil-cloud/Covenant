@@ -29,7 +29,6 @@
             --footer-label: rgba(236, 216, 176, 0.78);
             --footer-label-hover: rgba(245, 217, 140, 0.96);
 
-            /* Raise the glyph-only Lexicon button slightly so its framed box aligns with the NEXT framed box (which has a label below it). */
             --lexicon-frame-raise: 7px;
         }
 
@@ -57,7 +56,7 @@
             position: relative;
         }
 
-        /* Scroll lock (prevents iOS pull-to-refresh behind Lexicon) */
+        /* Scroll lock */
         html.lexicon-scroll-lock,
         body.lexicon-scroll-lock {
             overflow: hidden;
@@ -302,24 +301,8 @@
             align-items: center;
             justify-content: center;
             gap: 0;
-            /*
-                Ensure the center column has a definite height so the Lexicon button can be full-height.
-                Without this, the ::before/::after inset frame can collapse into a thin horizontal line.
-            */
             align-self: stretch;
             height: 100%;
-        }
-
-        .nav-section-indicator {
-            font-size: 0.62rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--footer-label);
-            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
-            user-select: none;
-            pointer-events: none;
-            line-height: 1;
-            white-space: nowrap;
         }
 
         /* Navigation Buttons - Base Styles */
@@ -379,14 +362,14 @@
             box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
         }
 
-        /* Arrow Buttons - Unified Background (both sides match) */
+        /* Arrow Buttons - Background */
         .nav-btn:not(.center)::after {
             content: '';
             position: absolute;
             inset: 12px;
             border-radius: 4px;
             z-index: -1;
-            transition: background 0.2s ease, filter 0.2s ease;
+            transition: background 0.2s ease;
             pointer-events: none;
             background: linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
         }
@@ -400,41 +383,12 @@
             background: linear-gradient(to bottom, rgba(255, 232, 180, 0.06) 0%, rgba(0, 0, 0, 0.26) 100%);
         }
 
-        /* Next button label stack (legacy; not used on this page anymore) */
-        .nav-btn.stack {
-            flex-direction: column;
-            gap: 2px;
-            padding: 9px 0 6px;
-        }
-
-        .nav-btn.stack::before,
-        .nav-btn.stack::after {
-            inset: 9px;
-        }
-
-        .nav-btn-label {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.62rem;
-            font-weight: 600;
-            letter-spacing: 0.09em;
-            text-transform: uppercase;
-            color: var(--footer-label);
-            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
-            line-height: 1;
-            user-select: none;
-            pointer-events: none;
-            white-space: nowrap;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
         .nav-btn-icon {
             font-size: 1.55rem;
             line-height: 1;
             pointer-events: none;
         }
 
-        /* Slightly enlarge the new arrow glyphs without hardcoding per-breakpoint sizes. */
         .nav-btn-icon.nav-btn-icon--arrow {
             display: inline-block;
             transform: scale(1.08);
@@ -483,7 +437,7 @@
             inset: 0;
             border-radius: 4px;
             z-index: -1;
-            transition: background 0.2s ease, filter 0.2s ease;
+            transition: background 0.2s ease;
             pointer-events: none;
             background: linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
         }
@@ -529,17 +483,11 @@
             color: var(--footer-label-hover);
         }
 
-        /* Make the NEXT arrow a touch larger inside its frame than the default arrow scaling. */
         .nav-next .nav-btn-icon--arrow {
             transform: scale(1.16);
         }
 
-        .nav-btn:hover:not(:disabled) .nav-btn-label,
-        .nav-btn:focus-visible:not(:disabled) .nav-btn-label {
-            color: var(--footer-label-hover);
-        }
-
-        /* Lexicon Button - Center (match NEXT frame size/position; glyph-only) */
+        /* Lexicon Button - Center */
         .nav-btn.center {
             width: 74px;
             height: 44px;
@@ -612,7 +560,7 @@
             background: rgba(0, 0, 0, 0.5);
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.25s ease;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
             z-index: 700;
         }
 
@@ -780,7 +728,7 @@
             font-style: italic;
             color: #a8a8a8;
             margin-bottom: 1rem;
-            padding: 0.6rem 1rem 0.6rem 1rem;
+            padding: 0.6rem 1rem;
             background: #262626;
             border-left: 2px solid var(--glyph-gold);
             line-height: 1.5;
@@ -904,22 +852,8 @@
                 font-size: 1.6rem;
             }
 
-            .nav-section-indicator {
-                font-size: 0.58rem;
-                letter-spacing: 0.16em;
-            }
-
             .nav-btn-icon {
                 font-size: 1.4rem;
-            }
-
-            .nav-btn-label {
-                font-size: 0.60rem;
-                letter-spacing: 0.085em;
-            }
-
-            .nav-btn.stack {
-                padding: 9px 0 6px;
             }
 
             .nav-next-frame {
@@ -1006,22 +940,8 @@
                 font-size: 1.45rem;
             }
 
-            .nav-section-indicator {
-                font-size: 0.56rem;
-                letter-spacing: 0.14em;
-            }
-
             .nav-btn-icon {
                 font-size: 1.25rem;
-            }
-
-            .nav-btn-label {
-                font-size: 0.58rem;
-                letter-spacing: 0.08em;
-            }
-
-            .nav-btn.stack {
-                padding: 9px 0 6px;
             }
 
             .nav-next-frame {
@@ -1038,14 +958,6 @@
         @media (max-width: 360px) {
             .nav-footer-inner {
                 grid-template-columns: 86px 1fr 86px;
-            }
-
-            .nav-section-indicator {
-                letter-spacing: 0.1em;
-            }
-
-            .nav-btn-label {
-                letter-spacing: 0.075em;
             }
 
             .nav-next-frame {
@@ -1118,7 +1030,6 @@
         </section>
     </div>
 
-    <!-- Sticky Footer Navigation -->
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
             <button class="nav-btn" disabled aria-label="Previous section"><span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⟢</span></button>
@@ -1146,14 +1057,14 @@
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
+                <div class="lexicon-panel-mode">Invocation and Preamble</div>
             </div>
             <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
         </div>
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent">
                 <p>
-                    This opening passage marks the ceremonial threshold where three authorities are called to witness—silence (formless void), stars (celestial realm), Earth (material plane). The celestial order ("mirror of the firmament") is then reflected in the structure of the bond: Lord-Covenant-Faithful, where the Covenant is mediator between Lord and&nbsp;Faithful.
+                    This opening passage marks the ceremonial threshold where three authorities are called to witness—silence (formless void), stars (celestial realm), Earth (material plane). The celestial order (“mirror of the firmament”) is then reflected in the structure of the bond: Lord-Covenant-Faithful, where the Covenant is mediator between Lord and&nbsp;Faithful.
                 </p>
                 <div class="section-divider">✦</div>
                 <p>
@@ -1194,10 +1105,10 @@
         var focusReturnEl = null;
         var scrollLockY = 0;
 
-        var isMobileGlyphMode = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)').matches : false;
+        var isMobileGlyphMode = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
         function isBottomSheetMode() {
-            return window.matchMedia ? window.matchMedia('(max-width: 600px)').matches : false;
+            return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
         }
 
         function lockBodyScroll() {
@@ -1615,11 +1526,6 @@
             });
         });
 
-        /*
-            IMPORTANT (iOS): Do not call preventDefault/stopPropagation on a global touchend handler.
-            It can suppress the synthetic "click" event, making Lexicon close controls feel dead.
-            Instead, clear tooltip/selection early on touchstart (capture) without blocking the event.
-        */
         document.addEventListener('touchstart', function(e) {
             if (!currentlyActiveTooltip) return;
             var touchedGlossaryTerm = Array.from(glossaryTerms).some(function(term) {
