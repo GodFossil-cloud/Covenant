@@ -42,6 +42,10 @@
             --plate-border: rgba(201, 169, 97, 0.22);
             --plate-hi: rgba(255, 235, 195, 0.10);
             --plate-lo: rgba(0, 0, 0, 0.38);
+
+            /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
+            --nav-pill-width: 92px;
+            --nav-pill-height: 52px;
         }
 
         * {
@@ -422,8 +426,8 @@
 
         .nav-next-frame {
             position: relative;
-            width: 92px;
-            height: 52px;
+            width: var(--nav-pill-width);
+            height: var(--nav-pill-height);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -501,8 +505,8 @@
 
         /* Lexicon Button - Center */
         .nav-btn.center {
-            width: 92px;
-            height: 52px;
+            width: var(--nav-pill-width);
+            height: var(--nav-pill-height);
             padding: 0 14px;
             max-width: none;
             font-size: 1.62rem;
@@ -972,6 +976,11 @@
         }
 
         @media (max-width: 768px) {
+            :root {
+                --nav-pill-width: 82px;
+                --nav-pill-height: 46px;
+            }
+
             body {
                 padding: 20px 10px calc(var(--footer-height) + 30px + var(--footer-safe));
                 font-size: 15px;
@@ -998,19 +1007,12 @@
             }
 
             .nav-btn.center {
-                width: 82px;
-                height: 46px;
                 padding: 0 12px;
                 font-size: 1.48rem;
             }
 
             .nav-btn-icon {
                 font-size: 1.4rem;
-            }
-
-            .nav-next-frame {
-                width: 82px;
-                height: 46px;
             }
 
             .nav-next-label {
@@ -1060,6 +1062,11 @@
         }
 
         @media (max-width: 480px) {
+            :root {
+                --nav-pill-width: 78px;
+                --nav-pill-height: 44px;
+            }
+
             .container {
                 padding: 20px 15px;
             }
@@ -1087,19 +1094,12 @@
             }
 
             .nav-btn.center {
-                width: 78px;
-                height: 44px;
                 padding: 0 12px;
                 font-size: 1.34rem;
             }
 
             .nav-btn-icon {
                 font-size: 1.25rem;
-            }
-
-            .nav-next-frame {
-                width: 78px;
-                height: 44px;
             }
 
             .nav-next-label {
@@ -1109,18 +1109,16 @@
         }
 
         @media (max-width: 360px) {
+            :root {
+                --nav-pill-width: 72px;
+                --nav-pill-height: 42px;
+            }
+
             .nav-footer-inner {
                 grid-template-columns: 86px 1fr 86px;
             }
 
-            .nav-next-frame {
-                width: 72px;
-                height: 42px;
-            }
-
             .nav-btn.center {
-                width: 72px;
-                height: 42px;
                 padding: 0 10px;
                 font-size: 1.26rem;
             }
@@ -1614,7 +1612,7 @@
                 dragRegion.addEventListener('touchcancel', function() {
                     cancelDrag();
                     endDrag();
-                });
+                }, {passive: true});
             }
         }
 
