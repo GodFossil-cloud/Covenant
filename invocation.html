@@ -425,6 +425,13 @@
             pointer-events: none;
         }
 
+        /* Slightly enlarge the new arrow glyphs without hardcoding per-breakpoint sizes. */
+        .nav-btn-icon.nav-btn-icon--arrow {
+            display: inline-block;
+            transform: scale(1.08);
+            transform-origin: center;
+        }
+
         .nav-btn:hover:not(:disabled) .nav-btn-label,
         .nav-btn:focus-visible:not(:disabled) .nav-btn-label {
             color: var(--footer-label-hover);
@@ -975,7 +982,7 @@
     <!-- Sticky Footer Navigation -->
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
-            <button class="nav-btn" disabled aria-label="Previous section">⟢</button>
+            <button class="nav-btn" disabled aria-label="Previous section"><span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⟢</span></button>
 
             <div class="nav-center">
                 <div class="nav-section-indicator" aria-hidden="true">Invocation</div>
@@ -983,7 +990,7 @@
             </div>
 
             <a href="foundation.html" class="nav-btn stack" aria-label="Next: Foundation">
-                <span class="nav-btn-icon" aria-hidden="true">⟣</span>
+                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⟣</span>
                 <span class="nav-btn-label">Foundation</span>
             </a>
         </div>
