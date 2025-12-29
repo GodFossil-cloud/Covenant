@@ -29,7 +29,8 @@
             --footer-label: rgba(236, 216, 176, 0.78);
             --footer-label-hover: rgba(245, 217, 140, 0.96);
 
-            --lexicon-frame-raise: 7px;
+            /* Keep this at 0 so the lexicon control sits perfectly centered in the footer. */
+            --lexicon-frame-raise: 0px;
 
             /* Reliquary / mechanical refinements */
             --focus-ring: rgba(201, 169, 97, 0.48);
@@ -500,15 +501,17 @@
 
         /* Lexicon Button - Center */
         .nav-btn.center {
-            width: 74px;
-            height: 44px;
-            padding: 0;
+            width: 92px;
+            height: 52px;
+            padding: 1px 14px 0;
             max-width: none;
-            font-size: 1.75rem;
+            font-size: 1.62rem;
             white-space: nowrap;
             line-height: 1;
+            text-align: center;
+            letter-spacing: 0.04em;
             font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
-            transform: translateY(calc(-1 * var(--lexicon-frame-raise)));
+            transform: none;
         }
 
         .nav-btn.center::before {
@@ -644,7 +647,7 @@
         }
 
         .nav-btn.center:active:not(:disabled) {
-            transform: translateY(calc(-1 * var(--lexicon-frame-raise) + 1px));
+            transform: translateY(1px);
             filter: brightness(0.98);
         }
 
@@ -986,9 +989,10 @@
             }
 
             .nav-btn.center {
-                width: 66px;
-                height: 40px;
-                font-size: 1.6rem;
+                width: 82px;
+                height: 46px;
+                padding: 1px 12px 0;
+                font-size: 1.48rem;
             }
 
             .nav-btn-icon {
@@ -1074,9 +1078,10 @@
             }
 
             .nav-btn.center {
-                width: 62px;
-                height: 38px;
-                font-size: 1.45rem;
+                width: 78px;
+                height: 44px;
+                padding: 1px 12px 0;
+                font-size: 1.34rem;
             }
 
             .nav-btn-icon {
@@ -1105,9 +1110,10 @@
             }
 
             .nav-btn.center {
-                width: 58px;
-                height: 36px;
-                font-size: 1.35rem;
+                width: 72px;
+                height: 42px;
+                padding: 1px 10px 0;
+                font-size: 1.26rem;
             }
         }
     </style>
