@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=block" rel="stylesheet">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -297,7 +298,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 0;
         }
 
         .nav-section-indicator {
@@ -390,14 +391,13 @@
             background: linear-gradient(to bottom, rgba(255, 232, 180, 0.06) 0%, rgba(0, 0, 0, 0.26) 100%);
         }
 
-        /* Next button label stack */
+        /* Next button label stack (legacy; not used on this page anymore) */
         .nav-btn.stack {
             flex-direction: column;
             gap: 2px;
             padding: 9px 0 6px;
         }
 
-        /* Give the stacked Next a slightly wider "inner frame" so long labels don't touch the border. */
         .nav-btn.stack::before,
         .nav-btn.stack::after {
             inset: 9px;
@@ -432,6 +432,99 @@
             transform-origin: center;
         }
 
+        /* Right column: Next button with label OUTSIDE the frame */
+        .nav-next {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-next-frame {
+            position: relative;
+            width: 74px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--glyph-gold);
+            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease;
+            z-index: 0;
+        }
+
+        .nav-next-frame::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid #571619;
+            border-radius: 4px;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            pointer-events: none;
+        }
+
+        .nav-next-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 4px;
+            z-index: -1;
+            transition: background 0.2s ease, filter 0.2s ease;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
+        }
+
+        .nav-next:hover .nav-next-frame,
+        .nav-next:focus-visible .nav-next-frame {
+            color: #f5d98c;
+            text-shadow: 0 0 8px rgba(201, 169, 97, 0.28);
+        }
+
+        .nav-next:hover .nav-next-frame::before,
+        .nav-next:focus-visible .nav-next-frame::before {
+            border-color: #6a1f20;
+            box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95);
+        }
+
+        .nav-next:hover .nav-next-frame::after,
+        .nav-next:focus-visible .nav-next-frame::after {
+            background: linear-gradient(to bottom, rgba(255, 232, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
+        }
+
+        .nav-next:active .nav-next-frame {
+            filter: brightness(0.96);
+        }
+
+        .nav-next-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--footer-label);
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
+            line-height: 1;
+            user-select: none;
+            white-space: nowrap;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        .nav-next:hover .nav-next-label,
+        .nav-next:focus-visible .nav-next-label {
+            color: var(--footer-label-hover);
+        }
+
+        /* Make the NEXT arrow a touch larger inside its frame than the default arrow scaling. */
+        .nav-next .nav-btn-icon--arrow {
+            transform: scale(1.16);
+        }
+
         .nav-btn:hover:not(:disabled) .nav-btn-label,
         .nav-btn:focus-visible:not(:disabled) .nav-btn-label {
             color: var(--footer-label-hover);
@@ -442,7 +535,7 @@
             font-size: 2rem;
             white-space: nowrap;
             line-height: 1;
-            font-family: 'Segoe UI Symbol', 'Apple Symbols', 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Lora', serif;
+            font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
             max-width: 220px;
             width: auto;
             padding: 0 18px;
@@ -815,6 +908,16 @@
             .nav-btn.stack {
                 padding: 9px 0 6px;
             }
+
+            .nav-next-frame {
+                width: 66px;
+                height: 40px;
+            }
+
+            .nav-next-label {
+                font-size: 0.60rem;
+                letter-spacing: 0.085em;
+            }
         }
 
         @media (max-width: 600px) {
@@ -905,6 +1008,16 @@
             .nav-btn.stack {
                 padding: 9px 0 6px;
             }
+
+            .nav-next-frame {
+                width: 62px;
+                height: 38px;
+            }
+
+            .nav-next-label {
+                font-size: 0.58rem;
+                letter-spacing: 0.08em;
+            }
         }
 
         @media (max-width: 360px) {
@@ -918,6 +1031,11 @@
 
             .nav-btn-label {
                 letter-spacing: 0.075em;
+            }
+
+            .nav-next-frame {
+                width: 58px;
+                height: 36px;
             }
         }
     </style>
@@ -985,13 +1103,14 @@
             <button class="nav-btn" disabled aria-label="Previous section"><span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⟢</span></button>
 
             <div class="nav-center">
-                <div class="nav-section-indicator" aria-hidden="true">Invocation</div>
                 <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel">𖤓</button>
             </div>
 
-            <a href="foundation.html" class="nav-btn stack" aria-label="Next: Foundation">
-                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⟣</span>
-                <span class="nav-btn-label">Foundation</span>
+            <a href="foundation.html" class="nav-next" aria-label="Next: Foundation">
+                <span class="nav-next-frame" aria-hidden="true">
+                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⟣</span>
+                </span>
+                <span class="nav-next-label" aria-hidden="true">Foundation</span>
             </a>
         </div>
     </nav>
