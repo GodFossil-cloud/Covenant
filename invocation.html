@@ -31,6 +31,10 @@
 
             /* Keep this at 0 so the lexicon control sits perfectly centered in the footer. */
             --lexicon-frame-raise: 0px;
+            
+  /* Optional: tiny optical nudges if needed (start at 0) */
+  --lexicon-star-nudge-x: 0px;
+  --lexicon-star-nudge-y: 0px;
 
             /* Reliquary / mechanical refinements */
             --focus-ring: rgba(201, 169, 97, 0.48);
@@ -518,6 +522,24 @@
             transform: none;
         }
 
+        /* Fixed "rotation box" */
+.nav-btn.center .lexicon-glyph-mid {
+  display: inline-grid;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  vertical-align: -0.06em; /* optional; tweak if baseline feels off */
+}
+
+/* The actual rotating glyph */
+.nav-btn.center .lexicon-glyph-mid-inner {
+  display: inline-block;
+  line-height: 1;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
         .nav-btn.center .lexicon-glyph {
             display: inline-block;
             line-height: 1;
@@ -534,16 +556,17 @@
         }
 
         @keyframes lexiconStarSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+  from { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(0deg); }
+  to   { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(360deg); }
         }
 
-        .nav-btn.center.has-selection .lexicon-glyph-mid {
-            animation: lexiconStarSpin 6s linear infinite;
+/* Spin ONLY when selected glyph is shown (panel closed) */
+.nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
+            animation: lexiconStarSpin 10s linear infinite;
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .nav-btn.center.has-selection .lexicon-glyph-mid {
+  .nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
                 animation: none;
             }
         }
@@ -1375,11 +1398,15 @@
 
             target.appendChild(document.createTextNode(left));
 
-            var mid = document.createElement('span');
-            mid.className = 'lexicon-glyph-mid';
-            mid.textContent = star;
-            target.appendChild(mid);
-
+            var midOuter = document.createElement('span');
+            midOuter.className = 'lexicon-glyph-mid';
+            
+            var midInner = document.createElement('span');
+            midInner.className = 'lexicon-glyph-mid-inner';
+            midInner.textContent = star;
+            
+            midOuter.appendChild(midInner);
+            target.appendChild(midOuter);
             target.appendChild(document.createTextNode(right));
         }
 
