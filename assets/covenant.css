@@ -82,6 +82,11 @@ body {
     padding: 40px 20px calc(var(--footer-height) + 40px + var(--footer-safe));
     min-height: 100vh;
     position: relative;
+
+    /* Prevent sacred text from auto-hyphenating mid-word. */
+    -webkit-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
 }
 
 /* A11y: visually hidden but screen-reader available */
@@ -259,7 +264,15 @@ p.preamble {
 .subsection-text {
     display: inline;
     text-align: justify;
-    hyphens: auto;
+
+    /* Absolutely no auto-hyphenation. */
+    -webkit-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+
+    /* Don’t split words; only break at normal opportunities (spaces / punctuation). */
+    word-break: normal;
+    overflow-wrap: normal;
 }
 
 /* Glossary Terms & Tooltips */
