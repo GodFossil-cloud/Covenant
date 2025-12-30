@@ -261,6 +261,7 @@ p.preamble {
     margin-right: 12px;
     display: inline-block;
     min-width: 40px;
+    font-variant-numeric: lining-nums;
 }
 
 .subsection-text {
@@ -304,6 +305,7 @@ p.preamble {
     text-transform: uppercase;
     color: var(--primary-color);
     margin-bottom: 10px;
+    font-variant-numeric: lining-nums;
 }
 
 .subsection-body {
@@ -328,12 +330,16 @@ p.preamble {
     color: var(--accent-color);
     line-height: 1.3;
     transform: translateY(1px);
+    font-variant-numeric: lining-nums;
 }
 
 .subpart-content {
     flex: 1 1 auto;
     min-width: 0;
     line-height: 1.55;
+
+    /* Subtle “hanging indent” feel (wrapped lines tuck under, without looking indented). */
+    padding-left: 0.05em;
 
     /* Only break long/unbreakable tokens if needed to prevent horizontal overflow. */
     overflow-wrap: break-word;
@@ -1346,7 +1352,7 @@ body.is-exiting #blackFadeOverlay {
     }
 
     .subpart {
-        gap: 9px;
+        gap: 8px;
         margin-top: 10px;
     }
 
