@@ -719,7 +719,7 @@ body.is-exiting #blackFadeOverlay {
 .nav-prev:focus-visible .nav-prev-frame::after {
     background:
         linear-gradient(to bottom, var(--specular-bright) 0%, rgba(255, 242, 210, 0) 14px),
-        linear-gradient(to bottom, rgba(255, 232, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
+        linear-gradient(to bottom, rgba(255, 235, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
 }
 
 /* Mechanical press: 1px travel + deeper inset shadow */
@@ -812,16 +812,14 @@ body.is-exiting #blackFadeOverlay {
 @keyframes navRadiantPulse {
     0% {
         filter: drop-shadow(0 0 0 rgba(201,169,97,0.0));
-        transform: translateY(0);
     }
     35% {
         filter:
-            drop-shadow(0 0 10px rgba(201,169,97,0.28))
-            drop-shadow(0 0 22px rgba(201,169,97,0.16));
+            drop-shadow(0 0 11px rgba(201,169,97,0.32))
+            drop-shadow(0 0 24px rgba(201,169,97,0.18));
     }
     100% {
         filter: drop-shadow(0 0 0 rgba(201,169,97,0.0));
-        transform: translateY(0);
     }
 }
 

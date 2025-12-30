@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.3 */
+/*! Covenant Lexicon UI v0.2.4 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.3';
+    window.COVENANT_LEXICON_VERSION = '0.2.4';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -640,6 +640,7 @@
     (function initExitTransitions() {
         if (!panel || !lexiconToggle || !navFooter || !container) return;
 
+        var PANEL_CLOSE_MS = 120;
         var EXIT_MS = 380;
 
         function isModifiedClick(e) {
@@ -675,13 +676,25 @@
             if (!href) return;
             if (document.body.classList.contains('is-exiting')) return;
 
-            ensureExitOverlay();
-            document.body.classList.add('is-exiting');
+            var panelOpen = panel.classList.contains('is-open');
+            var delay = panelOpen ? PANEL_CLOSE_MS : 0;
+
             pulse(pulseTarget);
 
+            // Close panel if open (intentional first).
+            if (panelOpen) {
+                closePanel();
+            }
+
+            // Wait for panel close, then start exit.
             window.setTimeout(function () {
-                window.location.href = href;
-            }, EXIT_MS);
+                ensureExitOverlay();
+                document.body.classList.add('is-exiting');
+
+                window.setTimeout(function () {
+                    window.location.href = href;
+                }, EXIT_MS);
+            }, delay);
         }
 
         // Reset exit state if BFCache restores the page.
@@ -694,18 +707,6 @@
         });
 
         document.querySelectorAll('a.nav-next, a.nav-prev').forEach(function (link) {
-            link.addEventListener('pointerdown', function () {
-                var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
-                pulse(frame);
-            });
-
-            link.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
-                    pulse(frame);
-                }
-            });
-
             link.addEventListener('click', function (e) {
                 if (isModifiedClick(e)) return;
 
@@ -716,11 +717,6 @@
                 var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
                 beginExitThenNavigate(href, frame || link);
             });
-        });
-
-        // Optional: pulse center lexicon button on interaction.
-        lexiconToggle.addEventListener('pointerdown', function () {
-            pulse(lexiconToggle);
         });
     })();
 })();
