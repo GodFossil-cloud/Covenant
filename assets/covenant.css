@@ -464,6 +464,9 @@ p.preamble {
     color: var(--glyph-gold);
     transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
     z-index: 0;
+
+    /* Tiny breathing room from the top edge of the dock (without shifting the whole grid). */
+    margin-top: 1px;
 }
 
 .nav-next-frame::before,
@@ -539,6 +542,9 @@ p.preamble {
     letter-spacing: 0.04em;
     font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
     transform: none;
+
+    /* Match the left/right framed controls. */
+    margin-top: 1px;
 }
 
 .nav-btn.center .lexicon-glyph {
