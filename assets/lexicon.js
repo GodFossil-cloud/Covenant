@@ -1,12 +1,15 @@
-/*! Covenant Lexicon UI v0.2.0 */
+/*! Covenant Lexicon UI v0.2.1 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.0';
+    window.COVENANT_LEXICON_VERSION = '0.2.1';
 
     var pageConfig = window.COVENANT_PAGE || {};
+    var pageId = pageConfig.pageId || '';
     var sentenceExplanations = pageConfig.sentenceExplanations || {};
+
+    var logPrefix = pageId ? ('[Covenant Lexicon / ' + pageId + ']') : '[Covenant Lexicon]';
 
     var loadingIcon = document.getElementById('loadingIcon');
     var overlay = document.getElementById('blackFadeOverlay');
@@ -178,6 +181,23 @@
         if (modeEl) modeEl.textContent = pageConfig.modeLabel;
     }
 
+    function resolveKeyPattern() {
+        var fallback = /^[IVX]+\.[0-9]+$/;
+
+        if (pageConfig.keyPattern instanceof RegExp) return pageConfig.keyPattern;
+
+        if (typeof pageConfig.keyPattern === 'string' && pageConfig.keyPattern.trim()) {
+            try {
+                return new RegExp(pageConfig.keyPattern);
+            } catch (err) {
+                console.warn(logPrefix, 'Invalid pageConfig.keyPattern; using default.', pageConfig.keyPattern);
+                return fallback;
+            }
+        }
+
+        return fallback;
+    }
+
     function validateSentenceKeys() {
         var nodes = document.querySelectorAll('.sentence');
         if (!nodes || !nodes.length) return;
@@ -187,7 +207,7 @@
         var missingCount = 0;
         var nonstandard = Object.create(null);
 
-        var pattern = /^[IVX]+\.[0-9]+$/;
+        var pattern = resolveKeyPattern();
 
         Array.prototype.forEach.call(nodes, function (node) {
             var key = node && node.dataset ? node.dataset.lexiconKey : null;
@@ -208,16 +228,16 @@
 
         var dupKeys = Object.keys(duplicates);
         if (dupKeys.length) {
-            console.warn('[Covenant Lexicon] Duplicate data-lexicon-key values found:', dupKeys);
+            console.warn(logPrefix, 'Duplicate data-lexicon-key values found:', dupKeys);
         }
 
         if (missingCount) {
-            console.warn('[Covenant Lexicon] Some .sentence elements are missing data-lexicon-key:', missingCount);
+            console.warn(logPrefix, 'Some .sentence elements are missing data-lexicon-key:', missingCount);
         }
 
         var nonstandardKeys = Object.keys(nonstandard);
         if (nonstandardKeys.length) {
-            console.warn('[Covenant Lexicon] Non-standard data-lexicon-key format (expected I.1, II.3, etc.):', nonstandardKeys);
+            console.warn(logPrefix, 'Non-standard data-lexicon-key format (expected I.1, II.3, etc.):', nonstandardKeys);
         }
     }
 
