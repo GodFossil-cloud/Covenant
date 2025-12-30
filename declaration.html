@@ -17,9 +17,7 @@ layout: none
         pageId: 'declaration',
         modeLabel: 'Declaration of Intent',
 
-        // Declaration uses D.1, D.2... keys.
-        keyPattern: '^D\\.[0-9]+$',
-
+        // Faster transitions (same as foundation).
         intro: {
             startDelay: 520,
             iconToOverlayDelay: 160,
@@ -32,6 +30,9 @@ layout: none
             footerDuration: '0.35s',
             panelDuration: '1.15s'
         },
+
+        // Declaration uses D.1, D.2... keys.
+        keyPattern: '^[A-Z]+\\.[0-9]+$',
 
         defaultOverviewHTML: [
             '<p>\n'
@@ -133,7 +134,6 @@ layout: none
 
     {% include nav-footer.html
         current_label="Declaration of Intent"
-        center_aria_label="Open Lexicon for Declaration of Intent"
         prev_href="foundation.html"
         prev_label="Foundation"
         prev_aria="Previous: Foundation"
