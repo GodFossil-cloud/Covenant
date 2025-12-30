@@ -5,6 +5,8 @@
     --accent-color: #8b7355;
     --text-color: #1a1a1a;
     --bg-color: #fafaf8;
+    --border-color: #d4c5b9;
+    --highlight-color: #f5f1ed;
     --sentence-highlight: #f0e3d4;
     --glyph-red: #8b2f2f;
     --glyph-gold: #c9a961;
@@ -186,6 +188,15 @@ h1 {
     text-transform: uppercase;
 }
 
+h2 {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    text-align: center;
+}
+
 /* Text Content */
 p {
     margin-bottom: 18px;
@@ -218,6 +229,37 @@ p.preamble {
     text-align: center;
     margin: 10px 0;
     font-weight: 600;
+}
+
+/* Article layout (I–XII): subsection blocks */
+.subsection {
+    margin-bottom: 28px;
+    padding: 16px 20px;
+    background: var(--highlight-color);
+    border-left: 3px solid var(--accent-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subsection.is-selected {
+    background-color: var(--sentence-highlight);
+    box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.3);
+}
+
+.subsection-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-right: 12px;
+    display: inline-block;
+    min-width: 40px;
+}
+
+.subsection-text {
+    display: inline;
+    text-align: justify;
+    hyphens: auto;
 }
 
 /* Glossary Terms & Tooltips */
@@ -1126,9 +1168,13 @@ body.is-exiting #blackFadeOverlay {
 
     h1 { font-size: 1.8em; }
 
+    h2 { font-size: 1.3em; }
+
     #loadingIcon { font-size: 36px; }
 
     .tooltip { max-width: 240px; }
+
+    .subsection { padding: 12px 16px; }
 
     .nav-btn { font-size: 1.35rem; }
 
@@ -1199,6 +1245,8 @@ body.is-exiting #blackFadeOverlay {
         letter-spacing: 1px;
     }
 
+    h2 { font-size: 1.1em; }
+
     .ornament {
         font-size: 20px;
         letter-spacing: 8px;
@@ -1207,6 +1255,13 @@ body.is-exiting #blackFadeOverlay {
     #loadingIcon { font-size: 32px; }
 
     .tooltip { max-width: 200px; }
+
+    .subsection { padding: 10px 12px; }
+
+    .subsection-num {
+        display: block;
+        margin-bottom: 6px;
+    }
 
     .nav-btn { font-size: 1.25rem; }
 
