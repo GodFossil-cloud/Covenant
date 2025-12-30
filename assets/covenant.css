@@ -341,6 +341,9 @@ p.preamble {
     /* Subtle “hanging indent” feel (wrapped lines tuck under, without looking indented). */
     padding-left: 0.05em;
 
+    /* Reduce awkward wraps (supported browsers only; safe to ignore elsewhere). */
+    text-wrap: pretty;
+
     /* Only break long/unbreakable tokens if needed to prevent horizontal overflow. */
     overflow-wrap: break-word;
     word-break: normal;
@@ -425,6 +428,7 @@ p.preamble {
     margin-right: 0.2em;
     user-select: none;
     transition: color 0.2s ease;
+    font-variant-numeric: lining-nums;
 }
 
 .sentence.is-selected .sentence-label {
