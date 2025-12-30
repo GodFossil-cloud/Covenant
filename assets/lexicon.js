@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.4 */
+/*! Covenant Lexicon UI v0.2.5 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.4';
+    window.COVENANT_LEXICON_VERSION = '0.2.5';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -635,7 +635,7 @@
         }
     }, { capture: true, passive: true });
 
-    // Exit fade + radiant pulse for Covenant section nav only (invocation.html → XII.html).
+    // Exit fade + radiant nav pulse for Covenant section nav only (invocation.html → XII.html).
     // Gate: requires lexicon panel + toggle + footer (keeps this off non-section pages).
     (function initExitTransitions() {
         if (!panel || !lexiconToggle || !navFooter || !container) return;
@@ -643,18 +643,118 @@
         var PANEL_CLOSE_MS = 120;
         var EXIT_MS = 380;
 
+        // "Press" nudge duration (separate from :active).
+        var NUDGE_MS = 120;
+
+        // Optional: subtle nav click sound. Muted by default.
+        var SOUND_KEY = 'covenant_nav_sound';
+        var audioCtx = null;
+
+        function getSoundPref() {
+            try {
+                return window.localStorage && localStorage.getItem(SOUND_KEY);
+            } catch (err) {
+                return null;
+            }
+        }
+
+        function setSoundPref(val) {
+            try {
+                if (!window.localStorage) return;
+                if (val === null || val === undefined) {
+                    localStorage.removeItem(SOUND_KEY);
+                } else {
+                    localStorage.setItem(SOUND_KEY, String(val));
+                }
+            } catch (err) { }
+        }
+
+        // Opt-in via query param:
+        //   ?sound=1  (enable and persist)
+        //   ?sound=0  (disable and persist)
+        (function initSoundQueryParam() {
+            try {
+                if (!window.URLSearchParams) return;
+                var params = new URLSearchParams(window.location.search);
+                if (!params.has('sound')) return;
+                var v = params.get('sound');
+                if (v === '1' || v === 'true' || v === 'on') {
+                    setSoundPref('1');
+                } else if (v === '0' || v === 'false' || v === 'off') {
+                    setSoundPref('0');
+                }
+
+                // Clean URL (so the covenant path stays clean after opting in).
+                params.delete('sound');
+                var newSearch = params.toString();
+                var nextUrl = window.location.pathname + (newSearch ? ('?' + newSearch) : '') + window.location.hash;
+                if (window.history && history.replaceState) {
+                    history.replaceState(null, document.title, nextUrl);
+                }
+            } catch (err) { }
+        })();
+
+        function soundEnabled() {
+            return getSoundPref() === '1';
+        }
+
+        function playClickTick() {
+            if (!soundEnabled()) return;
+            try {
+                var Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return;
+                if (!audioCtx) audioCtx = new Ctx();
+                if (audioCtx.state === 'suspended' && audioCtx.resume) {
+                    audioCtx.resume();
+                }
+
+                var now = audioCtx.currentTime;
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+
+                // Tiny percussive "tick": quick down-sweep.
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1100, now);
+                osc.frequency.exponentialRampToValueAtTime(520, now + 0.03);
+
+                // Very low gain (subtle).
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.018, now + 0.005);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.06);
+
+                osc.onended = function () {
+                    try { osc.disconnect(); } catch (err) { }
+                    try { gain.disconnect(); } catch (err) { }
+                };
+            } catch (err) { }
+        }
+
         function isModifiedClick(e) {
             return !!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0);
         }
 
         function pulse(el) {
             if (!el) return;
+
+            // Radiant flare.
             el.classList.remove('is-pulsing');
             void el.offsetWidth;
             el.classList.add('is-pulsing');
             window.setTimeout(function () {
                 el.classList.remove('is-pulsing');
             }, 700);
+
+            // Physical press: brief 1px travel, separate from :active.
+            el.classList.add('is-nudging');
+            window.setTimeout(function () {
+                el.classList.remove('is-nudging');
+            }, NUDGE_MS);
         }
 
         function ensureExitOverlay() {
@@ -679,6 +779,7 @@
             var panelOpen = panel.classList.contains('is-open');
             var delay = panelOpen ? PANEL_CLOSE_MS : 0;
 
+            playClickTick();
             pulse(pulseTarget);
 
             // Close panel if open (intentional first).
