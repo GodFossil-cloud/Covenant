@@ -45,6 +45,14 @@
     --intro-footer-duration: 0.5s;
     --intro-panel-duration: 2.5s;
 
+    /* Exit sequence durations (Covenant section pages). */
+    --exit-overlay-duration: 360ms;
+    --exit-container-duration: 260ms;
+    --exit-footer-duration: 240ms;
+
+    /* Navigation interaction feedback. */
+    --nav-pulse-duration: 520ms;
+
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
     --nav-pill-width: 84px;
     --nav-pill-height: 44px;
@@ -327,6 +335,25 @@ p.preamble {
 
 .nav-footer.fade-in {
     opacity: 1;
+}
+
+/* Exit state (Covenant section pages). */
+body.is-exiting .container {
+    opacity: 0;
+    transition: opacity var(--exit-container-duration) ease-in !important;
+}
+
+body.is-exiting .nav-footer {
+    opacity: 0;
+    transition: opacity var(--exit-footer-duration) ease-in !important;
+    pointer-events: none;
+}
+
+/* Overlay default is black; during intro it gets .fade-out to go transparent.
+   On exit we bring it back to opaque (lexicon.js will ensure an overlay exists if it was removed). */
+body.is-exiting #blackFadeOverlay {
+    opacity: 1 !important;
+    transition: opacity var(--exit-overlay-duration) ease-in !important;
 }
 
 .nav-footer-inner {
@@ -779,6 +806,37 @@ p.preamble {
 .nav-prev:active .nav-prev-label {
     transform: translateY(1px);
     filter: brightness(0.95);
+}
+
+/* Radiant pulse feedback (triggered via JS: .is-pulsing) */
+@keyframes navRadiantPulse {
+    0% {
+        filter: drop-shadow(0 0 0 rgba(201,169,97,0.0));
+        transform: translateY(0);
+    }
+    35% {
+        filter:
+            drop-shadow(0 0 10px rgba(201,169,97,0.28))
+            drop-shadow(0 0 22px rgba(201,169,97,0.16));
+    }
+    100% {
+        filter: drop-shadow(0 0 0 rgba(201,169,97,0.0));
+        transform: translateY(0);
+    }
+}
+
+.nav-next-frame.is-pulsing,
+.nav-prev-frame.is-pulsing,
+.nav-btn.center.is-pulsing {
+    animation: navRadiantPulse var(--nav-pulse-duration) ease-out 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-next-frame.is-pulsing,
+    .nav-prev-frame.is-pulsing,
+    .nav-btn.center.is-pulsing {
+        animation: none;
+    }
 }
 
 /* Lexicon Overlay */

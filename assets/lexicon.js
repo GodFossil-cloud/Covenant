@@ -634,4 +634,93 @@
             }
         }
     }, { capture: true, passive: true });
+
+    // Exit fade + radiant pulse for Covenant section nav only (invocation.html → XII.html).
+    // Gate: requires lexicon panel + toggle + footer (keeps this off non-section pages).
+    (function initExitTransitions() {
+        if (!panel || !lexiconToggle || !navFooter || !container) return;
+
+        var EXIT_MS = 380;
+
+        function isModifiedClick(e) {
+            return !!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0);
+        }
+
+        function pulse(el) {
+            if (!el) return;
+            el.classList.remove('is-pulsing');
+            void el.offsetWidth;
+            el.classList.add('is-pulsing');
+            window.setTimeout(function () {
+                el.classList.remove('is-pulsing');
+            }, 700);
+        }
+
+        function ensureExitOverlay() {
+            var existing = document.getElementById('blackFadeOverlay');
+            if (existing) return existing;
+
+            var o = document.createElement('div');
+            o.id = 'blackFadeOverlay';
+            // Start transparent; CSS "fade-out" sets opacity:0, then body.is-exiting forces it back to 1.
+            o.className = 'fade-out';
+            o.setAttribute('data-exit-overlay', 'true');
+            document.body.appendChild(o);
+            // Force style flush so transition engages.
+            void o.offsetWidth;
+            return o;
+        }
+
+        function beginExitThenNavigate(href, pulseTarget) {
+            if (!href) return;
+            if (document.body.classList.contains('is-exiting')) return;
+
+            ensureExitOverlay();
+            document.body.classList.add('is-exiting');
+            pulse(pulseTarget);
+
+            window.setTimeout(function () {
+                window.location.href = href;
+            }, EXIT_MS);
+        }
+
+        // Reset exit state if BFCache restores the page.
+        window.addEventListener('pageshow', function () {
+            document.body.classList.remove('is-exiting');
+            var o = document.getElementById('blackFadeOverlay');
+            if (o && o.getAttribute('data-exit-overlay') === 'true' && o.parentNode) {
+                o.parentNode.removeChild(o);
+            }
+        });
+
+        document.querySelectorAll('a.nav-next, a.nav-prev').forEach(function (link) {
+            link.addEventListener('pointerdown', function () {
+                var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
+                pulse(frame);
+            });
+
+            link.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
+                    pulse(frame);
+                }
+            });
+
+            link.addEventListener('click', function (e) {
+                if (isModifiedClick(e)) return;
+
+                var href = link.getAttribute('href');
+                if (!href || href.charAt(0) === '#') return;
+
+                e.preventDefault();
+                var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
+                beginExitThenNavigate(href, frame || link);
+            });
+        });
+
+        // Optional: pulse center lexicon button on interaction.
+        lexiconToggle.addEventListener('pointerdown', function () {
+            pulse(lexiconToggle);
+        });
+    })();
 })();
