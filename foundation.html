@@ -1,3 +1,6 @@
+---
+layout: none
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctrinal Foundation - Covenant</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=block" rel="stylesheet">
+    {% include head-fonts.html %}
 
     <link rel="stylesheet" href="assets/covenant.css">
 
@@ -80,7 +80,7 @@
                     rests upon three indivisible principles from which all authority derives:
                 </span>
             </p>
-            
+
             <div class="foundation-principles">
                 <p>
                     <span class="sentence" data-lexicon-key="F.2" data-sentence-text="Hierarchy is sacred.">
@@ -114,7 +114,7 @@
                     with nurture, power with wisdom.
                 </span>
             </p>
-            
+
             <p>
                 <span class="sentence" data-lexicon-key="F.7" data-sentence-text="All Articles that follow operate under this Foundation.">
                     <span class="sentence-label">7</span>
@@ -132,7 +132,7 @@
                     which remains inviolate through all amendments and renewals.
                 </span>
             </p>
-            
+
             <p>
                 <span class="sentence" data-lexicon-key="F.9" data-sentence-text="From this Foundation flows all authority, obligation, and sacred structure herein established.">
                     <span class="sentence-label">9</span>
@@ -169,69 +169,48 @@
         </div>
     </nav>
 
-    <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
-
-    <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1">
-        <div class="lexicon-drag-region" id="lexiconDragRegion" aria-hidden="true">
-            <div class="lexicon-drag-pill"></div>
-        </div>
-
-        <div class="lexicon-panel-header">
-            <div>
-                <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode" id="lexiconModeLabel">Doctrinal Foundation</div>
-            </div>
-            <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
-        </div>
-        <div class="lexicon-panel-body">
-            <div id="lexiconDynamicContent"></div>
-            <noscript>
-                <p>JavaScript is required to view lexicon details.</p>
-            </noscript>
-
-            <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
-
-            <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
-                <h3>Terms in this section</h3>
-                <ul class="lexicon-term-list">
-                    <li>
-                        <span class="lexicon-term-label">Faithful</span>
-                        <span class="lexicon-term-ref">[1]</span>
-                        – The devoted servant and obedient instrument within this sacred bond.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Covenant</span>
-                        <span class="lexicon-term-ref">[2]</span>
-                        – A sacred, binding agreement between the Lord and the Faithful.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Hierarchy</span>
-                        <span class="lexicon-term-ref">[3]</span>
-                        – The sacred ordering of authority and obedience.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Command</span>
-                        <span class="lexicon-term-ref">[4]</span>
-                        – An authoritative directive given by the Lord.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Obedience</span>
-                        <span class="lexicon-term-ref">[5]</span>
-                        – The willing submission and faithful execution of commands.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Consecrated</span>
-                        <span class="lexicon-term-ref">[6]</span>
-                        – Sacred blessing and binding force that seals this Covenant.
-                    </li>
-                    <li>
-                        <span class="lexicon-term-label">Foundation</span>
-                        <span class="lexicon-term-ref">[7]</span>
-                        – The three indivisible principles of the Covenant.
-                    </li>
-                </ul>
-            </div>
-        </div>
+    {% capture lexicon_glossary %}
+    <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
+        <h3>Terms in this section</h3>
+        <ul class="lexicon-term-list">
+            <li>
+                <span class="lexicon-term-label">Faithful</span>
+                <span class="lexicon-term-ref">[1]</span>
+                – The devoted servant and obedient instrument within this sacred bond.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Covenant</span>
+                <span class="lexicon-term-ref">[2]</span>
+                – A sacred, binding agreement between the Lord and the Faithful.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Hierarchy</span>
+                <span class="lexicon-term-ref">[3]</span>
+                – The sacred ordering of authority and obedience.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Command</span>
+                <span class="lexicon-term-ref">[4]</span>
+                – An authoritative directive given by the Lord.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Obedience</span>
+                <span class="lexicon-term-ref">[5]</span>
+                – The willing submission and faithful execution of commands.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Consecrated</span>
+                <span class="lexicon-term-ref">[6]</span>
+                – Sacred blessing and binding force that seals this Covenant.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Foundation</span>
+                <span class="lexicon-term-ref">[7]</span>
+                – The three indivisible principles of the Covenant.
+            </li>
+        </ul>
     </div>
+    {% endcapture %}
+    {% include lexicon-panel.html glossary=lexicon_glossary %}
 </body>
 </html>

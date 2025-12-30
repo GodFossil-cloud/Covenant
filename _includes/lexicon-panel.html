@@ -1,0 +1,28 @@
+<!-- Shared Lexicon panel shell (GitHub Pages / Jekyll include). -->
+<div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
+
+<div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1">
+    <div class="lexicon-drag-region" id="lexiconDragRegion" aria-hidden="true">
+        <div class="lexicon-drag-pill"></div>
+    </div>
+
+    <div class="lexicon-panel-header">
+        <div>
+            <div class="lexicon-panel-title">Lexicon</div>
+            <!-- Intentionally left blank; populated by assets/lexicon.js from window.COVENANT_PAGE.modeLabel. -->
+            <div class="lexicon-panel-mode" id="lexiconModeLabel"></div>
+        </div>
+        <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
+    </div>
+
+    <div class="lexicon-panel-body">
+        <div id="lexiconDynamicContent"></div>
+        <noscript>
+            <p>JavaScript is required to view lexicon details.</p>
+        </noscript>
+
+        <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
+
+        {{ include.glossary | default: "" }}
+    </div>
+</div>
