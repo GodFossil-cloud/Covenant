@@ -46,8 +46,8 @@
     --intro-panel-duration: 2.5s;
 
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
-    --nav-pill-width: 92px;
-    --nav-pill-height: 52px;
+    --nav-pill-width: 86px;
+    --nav-pill-height: 48px;
 }
 
 * {
@@ -333,7 +333,7 @@ p.preamble {
     max-width: 900px;
     margin: 0 auto;
     height: var(--footer-height);
-    padding: 0 10px;
+    padding: 8px 10px 0;
     display: grid;
     grid-template-columns: 100px 1fr 100px;
     align-items: center;
@@ -359,7 +359,7 @@ p.preamble {
     padding: 0;
     border: none;
     background: transparent;
-    font-size: 1.8rem;
+    font-size: 1.55rem;
     color: var(--glyph-gold);
     cursor: pointer;
     transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
@@ -387,7 +387,7 @@ p.preamble {
 .nav-btn:not(.center)::before {
     content: '';
     position: absolute;
-    inset: 12px;
+    inset: 14px;
     border: 1px solid #571619;
     border-radius: 4px;
     box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
@@ -410,7 +410,7 @@ p.preamble {
 .nav-btn:not(.center)::after {
     content: '';
     position: absolute;
-    inset: 12px;
+    inset: 14px;
     border-radius: 4px;
     z-index: -1;
     transition: background 0.2s ease;
@@ -428,14 +428,14 @@ p.preamble {
 }
 
 .nav-btn-icon {
-    font-size: 1.55rem;
+    font-size: 1.4rem;
     line-height: 1;
     pointer-events: none;
 }
 
 .nav-btn-icon.nav-btn-icon--arrow {
     display: inline-block;
-    transform: scale(1.08);
+    transform: scale(1.06);
     transform-origin: center;
 }
 
@@ -448,7 +448,7 @@ p.preamble {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 }
@@ -519,11 +519,11 @@ p.preamble {
 }
 
 .nav-next .nav-btn-icon--arrow {
-    transform: scale(1.16);
+    transform: scale(1.12);
 }
 
 .nav-prev .nav-btn-icon--arrow {
-    transform: scale(1.16);
+    transform: scale(1.12);
 }
 
 /* Lexicon Button - Center */
@@ -532,7 +532,7 @@ p.preamble {
     height: var(--nav-pill-height);
     padding: 0 14px;
     max-width: none;
-    font-size: 1.62rem;
+    font-size: 1.52rem;
     white-space: nowrap;
     line-height: 1;
     text-align: center;
@@ -724,13 +724,13 @@ p.preamble {
 .nav-prev-label {
     position: relative;
     display: inline-block;
-    padding: 5px 12px 4px;
+    padding: 6px 12px 5px;
     border-radius: 3px;
 
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.62rem;
+    font-size: 0.74rem;
     font-weight: 600;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
 
     text-transform: none;
     font-variant-caps: all-small-caps;
@@ -1022,8 +1022,8 @@ p.preamble {
 
 @media (max-width: 768px) {
     :root {
-        --nav-pill-width: 82px;
-        --nav-pill-height: 46px;
+        --nav-pill-width: 78px;
+        --nav-pill-height: 44px;
     }
 
     body {
@@ -1039,19 +1039,19 @@ p.preamble {
 
     .tooltip { max-width: 240px; }
 
-    .nav-btn { font-size: 1.5rem; }
+    .nav-btn { font-size: 1.35rem; }
 
     .nav-btn.center {
         padding: 0 12px;
-        font-size: 1.48rem;
+        font-size: 1.36rem;
     }
 
-    .nav-btn-icon { font-size: 1.4rem; }
+    .nav-btn-icon { font-size: 1.25rem; }
 
     .nav-next-label,
     .nav-prev-label {
-        font-size: 0.60rem;
-        letter-spacing: 0.14em;
+        font-size: 0.70rem;
+        letter-spacing: 0.13em;
     }
 }
 
@@ -1097,8 +1097,8 @@ p.preamble {
 
 @media (max-width: 480px) {
     :root {
-        --nav-pill-width: 78px;
-        --nav-pill-height: 44px;
+        --nav-pill-width: 74px;
+        --nav-pill-height: 42px;
     }
 
     .container { padding: 20px 15px; }
@@ -1117,26 +1117,26 @@ p.preamble {
 
     .tooltip { max-width: 200px; }
 
-    .nav-btn { font-size: 1.3rem; }
+    .nav-btn { font-size: 1.25rem; }
 
     .nav-btn.center {
         padding: 0 12px;
-        font-size: 1.34rem;
+        font-size: 1.24rem;
     }
 
-    .nav-btn-icon { font-size: 1.25rem; }
+    .nav-btn-icon { font-size: 1.15rem; }
 
     .nav-next-label,
     .nav-prev-label {
-        font-size: 0.58rem;
-        letter-spacing: 0.13em;
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
     }
 }
 
 @media (max-width: 360px) {
     :root {
-        --nav-pill-width: 72px;
-        --nav-pill-height: 42px;
+        --nav-pill-width: 68px;
+        --nav-pill-height: 40px;
     }
 
     .nav-footer-inner {
@@ -1145,6 +1145,6 @@ p.preamble {
 
     .nav-btn.center {
         padding: 0 10px;
-        font-size: 1.26rem;
+        font-size: 1.18rem;
     }
 }
