@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.5 */
+/*! Covenant Lexicon UI v0.2.6 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.5';
+    window.COVENANT_LEXICON_VERSION = '0.2.6';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -73,7 +73,7 @@
         var lastPointerUpAt = 0;
 
         el.addEventListener('pointerup', function (e) {
-            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
             lastPointerUpAt = Date.now();
             handler(e);
         });
@@ -434,7 +434,7 @@
             closePanel();
         });
 
-        panel.querySelectorAll('.lexicon-panel-close').forEach(function (btn) {
+        Array.prototype.forEach.call(panel.querySelectorAll('.lexicon-panel-close'), function (btn) {
             applyPressFeedback(btn);
             bindActivate(btn, function (e) {
                 if (e && e.preventDefault) e.preventDefault();
@@ -572,7 +572,7 @@
     }
 
     var sentenceNodes = document.querySelectorAll('.sentence');
-    sentenceNodes.forEach(function (node) {
+    Array.prototype.forEach.call(sentenceNodes, function (node) {
         node.addEventListener('click', function (event) {
             event.stopPropagation();
             handleSentenceClick(node);
@@ -605,7 +605,7 @@
 
     var glossaryTerms = document.querySelectorAll('.glossary-term');
 
-    glossaryTerms.forEach(function (term) {
+    Array.prototype.forEach.call(glossaryTerms, function (term) {
         term.addEventListener('touchstart', function (e) {
             if (this === currentlyActiveTooltip) return;
             e.preventDefault();
@@ -736,7 +736,8 @@
         }
 
         function isModifiedClick(e) {
-            return !!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0);
+            var nonPrimary = (typeof e.button === 'number') ? (e.button !== 0) : false;
+            return !!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || nonPrimary);
         }
 
         function pulse(el) {
@@ -807,7 +808,7 @@
             }
         });
 
-        document.querySelectorAll('a.nav-next, a.nav-prev').forEach(function (link) {
+        Array.prototype.forEach.call(document.querySelectorAll('a.nav-next, a.nav-prev'), function (link) {
             link.addEventListener('click', function (e) {
                 if (isModifiedClick(e)) return;
 
