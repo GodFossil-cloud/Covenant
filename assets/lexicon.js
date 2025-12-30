@@ -21,6 +21,7 @@
     var dynamicContent = document.getElementById('lexiconDynamicContent');
 
     // Standardize the "seal" glyph used for the intro loader across Covenant pages.
+    // Canonical default: _includes/covenant-config.html (included via _includes/head-fonts.html).
     // Override options:
     // - window.COVENANT_LOADING_GLYPH = '✦'
     // - window.COVENANT_PAGE.loadingGlyph = '✦'
