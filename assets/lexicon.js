@@ -1,5 +1,9 @@
+/*! Covenant Lexicon UI v0.2.0 */
 (function () {
     'use strict';
+
+    // Exposed for quick verification during future page migrations.
+    window.COVENANT_LEXICON_VERSION = '0.2.0';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var sentenceExplanations = pageConfig.sentenceExplanations || {};
@@ -12,7 +16,15 @@
     var lexiconToggle = document.getElementById('lexiconToggle');
     var lexOverlay = document.getElementById('lexiconOverlay');
     var dynamicContent = document.getElementById('lexiconDynamicContent');
-    var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
+
+    // Back-compat: if pageConfig.defaultOverviewHTML is not set yet (older pages), fall back to DOM capture.
+    var defaultOverviewHTML = pageConfig.defaultOverviewHTML || (dynamicContent ? dynamicContent.innerHTML : '');
+
+    // If a page provides overview via config, treat the panel body as JS-driven.
+    if (dynamicContent && pageConfig.defaultOverviewHTML) {
+        dynamicContent.innerHTML = pageConfig.defaultOverviewHTML;
+    }
+
     var currentlySelectedSentence = null;
     var currentlyActiveTooltip = null;
     var focusReturnEl = null;
@@ -162,8 +174,51 @@
 
     function setModeLabel() {
         if (!pageConfig.modeLabel) return;
-        var modeEl = document.querySelector('.lexicon-panel-mode');
+        var modeEl = document.getElementById('lexiconModeLabel') || document.querySelector('.lexicon-panel-mode');
         if (modeEl) modeEl.textContent = pageConfig.modeLabel;
+    }
+
+    function validateSentenceKeys() {
+        var nodes = document.querySelectorAll('.sentence');
+        if (!nodes || !nodes.length) return;
+
+        var seen = Object.create(null);
+        var duplicates = Object.create(null);
+        var missingCount = 0;
+        var nonstandard = Object.create(null);
+
+        var pattern = /^[IVX]+\.[0-9]+$/;
+
+        Array.prototype.forEach.call(nodes, function (node) {
+            var key = node && node.dataset ? node.dataset.lexiconKey : null;
+            if (!key) {
+                missingCount += 1;
+                return;
+            }
+
+            if (!pattern.test(key)) {
+                nonstandard[key] = true;
+            }
+
+            if (seen[key]) {
+                duplicates[key] = true;
+            }
+            seen[key] = true;
+        });
+
+        var dupKeys = Object.keys(duplicates);
+        if (dupKeys.length) {
+            console.warn('[Covenant Lexicon] Duplicate data-lexicon-key values found:', dupKeys);
+        }
+
+        if (missingCount) {
+            console.warn('[Covenant Lexicon] Some .sentence elements are missing data-lexicon-key:', missingCount);
+        }
+
+        var nonstandardKeys = Object.keys(nonstandard);
+        if (nonstandardKeys.length) {
+            console.warn('[Covenant Lexicon] Non-standard data-lexicon-key format (expected I.1, II.3, etc.):', nonstandardKeys);
+        }
     }
 
     setTimeout(function () {
@@ -262,6 +317,8 @@
             dynamicContent.style.opacity = '1';
         }, 150);
     }
+
+    validateSentenceKeys();
 
     if (lexiconToggle && panel && lexOverlay) {
         setModeLabel();

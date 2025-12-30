@@ -7,7 +7,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=block" rel="stylesheet">
 
     <link rel="stylesheet" href="assets/covenant.css">
@@ -15,6 +15,15 @@
     <script>
     window.COVENANT_PAGE = {
         modeLabel: 'Invocation and Preamble',
+        defaultOverviewHTML: [
+            '<p>\n'
+                + '    This opening passage marks the ceremonial threshold where three authorities are called to witness—silence (formless void), stars (celestial realm), Earth (material plane). The celestial order (“mirror of the firmament”) is then reflected in the structure of the bond: Lord-Covenant-Faithful, where the Covenant is mediator between Lord and&nbsp;Faithful.\n'
+                + '</p>',
+            '<div class="section-divider">✦</div>',
+            '<p>\n'
+                + '    The preamble then unfolds in four movements—ordination, admonition, purification, declaration—establishing structure, condemning falsification, expelling corruption, and sealing the binding force. All that follows—Doctrinal Foundation, Articles, Rituals, the Oath—flows out from this cosmic&nbsp;frame.\n'
+                + '</p>'
+        ].join(''),
         sentenceExplanations: {
             'I.1': 'The Invocation solves a structural problem: how to establish hierarchy without reducing it to human claim. Three authorities are summoned in descending order—silence (void above all), stars (celestial pattern), Earth (terrestrial witness)—embodying the vertical structure before naming it. This makes ordination, admonition, purification, and declaration possible: each operates within cosmic framework already enacted. Without this opening, the preamble begins with assertion requiring justification. With witness invoked, subsequent language becomes ritual recognition within pre-existing sacred order.',
             'I.2': 'This passage ordains the structure of the Covenant in reflection of the invocation. "Mirror of the firmament" refers to the celestial order in the opening passage—the hierarchy as an existing architecture is directly called to witness before any declarations are made. The hierarchy is already sanctified: the void (Lord), the firmament (Covenant as mediator), the Earth (Faithful). No judge can assert what a witness has proclaimed, because it is already established as-it-is. This transforms the bond from temporal contract into holy sacrament within a pre-existing cosmic order.',
@@ -112,20 +121,15 @@
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
-                <div class="lexicon-panel-mode">Invocation and Preamble</div>
+                <div class="lexicon-panel-mode" id="lexiconModeLabel">Invocation and Preamble</div>
             </div>
             <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
         </div>
         <div class="lexicon-panel-body">
-            <div id="lexiconDynamicContent">
-                <p>
-                    This opening passage marks the ceremonial threshold where three authorities are called to witness—silence (formless void), stars (celestial realm), Earth (material plane). The celestial order (“mirror of the firmament”) is then reflected in the structure of the bond: Lord-Covenant-Faithful, where the Covenant is mediator between Lord and&nbsp;Faithful.
-                </p>
-                <div class="section-divider">✦</div>
-                <p>
-                    The preamble then unfolds in four movements—ordination, admonition, purification, declaration—establishing structure, condemning falsification, expelling corruption, and sealing the binding force. All that follows—Doctrinal Foundation, Articles, Rituals, the Oath—flows out from this cosmic&nbsp;frame.
-                </p>
-            </div>
+            <div id="lexiconDynamicContent"></div>
+            <noscript>
+                <p>JavaScript is required to view lexicon details.</p>
+            </noscript>
 
             <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
 
