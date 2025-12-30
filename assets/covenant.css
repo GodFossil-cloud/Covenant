@@ -313,7 +313,7 @@ p.preamble {
 .subpart {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
     margin-top: 12px;
 }
 
@@ -333,6 +333,7 @@ p.preamble {
 .subpart-content {
     flex: 1 1 auto;
     min-width: 0;
+    line-height: 1.55;
 
     /* Only break long/unbreakable tokens if needed to prevent horizontal overflow. */
     overflow-wrap: break-word;
