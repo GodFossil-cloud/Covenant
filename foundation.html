@@ -7,6 +7,42 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
+
+    <script>
+    window.COVENANT_PAGE = {
+        pageId: 'foundation',
+        modeLabel: 'Doctrinal Foundation',
+
+        // Foundation currently uses F.1, F.2... keys.
+        // This override prevents "non-standard key" warnings until we later standardize keys site-wide.
+        keyPattern: '^[A-Z]+\\.[0-9]+$',
+
+        // Moved from DOM into config so the panel body is fully config-driven.
+        defaultOverviewHTML: [
+            '<p>\n'
+                + '    The Doctrinal Foundation establishes the three core principles upon which the entire Covenant stands: Hierarchy is sacred, Command is rightful, and Obedience is consecrated.\n'
+                + '</p>',
+            '<p>\n'
+                + '    This section frames all later Articles as expressions of an eternal structure, not arbitrary inventions. Authority, when derived from this Foundation, is portrayed as both divinely patterned and mutually chosen.\n'
+                + '</p>'
+        ].join(''),
+
+        // Lexicon content preserved exactly; moved into per-page config.
+        sentenceExplanations: {
+            'F.1': 'This opening line positions the Foundation not as an arbitrary preference, but as the structural core from which all authority within the Covenant flows. It frames what follows as non-negotiable bedrock.',
+            'F.2': 'The first of the three pillars. Declaring hierarchy sacred removes it from the realm of convenience or social construct and elevates it to a metaphysical principle—alignment with divine or cosmic order.',
+            'F.3': 'The second pillar. Command is not framed as power seized, but as rightful authority—implying moral legitimacy, not mere force. It ties the exercise of will to justification.',
+            'F.4': 'The third pillar. Obedience is not framed as submission under duress, but as an act of devotion. The use of "consecrated" invokes religious ritual—obedience is not servitude but sacrament.',
+            'F.5': 'This line acknowledges mutual consent ("freely chosen") while framing the bond as deriving authority from the preceding immutable order, not from negotiation. Choice enters the picture, but only as acceptance of what already exists.',
+            'F.6': 'A brief statement that binds power to responsibility. It implies that lordship, when properly enacted, is not tyranny but care—a protective stewardship. This sentence tempers absolute authority with an ethical ideal.',
+            'F.7': 'This establishes the Foundation as the interpretive key for all that follows. No Article can be read in isolation—everything refers back to these three principles.',
+            'F.8': 'Cements the Foundation as eternal and immutable. Even amendments to the Covenant must bow to this Foundation. It locks the three pillars into place, immune to revision.',
+            'F.9': 'A concluding statement that reiterates the Foundation as the generative source of all authority, duty, and structure in the Covenant. It is both origin and anchor.'
+        }
+    };
+    </script>
+    <script src="assets/lexicon.js" defer></script>
+
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -484,6 +520,19 @@
             user-select: none;
         }
 
+        /* Added for shared lexicon.js scroll locking */
+        html.lexicon-scroll-lock,
+        body.lexicon-scroll-lock {
+            overflow: hidden;
+        }
+
+        body.lexicon-scroll-lock {
+            position: fixed;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+
         @media print {
             #loadingIcon,
             #blackFadeOverlay,
@@ -651,8 +700,8 @@
         </section>
     </div>
 
-    <div class="lexicon-glyph-toggle">
-        <button id="lexiconToggle" type="button" aria-label="Open Covenant Lexicon panel">
+    <div class="lexicon-glyph-toggle fade-in">
+        <button id="lexiconToggle" type="button" aria-label="Open Covenant Lexicon panel" aria-expanded="false" aria-controls="lexiconPanel">
             𖤓
         </button>
     </div>
@@ -668,14 +717,10 @@
             </button>
         </div>
         <div class="lexicon-panel-body">
-            <div id="lexiconDynamicContent">
-                <p>
-                    The Doctrinal Foundation establishes the three core principles upon which the entire Covenant stands: Hierarchy is sacred, Command is rightful, and Obedience is consecrated.
-                </p>
-                <p>
-                    This section frames all later Articles as expressions of an eternal structure, not arbitrary inventions. Authority, when derived from this Foundation, is portrayed as both divinely patterned and mutually chosen.
-                </p>
-            </div>
+            <div id="lexiconDynamicContent"></div>
+            <noscript>
+                <p>JavaScript is required to view lexicon details.</p>
+            </noscript>
 
             <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">
                 Open Full Lexicon
@@ -725,215 +770,5 @@
     </div>
 
     <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
-
-    <script>
-    (function () {
-        var loadingIcon = document.getElementById('loadingIcon');
-        var overlay = document.getElementById('blackFadeOverlay');
-        var container = document.querySelector('.container');
-        var lexiconToggleWrap = document.querySelector('.lexicon-glyph-toggle');
-        var glyphButton = document.getElementById('lexiconToggle');
-
-        setTimeout(function() {
-            if (loadingIcon) loadingIcon.classList.add('fade-out');
-            setTimeout(function() {
-                overlay.classList.add('fade-out');
-                setTimeout(function() {
-                    container.classList.add('fade-in');
-                    if (lexiconToggleWrap) lexiconToggleWrap.classList.add('fade-in');
-                    setTimeout(function() {
-                        if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
-                        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                    }, 1500);
-                }, 1500);
-            }, 500);
-        }, 1800);
-
-        var panel = document.getElementById('lexiconPanel');
-        var lexOverlay = document.getElementById('lexiconOverlay');
-        var closeButtons = panel ? panel.querySelectorAll('.lexicon-panel-close') : [];
-        var modeLabel = document.getElementById('lexiconModeLabel');
-        var dynamicContent = document.getElementById('lexiconDynamicContent');
-        var defaultOverviewHTML = dynamicContent ? dynamicContent.innerHTML : '';
-
-        var sentenceExplanations = {
-            'F.1': 'This opening line positions the Foundation not as an arbitrary preference, but as the structural core from which all authority within the Covenant flows. It frames what follows as non-negotiable bedrock.',
-            'F.2': 'The first of the three pillars. Declaring hierarchy sacred removes it from the realm of convenience or social construct and elevates it to a metaphysical principle—alignment with divine or cosmic order.',
-            'F.3': 'The second pillar. Command is not framed as power seized, but as rightful authority—implying moral legitimacy, not mere force. It ties the exercise of will to justification.',
-            'F.4': 'The third pillar. Obedience is not framed as submission under duress, but as an act of devotion. The use of "consecrated" invokes religious ritual—obedience is not servitude but sacrament.',
-            'F.5': 'This line acknowledges mutual consent ("freely chosen") while framing the bond as deriving authority from the preceding immutable order, not from negotiation. Choice enters the picture, but only as acceptance of what already exists.',
-            'F.6': 'A brief statement that binds power to responsibility. It implies that lordship, when properly enacted, is not tyranny but care—a protective stewardship. This sentence tempers absolute authority with an ethical ideal.',
-            'F.7': 'This establishes the Foundation as the interpretive key for all that follows. No Article can be read in isolation—everything refers back to these three principles.',
-            'F.8': 'Cements the Foundation as eternal and immutable. Even amendments to the Covenant must bow to this Foundation. It locks the three pillars into place, immune to revision.',
-            'F.9': 'A concluding statement that reiterates the Foundation as the generative source of all authority, duty, and structure in the Covenant. It is both origin and anchor.'
-        };
-
-        var currentlySelectedSentence = null;
-
-        function setGlyphActiveState(isActive) {
-            if (!glyphButton) return;
-            if (isActive) {
-                glyphButton.classList.add('is-active');
-            } else {
-                glyphButton.classList.remove('is-active');
-            }
-        }
-
-        function openPanel() {
-            if (!panel || !lexOverlay) return;
-            panel.classList.add('is-open');
-            lexOverlay.classList.add('is-open');
-            panel.setAttribute('aria-hidden', 'false');
-            lexOverlay.setAttribute('aria-hidden', 'false');
-        }
-
-        function closePanel() {
-            if (!panel || !lexOverlay) return;
-            panel.classList.remove('is-open');
-            lexOverlay.classList.remove('is-open');
-            panel.setAttribute('aria-hidden', 'true');
-            lexOverlay.setAttribute('aria-hidden', 'true');
-        }
-
-        function renderOverview() {
-            if (!dynamicContent) return;
-            dynamicContent.style.opacity = '0';
-            setTimeout(function () {
-                dynamicContent.innerHTML = defaultOverviewHTML;
-                dynamicContent.style.opacity = '1';
-            }, 150);
-        }
-
-        function renderSentenceExplanation(key, sentenceText) {
-            if (!dynamicContent) return;
-            var explanation = sentenceExplanations[key];
-            if (!explanation) {
-                renderOverview();
-                return;
-            }
-            dynamicContent.style.opacity = '0';
-            setTimeout(function () {
-                var html = '<div class="lexicon-sentence-quote">“' + sentenceText + '”</div><p>' + explanation + '</p>';
-                dynamicContent.innerHTML = html;
-                dynamicContent.style.opacity = '1';
-            }, 150);
-        }
-
-        if (glyphButton && panel && lexOverlay) {
-            glyphButton.addEventListener('click', function () {
-                if (panel.classList.contains('is-open')) {
-                    closePanel();
-                } else {
-                    if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                        renderSentenceExplanation(
-                            currentlySelectedSentence.dataset.lexiconKey,
-                            currentlySelectedSentence.dataset.sentenceText
-                        );
-                    } else {
-                        renderOverview();
-                    }
-                    openPanel();
-                }
-            });
-
-            lexOverlay.addEventListener('click', closePanel);
-            closeButtons.forEach(function (btn) {
-                btn.addEventListener('click', closePanel);
-            });
-            document.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape' && panel.classList.contains('is-open')) {
-                    closePanel();
-                }
-            });
-        }
-
-        var sentenceNodes = document.querySelectorAll('.sentence');
-
-        function clearSentenceSelection() {
-            if (currentlySelectedSentence) {
-                currentlySelectedSentence.classList.remove('is-selected');
-                currentlySelectedSentence = null;
-                setGlyphActiveState(false);
-            }
-        }
-
-        sentenceNodes.forEach(function (node) {
-            node.addEventListener('click', function (event) {
-                event.stopPropagation();
-                if (currentlySelectedSentence === node) {
-                    clearSentenceSelection();
-                } else {
-                    clearSentenceSelection();
-                    currentlySelectedSentence = node;
-                    node.classList.add('is-selected');
-                    setGlyphActiveState(true);
-                }
-            });
-
-            var lastTapTime = 0;
-            node.addEventListener('touchend', function (event) {
-                var currentTime = new Date().getTime();
-                var tapLength = currentTime - lastTapTime;
-                if (tapLength < 300 && tapLength > 0) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    if (currentlySelectedSentence === node) {
-                        clearSentenceSelection();
-                    } else {
-                        clearSentenceSelection();
-                        currentlySelectedSentence = node;
-                        node.classList.add('is-selected');
-                        setGlyphActiveState(true);
-                    }
-                }
-                lastTapTime = currentTime;
-            });
-        });
-
-        document.addEventListener('click', function (event) {
-            var isSentence = event.target.closest('.sentence');
-            var isGlyph = event.target.closest('#lexiconToggle');
-            var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
-            }
-        });
-
-        document.addEventListener('touchend', function (event) {
-            var isSentence = event.target.closest('.sentence');
-            var isGlyph = event.target.closest('#lexiconToggle');
-            var isPanel = event.target.closest('#lexiconPanel');
-            if (!isSentence && !isGlyph && !isPanel) {
-                clearSentenceSelection();
-            }
-        });
-
-        var glossaryTerms = document.querySelectorAll('.glossary-term');
-        var currentlyActiveTooltip = null;
-
-        glossaryTerms.forEach(function(term) {
-            term.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                if (this === currentlyActiveTooltip) return;
-                if (currentlyActiveTooltip) {
-                    currentlyActiveTooltip.classList.remove('tooltip-active');
-                }
-                this.classList.add('tooltip-active');
-                currentlyActiveTooltip = this;
-            });
-        });
-
-        document.addEventListener('touchstart', function(e) {
-            var touchedGlossaryTerm = false;
-            glossaryTerms.forEach(function(term) {
-                if (term.contains(e.target)) touchedGlossaryTerm = true;
-            });
-            if (!touchedGlossaryTerm && currentlyActiveTooltip) {
-                currentlyActiveTooltip.classList.remove('tooltip-active');
-                currentlyActiveTooltip = null;
-            }
-        });
-    })();
-    </script>
 </body>
 </html>
