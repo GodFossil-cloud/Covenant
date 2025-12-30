@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.7 */
+/*! Covenant Lexicon UI v0.2.8 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.7';
+    window.COVENANT_LEXICON_VERSION = '0.2.8';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -35,6 +35,23 @@
 
     var isMobileGlyphMode = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
+    // iOS Safari (and iOS WKWebView) is particularly sensitive to the "body { position: fixed }" scroll-lock pattern.
+    // When the user is near the bottom, it can expose the black html background and, worse, get stuck in a non-interactive state.
+    // Use an iOS-specific scroll lock that avoids fixing the body and instead prevents background touch scrolling.
+    var isIOS = (function () {
+        try {
+            var ua = navigator.userAgent || '';
+            var platform = navigator.platform || '';
+            var iOSDevice = /iPad|iPhone|iPod/.test(ua);
+            var iPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+            return iOSDevice || iPadOS;
+        } catch (err) {
+            return false;
+        }
+    })();
+
+    var iosTouchMoveBlocker = null;
+
     function closestSafe(target, selector) {
         if (!target) return null;
         var el = (target.nodeType === 1) ? target : target.parentElement;
@@ -46,17 +63,64 @@
         return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
     }
 
+    function enableIOSTouchScrollLock() {
+        if (iosTouchMoveBlocker) return;
+
+        iosTouchMoveBlocker = function (e) {
+            // Only relevant while the panel is open.
+            if (!panel || !panel.classList.contains('is-open')) return;
+
+            // Allow scrolling inside the panel body.
+            var withinPanelBody = !!closestSafe(e.target, '.lexicon-panel-body');
+            if (withinPanelBody) return;
+
+            // Block everything else (prevents the page behind from scrolling / rubber-banding).
+            if (e && e.cancelable) e.preventDefault();
+        };
+
+        // Capture + passive:false are required to reliably prevent iOS background scrolling.
+        document.addEventListener('touchmove', iosTouchMoveBlocker, { capture: true, passive: false });
+    }
+
+    function disableIOSTouchScrollLock() {
+        if (!iosTouchMoveBlocker) return;
+        document.removeEventListener('touchmove', iosTouchMoveBlocker, { capture: true });
+        iosTouchMoveBlocker = null;
+    }
+
     function lockBodyScroll() {
         if (document.documentElement.classList.contains('lexicon-scroll-lock')) return;
         scrollLockY = window.scrollY || window.pageYOffset || 0;
+
+        // Always lock the root element.
         document.documentElement.classList.add('lexicon-scroll-lock');
+
+        if (isIOS) {
+            // iOS path: do not apply body fixed positioning (avoid black gaps + stuck interaction).
+            document.body.style.overflow = 'hidden';
+            enableIOSTouchScrollLock();
+            return;
+        }
+
+        // Default path (desktop + most browsers): fixed-body lock.
         document.body.classList.add('lexicon-scroll-lock');
         document.body.style.top = (-scrollLockY) + 'px';
     }
 
     function unlockBodyScroll() {
         if (!document.documentElement.classList.contains('lexicon-scroll-lock')) return;
+
         document.documentElement.classList.remove('lexicon-scroll-lock');
+
+        if (isIOS) {
+            disableIOSTouchScrollLock();
+            document.body.style.overflow = '';
+            // On iOS we never moved the body, so no scrollTo correction is needed,
+            // but keeping it is harmless and normalizes edge cases.
+            window.scrollTo(0, scrollLockY);
+            return;
+        }
+
         document.body.classList.remove('lexicon-scroll-lock');
         document.body.style.top = '';
         window.scrollTo(0, scrollLockY);
