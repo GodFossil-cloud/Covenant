@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.2 */
+/*! Covenant Lexicon UI v0.2.3 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.2';
+    window.COVENANT_LEXICON_VERSION = '0.2.3';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -264,7 +264,11 @@
             startDelay: 1800,
             iconToOverlayDelay: 500,
             overlayToContentDelay: 1500,
-            cleanupDelay: 1500
+            cleanupDelay: 1500,
+
+            // Panel should "spawn" first, but footer should become visible sooner.
+            // This delay ensures the footer fade begins slightly after the panel fade starts.
+            panelToFooterDelay: 90
         };
 
         if (!intro || typeof intro !== 'object') return defaults;
@@ -277,7 +281,8 @@
             startDelay: pickNumber(intro.startDelay, defaults.startDelay),
             iconToOverlayDelay: pickNumber(intro.iconToOverlayDelay, defaults.iconToOverlayDelay),
             overlayToContentDelay: pickNumber(intro.overlayToContentDelay, defaults.overlayToContentDelay),
-            cleanupDelay: pickNumber(intro.cleanupDelay, defaults.cleanupDelay)
+            cleanupDelay: pickNumber(intro.cleanupDelay, defaults.cleanupDelay),
+            panelToFooterDelay: pickNumber(intro.panelToFooterDelay, defaults.panelToFooterDelay)
         };
     }
 
@@ -291,8 +296,15 @@
             if (overlay) overlay.classList.add('fade-out');
             setTimeout(function () {
                 if (container) container.classList.add('fade-in');
-                if (navFooter) navFooter.classList.add('fade-in');
+
+                // Spawn panel first.
                 if (panel) panel.classList.add('fade-in');
+
+                // Then bring the footer in quickly; its shorter duration makes it "arrive" first.
+                setTimeout(function () {
+                    if (navFooter) navFooter.classList.add('fade-in');
+                }, introDelays.panelToFooterDelay);
+
                 setTimeout(function () {
                     if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
                     if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
