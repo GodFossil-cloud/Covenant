@@ -31,10 +31,10 @@
 
             /* Keep this at 0 so the lexicon control sits perfectly centered in the footer. */
             --lexicon-frame-raise: 0px;
-            
-  /* Optional: tiny optical nudges if needed (start at 0) */
-  --lexicon-star-nudge-x: 0px;
-  --lexicon-star-nudge-y: 0px;
+
+            /* Optional: tiny optical nudges if needed (start at 0) */
+            --lexicon-star-nudge-x: 0px;
+            --lexicon-star-nudge-y: 0px;
 
             /* Reliquary / mechanical refinements */
             --focus-ring: rgba(201, 169, 97, 0.48);
@@ -338,7 +338,7 @@
             font-size: 1.8rem;
             color: var(--glyph-gold);
             cursor: pointer;
-            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease;
+            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
             text-decoration: none;
             -webkit-tap-highlight-color: transparent;
             position: relative;
@@ -436,7 +436,7 @@
             align-items: center;
             justify-content: center;
             color: var(--glyph-gold);
-            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease;
+            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
             z-index: 0;
         }
 
@@ -483,26 +483,6 @@
             filter: brightness(0.96);
         }
 
-        .nav-next-label {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.62rem;
-            font-weight: 600;
-            letter-spacing: 0.09em;
-            text-transform: uppercase;
-            color: var(--footer-label);
-            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
-            line-height: 1;
-            user-select: none;
-            white-space: nowrap;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        .nav-next:hover .nav-next-label,
-        .nav-next:focus-visible .nav-next-label {
-            color: var(--footer-label-hover);
-        }
-
         .nav-next .nav-btn-icon--arrow {
             transform: scale(1.16);
         }
@@ -522,24 +502,6 @@
             transform: none;
         }
 
-        /* Fixed "rotation box" */
-.nav-btn.center .lexicon-glyph-mid {
-  display: inline-grid;
-  place-items: center;
-  width: 1em;
-  height: 1em;
-  line-height: 1;
-  vertical-align: -0.06em; /* optional; tweak if baseline feels off */
-}
-
-/* The actual rotating glyph */
-.nav-btn.center .lexicon-glyph-mid-inner {
-  display: inline-block;
-  line-height: 1;
-  transform-origin: 50% 50%;
-  will-change: transform;
-}
-
         .nav-btn.center .lexicon-glyph {
             display: inline-block;
             line-height: 1;
@@ -549,24 +511,36 @@
             white-space: nowrap;
         }
 
+        /* Fixed rotation box for the middle 𖤓 (prevents layout jitter while spinning) */
         .nav-btn.center .lexicon-glyph-mid {
+            display: inline-grid;
+            place-items: center;
+            width: 1em;
+            height: 1em;
+            line-height: 1;
+            vertical-align: -0.06em;
+        }
+
+        /* The actual rotating glyph (inner element) */
+        .nav-btn.center .lexicon-glyph-mid-inner {
             display: inline-block;
+            line-height: 1;
             transform-origin: 50% 50%;
             will-change: transform;
         }
 
         @keyframes lexiconStarSpin {
-  from { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(0deg); }
-  to   { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(360deg); }
+            from { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(0deg); }
+            to { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(360deg); }
         }
 
-/* Spin ONLY when selected glyph is shown (panel closed) */
-.nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
+        /* Spin ONLY when selected glyph is shown (panel closed) */
+        .nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
             animation: lexiconStarSpin 10s linear infinite;
         }
 
         @media (prefers-reduced-motion: reduce) {
-  .nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
+            .nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
                 animation: none;
             }
         }
@@ -621,15 +595,6 @@
         .nav-btn.center.has-selection::after {
             background-color: #5f1b1b;
             transform: translateY(-1px);
-        }
-
-        /* Reliquary / mechanical refinements (invocation only) */
-        .nav-btn {
-            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
-        }
-
-        .nav-next-frame {
-            transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
         }
 
         /* Focus-visible “inspection ring” */
@@ -1286,7 +1251,7 @@
     <script>
     (function() {
         'use strict';
-        
+
         var loadingIcon = document.getElementById('loadingIcon');
         var overlay = document.getElementById('blackFadeOverlay');
         var container = document.querySelector('.container');
@@ -1302,6 +1267,13 @@
         var scrollLockY = 0;
 
         var isMobileGlyphMode = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+        function closestSafe(target, selector) {
+            if (!target) return null;
+            var el = (target.nodeType === 1) ? target : target.parentElement;
+            if (!el || !el.closest) return null;
+            return el.closest(selector);
+        }
 
         function isBottomSheetMode() {
             return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
@@ -1400,13 +1372,14 @@
 
             var midOuter = document.createElement('span');
             midOuter.className = 'lexicon-glyph-mid';
-            
+
             var midInner = document.createElement('span');
             midInner.className = 'lexicon-glyph-mid-inner';
             midInner.textContent = star;
-            
+
             midOuter.appendChild(midInner);
             target.appendChild(midOuter);
+
             target.appendChild(document.createTextNode(right));
         }
 
@@ -1444,9 +1417,9 @@
         setTimeout(function() {
             if (loadingIcon) loadingIcon.classList.add('fade-out');
             setTimeout(function() {
-                overlay.classList.add('fade-out');
+                if (overlay) overlay.classList.add('fade-out');
                 setTimeout(function() {
-                    container.classList.add('fade-in');
+                    if (container) container.classList.add('fade-in');
                     if (navFooter) navFooter.classList.add('fade-in');
                     if (panel) panel.classList.add('fade-in');
                     setTimeout(function() {
@@ -1733,9 +1706,9 @@
         });
 
         function handleOutsideInteraction(event) {
-            var isSentence = event.target.closest('.sentence');
-            var isLexicon = event.target.closest('#lexiconToggle');
-            var isPanel = event.target.closest('#lexiconPanel');
+            var isSentence = !!closestSafe(event.target, '.sentence');
+            var isLexicon = !!closestSafe(event.target, '#lexiconToggle');
+            var isPanel = !!closestSafe(event.target, '#lexiconPanel');
             if (!isSentence && !isLexicon && !isPanel) {
                 clearSentenceSelection();
             }
@@ -1769,8 +1742,8 @@
         document.addEventListener('touchstart', function(e) {
             if (!currentlySelectedSentence) return;
             var touchedCurrentSentence = currentlySelectedSentence.contains(e.target);
-            var touchedLexicon = e.target.closest('#lexiconToggle');
-            var touchedPanel = e.target.closest('#lexiconPanel');
+            var touchedLexicon = !!closestSafe(e.target, '#lexiconToggle');
+            var touchedPanel = !!closestSafe(e.target, '#lexiconPanel');
             if (!touchedCurrentSentence && !touchedLexicon && !touchedPanel) {
                 clearSentenceSelection();
             }
