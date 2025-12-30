@@ -17,6 +17,20 @@
         pageId: 'foundation',
         modeLabel: 'Doctrinal Foundation',
 
+        // Faster transitions from here onward (Invocation keeps the more dramatic intro).
+        intro: {
+            startDelay: 520,
+            iconToOverlayDelay: 160,
+            overlayToContentDelay: 720,
+            cleanupDelay: 650,
+
+            iconDuration: '0.28s',
+            overlayDuration: '0.85s',
+            contentDuration: '0.65s',
+            footerDuration: '0.35s',
+            panelDuration: '1.15s'
+        },
+
         // Foundation currently uses F.1, F.2... keys.
         // This override prevents "non-standard key" warnings until we later standardize keys site-wide.
         keyPattern: '^[A-Z]+\\.[0-9]+$',
@@ -127,16 +141,22 @@
                     flows all authority, obligation, and sacred structure herein established.
                 </span>
             </p>
+
+            <div class="section-divider">✦ ✧ ✦</div>
         </section>
     </div>
 
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
-            <a class="nav-btn" href="invocation.html" aria-label="Previous: Invocation">
-                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span>
+            <a href="invocation.html" class="nav-prev" aria-label="Previous: Invocation">
+                <span class="nav-prev-frame" aria-hidden="true">
+                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span>
+                </span>
+                <span class="nav-prev-label" aria-hidden="true">Invocation</span>
             </a>
 
             <div class="nav-center">
+                <span class="sr-only" aria-current="page">Doctrinal Foundation</span>
                 <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𓐆 𖤓 𓐆</span></button>
             </div>
 

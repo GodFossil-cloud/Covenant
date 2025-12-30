@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.1 */
+/*! Covenant Lexicon UI v0.2.2 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.1';
+    window.COVENANT_LEXICON_VERSION = '0.2.2';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -241,6 +241,50 @@
         }
     }
 
+    function applyIntroOverrides() {
+        var intro = pageConfig.intro;
+        if (!intro || typeof intro !== 'object') return;
+
+        function setVar(name, value) {
+            if (value === null || value === undefined) return;
+            if (value === '') return;
+            document.documentElement.style.setProperty(name, String(value));
+        }
+
+        setVar('--intro-icon-duration', intro.iconDuration);
+        setVar('--intro-overlay-duration', intro.overlayDuration);
+        setVar('--intro-container-duration', intro.contentDuration);
+        setVar('--intro-footer-duration', intro.footerDuration);
+        setVar('--intro-panel-duration', intro.panelDuration);
+    }
+
+    function resolveIntroDelays() {
+        var intro = pageConfig.intro;
+        var defaults = {
+            startDelay: 1800,
+            iconToOverlayDelay: 500,
+            overlayToContentDelay: 1500,
+            cleanupDelay: 1500
+        };
+
+        if (!intro || typeof intro !== 'object') return defaults;
+
+        function pickNumber(value, fallback) {
+            return (typeof value === 'number' && isFinite(value)) ? value : fallback;
+        }
+
+        return {
+            startDelay: pickNumber(intro.startDelay, defaults.startDelay),
+            iconToOverlayDelay: pickNumber(intro.iconToOverlayDelay, defaults.iconToOverlayDelay),
+            overlayToContentDelay: pickNumber(intro.overlayToContentDelay, defaults.overlayToContentDelay),
+            cleanupDelay: pickNumber(intro.cleanupDelay, defaults.cleanupDelay)
+        };
+    }
+
+    applyIntroOverrides();
+
+    var introDelays = resolveIntroDelays();
+
     setTimeout(function () {
         if (loadingIcon) loadingIcon.classList.add('fade-out');
         setTimeout(function () {
@@ -252,10 +296,10 @@
                 setTimeout(function () {
                     if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
                     if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                }, 1500);
-            }, 1500);
-        }, 500);
-    }, 1800);
+                }, introDelays.cleanupDelay);
+            }, introDelays.overlayToContentDelay);
+        }, introDelays.iconToOverlayDelay);
+    }, introDelays.startDelay);
 
     function updateLexiconButtonState() {
         if (!lexiconToggle) return;

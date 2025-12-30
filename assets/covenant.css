@@ -38,6 +38,13 @@
     --plate-hi: rgba(255, 235, 195, 0.10);
     --plate-lo: rgba(0, 0, 0, 0.38);
 
+    /* Intro sequence durations (override per-page via lexicon.js). */
+    --intro-icon-duration: 0.5s;
+    --intro-overlay-duration: 1.5s;
+    --intro-container-duration: 1s;
+    --intro-footer-duration: 0.5s;
+    --intro-panel-duration: 2.5s;
+
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
     --nav-pill-width: 92px;
     --nav-pill-height: 52px;
@@ -67,6 +74,19 @@ body {
     position: relative;
 }
 
+/* A11y: visually hidden but screen-reader available */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /* Scroll lock */
 html.lexicon-scroll-lock,
 body.lexicon-scroll-lock {
@@ -93,7 +113,7 @@ body.lexicon-scroll-lock {
     animation: rotateGlyph 2s linear infinite;
     pointer-events: none;
     opacity: 1;
-    transition: opacity 0.5s ease-out;
+    transition: opacity var(--intro-icon-duration) ease-out;
 }
 
 #loadingIcon.fade-out {
@@ -111,7 +131,7 @@ body.lexicon-scroll-lock {
     background-color: #000;
     z-index: 10000;
     pointer-events: none;
-    transition: opacity 1.5s ease-out;
+    transition: opacity var(--intro-overlay-duration) ease-out;
 }
 
 #blackFadeOverlay.fade-out {
@@ -126,7 +146,7 @@ body.lexicon-scroll-lock {
     padding: 60px;
     border-radius: 2px;
     opacity: 0;
-    transition: opacity 1s ease-in;
+    transition: opacity var(--intro-container-duration) ease-in;
 }
 
 .container.fade-in {
@@ -291,7 +311,7 @@ p.preamble {
     box-shadow: 0 -10px 18px -10px rgba(0, 0, 0, 0.65), inset 0 -6px 14px -10px rgba(0, 0, 0, 0.45);
     z-index: 1200;
     opacity: 0;
-    transition: opacity 0.5s ease-in;
+    transition: opacity var(--intro-footer-duration) ease-in;
 }
 
 .nav-footer::before {
@@ -419,8 +439,9 @@ p.preamble {
     transform-origin: center;
 }
 
-/* Right column: Next button with label OUTSIDE the frame */
-.nav-next {
+/* Prev/Next blocks (labels under framed arrows) */
+.nav-next,
+.nav-prev {
     height: 100%;
     width: 100%;
     display: flex;
@@ -432,7 +453,8 @@ p.preamble {
     -webkit-tap-highlight-color: transparent;
 }
 
-.nav-next-frame {
+.nav-next-frame,
+.nav-prev-frame {
     position: relative;
     width: var(--nav-pill-width);
     height: var(--nav-pill-height);
@@ -444,7 +466,8 @@ p.preamble {
     z-index: 0;
 }
 
-.nav-next-frame::before {
+.nav-next-frame::before,
+.nav-prev-frame::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -455,7 +478,8 @@ p.preamble {
     pointer-events: none;
 }
 
-.nav-next-frame::after {
+.nav-next-frame::after,
+.nav-prev-frame::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -467,27 +491,38 @@ p.preamble {
 }
 
 .nav-next:hover .nav-next-frame,
-.nav-next:focus-visible .nav-next-frame {
+.nav-next:focus-visible .nav-next-frame,
+.nav-prev:hover .nav-prev-frame,
+.nav-prev:focus-visible .nav-prev-frame {
     color: #f5d98c;
     text-shadow: 0 0 8px rgba(201, 169, 97, 0.28);
 }
 
 .nav-next:hover .nav-next-frame::before,
-.nav-next:focus-visible .nav-next-frame::before {
+.nav-next:focus-visible .nav-next-frame::before,
+.nav-prev:hover .nav-prev-frame::before,
+.nav-prev:focus-visible .nav-prev-frame::before {
     border-color: #6a1f20;
     box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95);
 }
 
 .nav-next:hover .nav-next-frame::after,
-.nav-next:focus-visible .nav-next-frame::after {
+.nav-next:focus-visible .nav-next-frame::after,
+.nav-prev:hover .nav-prev-frame::after,
+.nav-prev:focus-visible .nav-prev-frame::after {
     background: linear-gradient(to bottom, rgba(255, 232, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
 }
 
-.nav-next:active .nav-next-frame {
+.nav-next:active .nav-next-frame,
+.nav-prev:active .nav-prev-frame {
     filter: brightness(0.96);
 }
 
 .nav-next .nav-btn-icon--arrow {
+    transform: scale(1.16);
+}
+
+.nav-prev .nav-btn-icon--arrow {
     transform: scale(1.16);
 }
 
@@ -612,11 +647,13 @@ p.preamble {
                 0 0 0 4px var(--focus-ring-outer);
 }
 
-.nav-next:focus-visible {
+.nav-next:focus-visible,
+.nav-prev:focus-visible {
     outline: none;
 }
 
-.nav-next:focus-visible .nav-next-frame::before {
+.nav-next:focus-visible .nav-next-frame::before,
+.nav-prev:focus-visible .nav-prev-frame::before {
     box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
                 0 0 0 2px var(--focus-ring),
                 0 0 0 4px var(--focus-ring-outer);
@@ -636,14 +673,17 @@ p.preamble {
         linear-gradient(to bottom, rgba(255, 232, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
 }
 
-.nav-next-frame::after {
+.nav-next-frame::after,
+.nav-prev-frame::after {
     background:
         linear-gradient(to bottom, var(--specular-soft) 0%, rgba(255, 242, 210, 0) 14px),
         linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
 }
 
 .nav-next:hover .nav-next-frame::after,
-.nav-next:focus-visible .nav-next-frame::after {
+.nav-next:focus-visible .nav-next-frame::after,
+.nav-prev:hover .nav-prev-frame::after,
+.nav-prev:focus-visible .nav-prev-frame::after {
     background:
         linear-gradient(to bottom, var(--specular-bright) 0%, rgba(255, 242, 210, 0) 14px),
         linear-gradient(to bottom, rgba(255, 232, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
@@ -661,12 +701,14 @@ p.preamble {
                 inset 0 2px 10px rgba(0, 0, 0, 0.55);
 }
 
-.nav-next:active .nav-next-frame {
+.nav-next:active .nav-next-frame,
+.nav-prev:active .nav-prev-frame {
     transform: translateY(1px);
     filter: brightness(0.96);
 }
 
-.nav-next:active .nav-next-frame::before {
+.nav-next:active .nav-next-frame::before,
+.nav-prev:active .nav-prev-frame::before {
     border-color: #4f1618;
     box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.98),
                 inset 0 2px 10px rgba(0, 0, 0, 0.55);
@@ -677,8 +719,9 @@ p.preamble {
     filter: brightness(0.98);
 }
 
-/* Engraved label bed under Next */
-.nav-next-label {
+/* Engraved label bed (used by both Prev + Next) */
+.nav-next-label,
+.nav-prev-label {
     position: relative;
     display: inline-block;
     padding: 5px 12px 4px;
@@ -712,13 +755,24 @@ p.preamble {
         inset 0 2px 7px rgba(0, 0, 0, 0.38),
         inset 0 0 0 1px rgba(0, 0, 0, 0.26),
         0 10px 14px -14px rgba(0, 0, 0, 0.90);
+
+    transition: transform 0.08s ease, filter 0.12s ease, color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .nav-next:hover .nav-next-label,
-.nav-next:focus-visible .nav-next-label {
+.nav-next:focus-visible .nav-next-label,
+.nav-prev:hover .nav-prev-label,
+.nav-prev:focus-visible .nav-prev-label {
     color: var(--footer-label-hover);
     border-color: rgba(201, 169, 97, 0.34);
     background: linear-gradient(to bottom, rgba(255, 235, 195, 0.13) 0%, rgba(0, 0, 0, 0.34) 100%);
+}
+
+/* Active press also affects the label bed (not just the frame) */
+.nav-next:active .nav-next-label,
+.nav-prev:active .nav-prev-label {
+    transform: translateY(1px);
+    filter: brightness(0.95);
 }
 
 /* Lexicon Overlay */
@@ -748,7 +802,7 @@ p.preamble {
     border-left: 1px solid #3a3a3a;
     box-shadow: none;
     transform: translateX(100%);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 2.5s ease-in;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity var(--intro-panel-duration) ease-in;
     z-index: 1100;
     display: flex;
     flex-direction: column;
@@ -994,7 +1048,8 @@ p.preamble {
 
     .nav-btn-icon { font-size: 1.4rem; }
 
-    .nav-next-label {
+    .nav-next-label,
+    .nav-prev-label {
         font-size: 0.60rem;
         letter-spacing: 0.14em;
     }
@@ -1071,7 +1126,8 @@ p.preamble {
 
     .nav-btn-icon { font-size: 1.25rem; }
 
-    .nav-next-label {
+    .nav-next-label,
+    .nav-prev-label {
         font-size: 0.58rem;
         letter-spacing: 0.13em;
     }
