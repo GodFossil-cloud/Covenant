@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctrinal Foundation - Covenant</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=block" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/covenant.css">
 
     <script>
     window.COVENANT_PAGE = {
@@ -42,572 +46,9 @@
     };
     </script>
     <script src="assets/lexicon.js" defer></script>
-
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #8b7355;
-            --text-color: #1a1a1a;
-            --bg-color: #fafaf8;
-            --border-color: #d4c5b9;
-            --highlight-color: #f5f1ed;
-            --glyph-active-glow: 0 0 12px rgba(139, 115, 85, 0.9);
-            --sentence-highlight: #f0e3d4;
-            --glyph-red: #8b2f2f;
-            --glyph-gold: #c9a961;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            height: 100%;
-            font-family: 'Lora', serif;
-            background-color: #000000;
-            color: var(--text-color);
-        }
-
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-        }
-
-        body {
-            line-height: 1.7;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        #loadingIcon {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
-            color: #8b7355;
-            z-index: 10001;
-            animation: rotateGlyph 2s linear infinite;
-            pointer-events: none;
-            opacity: 1;
-            transition: opacity 0.5s ease-out;
-        }
-
-        #loadingIcon.fade-out {
-            opacity: 0;
-        }
-
-        @keyframes rotateGlyph {
-            from {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        #blackFadeOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #000;
-            z-index: 10000;
-            pointer-events: none;
-            transition: opacity 1.5s ease-out;
-        }
-
-        #blackFadeOverlay.fade-out {
-            opacity: 0;
-        }
-
-        .container {
-            background: var(--bg-color);
-            padding: 60px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border-radius: 2px;
-            opacity: 0;
-            transition: opacity 1s ease-in;
-        }
-
-        .container.fade-in {
-            opacity: 1;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 50px;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 30px;
-        }
-
-        .ornament {
-            font-size: 28px;
-            letter-spacing: 12px;
-            margin-bottom: 20px;
-            color: var(--accent-color);
-        }
-
-        h1 {
-            font-family: 'Crimson Text', serif;
-            font-size: 2.5em;
-            font-weight: 600;
-            letter-spacing: 2px;
-            margin: 20px 0;
-            color: var(--primary-color);
-            text-transform: uppercase;
-        }
-
-        p {
-            margin-bottom: 18px;
-            text-align: justify;
-            hyphens: auto;
-        }
-
-        .foundation-principles {
-            text-align: center;
-            margin: 30px 0;
-            line-height: 2;
-        }
-
-        .foundation-principles p {
-            text-align: center;
-            margin: 10px 0;
-            font-weight: 600;
-        }
-
-        .glossary-term {
-            cursor: help;
-            border-bottom: 1px dotted var(--accent-color);
-            position: relative;
-            color: var(--primary-color);
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-
-        .glossary-term:hover {
-            background-color: rgba(139, 115, 85, 0.1);
-        }
-
-        .glossary-ref {
-            vertical-align: super;
-            font-size: 0.75em;
-            margin-left: 2px;
-            color: var(--accent-color);
-            font-weight: bold;
-        }
-
-        .tooltip {
-            visibility: hidden;
-            position: absolute;
-            z-index: 1000;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 10px 15px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            font-style: normal;
-            font-weight: 400;
-            max-width: 280px;
-            line-height: 1.4;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            hyphens: none;
-        }
-
-        .tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: var(--primary-color) transparent transparent transparent;
-        }
-
-        .glossary-term:hover .tooltip {
-            visibility: visible;
-        }
-
-        .glossary-term.tooltip-active .tooltip {
-            visibility: visible;
-        }
-
-        .navigation-section {
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .site-nav {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .site-nav a {
-            display: inline-block;
-            padding: 0.75rem 1.75rem;
-            border: 1px solid var(--primary-color);
-            background-color: var(--primary-color);
-            color: #f5f5f0;
-            text-decoration: none;
-            font-size: 0.9rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .site-nav a:hover,
-        .site-nav a:focus-visible {
-            background-color: #f5f5f0;
-            color: var(--primary-color);
-        }
-
-        .site-nav a.site-nav--secondary {
-            background-color: transparent;
-            color: var(--primary-color);
-        }
-
-        .site-nav a.site-nav--secondary:hover,
-        .site-nav a.site-nav--secondary:focus-visible {
-            background-color: var(--primary-color);
-            color: #f5f5f0;
-        }
-
-        .lexicon-glyph-toggle {
-            position: fixed;
-            right: 24px;
-            bottom: 24px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 1s ease-in;
-        }
-
-        .lexicon-glyph-toggle.fade-in {
-            opacity: 1;
-        }
-
-        .lexicon-glyph-toggle button {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 1px solid var(--glyph-red);
-            background-color: var(--glyph-red);
-            color: var(--glyph-gold);
-            font-size: 1.3rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(139, 47, 47, 0.35);
-            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            padding: 0;
-            margin: 0;
-            text-transform: none;
-            letter-spacing: 0;
-            font-weight: normal;
-        }
-
-        .lexicon-glyph-toggle button:hover,
-        .lexicon-glyph-toggle button:focus-visible {
-            background-color: #a23737;
-            color: #e0bf7a;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 12px rgba(139, 47, 47, 0.45);
-        }
-
-        .lexicon-glyph-toggle button.is-active {
-            background-color: #6b1f1f;
-            color: #f5d98c;
-            box-shadow: 0 0 16px rgba(201, 169, 97, 0.6);
-            transform: translateY(-1px);
-        }
-
-        .lexicon-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            height: 100vh;
-            width: min(360px, 90vw);
-            background-color: #1a1a1a;
-            border-left: 1px solid #3a3a3a;
-            box-shadow: -2px 0 12px rgba(0, 0, 0, 0.5);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            z-index: 1100;
-            display: flex;
-            flex-direction: column;
-            padding: 24px 20px;
-        }
-
-        .lexicon-panel.is-open {
-            transform: translateX(0);
-        }
-
-        .lexicon-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .lexicon-panel-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.4rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--glyph-gold);
-        }
-
-        .lexicon-panel-mode {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: #b8986a;
-            margin-top: 4px;
-        }
-
-        .lexicon-panel-close {
-            border: none;
-            background: transparent;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--glyph-gold);
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-transform: none;
-            letter-spacing: 0;
-            font-weight: normal;
-            transition: color 0.2s ease;
-        }
-
-        .lexicon-panel-close:hover,
-        .lexicon-panel-close:focus-visible {
-            color: #e0bf7a;
-        }
-
-        .lexicon-panel-body {
-            font-size: 0.95rem;
-            color: #d4d4d4;
-            line-height: 1.6;
-            flex: 1 1 auto;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .lexicon-panel-body p + p {
-            margin-top: 0.9rem;
-        }
-
-        .lexicon-sentence-quote {
-            font-size: 0.88rem;
-            font-style: italic;
-            color: #a8a8a8;
-            margin-bottom: 1rem;
-            padding: 0.6rem 1rem;
-            background: #262626;
-            border-left: 2px solid var(--glyph-gold);
-            line-height: 1.5;
-        }
-
-        .lexicon-link {
-            display: inline-block;
-            margin-top: 1.2rem;
-            padding: 0.5rem 1.2rem;
-            border-radius: 2px;
-            border: 1px solid var(--glyph-gold);
-            color: var(--glyph-gold);
-            text-decoration: none;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            background-color: #262626;
-        }
-
-        .lexicon-link:hover,
-        .lexicon-link:focus-visible {
-            background-color: var(--glyph-gold);
-            color: #1a1a1a;
-        }
-
-        .lexicon-glossary-footer {
-            margin-top: 1.6rem;
-            padding-top: 1rem;
-            border-top: 1px solid #3a3a3a;
-            font-size: 0.85rem;
-        }
-
-        .lexicon-glossary-footer h3 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            margin-bottom: 0.6rem;
-            color: var(--glyph-gold);
-        }
-
-        .lexicon-term-list {
-            list-style: none;
-        }
-
-        .lexicon-term-list li + li {
-            margin-top: 0.5rem;
-        }
-
-        .lexicon-term-label {
-            font-weight: 600;
-            color: #e0bf7a;
-        }
-
-        .lexicon-term-ref {
-            font-size: 0.75rem;
-            vertical-align: super;
-            color: var(--glyph-gold);
-            margin-left: 2px;
-        }
-
-        .lexicon-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.25s ease;
-            z-index: 1050;
-        }
-
-        .lexicon-overlay.is-open {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .sentence {
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sentence.is-selected {
-            background-color: var(--sentence-highlight);
-            box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
-        }
-
-        .sentence-label {
-            font-size: 0.7em;
-            vertical-align: super;
-            color: #b79a76;
-            margin-right: 0.2em;
-            user-select: none;
-        }
-
-        /* Added for shared lexicon.js scroll locking */
-        html.lexicon-scroll-lock,
-        body.lexicon-scroll-lock {
-            overflow: hidden;
-        }
-
-        body.lexicon-scroll-lock {
-            position: fixed;
-            left: 0;
-            right: 0;
-            width: 100%;
-        }
-
-        @media print {
-            #loadingIcon,
-            #blackFadeOverlay,
-            .lexicon-glyph-toggle,
-            .lexicon-panel,
-            .lexicon-overlay {
-                display: none !important;
-            }
-
-            body {
-                padding: 0;
-                background-color: white;
-            }
-
-            .container {
-                box-shadow: none;
-                padding: 0;
-                opacity: 1 !important;
-            }
-
-            .tooltip {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 20px 10px;
-                font-size: 15px;
-            }
-
-            .container {
-                padding: 30px 20px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            #loadingIcon {
-                font-size: 36px;
-            }
-
-            .tooltip {
-                max-width: 240px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px 15px;
-            }
-
-            h1 {
-                font-size: 1.5em;
-                letter-spacing: 1px;
-            }
-
-            .ornament {
-                font-size: 20px;
-                letter-spacing: 8px;
-            }
-
-            #loadingIcon {
-                font-size: 32px;
-            }
-
-            .tooltip {
-                max-width: 200px;
-            }
-        }
-    </style>
 </head>
 <body>
-    <div id="loadingIcon">✦</div>
+    <div id="loadingIcon">֎</div>
     <div id="blackFadeOverlay"></div>
 
     <div class="container">
@@ -687,34 +128,40 @@
                 </span>
             </p>
         </section>
+    </div>
 
-        <section class="navigation-section" aria-label="Page navigation">
-            <div class="site-nav">
-                <a href="invocation.html" class="site-nav--secondary">
-                    ← Back to Invocation
-                </a>
-                <a href="declaration.html">
-                    Forward to Declaration →
-                </a>
+    <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
+        <div class="nav-footer-inner">
+            <a class="nav-btn" href="invocation.html" aria-label="Previous: Invocation">
+                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span>
+            </a>
+
+            <div class="nav-center">
+                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𓐆 𖤓 𓐆</span></button>
             </div>
-        </section>
-    </div>
 
-    <div class="lexicon-glyph-toggle fade-in">
-        <button id="lexiconToggle" type="button" aria-label="Open Covenant Lexicon panel" aria-expanded="false" aria-controls="lexiconPanel">
-            𖤓
-        </button>
-    </div>
+            <a href="declaration.html" class="nav-next" aria-label="Next: Declaration">
+                <span class="nav-next-frame" aria-hidden="true">
+                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❯</span>
+                </span>
+                <span class="nav-next-label" aria-hidden="true">Declaration</span>
+            </a>
+        </div>
+    </nav>
 
-    <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true">
+    <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
+
+    <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1">
+        <div class="lexicon-drag-region" id="lexiconDragRegion" aria-hidden="true">
+            <div class="lexicon-drag-pill"></div>
+        </div>
+
         <div class="lexicon-panel-header">
             <div>
                 <div class="lexicon-panel-title">Lexicon</div>
                 <div class="lexicon-panel-mode" id="lexiconModeLabel">Doctrinal Foundation</div>
             </div>
-            <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">
-                ×
-            </button>
+            <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
         </div>
         <div class="lexicon-panel-body">
             <div id="lexiconDynamicContent"></div>
@@ -722,9 +169,7 @@
                 <p>JavaScript is required to view lexicon details.</p>
             </noscript>
 
-            <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">
-                Open Full Lexicon
-            </a>
+            <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
 
             <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
                 <h3>Terms in this section</h3>
@@ -768,7 +213,5 @@
             </div>
         </div>
     </div>
-
-    <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
 </body>
 </html>
