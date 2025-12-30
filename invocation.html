@@ -887,6 +887,11 @@
             margin-top: 0.9rem;
         }
 
+        /* Added: make JS opacity changes actually animate. */
+        #lexiconDynamicContent {
+            transition: opacity 150ms ease;
+        }
+
         .lexicon-sentence-quote {
             font-size: 0.88rem;
             font-style: italic;
@@ -1193,7 +1198,9 @@
 
     <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
         <div class="nav-footer-inner">
-            <button class="nav-btn" disabled aria-label="Previous section"><span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span></button>
+            <button class="nav-btn" type="button" disabled aria-label="Previous section">
+                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span>
+            </button>
 
             <div class="nav-center">
                 <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𓐆 𖤓 𓐆</span></button>
@@ -1631,9 +1638,15 @@
                 }
             }
 
+            /* Fixed: cancel should always restore panel state instead of preventing endDrag(). */
             function cancelDrag() {
+                if (!isDragging) return;
                 setPillPressed(false);
                 isDragging = false;
+                panel.classList.remove('is-dragging');
+                panel.style.transition = '';
+                panel.style.transform = '';
+                lexOverlay.style.opacity = '';
             }
 
             if (window.PointerEvent) {
@@ -1645,10 +1658,7 @@
                     updateDrag(e.clientY);
                 });
                 dragRegion.addEventListener('pointerup', endDrag);
-                dragRegion.addEventListener('pointercancel', function() {
-                    cancelDrag();
-                    endDrag();
-                });
+                dragRegion.addEventListener('pointercancel', cancelDrag);
             } else {
                 dragRegion.addEventListener('touchstart', function(e) {
                     if (!e.touches || !e.touches[0]) return;
@@ -1659,10 +1669,7 @@
                     updateDrag(e.touches[0].clientY);
                 }, {passive: true});
                 dragRegion.addEventListener('touchend', endDrag);
-                dragRegion.addEventListener('touchcancel', function() {
-                    cancelDrag();
-                    endDrag();
-                }, {passive: true});
+                dragRegion.addEventListener('touchcancel', cancelDrag, {passive: true});
             }
         }
 
@@ -1726,7 +1733,7 @@
                 clearActiveTooltip();
                 this.classList.add('tooltip-active');
                 currentlyActiveTooltip = this;
-            });
+            }, {passive: false});
         });
 
         document.addEventListener('touchstart', function(e) {
