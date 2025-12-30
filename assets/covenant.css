@@ -448,7 +448,7 @@ p.preamble {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 }
