@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.8 */
+/*! Covenant Lexicon UI v0.2.9 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.8';
+    window.COVENANT_LEXICON_VERSION = '0.2.9';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -19,6 +19,18 @@
     var lexiconToggle = document.getElementById('lexiconToggle');
     var lexOverlay = document.getElementById('lexiconOverlay');
     var dynamicContent = document.getElementById('lexiconDynamicContent');
+
+    // Standardize the "seal" glyph used for the intro loader across Covenant pages.
+    // Override options:
+    // - window.COVENANT_LOADING_GLYPH = '✦'
+    // - window.COVENANT_PAGE.loadingGlyph = '✦'
+    var loadingGlyph = (pageConfig && pageConfig.loadingGlyph) || window.COVENANT_LOADING_GLYPH || '֎';
+    if (loadingIcon) {
+        var currentGlyph = (loadingIcon.textContent || '').trim();
+        if (currentGlyph !== loadingGlyph) {
+            loadingIcon.textContent = loadingGlyph;
+        }
+    }
 
     // Back-compat: if pageConfig.defaultOverviewHTML is not set yet (older pages), fall back to DOM capture.
     var defaultOverviewHTML = pageConfig.defaultOverviewHTML || (dynamicContent ? dynamicContent.innerHTML : '');
