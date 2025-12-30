@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.6 */
+/*! Covenant Lexicon UI v0.2.7 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.6';
+    window.COVENANT_LEXICON_VERSION = '0.2.7';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -447,6 +447,15 @@
                 closePanel();
             }
         });
+
+        // Hard safety net: if the browser loses focus or hides the tab while the panel is open,
+        // force-close and unlock scroll so the page cannot get "stuck".
+        window.addEventListener('blur', function () {
+            if (panel.classList.contains('is-open')) closePanel();
+        });
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden && panel.classList.contains('is-open')) closePanel();
+        });
     }
 
     var dragRegion = document.getElementById('lexiconDragRegion');
@@ -459,6 +468,7 @@
         var lastT = 0;
         var velocity = 0;
         var currentDelta = 0;
+        var capturedPointerId = null;
 
         function setPillPressed(on) {
             if (!dragPill) return;
@@ -468,6 +478,12 @@
         function getPanelHeight() {
             var rect = panel.getBoundingClientRect();
             return rect && rect.height ? rect.height : 1;
+        }
+
+        function releaseCapture() {
+            if (capturedPointerId === null) return;
+            try { dragRegion.releasePointerCapture(capturedPointerId); } catch (err) { }
+            capturedPointerId = null;
         }
 
         function beginDrag(clientY) {
@@ -507,6 +523,7 @@
             var threshold = Math.max(120, h * 0.25);
             var shouldClose = (currentDelta > threshold) || (velocity > 0.9);
             isDragging = false;
+            releaseCapture();
             if (shouldClose) {
                 closePanel();
             } else {
@@ -519,9 +536,14 @@
 
         /* cancel should always restore panel state */
         function cancelDrag() {
-            if (!isDragging) return;
+            if (!isDragging) {
+                // Still ensure capture is released if the browser glitched.
+                releaseCapture();
+                return;
+            }
             setPillPressed(false);
             isDragging = false;
+            releaseCapture();
             panel.classList.remove('is-dragging');
             panel.style.transition = '';
             panel.style.transform = '';
@@ -531,13 +553,30 @@
         if (window.PointerEvent) {
             dragRegion.addEventListener('pointerdown', function (e) {
                 beginDrag(e.clientY);
+                if (!isDragging) return;
+                capturedPointerId = e.pointerId;
                 try { dragRegion.setPointerCapture(e.pointerId); } catch (err) { }
             });
-            dragRegion.addEventListener('pointermove', function (e) {
+
+            // Use window-level capture listeners so the UI cannot get stuck if the pointer leaves the drag region.
+            window.addEventListener('pointermove', function (e) {
+                if (!isDragging) return;
+                if (capturedPointerId !== null && e.pointerId !== capturedPointerId) return;
                 updateDrag(e.clientY);
-            });
-            dragRegion.addEventListener('pointerup', endDrag);
-            dragRegion.addEventListener('pointercancel', cancelDrag);
+            }, true);
+
+            window.addEventListener('pointerup', function (e) {
+                if (!isDragging) return;
+                if (capturedPointerId !== null && e.pointerId !== capturedPointerId) return;
+                endDrag();
+            }, true);
+
+            window.addEventListener('pointercancel', function (e) {
+                if (capturedPointerId !== null && e.pointerId !== capturedPointerId) return;
+                cancelDrag();
+            }, true);
+
+            dragRegion.addEventListener('lostpointercapture', cancelDrag);
         } else {
             dragRegion.addEventListener('touchstart', function (e) {
                 if (!e.touches || !e.touches[0]) return;
