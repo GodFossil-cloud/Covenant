@@ -98,25 +98,15 @@ layout: none
         </section>
     </div>
 
-    <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
-        <div class="nav-footer-inner">
-            <button class="nav-btn" type="button" disabled aria-label="Previous section">
-                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span>
-            </button>
-
-            <div class="nav-center">
-                <span class="sr-only" aria-current="page">Invocation and Preamble</span>
-                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𓐆 𖤓 𓐆</span></button>
-            </div>
-
-            <a href="foundation.html" class="nav-next" aria-label="Next: Foundation">
-                <span class="nav-next-frame" aria-hidden="true">
-                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❯</span>
-                </span>
-                <span class="nav-next-label" aria-hidden="true">Foundation</span>
-            </a>
-        </div>
-    </nav>
+    {% include nav-footer.html
+        current_label="Invocation and Preamble"
+        prev_href=""
+        prev_label=""
+        prev_aria="Previous section"
+        next_href="foundation.html"
+        next_label="Foundation"
+        next_aria="Next: Foundation"
+    %}
 
     {% capture lexicon_glossary %}
     <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">

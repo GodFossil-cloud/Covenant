@@ -146,28 +146,15 @@ layout: none
         </section>
     </div>
 
-    <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
-        <div class="nav-footer-inner">
-            <a href="invocation.html" class="nav-prev" aria-label="Previous: Invocation">
-                <span class="nav-prev-frame" aria-hidden="true">
-                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❮</span>
-                </span>
-                <span class="nav-prev-label" aria-hidden="true">Invocation</span>
-            </a>
-
-            <div class="nav-center">
-                <span class="sr-only" aria-current="page">Doctrinal Foundation</span>
-                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𓐆 𖤓 𓐆</span></button>
-            </div>
-
-            <a href="declaration.html" class="nav-next" aria-label="Next: Declaration">
-                <span class="nav-next-frame" aria-hidden="true">
-                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">❯</span>
-                </span>
-                <span class="nav-next-label" aria-hidden="true">Declaration</span>
-            </a>
-        </div>
-    </nav>
+    {% include nav-footer.html
+        current_label="Doctrinal Foundation"
+        prev_href="invocation.html"
+        prev_label="Invocation"
+        prev_aria="Previous: Invocation"
+        next_href="declaration.html"
+        next_label="Declaration"
+        next_aria="Next: Declaration"
+    %}
 
     {% capture lexicon_glossary %}
     <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
