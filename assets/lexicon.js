@@ -185,14 +185,14 @@
 
     var lexiconHovering = false;
     var LEX_GLYPHS = {
-        default: '𓐆 𖤓 𓐆',
-        defaultHover: '↿◌↾',
-        selected: '⌯ 𖤓 ⌯',
-        selectedHover: '⌯ 𖤓 ⌯',
-        openSummary: '≡⦿≡',
-        openSelected: '▸𖤓◂',
-        openHover: '⇃⌵⇂',
-        mobileOpen: '⇃⌵⇂'
+            default: '𖤓',
+            defaultHover: '𖤓',
+            selected: '𖤓',
+            selectedHover: '𖤓',
+            openSummary: '𖤓',
+            openSelected: '𖤓',
+            openHover: '𖤓',
+            mobileOpen: '𖤓'
     };
 
     function setGlyphMarkup(target, glyph) {
@@ -495,6 +495,48 @@
         applyPressFeedback(lexiconToggle);
 
         bindActivate(lexiconToggle, function () {
+
+              // Mobile: drag center tab upward to open
+  if (lexiconToggle && window.PointerEvent) {
+    var toggleDragStartY = null;
+    var toggleDragWasDragged = false;
+    var toggleDragThreshold = 22;
+
+    lexiconToggle.addEventListener('pointerdown', function (e) {
+      if (!isBottomSheetMode() || panel.classList.contains('is-open')) return;
+      toggleDragStartY = e.clientY;
+      toggleDragWasDragged = false;
+    });
+
+    lexiconToggle.addEventListener('pointermove', function (e) {
+      if (toggleDragStartY === null) return;
+      var deltaY = toggleDragStartY - e.clientY;
+      if (deltaY > 2) {
+        toggleDragWasDragged = true;
+        var lift = Math.min(deltaY, toggleDragThreshold + 10);
+        lexiconToggle.style.transform = 'translateY(calc(var(--seal-lift, 0px) - ' + lift + 'px))';
+      }
+    });
+
+    var finishToggleDrag = function () {
+      if (toggleDragStartY === null) return;
+      var wasDragged = toggleDragWasDragged;
+      var deltaY = toggleDragStartY - (window.lastPointerY || toggleDragStartY);
+      toggleDragStartY = null;
+      toggleDragWasDragged = false;
+      lexiconToggle.style.transform = '';
+      if (wasDragged && deltaY >= toggleDragThreshold) {
+        openPanel();
+      }
+    };
+
+    lexiconToggle.addEventListener('pointerup', function (e) {
+      window.lastPointerY = e.clientY;
+      finishToggleDrag();
+    });
+
+    lexiconToggle.addEventListener('pointercancel', finishToggleDrag);
+  }
             if (panel.classList.contains('is-open')) {
                 closePanel();
             } else {
@@ -536,7 +578,7 @@
     }
 
     var dragRegion = document.getElementById('lexiconDragRegion');
-    var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
+    var dragStar = dragRegion ? dragRegion.querySelector('.lexicon-drag-star') : null;
 
     if (dragRegion && panel && lexOverlay) {
         var isDragging = false;
