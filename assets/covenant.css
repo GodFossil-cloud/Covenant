@@ -1422,6 +1422,8 @@ body.is-exiting #blackFadeOverlay {
 :root {
   /* Declarative medallion lift. */
   --seal-lift: 12px;
+  --seal-rise: 10px;   /* NEW: how far tab rises above dock */
+  --seal-depth: 10px;  /* NEW: how far tab extends into dock */
 
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
@@ -1542,31 +1544,31 @@ body {
   border-color: rgba(192,154,63,0.62);
 }
 
-/* Center: round medallion + declarative lift. */
+/* Center: tab silhouette seated into dock. */
 .nav-btn.center {
   width: var(--seal-size);
-  height: var(--seal-size);
+  height: calc(var(--seal-size) + var(--seal-depth));  /* Taller to sink into dock */
   padding: 0;
-  border-radius: 999px;
-
-  --seal-translate: calc(-1 * var(--seal-lift));
+  border-radius: 999px 999px 16px 16px;  /* Round top, flat bottom corners */
+  
+  --seal-translate: calc(-1 * var(--seal-rise));
   transform: translateY(var(--seal-translate));
-
+  
   z-index: 2;
   margin-top: 0;
-
-  /* Slightly larger glyph in a medallion. */
+  
+  /* Slightly larger glyph in a tab. */
   font-size: 1.6rem;
 }
 
 .nav-btn.center::before {
   inset: 0;
-  border-radius: 999px;
+  border-radius: 999px 999px 16px 16px;  /* Match parent shape */
   border: 1px solid rgba(154,119,38,0.62);
-
-  /* Small, tight, non-glowy cast shadow to “stamp” the seal into the slab. */
+  
+  /* Small, tight, non-glow cast shadow to "stamp" the seal into the slab. */
   box-shadow:
-    inset 0 0 18px rgba(0,0,0,0.94),
+    inset 0 0 18px rgba(0,0,0,0.84),
     inset 0 1px 0 rgba(255,255,255,0.05),
     0 10px 18px -14px rgba(0,0,0,0.90),
     0 14px 10px -12px rgba(0,0,0,0.92);
@@ -1574,11 +1576,11 @@ body {
 
 .nav-btn.center::after {
   inset: 0;
-  border-radius: 999px;
+  border-radius: 999px 999px 16px 16px;  /* Match parent shape */
   background:
     radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),
     linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40)),
-    linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
+    var(--obsidian-1);
 }
 
 .nav-btn.center:hover::before,
