@@ -1581,8 +1581,9 @@ body {
   font-size: 1.6rem;
 }
 
-/* When the panel is open, remove the extra seating nudge (keeps motion feeling consistent). */
-#lexiconToggle[aria-expanded="true"] {
+/* When the panel is open, remove the extra seating nudge.
+   IMPORTANT: while finger-dragging, keep the nudge so the seal doesn't "snap" downward the instant aria-expanded flips. */
+#lexiconToggle[aria-expanded="true"]:not(.is-seal-dragging) {
   --seal-seat-nudge: 0px;
 }
 
