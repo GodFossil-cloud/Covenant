@@ -74,6 +74,15 @@
         return el.closest(selector);
     }
 
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function isBottomSheetMode() {
         return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
     }
@@ -406,7 +415,7 @@
         if (lexOverlay) lexOverlay.style.opacity = '';
     }
 
-        function getPanelHeightSafe() {
+    function getPanelHeightSafe() {
         if (!panel) return 0;
         var rect = panel.getBoundingClientRect();
         return (rect && rect.height) ? rect.height : 0;
@@ -451,7 +460,7 @@
         setSealDragOffset(0, false);
         clearSealDragOffsetSoon(340);
     }
-    
+
     function focusIntoPanel() {
         if (!panel) return;
         var closeBtn = panel.querySelector('.lexicon-panel-close');
@@ -530,9 +539,12 @@
             renderOverview();
             return;
         }
+
+        var safeSentence = escapeHtml(sentenceText);
+
         dynamicContent.style.opacity = '0';
         setTimeout(function () {
-            dynamicContent.innerHTML = '<div class="lexicon-sentence-quote">"' + sentenceText + '"</div><p>' + explanation + '</p>';
+            dynamicContent.innerHTML = '<div class="lexicon-sentence-quote">"' + safeSentence + '"</div><p>' + explanation + '</p>';
             dynamicContent.style.opacity = '1';
         }, 150);
     }
@@ -752,7 +764,7 @@
             setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
         }
-        
+
         function finishOpenGesture() {
             if (!dragging) return;
 
@@ -802,7 +814,6 @@
         lexiconToggle.addEventListener('pointercancel', function () { finishOpenGesture(); }, true);
     })();
 
-    var dragStar = dragRegion ? dragRegion.querySelector('.lexicon-drag-star') : null;
     var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
 
     if (dragRegion && panel && lexOverlay) {
