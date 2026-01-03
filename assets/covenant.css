@@ -1451,9 +1451,11 @@ body.is-exiting #blackFadeOverlay {
   /* Frame lines in footer (footer-only). */
   --footer-frame: rgba(154, 119, 38, 0.58);
 
-  /* Notch geometry (engineered “seat” behind the medallion). */
-  --seal-notch-radius: calc(var(--seal-size) * 0.62);
-  --seal-notch-height: 26px;
+  /* Notch geometry (engineered “seat” behind the medallion).
+     The notch height must be >= radius or you only see side "quarter" accents.
+     Keeping these proportional produces a single continuous semicircle cradle. */
+  --seal-notch-radius: calc(var(--seal-size) * 0.52);
+  --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
 }
 
 /* Ensure page content never sits under the lifted seal. */
@@ -1478,7 +1480,7 @@ body {
   background: rgba(154, 119, 38, 0.18);
 }
 
-/* Engineered notch highlight behind the medallion. */
+/* Engineered cradle highlight behind the seal (single upward-facing semicircle). */
 .nav-footer::after {
   content: '';
   position: absolute;
@@ -1488,15 +1490,21 @@ body {
   height: var(--seal-notch-height);
   pointer-events: none;
 
+  /* A single semicircle “nest” under the seal:
+     - inner dark shading to suggest a carved seat
+     - thin leaf-toned hairline tracing the curve */
   background:
-    linear-gradient(to right, rgba(154,119,38,0.08), rgba(154,119,38,0.08)),
     radial-gradient(circle at 50% 0%,
-      transparent 0 calc(var(--seal-notch-radius) - 2px),
-      rgba(242,220,154,0.22) calc(var(--seal-notch-radius) - 1px) calc(var(--seal-notch-radius) + 1px),
+      rgba(0,0,0,0.62) 0 calc(var(--seal-notch-radius) - 12px),
+      rgba(0,0,0,0.00) calc(var(--seal-notch-radius) - 2px)
+    ),
+    radial-gradient(circle at 50% 0%,
+      transparent 0 calc(var(--seal-notch-radius) - 1px),
+      rgba(242,220,154,0.22) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 1px),
       transparent calc(var(--seal-notch-radius) + 2px)
     );
 
-  opacity: 0.88;
+  opacity: 0.90;
 }
 
 /* Footer control color (antique brass by default). */
