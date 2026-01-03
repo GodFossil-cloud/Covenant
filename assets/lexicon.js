@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.13 */
+/*! Covenant Lexicon UI v0.2.14 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.13';
+    window.COVENANT_LEXICON_VERSION = '0.2.14';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -664,16 +664,18 @@
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
-            // Gradually offset the seal as the panel rises:
-            // y == closedY  => seal offset +seatNudge (in notch, matches CSS default)
-            // y == 0        => seal offset -closedY + seatNudge (at sheet top)
-            var seatNudge = getSeatNudge();
-            var sealOffset = (y - closedY) + seatNudge;
-            setSealDragOffset(sealOffset, true);
-
-            var progress = 1 - (y / (closedY || 1));
+            // Keep seal and sheet in one continuous chain:
+            // - At rest (closed), don't "pre-lift" the seal.
+            // - As the sheet rises, gradually cancel the closed seating nudge so the seal and the sheet lip stay welded.
+            var denom = (closedY || 1);
+            var progress = 1 - (y / denom);
             if (progress < 0) progress = 0;
             if (progress > 1) progress = 1;
+
+            var seatNudge = getSeatNudge();
+            var sealOffset = (y - closedY) + (seatNudge * progress);
+            setSealDragOffset(sealOffset, true);
+
             lexOverlay.style.opacity = String(progress);
         }
 
@@ -714,7 +716,7 @@
             panel.classList.add('is-dragging');
             panel.style.transition = 'none';
 
-            // Start from fully closed (setPanelY now initializes seal with the nudge).
+            // Start from fully closed.
             setPanelY(closedY);
 
             try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
