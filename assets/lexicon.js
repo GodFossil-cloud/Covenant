@@ -407,6 +407,39 @@
         if (lexOverlay) lexOverlay.style.opacity = '';
     }
 
+        function getPanelHeightSafe() {
+        if (!panel) return 0;
+        var rect = panel.getBoundingClientRect();
+        return (rect && rect.height) ? rect.height : 0;
+    }
+
+    function setSealDragOffset(px, draggingNow) {
+        if (!lexiconToggle) return;
+        lexiconToggle.style.setProperty('--seal-drag-y', px + 'px');
+        lexiconToggle.classList.toggle('is-seal-dragging', !!draggingNow);
+    }
+
+    function clearSealDragOffsetSoon(ms) {
+        if (!lexiconToggle) return;
+        window.setTimeout(function () {
+            if (!lexiconToggle) return;
+            lexiconToggle.style.removeProperty('--seal-drag-y');
+            lexiconToggle.classList.remove('is-seal-dragging');
+        }, ms || 0);
+    }
+
+    function setSealToOpenPosition() {
+        // Seal sits “with” the open panel: offset by -panelHeight.
+        var h = getPanelHeightSafe();
+        if (h > 0) setSealDragOffset(-h, false);
+    }
+
+    function setSealToClosedPosition() {
+        // Seal sits in the footer notch.
+        setSealDragOffset(0, false);
+        clearSealDragOffsetSoon(340);
+    }
+    
     function focusIntoPanel() {
         if (!panel) return;
         var closeBtn = panel.querySelector('.lexicon-panel-close');
@@ -422,21 +455,24 @@
         clearActiveTooltip();
         resetPanelInlineMotion();
 
-        // Mobile-only: move seal into panel drag region
-        if (isBottomSheetMode() && lexiconToggle && dragRegion) {
-            sealOriginalParent = lexiconToggle.parentNode;
-            sealOriginalNextSibling = lexiconToggle.nextSibling;
-            dragRegion.appendChild(lexiconToggle);
-            lexiconToggle.classList.add('is-docked-in-panel');
-        }
         focusReturnEl = lexiconToggle;
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
         lexOverlay.setAttribute('aria-hidden', 'false');
         if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'true');
+
         lockBodyScroll();
         setLexiconGlyph();
+
+        // Mobile bottom-sheet: lift the same footer seal up with the panel.
+        if (isBottomSheetMode()) {
+            // Defer one tick so layout has a stable height.
+            window.setTimeout(function () {
+                setSealToOpenPosition();
+            }, 0);
+        }
+
         setTimeout(focusIntoPanel, 0);
     }
 
@@ -445,22 +481,17 @@
         clearActiveTooltip();
         resetPanelInlineMotion();
 
-        // Mobile-only: move seal back to footer
-        if (lexiconToggle && lexiconToggle.classList.contains('is-docked-in-panel')) {
-            lexiconToggle.classList.remove('is-docked-in-panel');
-            if (sealOriginalParent) {
-                if (sealOriginalNextSibling && sealOriginalNextSibling.parentNode === sealOriginalParent) {
-                    sealOriginalParent.insertBefore(lexiconToggle, sealOriginalNextSibling);
-                } else {
-                    sealOriginalParent.appendChild(lexiconToggle);
-                }
-            }
-        }
         panel.classList.remove('is-open');
         lexOverlay.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
         lexOverlay.setAttribute('aria-hidden', 'true');
         if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
+
+        // Mobile bottom-sheet: let the seal descend back into the notch.
+        if (isBottomSheetMode()) {
+            setSealToClosedPosition();
+        }
+
         unlockBodyScroll();
         setLexiconGlyph();
 
@@ -596,6 +627,11 @@
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
+            // Keep the seal attached to the sheet while dragging:
+            // y == closedY  => seal offset 0 (in notch)
+            // y == 0        => seal offset -closedY (at sheet top)
+            setSealDragOffset(y - closedY, true);
+
             var progress = 1 - (y / (closedY || 1));
             if (progress < 0) progress = 0;
             if (progress > 1) progress = 1;
@@ -605,9 +641,6 @@
         function beginOpenGesture(e) {
             if (!isMobileSheet()) return;
             if (e.pointerType === 'mouse') return;
-
-            // If the seal has been moved into the panel, do not run footer-open dragging.
-            if (lexiconToggle.classList.contains('is-docked-in-panel')) return;
 
             // If already open, defer to the panel drag-region logic.
             if (panel.classList.contains('is-open')) return;
@@ -684,6 +717,8 @@
             lexOverlay.setAttribute('aria-hidden', 'true');
             lexiconToggle.setAttribute('aria-expanded', 'false');
 
+            setSealToClosedPosition();
+
             unlockBodyScroll();
             setLexiconGlyph();
         }
@@ -699,18 +734,14 @@
             panel.classList.add('is-open');
             lexOverlay.classList.add('is-open');
 
-            // Mobile-only: move seal into panel drag region once the panel is open.
-            if (isBottomSheetMode() && dragRegion) {
-                sealOriginalParent = lexiconToggle.parentNode;
-                sealOriginalNextSibling = lexiconToggle.nextSibling;
-                dragRegion.appendChild(lexiconToggle);
-                lexiconToggle.classList.add('is-docked-in-panel');
-            }
+            // Seal stays lifted with the open sheet.
+            setSealDragOffset(-closedY, false);
+            clearSealDragOffsetSoon(0);
 
             setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
         }
-
+        
         function finishOpenGesture() {
             if (!dragging) return;
 
@@ -805,12 +836,20 @@
             if (!isDragging) return;
             currentDelta = clientY - startY;
             if (currentDelta < 0) currentDelta = 0;
+
             panel.style.transform = 'translateY(' + currentDelta + 'px)';
+
             var h = getPanelHeight();
             var fade = 1 - (currentDelta / (h * 0.9));
             if (fade < 0) fade = 0;
             if (fade > 1) fade = 1;
             lexOverlay.style.opacity = String(fade);
+
+            // Seal tracks the top of the sheet while dragging down.
+            if (isBottomSheetMode()) {
+                setSealDragOffset(-h + currentDelta, true);
+            }
+
             var now = window.performance && performance.now ? performance.now() : Date.now();
             var dt = now - lastT;
             if (dt > 0) velocity = (clientY - lastY) / dt;
@@ -821,11 +860,14 @@
         function endDrag() {
             if (!isDragging) return;
             setPillPressed(false);
+
             var h = getPanelHeight();
             var threshold = Math.max(120, h * 0.25);
             var shouldClose = (currentDelta > threshold) || (velocity > 0.9);
+
             isDragging = false;
             releaseCapture();
+
             if (shouldClose) {
                 closePanel();
             } else {
@@ -833,23 +875,35 @@
                 panel.style.transition = '';
                 panel.style.transform = '';
                 lexOverlay.style.opacity = '';
+
+                // Snap seal back to open position.
+                if (isBottomSheetMode()) {
+                    setSealDragOffset(-h, false);
+                    clearSealDragOffsetSoon(0);
+                }
             }
         }
 
-        /* cancel should always restore panel state */
         function cancelDrag() {
             if (!isDragging) {
-                // Still ensure capture is released if the browser glitched.
                 releaseCapture();
                 return;
             }
             setPillPressed(false);
             isDragging = false;
             releaseCapture();
+
             panel.classList.remove('is-dragging');
             panel.style.transition = '';
             panel.style.transform = '';
             lexOverlay.style.opacity = '';
+
+            // Restore seal to open position.
+            if (isBottomSheetMode()) {
+                var h = getPanelHeight();
+                setSealDragOffset(-h, false);
+                clearSealDragOffsetSoon(0);
+            }
         }
 
         if (window.PointerEvent) {
