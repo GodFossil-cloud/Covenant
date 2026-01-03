@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.14 */
+/*! Covenant Lexicon UI v0.2.15 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.14';
+    window.COVENANT_LEXICON_VERSION = '0.2.15';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -701,6 +701,10 @@
             } else {
                 renderOverview();
             }
+
+            // IMPORTANT: prevent a 1-frame "pre-lift" caused by aria-expanded toggling before
+            // the .is-seal-dragging class is present.
+            setSealDragOffset(0, true);
 
             // Prepare overlay + scroll lock immediately (prevents iOS rubber-band).
             lexOverlay.classList.add('is-open');
