@@ -20,6 +20,7 @@
     var lexOverlay = document.getElementById('lexiconOverlay');
     var dynamicContent = document.getElementById('lexiconDynamicContent');
     var dragRegion = document.getElementById('lexiconDragRegion');
+    var sealClearTimer = null;
 
     // Standardize the "seal" glyph used for the intro loader across Covenant pages.
     // Canonical default: _includes/covenant-config.html (included via _includes/head-fonts.html).
@@ -413,13 +414,26 @@
 
     function setSealDragOffset(px, draggingNow) {
         if (!lexiconToggle) return;
+
+        if (sealClearTimer) {
+            window.clearTimeout(sealClearTimer);
+            sealClearTimer = null;
+        }
+
         lexiconToggle.style.setProperty('--seal-drag-y', px + 'px');
         lexiconToggle.classList.toggle('is-seal-dragging', !!draggingNow);
     }
 
     function clearSealDragOffsetSoon(ms) {
         if (!lexiconToggle) return;
-        window.setTimeout(function () {
+
+        if (sealClearTimer) {
+            window.clearTimeout(sealClearTimer);
+            sealClearTimer = null;
+        }
+
+        sealClearTimer = window.setTimeout(function () {
+            sealClearTimer = null;
             if (!lexiconToggle) return;
             lexiconToggle.style.removeProperty('--seal-drag-y');
             lexiconToggle.classList.remove('is-seal-dragging');
