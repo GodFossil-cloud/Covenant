@@ -19,6 +19,7 @@
     var lexiconToggle = document.getElementById('lexiconToggle');
     var lexOverlay = document.getElementById('lexiconOverlay');
     var dynamicContent = document.getElementById('lexiconDynamicContent');
+    var dragRegion = document.getElementById('lexiconDragRegion');
 
     // Standardize the "seal" glyph used for the intro loader across Covenant pages.
     // Canonical default: _includes/covenant-config.html (included via _includes/head-fonts.html).
@@ -672,7 +673,6 @@
         lexiconToggle.addEventListener('pointercancel', function () { finish(); }, true);
     })();
 
-    var dragRegion = document.getElementById('lexiconDragRegion');
     var dragStar = dragRegion ? dragRegion.querySelector('.lexicon-drag-star') : null;
     var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
 
