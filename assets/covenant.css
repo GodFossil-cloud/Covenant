@@ -1316,13 +1316,13 @@ body.is-exiting #blackFadeOverlay {
     }
 
     .lexicon-panel {
-        top: auto;
-        bottom: var(--footer-total-height);
+        top: 0;
+        bottom: 0;
         right: 0;
         left: 0;
         width: 100vw;
-        height: calc(100vh - var(--footer-total-height));
-        max-height: calc(100vh - var(--footer-total-height));
+        height: 100vh;
+        max-height: 100vh;
         border-left: none;
         border-top: 1px solid #3a3a3a;
         border-radius: 12px 12px 0 0;
@@ -1332,8 +1332,8 @@ body.is-exiting #blackFadeOverlay {
 
     @supports (height: 100dvh) {
         .lexicon-panel {
-            height: calc(100dvh - var(--footer-total-height));
-            max-height: calc(100dvh - var(--footer-total-height));
+            height: 100dvh;
+            max-height: 100dvh;
         }
     }
 
@@ -1693,18 +1693,5 @@ body {
   :root {
     --seal-size: 54px;
     --seal-lift: 8px;
-  }
-
-  .lexicon-panel {
-    bottom: calc(var(--footer-total-height) + var(--seal-lift));
-    height: calc(100vh - (var(--footer-total-height) + var(--seal-lift)));
-    max-height: calc(100vh - (var(--footer-total-height) + var(--seal-lift)));
-  }
-
-  @supports (height: 100dvh) {
-    .lexicon-panel {
-      height: calc(100dvh - (var(--footer-total-height) + var(--seal-lift)));
-      max-height: calc(100dvh - (var(--footer-total-height) + var(--seal-lift)));
-    }
   }
 }
