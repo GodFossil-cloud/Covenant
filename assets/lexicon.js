@@ -45,6 +45,8 @@
     var currentlyActiveTooltip = null;
     var focusReturnEl = null;
     var scrollLockY = 0;
+        var sealOriginalParent = null;
+        var sealOriginalNextSibling = null;
 
     var isMobileGlyphMode = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
@@ -418,6 +420,14 @@
         if (!panel || !lexOverlay) return;
         clearActiveTooltip();
         resetPanelInlineMotion();
+
+            // Mobile-only: move seal into panel drag region
+            if (isBottomSheetMode() && lexiconToggle && dragRegion) {
+                        sealOriginalParent = lexiconToggle.parentNode;
+                        sealOriginalNextSibling = lexiconToggle.nextSibling;
+                        dragRegion.appendChild(lexiconToggle);
+                        lexiconToggle.classList.add('is-docked-in-panel');
+                    }
         focusReturnEl = lexiconToggle;
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
@@ -433,6 +443,18 @@
         if (!panel || !lexOverlay) return;
         clearActiveTooltip();
         resetPanelInlineMotion();
+
+            // Mobile-only: move seal back to footer
+            if (lexiconToggle && lexiconToggle.classList.contains('is-docked-in-panel')) {
+                        lexiconToggle.classList.remove('is-docked-in-panel');
+                        if (sealOriginalParent) {
+                                        if (sealOriginalNextSibling && sealOriginalNextSibling.parentNode === sealOriginalParent) {
+                                                            sealOriginalParent.insertBefore(lexiconToggle, sealOriginalNextSibling);
+                                                        } else {
+                                                            sealOriginalParent.appendChild(lexiconToggle);
+                                                        }
+                                    }
+                    }
         panel.classList.remove('is-open');
         lexOverlay.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
