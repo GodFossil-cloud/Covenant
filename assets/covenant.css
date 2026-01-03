@@ -1151,6 +1151,7 @@ body.is-exiting #blackFadeOverlay {
     flex: 1 1 auto;
     overflow-y: auto;
     padding-right: 12px;
+    padding-bottom: calc(var(--footer-total-height) + 18px);
     scrollbar-width: thin;
     scrollbar-color: var(--glyph-gold) #555;
     -webkit-overflow-scrolling: touch;
