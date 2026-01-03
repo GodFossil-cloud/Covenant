@@ -1670,6 +1670,31 @@ body {
   #lexiconToggle.is-seal-dragging {
     transition: none !important;
   }
+
+        /* When seal is docked inside panel drag region (mobile-only "one seal" mode) */
+        #lexiconToggle.is-docked-in-panel {
+                    position: relative;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 999px;
+                    font-size: 1.2rem;
+                    transform: none !important;
+                    margin: 0;
+                    padding: 0;
+                    background: rgba(210, 191, 150, 0.12);
+                    box-shadow: 0 0 8px rgba(201, 169, 97, 0.14), 0 0 16px rgba(0, 0, 0, 0.25);
+                }
+
+        #lexiconToggle.is-docked-in-panel::before,
+        #lexiconToggle.is-docked-in-panel::after {
+                    display: none;
+                }
+
+        #lexiconToggle.is-docked-in-panel:active {
+                    background: rgba(210, 191, 150, 0.18);
+                                box-shadow: 0 0 12px rgba(201, 169, 97, 0.24), 0 0 20px rgba(0, 0, 0, 0.35);
+                    transform: translateY(-1px) !important;
+                }
 }
 
 /* Responsive: ensure body padding stays clear at smaller breakpoints. */
