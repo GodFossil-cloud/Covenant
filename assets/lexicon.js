@@ -502,7 +502,6 @@
             return;
         }
 
-            
             if (panel.classList.contains('is-open')) {
                 closePanel();
             } else {
@@ -561,6 +560,10 @@
 
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
 
+        function setSealDragging(on) {
+            lexiconToggle.classList.toggle('is-seal-dragging', !!on);
+        }
+
         function setDragY(px) {
             lexiconToggle.style.setProperty('--seal-drag-y', px ? (px + 'px') : '');
         }
@@ -573,6 +576,7 @@
             if (!isMobileSheet()) return;
             if (e.pointerType === 'mouse') return;
 
+            setSealDragging(true);
             dragging = true;
             moved = false;
             startY = e.clientY;
@@ -615,6 +619,7 @@
             var open = panel.classList.contains('is-open');
 
             setDragY(0);
+            setSealDragging(false);
 
             dragging = false;
             try {
@@ -644,10 +649,10 @@
         lexiconToggle.addEventListener('pointerup', function () { finish(); }, true);
         lexiconToggle.addEventListener('pointercancel', function () { finish(); }, true);
     })();
-    
+
     var dragRegion = document.getElementById('lexiconDragRegion');
     var dragStar = dragRegion ? dragRegion.querySelector('.lexicon-drag-star') : null;
-        var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
+    var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
 
     if (dragRegion && panel && lexOverlay) {
         var isDragging = false;
