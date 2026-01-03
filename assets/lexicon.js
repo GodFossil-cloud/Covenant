@@ -496,47 +496,13 @@
 
         bindActivate(lexiconToggle, function () {
 
-              // Mobile: drag center tab upward to open
-  if (lexiconToggle && window.PointerEvent) {
-    var toggleDragStartY = null;
-    var toggleDragWasDragged = false;
-    var toggleDragThreshold = 22;
+        // Prevent drag-then-tap from also toggling
+        if (window.__COVENANT_SEAL_DRAG_JUST_HAPPENED) {
+            window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
+            return;
+        }
 
-    lexiconToggle.addEventListener('pointerdown', function (e) {
-      if (!isBottomSheetMode() || panel.classList.contains('is-open')) return;
-      toggleDragStartY = e.clientY;
-      toggleDragWasDragged = false;
-    });
-
-    lexiconToggle.addEventListener('pointermove', function (e) {
-      if (toggleDragStartY === null) return;
-      var deltaY = toggleDragStartY - e.clientY;
-      if (deltaY > 2) {
-        toggleDragWasDragged = true;
-        var lift = Math.min(deltaY, toggleDragThreshold + 10);
-        lexiconToggle.style.transform = 'translateY(calc(var(--seal-lift, 0px) - ' + lift + 'px))';
-      }
-    });
-
-    var finishToggleDrag = function () {
-      if (toggleDragStartY === null) return;
-      var wasDragged = toggleDragWasDragged;
-      var deltaY = toggleDragStartY - (window.lastPointerY || toggleDragStartY);
-      toggleDragStartY = null;
-      toggleDragWasDragged = false;
-      lexiconToggle.style.transform = '';
-      if (wasDragged && deltaY >= toggleDragThreshold) {
-        openPanel();
-      }
-    };
-
-    lexiconToggle.addEventListener('pointerup', function (e) {
-      window.lastPointerY = e.clientY;
-      finishToggleDrag();
-    });
-
-    lexiconToggle.addEventListener('pointercancel', finishToggleDrag);
-  }
+            
             if (panel.classList.contains('is-open')) {
                 closePanel();
             } else {
@@ -577,8 +543,111 @@
         });
     }
 
+        // ---- Mobile seal drag (footer tab) ----
+    (function initMobileSealDrag() {
+        if (!lexiconToggle || !panel) return;
+        if (!window.PointerEvent) return;
+
+        var dragging = false;
+        var startY = 0;
+        var lastY = 0;
+        var moved = false;
+        var pointerId = null;
+
+        var MOVE_SLOP = 6;
+        var OPEN_THRESHOLD = 22;
+        var CLOSE_THRESHOLD = 18;
+        var VISUAL_CLAMP = 40;
+
+        window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
+
+        function setDragY(px) {
+            lexiconToggle.style.setProperty('--seal-drag-y', px ? (px + 'px') : '');
+        }
+
+        function isMobileSheet() {
+            return isBottomSheetMode && isBottomSheetMode();
+        }
+
+        lexiconToggle.addEventListener('pointerdown', function (e) {
+            if (!isMobileSheet()) return;
+            if (e.pointerType === 'mouse') return;
+
+            dragging = true;
+            moved = false;
+            startY = e.clientY;
+            lastY = e.clientY;
+            pointerId = e.pointerId;
+
+            try { lexiconToggle.setPointerCapture(pointerId); } catch (err) {}
+        }, { passive: true });
+
+        lexiconToggle.addEventListener('pointermove', function (e) {
+            if (!dragging) return;
+            if (pointerId !== null && e.pointerId !== pointerId) return;
+
+            lastY = e.clientY;
+            var delta = lastY - startY;
+
+            if (!moved && Math.abs(delta) > MOVE_SLOP) moved = true;
+            if (!moved) return;
+
+            var open = panel.classList.contains('is-open');
+            var visual = delta;
+
+            if (open) {
+                if (visual < 0) visual = 0;
+                if (visual > VISUAL_CLAMP) visual = VISUAL_CLAMP;
+            } else {
+                if (visual > 0) visual = 0;
+                if (visual < -VISUAL_CLAMP) visual = -VISUAL_CLAMP;
+            }
+
+            setDragY(visual);
+
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+
+        function finish() {
+            if (!dragging) return;
+
+            var delta = lastY - startY;
+            var open = panel.classList.contains('is-open');
+
+            setDragY(0);
+
+            dragging = false;
+            try {
+                if (pointerId !== null) lexiconToggle.releasePointerCapture(pointerId);
+            } catch (err) {}
+            pointerId = null;
+
+            if (!moved) return;
+
+            window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
+
+            if (!open && delta <= -OPEN_THRESHOLD) {
+                if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
+                    renderSentenceExplanation(
+                        currentlySelectedSentence.dataset.lexiconKey,
+                        currentlySelectedSentence.dataset.sentenceText
+                    );
+                } else {
+                    renderOverview();
+                }
+                openPanel();
+            } else if (open && delta >= CLOSE_THRESHOLD) {
+                closePanel();
+            }
+        }
+
+        lexiconToggle.addEventListener('pointerup', function () { finish(); }, true);
+        lexiconToggle.addEventListener('pointercancel', function () { finish(); }, true);
+    })();
+    
     var dragRegion = document.getElementById('lexiconDragRegion');
     var dragStar = dragRegion ? dragRegion.querySelector('.lexicon-drag-star') : null;
+        var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
 
     if (dragRegion && panel && lexOverlay) {
         var isDragging = false;
