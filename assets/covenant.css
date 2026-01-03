@@ -1636,8 +1636,10 @@ body {
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+    /* Smooth travel when snapping open/closed (JS drives --seal-drag-y). */
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 260ms ease;
   }
-
+    
   /* While finger-dragging the seal, remove transform easing (prevents lag/jank). */
   #lexiconToggle.is-seal-dragging {
     transition: none !important;
