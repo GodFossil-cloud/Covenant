@@ -1084,34 +1084,6 @@ body.is-exiting #blackFadeOverlay {
     transition: box-shadow 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
 }
 
-.lexicon-drag-star {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(210, 191, 150, 0.12);
-  color: var(--brass-1, var(--glyph-gold));
-  font-size: 1.2rem;
-  box-shadow: 
-    0 0 8px rgba(201, 169, 97, 0.14), 
-    0 0 16px rgba(0, 0, 0, 0.25);
-  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-  user-select: none;
-  cursor: grab;
-  touch-action: none;
-}
-
-.lexicon-drag-star:active {
-  cursor: grabbing;
-  background: rgba(210, 191, 150, 0.18);
-  box-shadow: 
-    0 0 12px rgba(201, 169, 97, 0.24), 
-    0 0 20px rgba(0, 0, 0, 0.35);
-  transform: translateY(-1px);
-}
-
 .lexicon-drag-pill.is-pressed {
     background: rgba(210, 191, 150, 0.82);
     box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.38),
