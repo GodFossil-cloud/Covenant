@@ -1580,7 +1580,9 @@ body {
   border-radius: 999px 999px 16px 16px;  /* Round top, flat bottom corners */
   
   --seal-translate: calc(-1 * var(--seal-rise));
-  transform: translateY(var(--seal-translate));
+    
+    /* NEW: allow JS to add temporary drag without clobbering the base lift */
+      transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px)));
   
   z-index: 2;
   margin-top: 0;
@@ -1651,7 +1653,16 @@ body {
 /* Preserve press behavior while lifted (don’t snap back to 0). */
 .nav-btn.center:active:not(:disabled),
 .nav-btn.center.is-nudging {
-  transform: translateY(calc(var(--seal-translate) + 1px));
+      transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) + 1px));
+}
+
+@media (max-width: 600px) {
+    /* Important for reliable pointer dragging on mobile Safari/Chrome. */
+    #lexiconToggle {
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
 }
 
 /* Responsive: ensure body padding stays clear at smaller breakpoints. */
