@@ -46,8 +46,6 @@
     var currentlyActiveTooltip = null;
     var focusReturnEl = null;
     var scrollLockY = 0;
-    var sealOriginalParent = null;
-    var sealOriginalNextSibling = null;
 
     var isMobileGlyphMode = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
@@ -736,7 +734,6 @@
 
             // Seal stays lifted with the open sheet.
             setSealDragOffset(-closedY, false);
-            clearSealDragOffsetSoon(0);
 
             setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
@@ -879,7 +876,6 @@
                 // Snap seal back to open position.
                 if (isBottomSheetMode()) {
                     setSealDragOffset(-h, false);
-                    clearSealDragOffsetSoon(0);
                 }
             }
         }
@@ -902,7 +898,6 @@
             if (isBottomSheetMode()) {
                 var h = getPanelHeight();
                 setSealDragOffset(-h, false);
-                clearSealDragOffsetSoon(0);
             }
         }
 
