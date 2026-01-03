@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.12 */
+/*! Covenant Lexicon UI v0.2.13 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.12';
+    window.COVENANT_LEXICON_VERSION = '0.2.13';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -647,14 +647,29 @@
             return isBottomSheetMode && isBottomSheetMode();
         }
 
+        // Read the CSS seating nudge so we can counterbalance it during drag init.
+        function getSeatNudge() {
+            if (!lexiconToggle) return 0;
+            try {
+                var style = window.getComputedStyle(document.documentElement);
+                var val = style.getPropertyValue('--seal-seat-nudge-closed').trim();
+                if (!val) return 0;
+                return parseFloat(val) || 0;
+            } catch (err) {
+                return 0;
+            }
+        }
+
         function setPanelY(y) {
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
-            // Keep the seal attached to the sheet while dragging:
-            // y == closedY  => seal offset 0 (seal stays in its CSS-seated cradle)
-            // y == 0        => seal offset -closedY (seal rises with sheet top)
-            setSealDragOffset(y - closedY, true);
+            // Gradually offset the seal as the panel rises:
+            // y == closedY  => seal offset +seatNudge (in notch, matches CSS default)
+            // y == 0        => seal offset -closedY + seatNudge (at sheet top)
+            var seatNudge = getSeatNudge();
+            var sealOffset = (y - closedY) + seatNudge;
+            setSealDragOffset(sealOffset, true);
 
             var progress = 1 - (y / (closedY || 1));
             if (progress < 0) progress = 0;
@@ -678,11 +693,6 @@
             lastT = (window.performance && performance.now) ? performance.now() : Date.now();
             velocity = 0;
 
-            // IMPORTANT: prevent the CSS "aria-expanded=true" rule from removing the
-            // closed seat nudge before we begin moving. This is what caused the initial "jump".
-            // (We keep --seal-drag-y at 0 here; the cradle position is purely CSS.)
-            setSealDragOffset(0, true);
-
             // Ensure the correct content is ready while dragging.
             if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
                 renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey, currentlySelectedSentence.dataset.sentenceText);
@@ -704,7 +714,7 @@
             panel.classList.add('is-dragging');
             panel.style.transition = 'none';
 
-            // Start from fully closed.
+            // Start from fully closed (setPanelY now initializes seal with the nudge).
             setPanelY(closedY);
 
             try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
@@ -818,8 +828,6 @@
         lexiconToggle.addEventListener('pointerup', function () { finishOpenGesture(); }, true);
         lexiconToggle.addEventListener('pointercancel', function () { finishOpenGesture(); }, true);
     })();
-
-    // --- remainder unchanged ---
 
     var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
 
@@ -974,5 +982,273 @@
         }
     }
 
-    // (Rest of file preserved in repo history; keeping this patch focused on the seal jump.)
+    function clearSentenceSelection() {
+        if (currentlySelectedSentence) {
+            currentlySelectedSentence.classList.remove('is-selected');
+            currentlySelectedSentence = null;
+            updateLexiconButtonState();
+        }
+    }
+
+    function handleSentenceClick(node) {
+        if (currentlySelectedSentence === node) {
+            clearSentenceSelection();
+        } else {
+            clearSentenceSelection();
+            currentlySelectedSentence = node;
+            node.classList.add('is-selected');
+            updateLexiconButtonState();
+        }
+    }
+
+    var sentenceNodes = document.querySelectorAll('.sentence');
+    Array.prototype.forEach.call(sentenceNodes, function (node) {
+        node.addEventListener('click', function (event) {
+            event.stopPropagation();
+            handleSentenceClick(node);
+        });
+
+        var lastTapTime = 0;
+        node.addEventListener('touchend', function (event) {
+            var currentTime = Date.now();
+            var tapLength = currentTime - lastTapTime;
+            if (tapLength < 300 && tapLength > 0) {
+                event.preventDefault();
+                event.stopPropagation();
+                handleSentenceClick(node);
+            }
+            lastTapTime = currentTime;
+        });
+    });
+
+    function handleOutsideInteraction(event) {
+        var isSentence = !!closestSafe(event.target, '.sentence');
+        var isLexicon = !!closestSafe(event.target, '#lexiconToggle');
+        var isPanel = !!closestSafe(event.target, '#lexiconPanel');
+        if (!isSentence && !isLexicon && !isPanel) {
+            clearSentenceSelection();
+        }
+    }
+
+    document.addEventListener('click', handleOutsideInteraction);
+    document.addEventListener('touchend', handleOutsideInteraction);
+
+    var glossaryTerms = document.querySelectorAll('.glossary-term');
+
+    Array.prototype.forEach.call(glossaryTerms, function (term) {
+        term.addEventListener('touchstart', function (e) {
+            if (this === currentlyActiveTooltip) return;
+            e.preventDefault();
+            clearActiveTooltip();
+            this.classList.add('tooltip-active');
+            currentlyActiveTooltip = this;
+        }, { passive: false });
+    });
+
+    document.addEventListener('touchstart', function (e) {
+        if (currentlyActiveTooltip) {
+            var touchedGlossaryTerm = Array.prototype.slice.call(glossaryTerms).some(function (term) {
+                return term.contains(e.target);
+            });
+            if (!touchedGlossaryTerm) {
+                clearActiveTooltip();
+            }
+        }
+
+        if (currentlySelectedSentence) {
+            var touchedCurrentSentence = currentlySelectedSentence.contains(e.target);
+            var touchedLexicon = !!closestSafe(e.target, '#lexiconToggle');
+            var touchedPanel = !!closestSafe(e.target, '#lexiconPanel');
+            if (!touchedCurrentSentence && !touchedLexicon && !touchedPanel) {
+                clearSentenceSelection();
+            }
+        }
+    }, { capture: true, passive: true });
+
+    // Exit fade + radiant nav pulse for Covenant section nav only (invocation.html → XII.html).
+    // Gate: requires lexicon panel + toggle + footer (keeps this off non-section pages).
+    (function initExitTransitions() {
+        if (!panel || !lexiconToggle || !navFooter || !container) return;
+
+        var PANEL_CLOSE_MS = 120;
+        var EXIT_MS = 380;
+
+        // "Press" nudge duration (separate from :active).
+        var NUDGE_MS = 120;
+
+        // Optional: subtle nav click sound. Muted by default.
+        var SOUND_KEY = 'covenant_nav_sound';
+        var audioCtx = null;
+
+        function getSoundPref() {
+            try {
+                return window.localStorage && localStorage.getItem(SOUND_KEY);
+            } catch (err) {
+                return null;
+            }
+        }
+
+        function setSoundPref(val) {
+            try {
+                if (!window.localStorage) return;
+                if (val === null || val === undefined) {
+                    localStorage.removeItem(SOUND_KEY);
+                } else {
+                    localStorage.setItem(SOUND_KEY, String(val));
+                }
+            } catch (err) { }
+        }
+
+        // Opt-in via query param:
+        //   ?sound=1  (enable and persist)
+        //   ?sound=0  (disable and persist)
+        (function initSoundQueryParam() {
+            try {
+                if (!window.URLSearchParams) return;
+                var params = new URLSearchParams(window.location.search);
+                if (!params.has('sound')) return;
+                var v = params.get('sound');
+                if (v === '1' || v === 'true' || v === 'on') {
+                    setSoundPref('1');
+                } else if (v === '0' || v === 'false' || v === 'off') {
+                    setSoundPref('0');
+                }
+
+                // Clean URL (so the covenant path stays clean after opting in).
+                params.delete('sound');
+                var newSearch = params.toString();
+                var nextUrl = window.location.pathname + (newSearch ? ('?' + newSearch) : '') + window.location.hash;
+                if (window.history && history.replaceState) {
+                    history.replaceState(null, document.title, nextUrl);
+                }
+            } catch (err) { }
+        })();
+
+        function soundEnabled() {
+            return getSoundPref() === '1';
+        }
+
+        function playClickTick() {
+            if (!soundEnabled()) return;
+            try {
+                var Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return;
+                if (!audioCtx) audioCtx = new Ctx();
+                if (audioCtx.state === 'suspended' && audioCtx.resume) {
+                    audioCtx.resume();
+                }
+
+                var now = audioCtx.currentTime;
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+
+                // Tiny percussive "tick": quick down-sweep.
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1100, now);
+                osc.frequency.exponentialRampToValueAtTime(520, now + 0.03);
+
+                // Very low gain (subtle).
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.018, now + 0.005);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.06);
+
+                osc.onended = function () {
+                    try { osc.disconnect(); } catch (err) { }
+                    try { gain.disconnect(); } catch (err) { }
+                };
+            } catch (err) { }
+        }
+
+        function isModifiedClick(e) {
+            var nonPrimary = (typeof e.button === 'number') ? (e.button !== 0) : false;
+            return !!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || nonPrimary);
+        }
+
+        function pulse(el) {
+            if (!el) return;
+
+            // Radiant flare.
+            el.classList.remove('is-pulsing');
+            void el.offsetWidth;
+            el.classList.add('is-pulsing');
+            window.setTimeout(function () {
+                el.classList.remove('is-pulsing');
+            }, 700);
+
+            // Physical press: brief 1px travel, separate from :active.
+            el.classList.add('is-nudging');
+            window.setTimeout(function () {
+                el.classList.remove('is-nudging');
+            }, NUDGE_MS);
+        }
+
+        function ensureExitOverlay() {
+            var existing = document.getElementById('blackFadeOverlay');
+            if (existing) return existing;
+
+            var o = document.createElement('div');
+            o.id = 'blackFadeOverlay';
+            // Start transparent; CSS "fade-out" sets opacity:0, then body.is-exiting forces it back to 1.
+            o.className = 'fade-out';
+            o.setAttribute('data-exit-overlay', 'true');
+            document.body.appendChild(o);
+            // Force style flush so transition engages.
+            void o.offsetWidth;
+            return o;
+        }
+
+        function beginExitThenNavigate(href, pulseTarget) {
+            if (!href) return;
+            if (document.body.classList.contains('is-exiting')) return;
+
+            var panelOpen = panel.classList.contains('is-open');
+            var delay = panelOpen ? PANEL_CLOSE_MS : 0;
+
+            playClickTick();
+            pulse(pulseTarget);
+
+            // Close panel if open (intentional first).
+            if (panelOpen) {
+                closePanel();
+            }
+
+            // Wait for panel close, then start exit.
+            window.setTimeout(function () {
+                ensureExitOverlay();
+                document.body.classList.add('is-exiting');
+
+                window.setTimeout(function () {
+                    window.location.href = href;
+                }, EXIT_MS);
+            }, delay);
+        }
+
+        // Reset exit state if BFCache restores the page.
+        window.addEventListener('pageshow', function () {
+            document.body.classList.remove('is-exiting');
+            var o = document.getElementById('blackFadeOverlay');
+            if (o && o.getAttribute('data-exit-overlay') === 'true' && o.parentNode) {
+                o.parentNode.removeChild(o);
+            }
+        });
+
+        Array.prototype.forEach.call(document.querySelectorAll('a.nav-next, a.nav-prev'), function (link) {
+            link.addEventListener('click', function (e) {
+                if (isModifiedClick(e)) return;
+
+                var href = link.getAttribute('href');
+                if (!href || href.charAt(0) === '#') return;
+
+                e.preventDefault();
+                var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
+                beginExitThenNavigate(href, frame || link);
+            });
+        });
+    })();
 })();
