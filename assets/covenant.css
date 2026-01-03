@@ -272,7 +272,7 @@ p.preamble {
     -ms-hyphens: none;
     hyphens: none;
 
-    /* Don’t split words; only break at normal opportunities (spaces / punctuation). */
+    /* Don't split words; only break at normal opportunities (spaces / punctuation). */
     word-break: normal;
     overflow-wrap: normal;
 }
@@ -337,7 +337,7 @@ p.preamble {
     min-width: 0;
     line-height: 1.55;
 
-    /* Subtle “hanging indent” feel (wrapped lines tuck under, without looking indented). */
+    /* Subtle "hanging indent" feel (wrapped lines tuck under, without looking indented). */
     padding-left: 0.05em;
 
     /* Reduce awkward wraps (supported browsers only; safe to ignore elsewhere). */
@@ -825,7 +825,7 @@ body.is-exiting #blackFadeOverlay {
     transform: translateY(-1px);
 }
 
-/* Focus-visible “inspection ring” */
+/* Focus-visible "inspection ring" */
 .nav-btn:focus-visible:not(:disabled) {
     outline: none;
 }
@@ -1428,7 +1428,7 @@ body.is-exiting #blackFadeOverlay {
   --seal-depth: 10px;  /* legacy: how far tab extends into dock (kept for compatibility) */
 
   /* Fine seating adjustment: raise the seal a touch when closed, so it sits "in" the cradle. */
-  --seal-seat-nudge-closed: 3px;
+  --seal-seat-nudge-closed: 8px;
 
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
@@ -1454,7 +1454,7 @@ body.is-exiting #blackFadeOverlay {
   /* Frame lines in footer (footer-only). */
   --footer-frame: rgba(154, 119, 38, 0.58);
 
-  /* Notch geometry (engineered “seat” behind the medallion).
+  /* Notch geometry (engineered "seat" behind the medallion).
      The notch height must be >= radius or you only see side "quarter" accents.
      Keeping these proportional produces a single continuous semicircle cradle. */
   --seal-notch-radius: calc(var(--seal-size) * 0.52);
@@ -1493,7 +1493,7 @@ body {
   height: var(--seal-notch-height);
   pointer-events: none;
 
-  /* A single semicircle “nest” under the seal:
+  /* A single semicircle "nest" under the seal:
      - inner dark shading to suggest a carved seat
      - thin leaf-toned hairline tracing the curve */
   background:
@@ -1652,7 +1652,7 @@ body {
     linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
 }
 
-/* Preserve press behavior while lifted (don’t snap back to 0). */
+/* Preserve press behavior while lifted (don't snap back to 0). */
 .nav-btn.center:active:not(:disabled),
 .nav-btn.center.is-nudging {
   transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 1px));
