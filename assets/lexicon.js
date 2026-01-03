@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.9 */
+/*! Covenant Lexicon UI v0.2.10 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.9';
+    window.COVENANT_LEXICON_VERSION = '0.2.10';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -450,7 +450,7 @@
     }
 
     function setSealToOpenPosition() {
-        // Seal sits “with” the open panel: offset by -panelHeight.
+        // Seal sits "with" the open panel: offset by -panelHeight.
         var h = getPanelHeightSafe();
         if (h > 0) setSealDragOffset(-h, false);
     }
@@ -651,10 +651,12 @@
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
-            // Keep the seal attached to the sheet while dragging:
+            // Gradually offset the seal as the panel rises:
             // y == closedY  => seal offset 0 (in notch)
             // y == 0        => seal offset -closedY (at sheet top)
-            setSealDragOffset(y - closedY, true);
+            // The seal travels smoothly with the panel edge.
+            var sealOffset = y - closedY;
+            setSealDragOffset(sealOffset, true);
 
             var progress = 1 - (y / (closedY || 1));
             if (progress < 0) progress = 0;
