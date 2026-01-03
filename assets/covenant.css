@@ -1321,13 +1321,20 @@ body.is-exiting #blackFadeOverlay {
         right: 0;
         left: 0;
         width: 100vw;
-        height: 82vh;
+        height: calc(100vh - var(--footer-total-height));
         max-height: calc(100vh - var(--footer-total-height));
         border-left: none;
         border-top: 1px solid #3a3a3a;
         border-radius: 12px 12px 0 0;
         transform: translateY(100%);
         z-index: 800;
+    }
+
+    @supports (height: 100dvh) {
+        .lexicon-panel {
+            height: calc(100dvh - var(--footer-total-height));
+            max-height: calc(100dvh - var(--footer-total-height));
+        }
     }
 
     .lexicon-panel.is-open {
@@ -1690,6 +1697,14 @@ body {
 
   .lexicon-panel {
     bottom: calc(var(--footer-total-height) + var(--seal-lift));
+    height: calc(100vh - (var(--footer-total-height) + var(--seal-lift)));
     max-height: calc(100vh - (var(--footer-total-height) + var(--seal-lift)));
+  }
+
+  @supports (height: 100dvh) {
+    .lexicon-panel {
+      height: calc(100dvh - (var(--footer-total-height) + var(--seal-lift)));
+      max-height: calc(100dvh - (var(--footer-total-height) + var(--seal-lift)));
+    }
   }
 }
