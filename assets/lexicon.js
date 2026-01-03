@@ -46,8 +46,8 @@
     var currentlyActiveTooltip = null;
     var focusReturnEl = null;
     var scrollLockY = 0;
-        var sealOriginalParent = null;
-        var sealOriginalNextSibling = null;
+    var sealOriginalParent = null;
+    var sealOriginalNextSibling = null;
 
     var isMobileGlyphMode = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
@@ -188,14 +188,14 @@
 
     var lexiconHovering = false;
     var LEX_GLYPHS = {
-            default: '𖤓',
-            defaultHover: '𖤓',
-            selected: '𖤓',
-            selectedHover: '𖤓',
-            openSummary: '𖤓',
-            openSelected: '𖤓',
-            openHover: '𖤓',
-            mobileOpen: '𖤓'
+        default: '𖤓',
+        defaultHover: '𖤓',
+        selected: '𖤓',
+        selectedHover: '𖤓',
+        openSummary: '𖤓',
+        openSelected: '𖤓',
+        openHover: '𖤓',
+        mobileOpen: '𖤓'
     };
 
     function setGlyphMarkup(target, glyph) {
@@ -422,13 +422,13 @@
         clearActiveTooltip();
         resetPanelInlineMotion();
 
-            // Mobile-only: move seal into panel drag region
-            if (isBottomSheetMode() && lexiconToggle && dragRegion) {
-                        sealOriginalParent = lexiconToggle.parentNode;
-                        sealOriginalNextSibling = lexiconToggle.nextSibling;
-                        dragRegion.appendChild(lexiconToggle);
-                        lexiconToggle.classList.add('is-docked-in-panel');
-                    }
+        // Mobile-only: move seal into panel drag region
+        if (isBottomSheetMode() && lexiconToggle && dragRegion) {
+            sealOriginalParent = lexiconToggle.parentNode;
+            sealOriginalNextSibling = lexiconToggle.nextSibling;
+            dragRegion.appendChild(lexiconToggle);
+            lexiconToggle.classList.add('is-docked-in-panel');
+        }
         focusReturnEl = lexiconToggle;
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
@@ -445,17 +445,17 @@
         clearActiveTooltip();
         resetPanelInlineMotion();
 
-            // Mobile-only: move seal back to footer
-            if (lexiconToggle && lexiconToggle.classList.contains('is-docked-in-panel')) {
-                        lexiconToggle.classList.remove('is-docked-in-panel');
-                        if (sealOriginalParent) {
-                                        if (sealOriginalNextSibling && sealOriginalNextSibling.parentNode === sealOriginalParent) {
-                                                            sealOriginalParent.insertBefore(lexiconToggle, sealOriginalNextSibling);
-                                                        } else {
-                                                            sealOriginalParent.appendChild(lexiconToggle);
-                                                        }
-                                    }
-                    }
+        // Mobile-only: move seal back to footer
+        if (lexiconToggle && lexiconToggle.classList.contains('is-docked-in-panel')) {
+            lexiconToggle.classList.remove('is-docked-in-panel');
+            if (sealOriginalParent) {
+                if (sealOriginalNextSibling && sealOriginalNextSibling.parentNode === sealOriginalParent) {
+                    sealOriginalParent.insertBefore(lexiconToggle, sealOriginalNextSibling);
+                } else {
+                    sealOriginalParent.appendChild(lexiconToggle);
+                }
+            }
+        }
         panel.classList.remove('is-open');
         lexOverlay.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
@@ -519,11 +519,11 @@
 
         bindActivate(lexiconToggle, function () {
 
-        // Prevent drag-then-tap from also toggling
-        if (window.__COVENANT_SEAL_DRAG_JUST_HAPPENED) {
-            window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
-            return;
-        }
+            // Prevent drag-then-tap from also toggling
+            if (window.__COVENANT_SEAL_DRAG_JUST_HAPPENED) {
+                window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
+                return;
+            }
 
             if (panel.classList.contains('is-open')) {
                 closePanel();
@@ -565,112 +565,199 @@
         });
     }
 
-        // ---- Mobile seal drag (footer tab) ----
+    // ---- Mobile seal drag -> drag panel open (bottom sheet) ----
     (function initMobileSealDrag() {
-        if (!lexiconToggle || !panel) return;
+        if (!lexiconToggle || !panel || !lexOverlay) return;
         if (!window.PointerEvent) return;
 
         var dragging = false;
-        var startY = 0;
-        var lastY = 0;
         var moved = false;
         var pointerId = null;
 
+        var startY = 0;
+        var lastY = 0;
+        var lastT = 0;
+        var velocity = 0;
+
+        var closedY = 0;
+        var currentY = 0;
+
         var MOVE_SLOP = 6;
-        var OPEN_THRESHOLD = 22;
-        var CLOSE_THRESHOLD = 18;
-        var VISUAL_CLAMP = 40;
+        var OPEN_VELOCITY = -0.85;
+        var OPEN_RATIO = 0.38;
 
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
-
-        function setSealDragging(on) {
-            lexiconToggle.classList.toggle('is-seal-dragging', !!on);
-        }
-
-        function setDragY(px) {
-            lexiconToggle.style.setProperty('--seal-drag-y', px ? (px + 'px') : '');
-        }
 
         function isMobileSheet() {
             return isBottomSheetMode && isBottomSheetMode();
         }
 
-        lexiconToggle.addEventListener('pointerdown', function (e) {
+        function setPanelY(y) {
+            currentY = y;
+            panel.style.transform = 'translateY(' + y + 'px)';
+
+            var progress = 1 - (y / (closedY || 1));
+            if (progress < 0) progress = 0;
+            if (progress > 1) progress = 1;
+            lexOverlay.style.opacity = String(progress);
+        }
+
+        function beginOpenGesture(e) {
             if (!isMobileSheet()) return;
             if (e.pointerType === 'mouse') return;
 
-            setSealDragging(true);
+            // If the seal has been moved into the panel, do not run footer-open dragging.
+            if (lexiconToggle.classList.contains('is-docked-in-panel')) return;
+
+            // If already open, defer to the panel drag-region logic.
+            if (panel.classList.contains('is-open')) return;
+
             dragging = true;
             moved = false;
-            startY = e.clientY;
-            lastY = e.clientY;
             pointerId = e.pointerId;
 
-            try { lexiconToggle.setPointerCapture(pointerId); } catch (err) {}
-        }, { passive: true });
+            startY = e.clientY;
+            lastY = e.clientY;
+            lastT = (window.performance && performance.now) ? performance.now() : Date.now();
+            velocity = 0;
 
-        lexiconToggle.addEventListener('pointermove', function (e) {
+            // Ensure the correct content is ready while dragging.
+            if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
+                renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey, currentlySelectedSentence.dataset.sentenceText);
+            } else {
+                renderOverview();
+            }
+
+            // Prepare overlay + scroll lock immediately (prevents iOS rubber-band).
+            lexOverlay.classList.add('is-open');
+            panel.setAttribute('aria-hidden', 'false');
+            lexOverlay.setAttribute('aria-hidden', 'false');
+            lexiconToggle.setAttribute('aria-expanded', 'true');
+            lockBodyScroll();
+
+            // Measure the panel's effective height, and treat that as our closed offset.
+            var rect = panel.getBoundingClientRect();
+            closedY = (rect && rect.height) ? rect.height : 1;
+
+            panel.classList.add('is-dragging');
+            panel.style.transition = 'none';
+
+            // Start from fully closed.
+            setPanelY(closedY);
+
+            try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
+        }
+
+        function updateOpenGesture(e) {
             if (!dragging) return;
             if (pointerId !== null && e.pointerId !== pointerId) return;
 
-            lastY = e.clientY;
-            var delta = lastY - startY;
+            var deltaUp = startY - e.clientY;
 
-            if (!moved && Math.abs(delta) > MOVE_SLOP) moved = true;
+            if (!moved && Math.abs(deltaUp) > MOVE_SLOP) moved = true;
             if (!moved) return;
 
-            var open = panel.classList.contains('is-open');
-            var visual = delta;
+            var now = (window.performance && performance.now) ? performance.now() : Date.now();
+            var dt = now - lastT;
+            if (dt > 0) velocity = (e.clientY - lastY) / dt;
+            lastY = e.clientY;
+            lastT = now;
 
-            if (open) {
-                if (visual < 0) visual = 0;
-                if (visual > VISUAL_CLAMP) visual = VISUAL_CLAMP;
-            } else {
-                if (visual > 0) visual = 0;
-                if (visual < -VISUAL_CLAMP) visual = -VISUAL_CLAMP;
-            }
+            var y = closedY - deltaUp;
+            if (y < 0) y = 0;
+            if (y > closedY) y = closedY;
 
-            setDragY(visual);
+            setPanelY(y);
 
             if (e.cancelable) e.preventDefault();
-        }, { passive: false });
+        }
 
-        function finish() {
+        function cleanupClosedState() {
+            panel.classList.remove('is-dragging');
+            panel.style.transform = '';
+            panel.style.transition = '';
+
+            lexOverlay.style.opacity = '';
+            lexOverlay.classList.remove('is-open');
+
+            panel.setAttribute('aria-hidden', 'true');
+            lexOverlay.setAttribute('aria-hidden', 'true');
+            lexiconToggle.setAttribute('aria-expanded', 'false');
+
+            unlockBodyScroll();
+            setLexiconGlyph();
+        }
+
+        function finalizeOpenState() {
+            // Convert to the normal open state (class-driven).
+            panel.classList.remove('is-dragging');
+            panel.style.transform = '';
+            panel.style.transition = '';
+            lexOverlay.style.opacity = '';
+
+            focusReturnEl = lexiconToggle;
+            panel.classList.add('is-open');
+            lexOverlay.classList.add('is-open');
+
+            // Mobile-only: move seal into panel drag region once the panel is open.
+            if (isBottomSheetMode() && dragRegion) {
+                sealOriginalParent = lexiconToggle.parentNode;
+                sealOriginalNextSibling = lexiconToggle.nextSibling;
+                dragRegion.appendChild(lexiconToggle);
+                lexiconToggle.classList.add('is-docked-in-panel');
+            }
+
+            setLexiconGlyph();
+            setTimeout(focusIntoPanel, 0);
+        }
+
+        function finishOpenGesture() {
             if (!dragging) return;
-
-            var delta = lastY - startY;
-            var open = panel.classList.contains('is-open');
-
-            setDragY(0);
-            setSealDragging(false);
 
             dragging = false;
             try {
                 if (pointerId !== null) lexiconToggle.releasePointerCapture(pointerId);
-            } catch (err) {}
+            } catch (err) { }
             pointerId = null;
 
-            if (!moved) return;
+            if (!moved) {
+                // Treat as a normal tap (the click handler will run).
+                cleanupClosedState();
+                return;
+            }
 
             window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
 
-            if (!open && delta <= -OPEN_THRESHOLD) {
-                if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                    renderSentenceExplanation(
-                        currentlySelectedSentence.dataset.lexiconKey,
-                        currentlySelectedSentence.dataset.sentenceText
-                    );
-                } else {
-                    renderOverview();
-                }
-                openPanel();
-            } else if (open && delta >= CLOSE_THRESHOLD) {
-                closePanel();
+            var progress = 1 - (currentY / (closedY || 1));
+            var shouldOpen = (progress >= OPEN_RATIO) || (velocity <= OPEN_VELOCITY);
+
+            if (shouldOpen) {
+                // Snap to open.
+                panel.style.transition = 'transform 260ms ease';
+                lexOverlay.style.transition = 'opacity 260ms ease';
+                setPanelY(0);
+
+                setTimeout(function () {
+                    lexOverlay.style.transition = '';
+                    finalizeOpenState();
+                }, 270);
+            } else {
+                // Snap back closed.
+                panel.style.transition = 'transform 220ms ease';
+                lexOverlay.style.transition = 'opacity 220ms ease';
+                setPanelY(closedY);
+
+                setTimeout(function () {
+                    lexOverlay.style.transition = '';
+                    cleanupClosedState();
+                }, 230);
             }
         }
 
-        lexiconToggle.addEventListener('pointerup', function () { finish(); }, true);
-        lexiconToggle.addEventListener('pointercancel', function () { finish(); }, true);
+        lexiconToggle.addEventListener('pointerdown', beginOpenGesture, { passive: true });
+        lexiconToggle.addEventListener('pointermove', updateOpenGesture, { passive: false });
+        lexiconToggle.addEventListener('pointerup', function () { finishOpenGesture(); }, true);
+        lexiconToggle.addEventListener('pointercancel', function () { finishOpenGesture(); }, true);
     })();
 
     var dragStar = dragRegion ? dragRegion.querySelector('.lexicon-drag-star') : null;
