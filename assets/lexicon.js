@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.10 */
+/*! Covenant Lexicon UI v0.2.11 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.10';
+    window.COVENANT_LEXICON_VERSION = '0.2.11';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -647,15 +647,28 @@
             return isBottomSheetMode && isBottomSheetMode();
         }
 
+        // Read the CSS seating nudge so we can counterbalance it during drag init.
+        function getSeatNudge() {
+            if (!lexiconToggle) return 0;
+            try {
+                var style = window.getComputedStyle(document.documentElement);
+                var val = style.getPropertyValue('--seal-seat-nudge-closed').trim();
+                if (!val) return 0;
+                return parseFloat(val) || 0;
+            } catch (err) {
+                return 0;
+            }
+        }
+
         function setPanelY(y) {
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
             // Gradually offset the seal as the panel rises:
-            // y == closedY  => seal offset 0 (in notch)
-            // y == 0        => seal offset -closedY (at sheet top)
-            // The seal travels smoothly with the panel edge.
-            var sealOffset = y - closedY;
+            // y == closedY  => seal offset +seatNudge (in notch, matches CSS default)
+            // y == 0        => seal offset -closedY + seatNudge (at sheet top)
+            var seatNudge = getSeatNudge();
+            var sealOffset = (y - closedY) + seatNudge;
             setSealDragOffset(sealOffset, true);
 
             var progress = 1 - (y / (closedY || 1));
@@ -701,7 +714,7 @@
             panel.classList.add('is-dragging');
             panel.style.transition = 'none';
 
-            // Start from fully closed.
+            // Start from fully closed (setPanelY now initializes seal with the nudge).
             setPanelY(closedY);
 
             try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
