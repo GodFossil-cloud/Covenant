@@ -1424,8 +1424,8 @@ body.is-exiting #blackFadeOverlay {
 :root {
   /* Declarative medallion lift. */
   --seal-lift: 12px;
-  --seal-rise: 10px;   /* NEW: how far tab rises above dock */
-  --seal-depth: 10px;  /* NEW: how far tab extends into dock */
+  --seal-rise: 10px;   /* how far seal rises above dock */
+  --seal-depth: 10px;  /* legacy: how far tab extends into dock (kept for compatibility) */
 
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
@@ -1546,12 +1546,13 @@ body {
   border-color: rgba(192,154,63,0.62);
 }
 
-/* Center: tab silhouette seated into dock. */
+/* Center: circular seal (no gold border). */
 .nav-btn.center {
   width: var(--seal-size);
-  height: calc(var(--seal-size) + var(--seal-depth));  /* Taller to sink into dock */
+  height: var(--seal-size);
   padding: 0;
-  border-radius: 999px 999px 16px 16px;  /* Round top, flat bottom corners */
+  border-radius: 999px;
+  overflow: hidden;
 
   --seal-translate: calc(-1 * var(--seal-rise));
 
@@ -1562,14 +1563,16 @@ body {
   z-index: 2;
   margin-top: 0;
 
-  /* Slightly larger glyph in a tab. */
+  /* Slightly larger glyph in a circular seal. */
   font-size: 1.6rem;
 }
 
 .nav-btn.center::before {
   inset: 0;
-  border-radius: 999px 999px 16px 16px;  /* Match parent shape */
-  border: 1px solid rgba(154,119,38,0.62);
+  border-radius: 999px;
+
+  /* Remove the gold/brass outline; keep only a quiet dark rim for definition. */
+  border: 1px solid rgba(0, 0, 0, 0.72);
 
   /* Small, tight, non-glow cast shadow to "stamp" the seal into the slab. */
   box-shadow:
@@ -1581,7 +1584,7 @@ body {
 
 .nav-btn.center::after {
   inset: 0;
-  border-radius: 999px 999px 16px 16px;  /* Match parent shape */
+  border-radius: 999px;
   background:
     radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),
     linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40)),
@@ -1590,12 +1593,16 @@ body {
 
 .nav-btn.center:hover::before,
 .nav-btn.center:focus-visible::before {
-  border-color: rgba(192,154,63,0.72);
+  border-color: rgba(0, 0, 0, 0.62);
   box-shadow:
     inset 0 0 20px rgba(0,0,0,0.96),
     inset 0 1px 0 rgba(255,255,255,0.06),
-    0 0 0 2px rgba(192,154,63,0.14),
     0 14px 10px -12px rgba(0,0,0,0.92);
+}
+
+/* Ensure pulse state doesn't reintroduce a gold border from earlier rules. */
+.nav-btn.center.is-pulsing::before {
+  border-color: rgba(0, 0, 0, 0.62);
 }
 
 /* Selection state = sacred leaf + textured fleck (not neon glow). */
@@ -1606,12 +1613,11 @@ body {
 
 .nav-btn.center.has-selection::before {
   transform: none;
-  border-color: rgba(242,220,154,0.72);
+  border-color: rgba(0, 0, 0, 0.62);
   box-shadow:
     inset 0 0 22px rgba(0,0,0,0.96),
     inset 0 0 0 1px rgba(242,220,154,0.18),
     inset 0 1px 0 rgba(255,255,255,0.06),
-    0 0 0 2px rgba(242,220,154,0.12),
     0 14px 10px -12px rgba(0,0,0,0.92);
 }
 
