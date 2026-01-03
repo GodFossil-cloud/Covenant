@@ -1427,6 +1427,9 @@ body.is-exiting #blackFadeOverlay {
   --seal-rise: 10px;   /* how far seal rises above dock */
   --seal-depth: 10px;  /* legacy: how far tab extends into dock (kept for compatibility) */
 
+  /* Fine seating adjustment: raise the seal a touch when closed, so it sits "in" the cradle. */
+  --seal-seat-nudge-closed: 3px;
+
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
 
@@ -1562,17 +1565,25 @@ body {
   border-radius: 999px;
   overflow: hidden;
 
+  /* Default = closed state: nudge upward slightly so it seats into the cradle. */
+  --seal-seat-nudge: var(--seal-seat-nudge-closed);
+
   --seal-translate: calc(-1 * var(--seal-rise));
 
   /* Allow JS to add temporary drag without clobbering the base lift.
      NOTE: --seal-drag-y is driven by assets/lexicon.js (single-seal continuous motion). */
-  transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px)));
+  transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
 
   z-index: 2;
   margin-top: 0;
 
   /* Slightly larger glyph in a circular seal. */
   font-size: 1.6rem;
+}
+
+/* When the panel is open, remove the extra seating nudge (keeps motion feeling consistent). */
+#lexiconToggle[aria-expanded="true"] {
+  --seal-seat-nudge: 0px;
 }
 
 .nav-btn.center::before {
@@ -1644,7 +1655,7 @@ body {
 /* Preserve press behavior while lifted (don’t snap back to 0). */
 .nav-btn.center:active:not(:disabled),
 .nav-btn.center.is-nudging {
-  transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) + 1px));
+  transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 1px));
 }
 
 @media (max-width: 600px) {
