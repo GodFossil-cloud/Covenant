@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.21 */
+/*! Covenant Lexicon UI v0.2.22 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.21';
+    window.COVENANT_LEXICON_VERSION = '0.2.22';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -708,7 +708,9 @@
             closedY = Math.max(1, panelH - footerH);
         }
 
-        function setPanelY(y) {
+        function setPanelY(y, sealDragging) {
+            if (typeof sealDragging !== 'boolean') sealDragging = true;
+
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
@@ -721,7 +723,9 @@
             // Counterbalance the seat nudge while open; reintroduce it as we approach closed.
             var seatNudge = getSeatNudge();
             var sealOffset = (y - closedY) + (seatNudge * progress);
-            setSealDragOffset(sealOffset, true);
+
+            // Important: when snapping (finger released), let CSS transitions take over.
+            setSealDragOffset(sealOffset, sealDragging);
 
             lexOverlay.style.opacity = String(progress);
         }
@@ -766,12 +770,12 @@
                 ensureOpenStatePrepared();
 
                 // Start tucked (closed).
-                setPanelY(closedY);
+                setPanelY(closedY, true);
             } else {
                 // Already open: keep the real open state, but allow dragging down from the seal.
                 // (Using setPanelY(0) is CRITICAL to prevent the seal from "dropping" when is-seal-dragging is applied.)
                 lockBodyScroll();
-                setPanelY(0);
+                setPanelY(0, true);
             }
 
             try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
@@ -804,7 +808,7 @@
             if (y < 0) y = 0;
             if (y > closedY) y = closedY;
 
-            setPanelY(y);
+            setPanelY(y, true);
 
             if (e.cancelable) e.preventDefault();
         }
@@ -895,9 +899,12 @@
 
             if (!moved) {
                 // Treat as a normal tap (the click handler will run).
+                // Also: restore transitions immediately (no snap-back while is-seal-dragging is still on).
                 if (startWasOpen) {
+                    setPanelY(0, false);
                     restoreOpenAfterCanceledClose();
                 } else {
+                    setPanelY(closedY, false);
                     cleanupClosedState();
                 }
                 return;
@@ -915,7 +922,7 @@
                     // Snap to open.
                     panel.style.transition = 'transform 260ms ease';
                     lexOverlay.style.transition = 'opacity 260ms ease';
-                    setPanelY(0);
+                    setPanelY(0, false);
 
                     setTimeout(function () {
                         lexOverlay.style.transition = '';
@@ -925,7 +932,7 @@
                     // Snap back closed.
                     panel.style.transition = 'transform 220ms ease';
                     lexOverlay.style.transition = 'opacity 220ms ease';
-                    setPanelY(closedY);
+                    setPanelY(closedY, false);
 
                     setTimeout(function () {
                         lexOverlay.style.transition = '';
@@ -943,7 +950,7 @@
             if (shouldClose) {
                 panel.style.transition = 'transform 220ms ease';
                 lexOverlay.style.transition = 'opacity 220ms ease';
-                setPanelY(closedY);
+                setPanelY(closedY, false);
 
                 setTimeout(function () {
                     lexOverlay.style.transition = '';
@@ -952,7 +959,7 @@
             } else {
                 panel.style.transition = 'transform 220ms ease';
                 lexOverlay.style.transition = 'opacity 220ms ease';
-                setPanelY(0);
+                setPanelY(0, false);
 
                 setTimeout(function () {
                     lexOverlay.style.transition = '';
