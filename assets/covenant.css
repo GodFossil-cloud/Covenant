@@ -1676,6 +1676,12 @@ body {
     --seal-translate: 0px;
   }
 
+  /* In bottom-sheet mode: keep seat-nudge constant even while open so the seal settles in one motion.
+     (JS counterbalances while open; this prevents a second "drop" at the end.) */
+  #lexiconToggle[aria-expanded="true"]:not(.is-seal-dragging) {
+    --seal-seat-nudge: var(--seal-seat-nudge-closed);
+  }
+
   /* Important for reliable pointer dragging on mobile Safari/Chrome. */
   #lexiconToggle {
     touch-action: none;
@@ -1684,7 +1690,7 @@ body {
 
     /* Smooth travel when snapping open/closed (JS drives --seal-drag-y).
        Heavier (more weight) = slower + decisive ease-out, not elastic. */
-    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
   /* While finger-dragging the seal, remove transform easing (prevents lag/jank). */

@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.22 */
+/*! Covenant Lexicon UI v0.2.23 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.22';
+    window.COVENANT_LEXICON_VERSION = '0.2.23';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -479,15 +479,17 @@
     function setSealToOpenPosition() {
         // On mobile bottom-sheet, the seal should meet the sheet lip.
         // The seal lives inside the footer, so subtract the footer height from the panel height.
+        // NOTE: In mobile sheet mode we keep the seat nudge active (CSS), so we counterbalance it here.
         var h = getPanelHeightSafe();
         var f = getFooterHeightSafe();
-        if (h > 0) setSealDragOffset(-(h - f), false);
+        var n = getSeatNudge();
+        if (h > 0) setSealDragOffset(-(h - f) + n, false);
     }
 
     function setSealToClosedPosition() {
         // Seal sits in the footer notch.
         setSealDragOffset(0, false);
-        clearSealDragOffsetSoon(340);
+        clearSealDragOffsetSoon(520);
     }
 
     // Read the CSS seating nudge (upward offset while closed).
@@ -695,6 +697,10 @@
         var CLOSE_VELOCITY = 0.85;
         var CLOSE_RATIO = 0.28;
 
+        // Snap tuning: heavier, slower, no bounce.
+        var SNAP_MS = 420;
+        var SNAP_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
+
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
 
         function isMobileSheet() {
@@ -843,7 +849,7 @@
             lexOverlay.classList.add('is-open');
 
             // Seal stays lifted with the open sheet.
-            setSealDragOffset(-closedY, false);
+            setSealDragOffset(-closedY + getSeatNudge(), false);
 
             setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
@@ -856,8 +862,8 @@
             lexOverlay.style.opacity = '';
             lexOverlay.style.transition = '';
 
-            // Snap seal back to open position (and release dragging state so seat nudge returns to 0).
-            setSealDragOffset(-closedY, false);
+            // Snap seal back to open position.
+            setSealDragOffset(-closedY + getSeatNudge(), false);
 
             setLexiconGlyph();
         }
@@ -914,30 +920,33 @@
 
             var progress = 1 - (currentY / (closedY || 1));
 
+            function setSnapTransitions() {
+                panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
+                lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
+            }
+
             if (!startWasOpen) {
                 // Decide open vs snap-back (opening gesture).
                 var shouldOpen = (progress >= OPEN_RATIO) || (velocity <= OPEN_VELOCITY);
 
                 if (shouldOpen) {
                     // Snap to open.
-                    panel.style.transition = 'transform 260ms ease';
-                    lexOverlay.style.transition = 'opacity 260ms ease';
+                    setSnapTransitions();
                     setPanelY(0, false);
 
                     setTimeout(function () {
                         lexOverlay.style.transition = '';
                         finalizeOpenState();
-                    }, 270);
+                    }, SNAP_MS + 20);
                 } else {
                     // Snap back closed.
-                    panel.style.transition = 'transform 220ms ease';
-                    lexOverlay.style.transition = 'opacity 220ms ease';
+                    setSnapTransitions();
                     setPanelY(closedY, false);
 
                     setTimeout(function () {
                         lexOverlay.style.transition = '';
                         cleanupClosedState();
-                    }, 230);
+                    }, SNAP_MS + 20);
                 }
 
                 return;
@@ -948,23 +957,21 @@
             var shouldClose = (currentY > closeThreshold) || (velocity >= CLOSE_VELOCITY);
 
             if (shouldClose) {
-                panel.style.transition = 'transform 220ms ease';
-                lexOverlay.style.transition = 'opacity 220ms ease';
+                setSnapTransitions();
                 setPanelY(closedY, false);
 
                 setTimeout(function () {
                     lexOverlay.style.transition = '';
                     finalizeClosedFromOpenState();
-                }, 230);
+                }, SNAP_MS + 20);
             } else {
-                panel.style.transition = 'transform 220ms ease';
-                lexOverlay.style.transition = 'opacity 220ms ease';
+                setSnapTransitions();
                 setPanelY(0, false);
 
                 setTimeout(function () {
                     lexOverlay.style.transition = '';
                     restoreOpenAfterCanceledClose();
-                }, 230);
+                }, SNAP_MS + 20);
             }
         }
 
