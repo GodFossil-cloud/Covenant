@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.16 */
+/*! Covenant Lexicon UI v0.2.17 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.16';
+    window.COVENANT_LEXICON_VERSION = '0.2.17';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -505,11 +505,12 @@
         setLexiconGlyph();
 
         // Mobile bottom-sheet: lift the same footer seal up with the panel.
+        // Use rAF so the seal and the panel transition begin on the same paint (prevents the seal "leading" the sheet).
         if (isBottomSheetMode()) {
-            // Defer one tick so layout has a stable height.
-            window.setTimeout(function () {
+            var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+            raf(function () {
                 setSealToOpenPosition();
-            }, 0);
+            });
         }
 
         setTimeout(focusIntoPanel, 0);
