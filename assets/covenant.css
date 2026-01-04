@@ -1739,9 +1739,9 @@ body {
   background: transparent;
 }
 
-/* Keep the header readable and “anchored” (not glass). */
+/* Keep the header readable and anchored (opaque, not glass). */
 .lexicon-panel-header {
-  background: linear-gradient(to bottom, rgba(11, 12, 14, 0.96), rgba(11, 12, 14, 0.90));
+  background: #1a1a1a;
   border-bottom: 1px solid rgba(242, 220, 154, 0.10);
   padding: 22px 20px 14px;
   margin: 0;
