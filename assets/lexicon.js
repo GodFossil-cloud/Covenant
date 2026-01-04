@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.18 */
+/*! Covenant Lexicon UI v0.2.19 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.18';
+    window.COVENANT_LEXICON_VERSION = '0.2.19';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -479,6 +479,19 @@
         clearSealDragOffsetSoon(340);
     }
 
+    // Read the CSS seating nudge (upward offset while closed).
+    function getSeatNudge() {
+        if (!lexiconToggle) return 0;
+        try {
+            var style = window.getComputedStyle(document.documentElement);
+            var val = style.getPropertyValue('--seal-seat-nudge-closed').trim();
+            if (!val) return 0;
+            return parseFloat(val) || 0;
+        } catch (err) {
+            return 0;
+        }
+    }
+
     function focusIntoPanel() {
         if (!panel) return;
         var closeBtn = panel.querySelector('.lexicon-panel-close');
@@ -666,19 +679,6 @@
             return isBottomSheetMode && isBottomSheetMode();
         }
 
-        // Read the CSS seating nudge so we can counterbalance it during drag init.
-        function getSeatNudge() {
-            if (!lexiconToggle) return 0;
-            try {
-                var style = window.getComputedStyle(document.documentElement);
-                var val = style.getPropertyValue('--seal-seat-nudge-closed').trim();
-                if (!val) return 0;
-                return parseFloat(val) || 0;
-            } catch (err) {
-                return 0;
-            }
-        }
-
         function setPanelY(y) {
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
@@ -721,10 +721,6 @@
                 renderOverview();
             }
 
-            // IMPORTANT: prevent a 1-frame "pre-lift" caused by aria-expanded toggling before
-            // the .is-seal-dragging class is present.
-            setSealDragOffset(0, true);
-
             // Prepare overlay + scroll lock immediately (prevents iOS rubber-band).
             lexOverlay.classList.add('is-open');
             panel.setAttribute('aria-hidden', 'false');
@@ -742,7 +738,14 @@
             panel.classList.add('is-dragging');
             panel.style.transition = 'none';
 
-            // Start from "tucked under footer" closed position.
+            // CRITICAL FIX: On first touch, counterbalance the seal's CSS seat nudge
+            // so the seal doesn't "jump" when .is-seal-dragging is applied.
+            // Initialize the seal's drag offset to the negative of the nudge.
+            var seatNudge = getSeatNudge();
+            setSealDragOffset(-seatNudge, true);
+
+            // Now position the sheet under the footer (tucked closed).
+            // The seal drag offset formula in setPanelY will keep everything aligned.
             setPanelY(closedY);
 
             try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
