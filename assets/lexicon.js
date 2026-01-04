@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.15 */
+/*! Covenant Lexicon UI v0.2.16 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.15';
+    window.COVENANT_LEXICON_VERSION = '0.2.16';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -421,6 +421,22 @@
         return (rect && rect.height) ? rect.height : 0;
     }
 
+    function getFooterHeightSafe() {
+        if (navFooter) {
+            var r = navFooter.getBoundingClientRect();
+            if (r && r.height) return r.height;
+        }
+
+        // Fallback: CSS variable (should resolve to px in computed style).
+        try {
+            var style = window.getComputedStyle(document.documentElement);
+            var val = style.getPropertyValue('--footer-total-height').trim();
+            if (val) return parseFloat(val) || 0;
+        } catch (err) { }
+
+        return 0;
+    }
+
     function setSealDragOffset(px, draggingNow) {
         if (!lexiconToggle) return;
 
@@ -450,9 +466,11 @@
     }
 
     function setSealToOpenPosition() {
-        // Seal sits "with" the open panel: offset by -panelHeight.
+        // On mobile bottom-sheet, the seal should meet the sheet lip.
+        // The seal lives inside the footer, so subtract the footer height from the panel height.
         var h = getPanelHeightSafe();
-        if (h > 0) setSealDragOffset(-h, false);
+        var f = getFooterHeightSafe();
+        if (h > 0) setSealDragOffset(-(h - f), false);
     }
 
     function setSealToClosedPosition() {
@@ -673,7 +691,8 @@
             if (progress > 1) progress = 1;
 
             var seatNudge = getSeatNudge();
-            var sealOffset = (y - closedY) + (seatNudge * progress);
+            var footerH = getFooterHeightSafe();
+            var sealOffset = (y - closedY) + (seatNudge * progress) + (footerH * progress);
             setSealDragOffset(sealOffset, true);
 
             lexOverlay.style.opacity = String(progress);
@@ -779,8 +798,9 @@
             panel.classList.add('is-open');
             lexOverlay.classList.add('is-open');
 
-            // Seal stays lifted with the open sheet.
-            setSealDragOffset(-closedY, false);
+            // Seal stays lifted with the open sheet (corrected for footer height).
+            var footerH = getFooterHeightSafe();
+            setSealDragOffset(-(closedY - footerH), false);
 
             setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
@@ -888,9 +908,10 @@
             if (fade > 1) fade = 1;
             lexOverlay.style.opacity = String(fade);
 
-            // Seal tracks the top of the sheet while dragging down.
+            // Seal tracks the top of the sheet while dragging down (corrected baseline).
             if (isBottomSheetMode()) {
-                setSealDragOffset(-h + currentDelta, true);
+                var footerH = getFooterHeightSafe();
+                setSealDragOffset(-(h - footerH) + currentDelta, true);
             }
 
             var now = window.performance && performance.now ? performance.now() : Date.now();
@@ -921,7 +942,8 @@
 
                 // Snap seal back to open position.
                 if (isBottomSheetMode()) {
-                    setSealDragOffset(-h, false);
+                    var footerH = getFooterHeightSafe();
+                    setSealDragOffset(-(h - footerH), false);
                 }
             }
         }
@@ -943,7 +965,8 @@
             // Restore seal to open position.
             if (isBottomSheetMode()) {
                 var h = getPanelHeight();
-                setSealDragOffset(-h, false);
+                var footerH = getFooterHeightSafe();
+                setSealDragOffset(-(h - footerH), false);
             }
         }
 
