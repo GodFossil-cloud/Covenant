@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.19 */
+/*! Covenant Lexicon UI v0.2.20 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.19';
+    window.COVENANT_LEXICON_VERSION = '0.2.20';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -652,7 +652,7 @@
         });
     }
 
-    // ---- Mobile seal drag -> drag panel open (bottom sheet) ----
+    // ---- Mobile seal drag -> drag panel open/close (bottom sheet) ----
     (function initMobileSealDrag() {
         if (!lexiconToggle || !panel || !lexOverlay) return;
         if (!window.PointerEvent) return;
@@ -666,12 +666,23 @@
         var lastT = 0;
         var velocity = 0;
 
+        var startWasOpen = false;
+
+        // closedY is the sheet's "tucked" resting translateY, measured from fully-open (0).
+        // For the Covenant footer seal, we treat the closed rest position as (panelHeight - footerHeight),
+        // so the sheet lip emerges immediately beneath the footer.
         var closedY = 0;
         var currentY = 0;
 
         var MOVE_SLOP = 6;
+
+        // Open gesture tuning (drag up from the seal while closed).
         var OPEN_VELOCITY = -0.85;
         var OPEN_RATIO = 0.38;
+
+        // Close gesture tuning (drag down from the seal while open).
+        var CLOSE_VELOCITY = 0.85;
+        var CLOSE_RATIO = 0.28;
 
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
 
@@ -679,18 +690,24 @@
             return isBottomSheetMode && isBottomSheetMode();
         }
 
+        function computeClosedY() {
+            var rect = panel.getBoundingClientRect();
+            var panelH = (rect && rect.height) ? rect.height : 1;
+            var footerH = getFooterHeightSafe();
+            closedY = Math.max(1, panelH - footerH);
+        }
+
         function setPanelY(y) {
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
             // Keep seal and sheet in one continuous chain.
-            // NOTE: In drag-open mode, we treat the panel's "closed" position as (panelHeight - footerHeight),
-            // so the sheet lip starts under the footer (instead of at the absolute bottom of the viewport).
             var denom = (closedY || 1);
             var progress = 1 - (y / denom);
             if (progress < 0) progress = 0;
             if (progress > 1) progress = 1;
 
+            // Counterbalance the seat nudge while open; reintroduce it as we approach closed.
             var seatNudge = getSeatNudge();
             var sealOffset = (y - closedY) + (seatNudge * progress);
             setSealDragOffset(sealOffset, true);
@@ -698,12 +715,20 @@
             lexOverlay.style.opacity = String(progress);
         }
 
-        function beginOpenGesture(e) {
+        function ensureOpenStatePrepared() {
+            // Prepare overlay + scroll lock immediately (prevents iOS rubber-band).
+            lexOverlay.classList.add('is-open');
+            panel.setAttribute('aria-hidden', 'false');
+            lexOverlay.setAttribute('aria-hidden', 'false');
+            lexiconToggle.setAttribute('aria-expanded', 'true');
+            lockBodyScroll();
+        }
+
+        function beginGesture(e) {
             if (!isMobileSheet()) return;
             if (e.pointerType === 'mouse') return;
 
-            // If already open, defer to the panel drag-region logic.
-            if (panel.classList.contains('is-open')) return;
+            startWasOpen = panel.classList.contains('is-open');
 
             dragging = true;
             moved = false;
@@ -714,50 +739,40 @@
             lastT = (window.performance && performance.now) ? performance.now() : Date.now();
             velocity = 0;
 
-            // Ensure the correct content is ready while dragging.
-            if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey, currentlySelectedSentence.dataset.sentenceText);
-            } else {
-                renderOverview();
-            }
-
-            // Prepare overlay + scroll lock immediately (prevents iOS rubber-band).
-            lexOverlay.classList.add('is-open');
-            panel.setAttribute('aria-hidden', 'false');
-            lexOverlay.setAttribute('aria-hidden', 'false');
-            lexiconToggle.setAttribute('aria-expanded', 'true');
-            lockBodyScroll();
-
-            // Treat the sheet's "closed" resting point as tucked under the footer,
-            // so the lip emerges immediately under the seal when dragging begins.
-            var rect = panel.getBoundingClientRect();
-            var panelH = (rect && rect.height) ? rect.height : 1;
-            var footerH = getFooterHeightSafe();
-            closedY = Math.max(1, panelH - footerH);
+            computeClosedY();
 
             panel.classList.add('is-dragging');
             panel.style.transition = 'none';
 
-            // CRITICAL FIX: On first touch, counterbalance the seal's CSS seat nudge
-            // so the seal doesn't "jump" when .is-seal-dragging is applied.
-            // Initialize the seal's drag offset to the negative of the nudge.
-            var seatNudge = getSeatNudge();
-            setSealDragOffset(-seatNudge, true);
+            if (!startWasOpen) {
+                // Ensure the correct content is ready while dragging open.
+                if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
+                    renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey, currentlySelectedSentence.dataset.sentenceText);
+                } else {
+                    renderOverview();
+                }
 
-            // Now position the sheet under the footer (tucked closed).
-            // The seal drag offset formula in setPanelY will keep everything aligned.
-            setPanelY(closedY);
+                ensureOpenStatePrepared();
+
+                // Start tucked (closed).
+                setPanelY(closedY);
+            } else {
+                // Already open: keep the real open state, but allow dragging down from the seal.
+                // (Using setPanelY(0) is CRITICAL to prevent the seal from "dropping" when is-seal-dragging is applied.)
+                lockBodyScroll();
+                setPanelY(0);
+            }
 
             try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
         }
 
-        function updateOpenGesture(e) {
+        function updateGesture(e) {
             if (!dragging) return;
             if (pointerId !== null && e.pointerId !== pointerId) return;
 
-            var deltaUp = startY - e.clientY;
+            var rawDelta = e.clientY - startY;
 
-            if (!moved && Math.abs(deltaUp) > MOVE_SLOP) moved = true;
+            if (!moved && Math.abs(rawDelta) > MOVE_SLOP) moved = true;
             if (!moved) return;
 
             var now = (window.performance && performance.now) ? performance.now() : Date.now();
@@ -766,7 +781,15 @@
             lastY = e.clientY;
             lastT = now;
 
-            var y = closedY - deltaUp;
+            var y;
+            if (startWasOpen) {
+                // Drag-down to close.
+                y = rawDelta;
+            } else {
+                // Drag-up to open: closedY + delta (delta is negative when moving up).
+                y = closedY + rawDelta;
+            }
+
             if (y < 0) y = 0;
             if (y > closedY) y = closedY;
 
@@ -811,7 +834,46 @@
             setTimeout(focusIntoPanel, 0);
         }
 
-        function finishOpenGesture() {
+        function restoreOpenAfterCanceledClose() {
+            panel.classList.remove('is-dragging');
+            panel.style.transform = '';
+            panel.style.transition = '';
+            lexOverlay.style.opacity = '';
+            lexOverlay.style.transition = '';
+
+            // Snap seal back to open position (and release dragging state so seat nudge returns to 0).
+            setSealDragOffset(-closedY, false);
+
+            setLexiconGlyph();
+        }
+
+        function finalizeClosedFromOpenState() {
+            // Fully close from a currently-open state (without relying on closePanel(),
+            // so there is no transform "snap" mid-gesture).
+            panel.classList.remove('is-dragging');
+            panel.style.transform = '';
+            panel.style.transition = '';
+
+            lexOverlay.style.opacity = '';
+            lexOverlay.style.transition = '';
+
+            panel.classList.remove('is-open');
+            lexOverlay.classList.remove('is-open');
+
+            panel.setAttribute('aria-hidden', 'true');
+            lexOverlay.setAttribute('aria-hidden', 'true');
+            lexiconToggle.setAttribute('aria-expanded', 'false');
+
+            setSealToClosedPosition();
+            unlockBodyScroll();
+            setLexiconGlyph();
+
+            setTimeout(function () {
+                if (lexiconToggle && lexiconToggle.focus) lexiconToggle.focus();
+            }, 0);
+        }
+
+        function finishGesture() {
             if (!dragging) return;
 
             dragging = false;
@@ -822,42 +884,76 @@
 
             if (!moved) {
                 // Treat as a normal tap (the click handler will run).
-                cleanupClosedState();
+                if (startWasOpen) {
+                    restoreOpenAfterCanceledClose();
+                } else {
+                    cleanupClosedState();
+                }
                 return;
             }
 
             window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
 
             var progress = 1 - (currentY / (closedY || 1));
-            var shouldOpen = (progress >= OPEN_RATIO) || (velocity <= OPEN_VELOCITY);
 
-            if (shouldOpen) {
-                // Snap to open.
-                panel.style.transition = 'transform 260ms ease';
-                lexOverlay.style.transition = 'opacity 260ms ease';
-                setPanelY(0);
+            if (!startWasOpen) {
+                // Decide open vs snap-back (opening gesture).
+                var shouldOpen = (progress >= OPEN_RATIO) || (velocity <= OPEN_VELOCITY);
 
-                setTimeout(function () {
-                    lexOverlay.style.transition = '';
-                    finalizeOpenState();
-                }, 270);
-            } else {
-                // Snap back closed.
+                if (shouldOpen) {
+                    // Snap to open.
+                    panel.style.transition = 'transform 260ms ease';
+                    lexOverlay.style.transition = 'opacity 260ms ease';
+                    setPanelY(0);
+
+                    setTimeout(function () {
+                        lexOverlay.style.transition = '';
+                        finalizeOpenState();
+                    }, 270);
+                } else {
+                    // Snap back closed.
+                    panel.style.transition = 'transform 220ms ease';
+                    lexOverlay.style.transition = 'opacity 220ms ease';
+                    setPanelY(closedY);
+
+                    setTimeout(function () {
+                        lexOverlay.style.transition = '';
+                        cleanupClosedState();
+                    }, 230);
+                }
+
+                return;
+            }
+
+            // Closing gesture (already open): decide close vs snap-back.
+            var closeThreshold = Math.max(120, closedY * CLOSE_RATIO);
+            var shouldClose = (currentY > closeThreshold) || (velocity >= CLOSE_VELOCITY);
+
+            if (shouldClose) {
                 panel.style.transition = 'transform 220ms ease';
                 lexOverlay.style.transition = 'opacity 220ms ease';
                 setPanelY(closedY);
 
                 setTimeout(function () {
                     lexOverlay.style.transition = '';
-                    cleanupClosedState();
+                    finalizeClosedFromOpenState();
+                }, 230);
+            } else {
+                panel.style.transition = 'transform 220ms ease';
+                lexOverlay.style.transition = 'opacity 220ms ease';
+                setPanelY(0);
+
+                setTimeout(function () {
+                    lexOverlay.style.transition = '';
+                    restoreOpenAfterCanceledClose();
                 }, 230);
             }
         }
 
-        lexiconToggle.addEventListener('pointerdown', beginOpenGesture, { passive: true });
-        lexiconToggle.addEventListener('pointermove', updateOpenGesture, { passive: false });
-        lexiconToggle.addEventListener('pointerup', function () { finishOpenGesture(); }, true);
-        lexiconToggle.addEventListener('pointercancel', function () { finishOpenGesture(); }, true);
+        lexiconToggle.addEventListener('pointerdown', beginGesture, { passive: true });
+        lexiconToggle.addEventListener('pointermove', updateGesture, { passive: false });
+        lexiconToggle.addEventListener('pointerup', function () { finishGesture(); }, true);
+        lexiconToggle.addEventListener('pointercancel', function () { finishGesture(); }, true);
     })();
 
     var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
