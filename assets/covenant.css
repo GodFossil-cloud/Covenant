@@ -1668,6 +1668,11 @@ body {
 }
 
 @media (max-width: 600px) {
+  /* When the sheet is fully open, drop the seal slightly so it sits flush with the sheet lip. */
+  #lexiconToggle[aria-expanded="true"] {
+    --seal-translate: 0px;
+  }
+
   /* Important for reliable pointer dragging on mobile Safari/Chrome. */
   #lexiconToggle {
     touch-action: none;
