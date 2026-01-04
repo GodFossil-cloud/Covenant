@@ -1320,7 +1320,7 @@ body.is-exiting #blackFadeOverlay {
         top: 0;
         bottom: 0;
         right: 0;
-        left: 0;
+    	left: 0;
         width: 100vw;
         height: 100vh;
         max-height: 100vh;
@@ -1419,6 +1419,7 @@ body.is-exiting #blackFadeOverlay {
         font-size: 1.16rem;
     }
 }
+
 
 /* =========================================================
    Obsidian & Gold Leaf — Cenotaph Seal Footer (Round Medallion)
@@ -1709,4 +1710,12 @@ body {
   #lexiconToggle.is-seal-dragging:active:not(:disabled) {
     transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
   }
+}
+
+/* ---------------------------------------------------------
+   Lexicon seal: sacred stillness (disable selected spin)
+   --------------------------------------------------------- */
+
+.nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
+  animation: none !important;
 }
