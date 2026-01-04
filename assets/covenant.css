@@ -1729,3 +1729,48 @@ body {
 .nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
   animation: none !important;
 }
+
+/* ---------------------------------------------------------
+   Lexicon panel: referential glass body (below header)
+   --------------------------------------------------------- */
+
+.lexicon-panel {
+  /* Let the page behind exist visually; keep separation via border/shadow. */
+  background: transparent;
+}
+
+/* Keep the header readable and “anchored” (not glass). */
+.lexicon-panel-header {
+  background: linear-gradient(to bottom, rgba(11, 12, 14, 0.96), rgba(11, 12, 14, 0.90));
+  border-bottom: 1px solid rgba(242, 220, 154, 0.10);
+  padding: 22px 20px 14px;
+  margin: 0;
+}
+
+/* Move padding off the parent so header/body can each have their own surface. */
+.lexicon-panel {
+  padding: 0;
+}
+
+/* Fallback: readable even without blur support. */
+.lexicon-panel-body {
+  background: #141418;
+  padding: 16px 20px calc(var(--footer-total-height) + 18px) 20px;
+  padding-right: 12px; /* keep breathing room near scrollbar */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 18px 30px rgba(0, 0, 0, 0.28);
+}
+
+/* “Glass” version when supported. */
+@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+  .lexicon-panel-body {
+    background: linear-gradient(
+      to bottom,
+      rgba(14, 14, 18, 0.52),
+      rgba(10, 10, 12, 0.66)
+    );
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    backdrop-filter: blur(10px) saturate(120%);
+  }
+}
