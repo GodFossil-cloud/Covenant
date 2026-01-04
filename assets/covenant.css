@@ -96,6 +96,7 @@ body {
     position: absolute;
     width: 1px;
     height: 1px;
+    height: 1px;
     padding: 0;
     margin: 0;
     overflow: hidden;
@@ -1664,10 +1665,11 @@ body {
     linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
 }
 
-/* Preserve press behavior while lifted (don't snap back to 0). */
+/* Seal press: sacred stillness (no tactile travel). */
 .nav-btn.center:active:not(:disabled),
 .nav-btn.center.is-nudging {
-  transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 1px));
+  transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  filter: brightness(0.98);
 }
 
 @media (max-width: 600px) {
