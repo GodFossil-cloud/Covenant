@@ -1438,7 +1438,7 @@ body.is-exiting #blackFadeOverlay {
   --seal-seat-nudge-closed: 25px;
 
   /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
-  --lexicon-panel-closed-peek: 25px;
+  --lexicon-panel-closed-peek: 5px;
     
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
