@@ -54,9 +54,6 @@
 
     /* Navigation interaction feedback. */
     --nav-pulse-duration: 520ms;
-  
-    /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
-    --lexicon-panel-closed-peek: 88px;
     
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
     --nav-pill-width: 84px;
@@ -1423,7 +1420,6 @@ body.is-exiting #blackFadeOverlay {
     }
 }
 
-
 /* =========================================================
    Obsidian & Gold Leaf — Cenotaph Seal Footer (Round Medallion)
    (Overrides; keep the rest of the site intact.)
@@ -1441,6 +1437,9 @@ body.is-exiting #blackFadeOverlay {
   /* Fine seating adjustment: raise the seal a touch when closed, so it sits "in" the cradle. */
   --seal-seat-nudge-closed: 25px;
 
+  /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
+  --lexicon-panel-closed-peek: 88px;
+    
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
 
