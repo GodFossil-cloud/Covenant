@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.23 */
+/*! Covenant Lexicon UI v0.2.24 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.23';
+    window.COVENANT_LEXICON_VERSION = '0.2.24';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -917,6 +917,10 @@
             }
 
             window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
+
+            // IMPORTANT: "is-dragging" sets transition: none !important in CSS.
+            // If it remains during the snap, the panel will teleport (no animation).
+            panel.classList.remove('is-dragging');
 
             var progress = 1 - (currentY / (closedY || 1));
 
