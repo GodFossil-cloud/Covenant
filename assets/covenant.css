@@ -1689,7 +1689,7 @@ body {
     -webkit-user-select: none;
 
     /* Smooth travel when snapping open/closed (JS drives --seal-drag-y).
-       Heavier (more weight) = slower + decisive ease-out, not elastic. */
+       SYNCED WITH PANEL: 420ms to match the snap timing. */
     transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
