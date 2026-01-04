@@ -1701,3 +1701,10 @@ body {
     --seal-lift: 8px;
   }
 }
+
+/* Seal drag: suppress the 1px :active press snap during the drag-open gesture (mobile). */
+@media (max-width: 600px) {
+  #lexiconToggle.is-seal-dragging:active:not(:disabled) {
+    transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  }
+}
