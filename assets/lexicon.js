@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.17 */
+/*! Covenant Lexicon UI v0.2.18 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.17';
+    window.COVENANT_LEXICON_VERSION = '0.2.18';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -683,17 +683,16 @@
             currentY = y;
             panel.style.transform = 'translateY(' + y + 'px)';
 
-            // Keep seal and sheet in one continuous chain:
-            // - At rest (closed), don't "pre-lift" the seal.
-            // - As the sheet rises, gradually cancel the closed seating nudge so the seal and the sheet lip stay welded.
+            // Keep seal and sheet in one continuous chain.
+            // NOTE: In drag-open mode, we treat the panel's "closed" position as (panelHeight - footerHeight),
+            // so the sheet lip starts under the footer (instead of at the absolute bottom of the viewport).
             var denom = (closedY || 1);
             var progress = 1 - (y / denom);
             if (progress < 0) progress = 0;
             if (progress > 1) progress = 1;
 
             var seatNudge = getSeatNudge();
-            var footerH = getFooterHeightSafe();
-            var sealOffset = (y - closedY) + (seatNudge * progress) + (footerH * progress);
+            var sealOffset = (y - closedY) + (seatNudge * progress);
             setSealDragOffset(sealOffset, true);
 
             lexOverlay.style.opacity = String(progress);
@@ -733,14 +732,17 @@
             lexiconToggle.setAttribute('aria-expanded', 'true');
             lockBodyScroll();
 
-            // Measure the panel's effective height, and treat that as our closed offset.
+            // Treat the sheet's "closed" resting point as tucked under the footer,
+            // so the lip emerges immediately under the seal when dragging begins.
             var rect = panel.getBoundingClientRect();
-            closedY = (rect && rect.height) ? rect.height : 1;
+            var panelH = (rect && rect.height) ? rect.height : 1;
+            var footerH = getFooterHeightSafe();
+            closedY = Math.max(1, panelH - footerH);
 
             panel.classList.add('is-dragging');
             panel.style.transition = 'none';
 
-            // Start from fully closed.
+            // Start from "tucked under footer" closed position.
             setPanelY(closedY);
 
             try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
@@ -799,9 +801,8 @@
             panel.classList.add('is-open');
             lexOverlay.classList.add('is-open');
 
-            // Seal stays lifted with the open sheet (corrected for footer height).
-            var footerH = getFooterHeightSafe();
-            setSealDragOffset(-(closedY - footerH), false);
+            // Seal stays lifted with the open sheet.
+            setSealDragOffset(-closedY, false);
 
             setLexiconGlyph();
             setTimeout(focusIntoPanel, 0);
