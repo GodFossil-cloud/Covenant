@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.20 */
+/*! Covenant Lexicon UI v0.2.21 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.20';
+    window.COVENANT_LEXICON_VERSION = '0.2.21';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -21,6 +21,17 @@
     var dynamicContent = document.getElementById('lexiconDynamicContent');
     var dragRegion = document.getElementById('lexiconDragRegion');
     var sealClearTimer = null;
+
+    // Policy: On mobile bottom-sheet, the panel should ONLY be dragged down from the footer seal.
+    // The top drag handle is kept in markup for compatibility, but disabled here.
+    var ENABLE_PANEL_HANDLE_DRAG = false;
+
+    if (dragRegion && !ENABLE_PANEL_HANDLE_DRAG) {
+        // Remove any implied affordance + ensure it can't intercept touches.
+        dragRegion.style.display = 'none';
+        dragRegion.style.pointerEvents = 'none';
+        dragRegion.setAttribute('aria-hidden', 'true');
+    }
 
     // Standardize the "seal" glyph used for the intro loader across Covenant pages.
     // Canonical default: _includes/covenant-config.html (included via _includes/head-fonts.html).
@@ -956,161 +967,8 @@
         lexiconToggle.addEventListener('pointercancel', function () { finishGesture(); }, true);
     })();
 
-    var dragPill = dragRegion ? dragRegion.querySelector('.lexicon-drag-pill') : null;
-
-    if (dragRegion && panel && lexOverlay) {
-        var isDragging = false;
-        var startY = 0;
-        var lastY = 0;
-        var lastT = 0;
-        var velocity = 0;
-        var currentDelta = 0;
-        var capturedPointerId = null;
-
-        function setPillPressed(on) {
-            if (!dragPill) return;
-            dragPill.classList.toggle('is-pressed', !!on);
-        }
-
-        function getPanelHeight() {
-            var rect = panel.getBoundingClientRect();
-            return rect && rect.height ? rect.height : 1;
-        }
-
-        function releaseCapture() {
-            if (capturedPointerId === null) return;
-            try { dragRegion.releasePointerCapture(capturedPointerId); } catch (err) { }
-            capturedPointerId = null;
-        }
-
-        function beginDrag(clientY) {
-            if (!panel.classList.contains('is-open') || !isBottomSheetMode()) return;
-            isDragging = true;
-            setPillPressed(true);
-            startY = clientY;
-            lastY = clientY;
-            lastT = window.performance && performance.now ? performance.now() : Date.now();
-            velocity = 0;
-            currentDelta = 0;
-            panel.classList.add('is-dragging');
-            panel.style.transition = 'none';
-        }
-
-        function updateDrag(clientY) {
-            if (!isDragging) return;
-            currentDelta = clientY - startY;
-            if (currentDelta < 0) currentDelta = 0;
-
-            panel.style.transform = 'translateY(' + currentDelta + 'px)';
-
-            var h = getPanelHeight();
-            var fade = 1 - (currentDelta / (h * 0.9));
-            if (fade < 0) fade = 0;
-            if (fade > 1) fade = 1;
-            lexOverlay.style.opacity = String(fade);
-
-            // Seal tracks the top of the sheet while dragging down (corrected baseline).
-            if (isBottomSheetMode()) {
-                var footerH = getFooterHeightSafe();
-                setSealDragOffset(-(h - footerH) + currentDelta, true);
-            }
-
-            var now = window.performance && performance.now ? performance.now() : Date.now();
-            var dt = now - lastT;
-            if (dt > 0) velocity = (clientY - lastY) / dt;
-            lastY = clientY;
-            lastT = now;
-        }
-
-        function endDrag() {
-            if (!isDragging) return;
-            setPillPressed(false);
-
-            var h = getPanelHeight();
-            var threshold = Math.max(120, h * 0.25);
-            var shouldClose = (currentDelta > threshold) || (velocity > 0.9);
-
-            isDragging = false;
-            releaseCapture();
-
-            if (shouldClose) {
-                closePanel();
-            } else {
-                panel.classList.remove('is-dragging');
-                panel.style.transition = '';
-                panel.style.transform = '';
-                lexOverlay.style.opacity = '';
-
-                // Snap seal back to open position.
-                if (isBottomSheetMode()) {
-                    var footerH = getFooterHeightSafe();
-                    setSealDragOffset(-(h - footerH), false);
-                }
-            }
-        }
-
-        function cancelDrag() {
-            if (!isDragging) {
-                releaseCapture();
-                return;
-            }
-            setPillPressed(false);
-            isDragging = false;
-            releaseCapture();
-
-            panel.classList.remove('is-dragging');
-            panel.style.transition = '';
-            panel.style.transform = '';
-            lexOverlay.style.opacity = '';
-
-            // Restore seal to open position.
-            if (isBottomSheetMode()) {
-                var h = getPanelHeight();
-                var footerH = getFooterHeightSafe();
-                setSealDragOffset(-(h - footerH), false);
-            }
-        }
-
-        if (window.PointerEvent) {
-            dragRegion.addEventListener('pointerdown', function (e) {
-                beginDrag(e.clientY);
-                if (!isDragging) return;
-                capturedPointerId = e.pointerId;
-                try { dragRegion.setPointerCapture(e.pointerId); } catch (err) { }
-            });
-
-            // Use window-level capture listeners so the UI cannot get stuck if the pointer leaves the drag region.
-            window.addEventListener('pointermove', function (e) {
-                if (!isDragging) return;
-                if (capturedPointerId !== null && e.pointerId !== capturedPointerId) return;
-                updateDrag(e.clientY);
-            }, true);
-
-            window.addEventListener('pointerup', function (e) {
-                if (!isDragging) return;
-                if (capturedPointerId !== null && e.pointerId !== capturedPointerId) return;
-                endDrag();
-            }, true);
-
-            window.addEventListener('pointercancel', function (e) {
-                if (capturedPointerId !== null && e.pointerId !== capturedPointerId) return;
-                cancelDrag();
-            }, true);
-
-            dragRegion.addEventListener('lostpointercapture', cancelDrag);
-        } else {
-            dragRegion.addEventListener('touchstart', function (e) {
-                if (!e.touches || !e.touches[0]) return;
-                beginDrag(e.touches[0].clientY);
-            }, { passive: true });
-            dragRegion.addEventListener('touchmove', function (e) {
-                if (!e.touches || !e.touches[0]) return;
-                updateDrag(e.touches[0].clientY);
-            }, { passive: true });
-            dragRegion.addEventListener('touchend', endDrag);
-            dragRegion.addEventListener('touchcancel', cancelDrag, { passive: true });
-        }
-    }
+    // NOTE: The old "drag down from top handle" behavior is intentionally disabled.
+    // Keep this file append-only and sacred: the seal is the sole drag gesture for closing on mobile.
 
     function clearSentenceSelection() {
         if (currentlySelectedSentence) {
