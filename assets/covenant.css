@@ -54,7 +54,10 @@
 
     /* Navigation interaction feedback. */
     --nav-pulse-duration: 520ms;
-
+  
+    /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
+    --lexicon-panel-closed-peek: 88px;
+    
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
     --nav-pill-width: 84px;
     --nav-pill-height: 44px;
@@ -1327,7 +1330,7 @@ body.is-exiting #blackFadeOverlay {
         border-left: none;
         border-top: 1px solid #3a3a3a;
         border-radius: 12px 12px 0 0;
-        transform: translateY(100%);
+        transform: translateY(calc(100% - (var(--footer-total-height) + var(--lexicon-panel-closed-peek))));
         z-index: 800;
     }
 
