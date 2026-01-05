@@ -601,6 +601,12 @@ body.is-exiting #blackFadeOverlay {
     display: inline-block;
     transform: scale(1.06);
     transform-origin: center;
+
+    /* Prefer Noto Sans Symbols 2 for nav glyphs; fallback to platform symbol fonts. */
+    font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
+
+    /* Ask for text presentation when the codepoint supports emoji/text variants (safe if ignored). */
+    font-variant-emoji: text;
 }
 
 /* Prev/Next blocks (labels under framed arrows) */
