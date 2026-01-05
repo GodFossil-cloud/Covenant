@@ -880,7 +880,7 @@ body.is-exiting #blackFadeOverlay {
         inset 0 1px 0 rgba(255, 255, 255, 0.06),
         inset 0 -1px 0 rgba(0, 0, 0, 0.72),
         inset 0 2px 7px rgba(0, 0, 0, 0.38),
-        inset 0 0 0 1px rgba(0, 0, 0, 0.26),
+        inset 0 0 0 1px rgba(0,  0, 0, 0.26),
         0 10px 14px -14px rgba(0, 0, 0, 0.90);
 
     transition: transform 0.08s ease, filter 0.12s ease, color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
@@ -1454,8 +1454,11 @@ body.is-exiting #blackFadeOverlay {
   --footer-bottom: var(--obsidian-0);
 
   /* Footer text/label tones (footer-only). */
-  --footer-label: rgba(236, 228, 206, 0.74);
-  --footer-label-hover: rgba(245, 236, 214, 0.92);
+  --footer-label: rgba(236, 228, 206, 0.82);
+  --footer-label-hover: rgba(245, 236, 214, 0.95);
+
+  /* Focus ring (footer-only override): harmonize keyboard focus with brass/leaf. */
+  --focus-ring: rgba(242, 220, 154, 0.34);
 
   /* Specular + engraved plate tokens used by shared footer components. */
   --specular-soft: rgba(255, 242, 210, 0.18);
@@ -1470,6 +1473,9 @@ body.is-exiting #blackFadeOverlay {
 
   /* Hairline accent across the footer slab (footer-only). */
   --footer-hairline: rgba(154, 119, 38, 0.18);
+
+  /* Cradle highlight line (footer-only). */
+  --footer-cradle-line: rgba(242, 220, 154, 0.22);
 
   /* Notch geometry (engineered "seat" behind the medallion).
      The notch height must be >= radius or you only see side "quarter" accents.
@@ -1520,7 +1526,7 @@ body {
     ),
     radial-gradient(circle at 50% 0%,
       transparent 0 calc(var(--seal-notch-radius) - 1px),
-      rgba(242,220,154,0.22) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 1px),
+      var(--footer-cradle-line) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 1px),
       transparent calc(var(--seal-notch-radius) + 2px)
     );
 
