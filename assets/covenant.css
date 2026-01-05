@@ -1,5 +1,3 @@
-/* Shared Covenant styles (extracted from invocation.html) */
-
 :root {
     --primary-color: #2c3e50;
     --accent-color: #8b7355;
@@ -15,12 +13,7 @@
     --footer-safe: env(safe-area-inset-bottom, 0px);
     --footer-total-height: calc(var(--footer-height) + var(--footer-safe));
 
-    --footer-top: #6b5a4a;
-    --footer-mid: #4a372b;
-    --footer-bottom: #23160f;
-
-    --footer-label: rgba(236, 216, 176, 0.78);
-    --footer-label-hover: rgba(245, 217, 140, 0.96);
+    /* Footer palette tokens live in the Obsidian & Gold Leaf block near the bottom. */
 
     /* Keep this at 0 so the lexicon control sits perfectly centered in the footer. */
     --lexicon-frame-raise: 0px;
@@ -28,13 +21,6 @@
     /* Reliquary / mechanical refinements */
     --focus-ring: rgba(201, 169, 97, 0.48);
     --focus-ring-outer: rgba(0, 0, 0, 0.72);
-
-    --specular-soft: rgba(255, 242, 210, 0.18);
-    --specular-bright: rgba(255, 242, 210, 0.28);
-
-    --plate-border: rgba(201, 169, 97, 0.22);
-    --plate-hi: rgba(255, 235, 195, 0.10);
-    --plate-lo: rgba(0, 0, 0, 0.38);
 
     /* Intro sequence durations (override per-page via lexicon.js). */
     --intro-icon-duration: 0.5s;
@@ -50,7 +36,7 @@
 
     /* Navigation interaction feedback. */
     --nav-pulse-duration: 520ms;
-    
+
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
     --nav-pill-width: 84px;
     --nav-pill-height: 44px;
@@ -1459,9 +1445,22 @@ body.is-exiting #blackFadeOverlay {
   --leaf-0: #f2dc9a;
   --leaf-1: #ffd77a;
 
+  /* Legacy footer gradient tokens (kept for compatibility; now mapped here). */
+  --footer-top: #6b5a4a;
+  --footer-mid: #4a372b;
+  --footer-bottom: #23160f;
+
   /* Footer text/label tones (footer-only). */
   --footer-label: rgba(236, 228, 206, 0.74);
   --footer-label-hover: rgba(245, 236, 214, 0.92);
+
+  /* Specular + engraved plate tokens used by shared footer components. */
+  --specular-soft: rgba(255, 242, 210, 0.18);
+  --specular-bright: rgba(255, 242, 210, 0.28);
+
+  --plate-border: rgba(201, 169, 97, 0.22);
+  --plate-hi: rgba(255, 235, 195, 0.10);
+  --plate-lo: rgba(0, 0, 0, 0.38);
 
   /* Frame lines in footer (footer-only). */
   --footer-frame: rgba(154, 119, 38, 0.58);
