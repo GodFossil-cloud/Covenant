@@ -441,7 +441,10 @@ p.preamble {
     right: 0;
     height: var(--footer-total-height);
     padding-bottom: var(--footer-safe);
+
+    /* Legacy fallback: Obsidian & Gold Leaf overrides .nav-footer later in this file. */
     background: linear-gradient(to bottom, var(--footer-top) 0%, var(--footer-mid) 45%, var(--footer-bottom) 100%);
+
     border-top: 1px solid rgba(0, 0, 0, 0.55);
     border-bottom: 1px solid rgba(0, 0, 0, 0.85);
     box-shadow: 0 -10px 18px -10px rgba(0, 0, 0, 0.65), inset 0 -6px 14px -10px rgba(0, 0, 0, 0.45);
@@ -457,7 +460,7 @@ p.preamble {
     left: 0;
     right: 0;
     height: 1px;
-    background: rgba(201, 169, 97, 0.35);
+    background: var(--footer-hairline);
     pointer-events: none;
 }
 
@@ -1465,6 +1468,9 @@ body.is-exiting #blackFadeOverlay {
   /* Frame lines in footer (footer-only). */
   --footer-frame: rgba(154, 119, 38, 0.58);
 
+  /* Hairline accent across the footer slab (footer-only). */
+  --footer-hairline: rgba(154, 119, 38, 0.18);
+
   /* Notch geometry (engineered "seat" behind the medallion).
      The notch height must be >= radius or you only see side "quarter" accents.
      Keeping these proportional produces a single continuous semicircle cradle. */
@@ -1491,7 +1497,7 @@ body {
 }
 
 .nav-footer::before {
-  background: rgba(154, 119, 38, 0.18);
+  background: var(--footer-hairline);
 }
 
 /* Engineered cradle highlight behind the seal (single upward-facing semicircle). */
