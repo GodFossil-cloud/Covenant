@@ -1774,3 +1774,29 @@ body {
     backdrop-filter: blur(10px) saturate(120%);
   }
 }
+
+/* ---------------------------------------------------------
+   Lexicon panel: restore rounded upper corners
+   (Needed because panel background is now transparent.)
+   --------------------------------------------------------- */
+
+/* Desktop side-drawer: round the *left* edge only (right edge is flush to screen). */
+.lexicon-panel {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+
+  /* Clips the header/body backgrounds to the panel curve. */
+  overflow: hidden;
+}
+
+/* Mobile bottom-sheet: round both top corners (matches the old look). */
+@media (max-width: 600px) {
+  .lexicon-panel {
+    border-radius: 12px 12px 0 0;
+  }
+
+  /* If the drag handle looks clipped, this keeps it safely inside the curve. */
+  .lexicon-drag-region {
+    margin-top: 0;
+  }
+}
