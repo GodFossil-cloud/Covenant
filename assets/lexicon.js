@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.24 */
+/*! Covenant Lexicon UI v0.2.25 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.24';
+    window.COVENANT_LEXICON_VERSION = '0.2.25';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -59,7 +59,10 @@
     var focusReturnEl = null;
     var scrollLockY = 0;
 
-    var isMobileGlyphMode = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    var mobileGlyphMql = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)') : null;
+    var isMobileGlyphMode = !!(mobileGlyphMql && mobileGlyphMql.matches);
+
+    var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
 
     // iOS Safari (and iOS WKWebView) is particularly sensitive to the "body { position: fixed }" scroll-lock pattern.
     // When the user is near the bottom, it can expose the black html background and, worse, get stuck in a non-interactive state.
@@ -95,7 +98,7 @@
     }
 
     function isBottomSheetMode() {
-        return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+        return !!(bottomSheetMql && bottomSheetMql.matches);
     }
 
     function enableIOSTouchScrollLock() {
@@ -220,6 +223,11 @@
     function setGlyphMarkup(target, glyph) {
         if (!target) return;
 
+        glyph = String(glyph === null || glyph === undefined ? '' : glyph);
+        var markerAttr = 'data-covenant-glyph';
+        if (target.getAttribute(markerAttr) === glyph) return;
+        target.setAttribute(markerAttr, glyph);
+
         while (target.firstChild) {
             target.removeChild(target.firstChild);
         }
@@ -272,6 +280,19 @@
         }
 
         setGlyphMarkup(glyphTarget, glyph);
+    }
+
+    if (mobileGlyphMql) {
+        var onMobileGlyphChange = function () {
+            isMobileGlyphMode = !!mobileGlyphMql.matches;
+            setLexiconGlyph();
+        };
+
+        if (typeof mobileGlyphMql.addEventListener === 'function') {
+            mobileGlyphMql.addEventListener('change', onMobileGlyphChange);
+        } else if (typeof mobileGlyphMql.addListener === 'function') {
+            mobileGlyphMql.addListener(onMobileGlyphChange);
+        }
     }
 
     function setModeLabel() {
@@ -1037,9 +1058,9 @@
     }
 
     document.addEventListener('click', handleOutsideInteraction);
-    document.addEventListener('touchend', handleOutsideInteraction);
 
     var glossaryTerms = document.querySelectorAll('.glossary-term');
+    var glossaryTermsArr = Array.prototype.slice.call(glossaryTerms);
 
     Array.prototype.forEach.call(glossaryTerms, function (term) {
         term.addEventListener('touchstart', function (e) {
@@ -1053,8 +1074,8 @@
 
     document.addEventListener('touchstart', function (e) {
         if (currentlyActiveTooltip) {
-            var touchedGlossaryTerm = Array.prototype.slice.call(glossaryTerms).some(function (term) {
-                return term.contains(e.target);
+            var touchedGlossaryTerm = glossaryTermsArr.some(function (term) {
+                return term && term.contains(e.target);
             });
             if (!touchedGlossaryTerm) {
                 clearActiveTooltip();
