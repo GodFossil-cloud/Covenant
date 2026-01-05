@@ -1445,10 +1445,10 @@ body.is-exiting #blackFadeOverlay {
   --leaf-0: #f2dc9a;
   --leaf-1: #ffd77a;
 
-  /* Legacy footer gradient tokens (kept for compatibility; now mapped here). */
-  --footer-top: #6b5a4a;
-  --footer-mid: #4a372b;
-  --footer-bottom: #23160f;
+  /* Legacy footer gradient tokens (kept for compatibility; aliased to obsidian). */
+  --footer-top: var(--obsidian-2);
+  --footer-mid: var(--obsidian-1);
+  --footer-bottom: var(--obsidian-0);
 
   /* Footer text/label tones (footer-only). */
   --footer-label: rgba(236, 228, 206, 0.74);
