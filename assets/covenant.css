@@ -754,23 +754,6 @@ body.is-exiting #blackFadeOverlay {
     display: inline-block;
     line-height: 1;
     transform-origin: 50% 50%;
-    will-change: transform;
-}
-
-@keyframes lexiconStarSpin {
-    from { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(0deg); }
-    to { transform: translate(var(--lexicon-star-nudge-x), var(--lexicon-star-nudge-y)) rotate(360deg); }
-}
-
-/* Spin ONLY when selected glyph is shown (panel closed) */
-.nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
-    animation: lexiconStarSpin 10s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
-        animation: none;
-    }
 }
 
 .nav-btn.center::before {
@@ -1756,12 +1739,4 @@ body {
   #lexiconToggle.is-seal-dragging:active:not(:disabled) {
     transform: translateY(calc(var(--seal-translate) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
   }
-}
-
-/* ---------------------------------------------------------
-   Lexicon seal: sacred stillness (disable selected spin)
-   --------------------------------------------------------- */
-
-.nav-btn.center.has-selection[aria-expanded="false"] .lexicon-glyph-mid-inner {
-  animation: none !important;
 }
