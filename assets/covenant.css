@@ -38,8 +38,8 @@
     --nav-pulse-duration: 520ms;
 
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
-    --nav-pill-width: 84px;
-    --nav-pill-height: 44px;
+    --nav-pill-width: 78px;
+    --nav-pill-height: 40px;
 }
 
 * {
@@ -546,7 +546,7 @@ body.is-exiting #blackFadeOverlay {
     content: '';
     position: absolute;
     inset: 14px;
-    border: 1px solid #571619;
+    border: 0.75px solid #571619;
     border-radius: 4px;
     box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -644,7 +644,7 @@ body.is-exiting #blackFadeOverlay {
     content: '';
     position: absolute;
     inset: 0;
-    border: 1px solid #571619;
+    border: 0.75px solid #571619;
     border-radius: 4px;
     box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -751,7 +751,7 @@ body.is-exiting #blackFadeOverlay {
     content: '';
     position: absolute;
     inset: 0;
-    border: 1px solid #571619;
+    border: 0.75px solid #571619;
     border-radius: 4px;
     box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -861,9 +861,9 @@ body.is-exiting #blackFadeOverlay {
     border-radius: 3px;
 
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.74rem;
+    font-size: 0.86rem;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
 
     text-transform: none;
     font-variant-caps: all-small-caps;
@@ -1271,8 +1271,8 @@ body.is-exiting #blackFadeOverlay {
 
 @media (max-width: 768px) {
     :root {
-        --nav-pill-width: 76px;
-        --nav-pill-height: 40px;
+        --nav-pill-width: 70px;
+        --nav-pill-height: 36px;
     }
 
     body {
@@ -1298,8 +1298,8 @@ body.is-exiting #blackFadeOverlay {
 
     .nav-next-label,
     .nav-prev-label {
-        font-size: 0.70rem;
-        letter-spacing: 0.13em;
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
     }
 }
 
@@ -1352,8 +1352,8 @@ body.is-exiting #blackFadeOverlay {
 
 @media (max-width: 480px) {
     :root {
-        --nav-pill-width: 72px;
-        --nav-pill-height: 38px;
+        --nav-pill-width: 66px;
+        --nav-pill-height: 34px;
     }
 
     .container { padding: 20px 15px; }
@@ -1400,15 +1400,15 @@ body.is-exiting #blackFadeOverlay {
 
     .nav-next-label,
     .nav-prev-label {
-        font-size: 0.68rem;
-        letter-spacing: 0.12em;
+        font-size: 0.80rem;
+        letter-spacing: 0.11em;
     }
 }
 
 @media (max-width: 360px) {
     :root {
-        --nav-pill-width: 66px;
-        --nav-pill-height: 36px;
+        --nav-pill-width: 60px;
+        --nav-pill-height: 32px;
     }
 
     .nav-footer-inner {
@@ -1559,7 +1559,7 @@ body {
 
 .nav-next-frame::before,
 .nav-prev-frame::before {
-  border: 1px solid var(--footer-frame);
+  border: 0.75px solid var(--footer-frame);
   box-shadow:
     inset 0 0 18px rgba(0, 0, 0, 0.92),
     inset 0 1px 0 rgba(255,255,255,0.05);
@@ -1621,7 +1621,7 @@ body {
   border-radius: 999px;
 
   /* Remove the gold/brass outline; keep only a quiet dark rim for definition. */
-  border: 1px solid rgba(0, 0, 0, 0.72);
+  border: 0.75px solid rgba(0, 0, 0, 0.72);
 
   /* Small, tight, non-glow cast shadow to "stamp" the seal into the slab. */
   box-shadow:
