@@ -12,6 +12,43 @@ layout: none
 
     <link rel="stylesheet" href="assets/covenant.css">
 
+    <style>
+        /* Compact header experiment: invocation.html only (keeps other pages untouched). */
+        body.page-invocation .container {
+            padding-top: 44px;
+        }
+
+        body.page-invocation .section-header {
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+        }
+
+        body.page-invocation .section-header .ornament {
+            display: none;
+        }
+
+        body.page-invocation .section-header h1 {
+            font-size: 2.1em;
+            margin: 10px 0 8px;
+        }
+
+        @media (max-width: 768px) {
+            body.page-invocation .container {
+                padding-top: 30px;
+            }
+
+            body.page-invocation .section-header h1 {
+                font-size: 1.6em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body.page-invocation .section-header h1 {
+                font-size: 1.35em;
+            }
+        }
+    </style>
+
     <script>
     window.COVENANT_PAGE = {
         pageId: 'invocation',
@@ -41,15 +78,13 @@ layout: none
     </script>
     <script src="assets/lexicon.js" defer></script>
 </head>
-<body>
+<body class="page-invocation">
     <div id="loadingIcon">֎</div>
     <div id="blackFadeOverlay"></div>
 
     <div class="container">
         <div class="section-header">
-            <div class="ornament">✦ ✧ ✦</div>
             <h1>Invocation and Preamble</h1>
-            <div class="ornament">✦ ✧ ✦</div>
         </div>
 
         <section id="invocation">
