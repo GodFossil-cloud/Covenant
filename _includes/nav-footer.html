@@ -4,13 +4,13 @@
         {% if include.prev_href and include.prev_href != "" %}
             <a href="{{ include.prev_href }}" class="nav-prev" aria-label="{{ include.prev_aria | default: "Previous" }}">
                 <span class="nav-prev-frame" aria-hidden="true">
-                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮘</span>
+                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">🙛</span>
                 </span>
                 <span class="nav-prev-label" aria-hidden="true">{{ include.prev_label | default: "Previous" }}</span>
             </a>
         {% else %}
             <button class="nav-btn" type="button" disabled aria-label="{{ include.prev_aria | default: "Previous section" }}">
-                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮘</span>
+                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">🙛</span>
             </button>
         {% endif %}
 
@@ -22,13 +22,13 @@
         {% if include.next_href and include.next_href != "" %}
             <a href="{{ include.next_href }}" class="nav-next" aria-label="{{ include.next_aria | default: "Next" }}">
                 <span class="nav-next-frame" aria-hidden="true">
-                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
+                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">🙙</span>
                 </span>
                 <span class="nav-next-label" aria-hidden="true">{{ include.next_label | default: "Next" }}</span>
             </a>
         {% else %}
             <button class="nav-btn" type="button" disabled aria-label="{{ include.next_aria | default: "Next section" }}">
-                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
+                <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">🙙</span>
             </button>
         {% endif %}
     </div>
