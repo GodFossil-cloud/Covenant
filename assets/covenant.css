@@ -25,10 +25,6 @@
     /* Keep this at 0 so the lexicon control sits perfectly centered in the footer. */
     --lexicon-frame-raise: 0px;
 
-    /* Optional: tiny optical nudges if needed (start at 0) */
-    --lexicon-star-nudge-x: 0px;
-    --lexicon-star-nudge-y: 0px;
-
     /* Reliquary / mechanical refinements */
     --focus-ring: rgba(201, 169, 97, 0.48);
     --focus-ring-outer: rgba(0, 0, 0, 0.72);
@@ -1303,11 +1299,6 @@ body.is-exiting #blackFadeOverlay {
 
     .nav-btn { font-size: 1.35rem; }
 
-    .nav-btn.center {
-        padding: 0 12px;
-        font-size: 1.34rem;
-    }
-
     .nav-btn-icon { font-size: 1.25rem; }
 
     .nav-next-label,
@@ -1410,11 +1401,6 @@ body.is-exiting #blackFadeOverlay {
 
     .nav-btn { font-size: 1.25rem; }
 
-    .nav-btn.center {
-        padding: 0 12px;
-        font-size: 1.22rem;
-    }
-
     .nav-btn-icon { font-size: 1.15rem; }
 
     .nav-next-label,
@@ -1432,11 +1418,6 @@ body.is-exiting #blackFadeOverlay {
 
     .nav-footer-inner {
         grid-template-columns: 86px 1fr 86px;
-    }
-
-    .nav-btn.center {
-        padding: 0 10px;
-        font-size: 1.16rem;
     }
 }
 
