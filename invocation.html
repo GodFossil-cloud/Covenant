@@ -16,6 +16,7 @@ layout: none
         /* Compact header experiment: invocation.html only (keeps other pages untouched). */
         body.page-invocation .container {
             padding-top: 44px;
+            padding-bottom: 38px;
         }
 
         body.page-invocation .section-header {
@@ -32,9 +33,15 @@ layout: none
             margin: 10px 0 8px;
         }
 
+        /* Reduce the "tail" gap under the bottom divider on this page. */
+        body.page-invocation #invocation .section-divider {
+            margin-bottom: 0.35rem;
+        }
+
         @media (max-width: 768px) {
             body.page-invocation .container {
                 padding-top: 30px;
+                padding-bottom: 26px;
             }
 
             body.page-invocation .section-header h1 {
