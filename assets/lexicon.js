@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.26 */
+/*! Covenant Lexicon UI v0.2.27 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.26';
+    window.COVENANT_LEXICON_VERSION = '0.2.27';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -446,21 +446,34 @@
      * @returns {string} - Formatted citation text
      */
     function formatCitation(sentenceKey) {
+        var isArticlePage = !!(pageConfig.pageId && pageConfig.pageId.match(/^[IVX]+$/));
+
         // If a sentence is selected, format as passage citation
         if (sentenceKey) {
-            // Check if this is an Article page (I-XII)
-            var articleMatch = sentenceKey.match(/^([IVX]+)\./);
-            if (articleMatch) {
+            // Article pages (I–XII) only: these are the *actual* Articles.
+            if (isArticlePage) {
                 return 'Art. §\u2011' + sentenceKey;
             }
-            
-            // For other pages with numbered sentences, use section marker
+
+            // Invocation page: sentence 1 = Invocation of Witness; 2-5 = Preamble.
+            if (pageConfig.pageId === 'invocation') {
+                var invMatch = String(sentenceKey).match(/^[IVX]+\.(\d+)$/);
+                if (invMatch) {
+                    var n = parseInt(invMatch[1], 10);
+                    if (n === 1) return 'Invocation §\u2011' + n;
+                    return 'Preamble §\u2011' + n;
+                }
+                // Fallback: keep key visible even if it doesn't parse.
+                return 'Invocation §\u2011' + sentenceKey;
+            }
+
+            // For other pages with numbered sentences, use section marker.
             return '§\u2011' + sentenceKey;
         }
 
         // Page overview citations
         var pageLabel = pageConfig.citationLabel || pageConfig.sectionLabel || pageConfig.pageId || '';
-        
+
         // Apply special formatting rules based on pageId
         if (pageConfig.pageId === 'invocation') {
             return 'Invocation and Preamble';
@@ -812,10 +825,10 @@
                     sentence.classList.add('is-selected');
                     currentlySelectedSentence = sentence;
                     updateLexiconButtonState();
-                    
+
                     var key = sentence.dataset.lexiconKey;
                     var text = sentence.dataset.sentenceText || sentence.textContent.replace(/^[0-9]+\.\s*/, '');
-                    
+
                     updateCitationLabel(key, hadPreviousSelection);
                     renderSentenceExplanation(key, text);
                 }
