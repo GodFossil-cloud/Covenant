@@ -452,7 +452,7 @@
         if (sentenceKey) {
             // Article pages (I–XII) only: these are the *actual* Articles.
             if (isArticlePage) {
-                return 'Art. §\u2011' + sentenceKey;
+                return 'Article §' + sentenceKey;
             }
 
             // Invocation page: sentence 1 = Invocation of Witness; 2-5 = Preamble.
