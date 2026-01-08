@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.0 */
+/*! Covenant ToC Progress Journal v1.0.1 */
 (function () {
     'use strict';
 
@@ -22,6 +22,15 @@
     var tocToggle = document.getElementById('tocToggle');
     var tocDynamicContent = document.getElementById('tocDynamicContent');
     var tocLiveRegion = document.getElementById('tocLiveRegion');
+
+    function escapeHtml(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
 
     // Test if localStorage is available and writable.
     function testStorage() {
@@ -85,12 +94,6 @@
         }
     }
 
-    function canNavigateTo(pageId) {
-        var idx = window.getJourneyIndex(pageId);
-        if (idx < 0) return false;
-        return idx <= maxIndexUnlocked;
-    }
-
     // Soft page-load gate: redirect if user jumped ahead.
     function enforceSoftGate() {
         if (!currentPageId) return;
@@ -104,18 +107,23 @@
             return;
         }
 
-        // User jumped ahead; redirect to first page.
         console.warn('[Covenant ToC] Access denied to locked page:', currentPageId);
         window.location.href = 'invocation.html';
     }
 
-    // Mark current page as unlocked (called after gate check).
     function unlockCurrentPage() {
         if (!currentPageId) return;
         unlock(currentPageId);
     }
 
-    // Render ToC list.
+    function announceLockedAttempt() {
+        if (!tocLiveRegion) return;
+        tocLiveRegion.textContent = 'This page is locked until you reach it through the journey.';
+        setTimeout(function () {
+            tocLiveRegion.textContent = '';
+        }, 3000);
+    }
+
     function renderToC() {
         if (!tocDynamicContent) return;
 
@@ -132,12 +140,12 @@
             html += '">';
 
             if (isUnlocked) {
-                html += '<a href="' + page.href + '"';
+                html += '<a href="' + escapeHtml(page.href) + '"';
                 if (isCurrent) html += ' aria-current="page"';
-                html += '>' + page.title + '</a>';
+                html += '>' + escapeHtml(page.title) + '</a>';
             } else {
-                html += '<button type="button" class="toc-locked-btn" aria-disabled="true" data-page-id="' + page.id + '">';
-                html += page.title;
+                html += '<button type="button" class="toc-locked-btn" aria-disabled="true" data-page-id="' + escapeHtml(page.id) + '">';
+                html += escapeHtml(page.title);
                 html += '<span class="toc-locked-label" aria-hidden="true"> (Locked)</span>';
                 html += '<span class="sr-only"> – Locked until reached through the journey</span>';
                 html += '</button>';
@@ -150,7 +158,6 @@
 
         tocDynamicContent.innerHTML = html;
 
-        // Wire locked button handlers.
         var lockedBtns = tocDynamicContent.querySelectorAll('.toc-locked-btn');
         Array.prototype.forEach.call(lockedBtns, function (btn) {
             btn.addEventListener('click', function (e) {
@@ -160,15 +167,33 @@
         });
     }
 
-    function announceLockedAttempt() {
-        if (!tocLiveRegion) return;
-        tocLiveRegion.textContent = 'This page is locked until you reach it through the journey.';
-        setTimeout(function () {
-            tocLiveRegion.textContent = '';
-        }, 3000);
+    // Create a header-mounted toggle so we do not disturb the footer seal geometry.
+    function ensureToggleExists() {
+        if (tocToggle) return;
+        if (!tocPanel) return;
+
+        var btn = document.createElement('button');
+        btn.id = 'tocToggle';
+        btn.type = 'button';
+        btn.className = 'toc-toggle';
+        btn.setAttribute('aria-label', 'Open Contents');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-controls', 'tocPanel');
+        btn.textContent = '☰';
+
+        var header = document.querySelector('.section-header');
+        if (header) {
+            header.classList.add('has-toc-toggle');
+            header.appendChild(btn);
+        } else {
+            btn.classList.add('toc-toggle--floating');
+            document.body.appendChild(btn);
+        }
+
+        tocToggle = btn;
     }
 
-    // Panel open/close (mirrors Lexicon behavior).
+    // Panel open/close.
     var focusReturnEl = null;
 
     function openToC() {
@@ -215,49 +240,49 @@
         }
     }
 
-    // Wire toggle button.
-    if (tocToggle) {
-        tocToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            toggleToC();
-        });
-    }
-
-    // Wire overlay click to close.
-    if (tocOverlay) {
-        tocOverlay.addEventListener('click', function () {
-            closeToC();
-        });
-    }
-
-    // Wire close button.
-    if (tocPanel) {
-        var closeBtns = tocPanel.querySelectorAll('.toc-panel-close');
-        Array.prototype.forEach.call(closeBtns, function (btn) {
-            btn.addEventListener('click', function (e) {
+    function wireControls() {
+        if (tocToggle) {
+            tocToggle.addEventListener('click', function (e) {
                 e.preventDefault();
+                toggleToC();
+            });
+        }
+
+        if (tocOverlay) {
+            tocOverlay.addEventListener('click', function () {
                 closeToC();
             });
+        }
+
+        if (tocPanel) {
+            var closeBtns = tocPanel.querySelectorAll('.toc-panel-close');
+            Array.prototype.forEach.call(closeBtns, function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    closeToC();
+                });
+            });
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) {
+                closeToC();
+            }
+        });
+
+        window.addEventListener('blur', function () {
+            if (tocPanel && tocPanel.classList.contains('is-open')) closeToC();
+        });
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden && tocPanel && tocPanel.classList.contains('is-open')) closeToC();
         });
     }
 
-    // Escape key closes panel.
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) {
-            closeToC();
-        }
-    });
-
-    // Safety: force close on blur/hide.
-    window.addEventListener('blur', function () {
-        if (tocPanel && tocPanel.classList.contains('is-open')) closeToC();
-    });
-    document.addEventListener('visibilitychange', function () {
-        if (document.hidden && tocPanel && tocPanel.classList.contains('is-open')) closeToC();
-    });
-
-    // Initialize on load.
+    // Initialize
     loadProgress();
     enforceSoftGate();
     unlockCurrentPage();
+
+    ensureToggleExists();
+    wireControls();
 })();
