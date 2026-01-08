@@ -501,10 +501,11 @@ body.is-exiting #blackFadeOverlay {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0;
     align-self: stretch;
     height: 100%;
+    padding-top: 8px;
 }
 
 /* Navigation Buttons - Base Styles */
@@ -718,7 +719,8 @@ body.is-exiting #blackFadeOverlay {
     transform: none;
 
     /* Match the left/right framed controls. */
-    margin-top: 1px;
+    margin-top: 0;
+    flex-shrink: 0;
 }
 
 .nav-btn.center .lexicon-glyph {
@@ -1693,18 +1695,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 18px;
-  margin-top: 10px;
+  min-height: 20px;
+  margin-top: 6px;
   pointer-events: none;
   user-select: none;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .citation-text {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.15em;
   text-transform: none;
   font-variant-caps: all-small-caps;
   color: var(--citation-color);
@@ -1805,8 +1808,8 @@ body {
   }
 
   .citation-text {
-    font-size: 0.88rem;
-    letter-spacing: 0.14em;
+    font-size: 0.84rem;
+    letter-spacing: 0.13em;
   }
 }
 
