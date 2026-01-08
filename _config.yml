@@ -1,0 +1,14 @@
+# Covenant GitHub Pages build config
+# Build outputs are produced by our workflow and published to gh-pages.
+
+# Keep URLs relative (site uses relative links throughout).
+baseurl: ""
+
+# Exclude dev / CI files from the built site output.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .github
+  - README.md
