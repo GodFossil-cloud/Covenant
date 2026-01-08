@@ -17,6 +17,9 @@
         <div class="nav-center">
             <span class="sr-only" aria-current="page">{{ include.current_label | default: "" }}</span>
             <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="{{ include.center_aria_label | default: "Open Lexicon" }}" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𖤓</span></button>
+            <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true">
+                <span class="citation-text" id="citationText"></span>
+            </div>
         </div>
 
         {% if include.next_href and include.next_href != "" %}
