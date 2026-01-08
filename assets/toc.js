@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.3 */
+/*! Covenant ToC Progress Journal v1.0.4 */
 (function () {
     'use strict';
 
@@ -22,30 +22,6 @@
     var tocToggle = document.getElementById('tocToggle');
     var tocDynamicContent = document.getElementById('tocDynamicContent');
     var tocLiveRegion = document.getElementById('tocLiveRegion');
-
-    // --- Event options safety (iOS/Safari edge-cases) ---
-    var supportsPassive = false;
-    try {
-        var opts = Object.defineProperty({}, 'passive', {
-            get: function () {
-                supportsPassive = true;
-                return false;
-            }
-        });
-        window.addEventListener('covenant-passive-test', function () {}, opts);
-        window.removeEventListener('covenant-passive-test', function () {}, opts);
-    } catch (e) {
-        supportsPassive = false;
-    }
-
-    function on(el, type, handler, options) {
-        if (!el) return;
-        try {
-            el.addEventListener(type, handler, supportsPassive ? options : false);
-        } catch (e) {
-            el.addEventListener(type, handler, false);
-        }
-    }
 
     function escapeHtml(s) {
         return String(s)
@@ -185,7 +161,7 @@
         var lockedBtns = tocDynamicContent.querySelectorAll('.toc-locked-btn');
         Array.prototype.forEach.call(lockedBtns, function (btn) {
             btn.addEventListener('click', function (e) {
-                e.preventDefault();
+                if (e && e.preventDefault) e.preventDefault();
                 announceLockedAttempt();
             });
         });
@@ -266,53 +242,49 @@
         }
     }
 
-    function wireControls() {
-        // iOS Safari: keep it simple and resilient.
-        var lastActivateAt = 0;
-        function activate(e) {
-            var now = Date.now();
-            if (now - lastActivateAt < 450) return; // suppress touch->click double fire
-            lastActivateAt = now;
+    // Match the Lexicon's proven activation strategy (pointerup + click fallback).
+    function bindActivate(el, handler) {
+        if (!el || !handler) return;
 
-            // Prevent the synthesized click / unwanted text selection on touch.
-            if (e && (e.type === 'touchend' || e.type === 'touchstart')) {
-                if (e.cancelable) e.preventDefault();
-            }
+        var lastPointerUpAt = 0;
 
-            toggleToC();
+        if (window.PointerEvent) {
+            el.addEventListener('pointerup', function (e) {
+                // Only left-click for mouse.
+                if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
+                lastPointerUpAt = Date.now();
+                handler(e);
+            });
         }
 
-        if (tocToggle) {
-            // Preferred: touchend for iOS.
-            on(tocToggle, 'touchend', activate, { passive: false });
-            // Some Safari builds are finicky about dispatch; bind touchstart as a backup.
-            on(tocToggle, 'touchstart', activate, { passive: false });
+        el.addEventListener('click', function (e) {
+            // Avoid double-activation when iOS synthesizes click after pointerup.
+            if (Date.now() - lastPointerUpAt < 700) return;
+            handler(e);
+        });
+    }
 
-            // Pointer events (newer browsers) + click (desktop/fallback).
-            on(tocToggle, 'pointerup', activate, { passive: false });
-            on(tocToggle, 'click', activate, false);
+    function wireControls() {
+        if (tocToggle) {
+            bindActivate(tocToggle, function (e) {
+                if (e && e.preventDefault) e.preventDefault();
+                toggleToC();
+            });
         }
 
         if (tocOverlay) {
-            on(tocOverlay, 'click', function () {
+            bindActivate(tocOverlay, function () {
                 closeToC();
-            }, false);
-            on(tocOverlay, 'touchend', function () {
-                closeToC();
-            }, { passive: true });
+            });
         }
 
         if (tocPanel) {
             var closeBtns = tocPanel.querySelectorAll('.toc-panel-close');
             Array.prototype.forEach.call(closeBtns, function (btn) {
-                on(btn, 'click', function (e) {
-                    e.preventDefault();
+                bindActivate(btn, function (e) {
+                    if (e && e.preventDefault) e.preventDefault();
                     closeToC();
-                }, false);
-                on(btn, 'touchend', function (e) {
-                    if (e.cancelable) e.preventDefault();
-                    closeToC();
-                }, { passive: false });
+                });
             });
         }
 
