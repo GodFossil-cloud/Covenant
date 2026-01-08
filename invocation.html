@@ -11,7 +11,6 @@ layout: none
     {% include head-fonts.html %}
 
     <link rel="stylesheet" href="assets/covenant.css">
-    <link rel="stylesheet" href="assets/toc.css">
 
     <style>
         /* Compact header experiment: invocation.html only (keeps other pages untouched). */
@@ -84,9 +83,7 @@ layout: none
         }
     };
     </script>
-    <script src="assets/journey.js"></script>
     <script src="assets/lexicon.js" defer></script>
-    <script src="assets/toc.js" defer></script>
 </head>
 <body class="page-invocation">
     <div id="loadingIcon">֎</div>
@@ -166,6 +163,5 @@ layout: none
     </div>
     {% endcapture %}
     {% include lexicon-panel.html glossary=lexicon_glossary %}
-    {% include toc-panel.html %}
 </body>
 </html>
