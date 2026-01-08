@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.25 */
+/*! Covenant Lexicon UI v0.2.26 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.25';
+    window.COVENANT_LEXICON_VERSION = '0.2.26';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -20,6 +20,7 @@
     var lexOverlay = document.getElementById('lexiconOverlay');
     var dynamicContent = document.getElementById('lexiconDynamicContent');
     var dragRegion = document.getElementById('lexiconDragRegion');
+    var citationText = document.getElementById('citationText');
     var sealClearTimer = null;
 
     // Policy: On mobile bottom-sheet, the panel should ONLY be dragged down from the footer seal.
@@ -433,6 +434,105 @@
         }, introDelays.iconToOverlayDelay);
     }, introDelays.startDelay);
 
+    // ========================================
+    // Citation Label Management
+    // ========================================
+
+    var lastCitationText = '';
+
+    /**
+     * Format citation based on page config and selection state.
+     * @param {string|null} sentenceKey - The data-lexicon-key of selected sentence, or null for page overview
+     * @returns {string} - Formatted citation text
+     */
+    function formatCitation(sentenceKey) {
+        // If a sentence is selected, format as passage citation
+        if (sentenceKey) {
+            // Check if this is an Article page (I-XII)
+            var articleMatch = sentenceKey.match(/^([IVX]+)\./);
+            if (articleMatch) {
+                return 'Art. §\u2011' + sentenceKey;
+            }
+            
+            // For other pages with numbered sentences, use section marker
+            return '§\u2011' + sentenceKey;
+        }
+
+        // Page overview citations
+        var pageLabel = pageConfig.citationLabel || pageConfig.sectionLabel || pageConfig.pageId || '';
+        
+        // Apply special formatting rules based on pageId
+        if (pageConfig.pageId === 'invocation') {
+            return 'Invocation and Preamble';
+        } else if (pageConfig.pageId === 'foundation') {
+            return 'Foundation';
+        } else if (pageConfig.pageId === 'declaration') {
+            return 'Declaration';
+        } else if (pageConfig.pageId && pageConfig.pageId.match(/^[IVX]+$/)) {
+            return 'Article ' + pageConfig.pageId;
+        }
+
+        return pageLabel;
+    }
+
+    /**
+     * Update the citation label with appropriate transition.
+     * @param {string|null} sentenceKey - The data-lexicon-key of selected sentence, or null
+     * @param {boolean} fromSelection - Was there a selection before this update?
+     */
+    function updateCitationLabel(sentenceKey, fromSelection) {
+        if (!citationText) return;
+
+        var newText = formatCitation(sentenceKey);
+        if (newText === lastCitationText) return;
+
+        var isToSelection = !!sentenceKey;
+        var wasSelection = fromSelection;
+
+        // Remove any existing animation classes
+        citationText.classList.remove('slide-up', 'slide-up-dramatic', 'slide-down');
+
+        // Determine transition type
+        var animClass;
+        if (!wasSelection && isToSelection) {
+            // Page overview → selected passage: dramatic upward
+            animClass = 'slide-up-dramatic';
+        } else if (wasSelection && !isToSelection) {
+            // Selected passage → page overview: swift downward
+            animClass = 'slide-down';
+        } else if (wasSelection && isToSelection) {
+            // Passage → passage: tight quick upward
+            animClass = 'slide-up';
+        } else {
+            // Overview → overview (shouldn't happen often): no animation
+            animClass = null;
+        }
+
+        // Update text content
+        citationText.textContent = newText;
+        lastCitationText = newText;
+
+        // Apply animation if appropriate
+        if (animClass) {
+            // Force reflow to restart animation
+            void citationText.offsetWidth;
+            citationText.classList.add(animClass);
+        }
+    }
+
+    /**
+     * Initialize citation label on page load.
+     */
+    function initializeCitationLabel() {
+        if (!citationText) return;
+        var initialText = formatCitation(null);
+        citationText.textContent = initialText;
+        lastCitationText = initialText;
+    }
+
+    // Initialize citation on page load
+    initializeCitationLabel();
+
     function updateLexiconButtonState() {
         if (!lexiconToggle) return;
         lexiconToggle.classList.toggle('has-selection', !!currentlySelectedSentence);
@@ -686,6 +786,43 @@
         });
     }
 
+    // ---- Sentence Selection ----
+    (function initSentenceSelection() {
+        var sentences = document.querySelectorAll('.sentence');
+        if (!sentences || !sentences.length) return;
+
+        Array.prototype.forEach.call(sentences, function (sentence) {
+            sentence.addEventListener('click', function () {
+                var wasSelected = sentence.classList.contains('is-selected');
+                var hadPreviousSelection = !!currentlySelectedSentence;
+
+                // Clear previous selection
+                if (currentlySelectedSentence) {
+                    currentlySelectedSentence.classList.remove('is-selected');
+                }
+
+                if (wasSelected) {
+                    // Deselect: go back to page overview
+                    currentlySelectedSentence = null;
+                    updateLexiconButtonState();
+                    updateCitationLabel(null, true);
+                    renderOverview();
+                } else {
+                    // Select new sentence
+                    sentence.classList.add('is-selected');
+                    currentlySelectedSentence = sentence;
+                    updateLexiconButtonState();
+                    
+                    var key = sentence.dataset.lexiconKey;
+                    var text = sentence.dataset.sentenceText || sentence.textContent.replace(/^[0-9]+\.\s*/, '');
+                    
+                    updateCitationLabel(key, hadPreviousSelection);
+                    renderSentenceExplanation(key, text);
+                }
+            });
+        });
+    })();
+
     // ---- Mobile seal drag -> drag panel open/close (bottom sheet) ----
     (function initMobileSealDrag() {
         if (!lexiconToggle || !panel || !lexOverlay) return;
@@ -754,528 +891,147 @@
             // Important: when snapping (finger released), let CSS transitions take over.
             setSealDragOffset(sealOffset, sealDragging);
 
-            lexOverlay.style.opacity = String(progress);
+            // Overlay opacity: fade in as panel lifts.
+            if (lexOverlay) {
+                lexOverlay.style.opacity = String(progress);
+            }
         }
 
-        function ensureOpenStatePrepared() {
-            // Prepare overlay + scroll lock immediately (prevents iOS rubber-band).
-            lexOverlay.classList.add('is-open');
-            panel.setAttribute('aria-hidden', 'false');
-            lexOverlay.setAttribute('aria-hidden', 'false');
-            lexiconToggle.setAttribute('aria-expanded', 'true');
-            lockBodyScroll();
+        function snap() {
+            // Decide whether to open or close based on gesture.
+            var shouldOpen = false;
+
+            if (startWasOpen) {
+                // Was open: close if dragged far enough down or with sufficient velocity.
+                var dragDist = currentY - 0;
+                if (velocity > CLOSE_VELOCITY || dragDist > closedY * CLOSE_RATIO) {
+                    shouldOpen = false;
+                } else {
+                    shouldOpen = true;
+                }
+            } else {
+                // Was closed: open if dragged far enough up or with sufficient velocity.
+                var dragDist = closedY - currentY;
+                if (velocity < OPEN_VELOCITY || dragDist > closedY * OPEN_RATIO) {
+                    shouldOpen = true;
+                } else {
+                    shouldOpen = false;
+                }
+            }
+
+            // Apply transition and snap to final position.
+            panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
+            if (lexOverlay) {
+                lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
+            }
+
+            if (shouldOpen) {
+                setPanelY(0, false);
+                if (!panel.classList.contains('is-open')) {
+                    panel.classList.add('is-open');
+                    lexOverlay.classList.add('is-open');
+                    panel.setAttribute('aria-hidden', 'false');
+                    lexOverlay.setAttribute('aria-hidden', 'false');
+                    if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'true');
+                    lockBodyScroll();
+                    setLexiconGlyph();
+                }
+            } else {
+                setPanelY(closedY, false);
+                if (panel.classList.contains('is-open')) {
+                    panel.classList.remove('is-open');
+                    lexOverlay.classList.remove('is-open');
+                    panel.setAttribute('aria-hidden', 'true');
+                    lexOverlay.setAttribute('aria-hidden', 'true');
+                    if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
+                    unlockBodyScroll();
+                    setLexiconGlyph();
+                }
+                clearSealDragOffsetSoon(SNAP_MS + 100);
+            }
+
+            setTimeout(function () {
+                panel.style.transform = '';
+                panel.style.transition = '';
+                if (lexOverlay) {
+                    lexOverlay.style.opacity = '';
+                    lexOverlay.style.transition = '';
+                }
+            }, SNAP_MS + 20);
         }
 
-        function beginGesture(e) {
+        lexiconToggle.addEventListener('pointerdown', function (e) {
             if (!isMobileSheet()) return;
-            if (e.pointerType === 'mouse') return;
-
-            startWasOpen = panel.classList.contains('is-open');
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
 
             dragging = true;
             moved = false;
             pointerId = e.pointerId;
-
             startY = e.clientY;
-            lastY = e.clientY;
-            lastT = (window.performance && performance.now) ? performance.now() : Date.now();
+            lastY = startY;
+            lastT = Date.now();
             velocity = 0;
 
+            startWasOpen = panel.classList.contains('is-open');
+
             computeClosedY();
+            currentY = startWasOpen ? 0 : closedY;
 
             panel.classList.add('is-dragging');
             panel.style.transition = 'none';
+            if (lexOverlay) lexOverlay.style.transition = 'none';
 
-            if (!startWasOpen) {
-                // Ensure the correct content is ready while dragging open.
-                if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                    renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey, currentlySelectedSentence.dataset.sentenceText);
-                } else {
-                    renderOverview();
-                }
+            lexiconToggle.setPointerCapture(e.pointerId);
+            e.preventDefault();
+        });
 
-                ensureOpenStatePrepared();
+        lexiconToggle.addEventListener('pointermove', function (e) {
+            if (!dragging || e.pointerId !== pointerId) return;
 
-                // Start tucked (closed).
-                setPanelY(closedY, true);
-            } else {
-                // Already open: keep the real open state, but allow dragging down from the seal.
-                // (Using setPanelY(0) is CRITICAL to prevent the seal from "dropping" when is-seal-dragging is applied.)
-                lockBodyScroll();
-                setPanelY(0, true);
-            }
-
-            try { lexiconToggle.setPointerCapture(pointerId); } catch (err) { }
-        }
-
-        function updateGesture(e) {
-            if (!dragging) return;
-            if (pointerId !== null && e.pointerId !== pointerId) return;
-
-            var rawDelta = e.clientY - startY;
-
-            if (!moved && Math.abs(rawDelta) > MOVE_SLOP) moved = true;
+            var deltaY = e.clientY - startY;
+            if (!moved && Math.abs(deltaY) > MOVE_SLOP) moved = true;
             if (!moved) return;
 
-            var now = (window.performance && performance.now) ? performance.now() : Date.now();
+            var now = Date.now();
             var dt = now - lastT;
-            if (dt > 0) velocity = (e.clientY - lastY) / dt;
+            if (dt > 0) {
+                velocity = (e.clientY - lastY) / dt;
+            }
             lastY = e.clientY;
             lastT = now;
 
-            var y;
-            if (startWasOpen) {
-                // Drag-down to close.
-                y = rawDelta;
-            } else {
-                // Drag-up to open: closedY + delta (delta is negative when moving up).
-                y = closedY + rawDelta;
-            }
+            var targetY = (startWasOpen ? 0 : closedY) + deltaY;
+            if (targetY < 0) targetY = 0;
+            if (targetY > closedY) targetY = closedY;
 
-            if (y < 0) y = 0;
-            if (y > closedY) y = closedY;
+            setPanelY(targetY, true);
+            e.preventDefault();
+        });
 
-            setPanelY(y, true);
-
-            if (e.cancelable) e.preventDefault();
-        }
-
-        function cleanupClosedState() {
-            panel.classList.remove('is-dragging');
-            panel.style.transform = '';
-            panel.style.transition = '';
-
-            lexOverlay.style.opacity = '';
-            lexOverlay.classList.remove('is-open');
-
-            panel.setAttribute('aria-hidden', 'true');
-            lexOverlay.setAttribute('aria-hidden', 'true');
-            lexiconToggle.setAttribute('aria-expanded', 'false');
-
-            setSealToClosedPosition();
-
-            unlockBodyScroll();
-            setLexiconGlyph();
-        }
-
-        function finalizeOpenState() {
-            // Convert to the normal open state (class-driven).
-            panel.classList.remove('is-dragging');
-            panel.style.transform = '';
-            panel.style.transition = '';
-            lexOverlay.style.opacity = '';
-
-            focusReturnEl = lexiconToggle;
-            panel.classList.add('is-open');
-            lexOverlay.classList.add('is-open');
-
-            // Seal stays lifted with the open sheet.
-            setSealDragOffset(-closedY + getSeatNudge(), false);
-
-            setLexiconGlyph();
-            setTimeout(focusIntoPanel, 0);
-        }
-
-        function restoreOpenAfterCanceledClose() {
-            panel.classList.remove('is-dragging');
-            panel.style.transform = '';
-            panel.style.transition = '';
-            lexOverlay.style.opacity = '';
-            lexOverlay.style.transition = '';
-
-            // Snap seal back to open position.
-            setSealDragOffset(-closedY + getSeatNudge(), false);
-
-            setLexiconGlyph();
-        }
-
-        function finalizeClosedFromOpenState() {
-            // Fully close from a currently-open state (without relying on closePanel(),
-            // so there is no transform "snap" mid-gesture).
-            panel.classList.remove('is-dragging');
-            panel.style.transform = '';
-            panel.style.transition = '';
-
-            lexOverlay.style.opacity = '';
-            lexOverlay.style.transition = '';
-
-            panel.classList.remove('is-open');
-            lexOverlay.classList.remove('is-open');
-
-            panel.setAttribute('aria-hidden', 'true');
-            lexOverlay.setAttribute('aria-hidden', 'true');
-            lexiconToggle.setAttribute('aria-expanded', 'false');
-
-            setSealToClosedPosition();
-            unlockBodyScroll();
-            setLexiconGlyph();
-
-            setTimeout(function () {
-                if (lexiconToggle && lexiconToggle.focus) lexiconToggle.focus();
-            }, 0);
-        }
-
-        function finishGesture() {
-            if (!dragging) return;
+        function endDrag(e) {
+            if (!dragging || (e && e.pointerId !== pointerId)) return;
 
             dragging = false;
-            try {
-                if (pointerId !== null) lexiconToggle.releasePointerCapture(pointerId);
-            } catch (err) { }
-            pointerId = null;
-
-            if (!moved) {
-                // Treat as a normal tap (the click handler will run).
-                // Also: restore transitions immediately (no snap-back while is-seal-dragging is still on).
-                if (startWasOpen) {
-                    setPanelY(0, false);
-                    restoreOpenAfterCanceledClose();
-                } else {
-                    setPanelY(closedY, false);
-                    cleanupClosedState();
-                }
-                return;
-            }
-
-            window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
-
-            // IMPORTANT: "is-dragging" sets transition: none !important in CSS.
-            // If it remains during the snap, the panel will teleport (no animation).
             panel.classList.remove('is-dragging');
 
-            var progress = 1 - (currentY / (closedY || 1));
-
-            function setSnapTransitions() {
-                panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
-                lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
-            }
-
-            if (!startWasOpen) {
-                // Decide open vs snap-back (opening gesture).
-                var shouldOpen = (progress >= OPEN_RATIO) || (velocity <= OPEN_VELOCITY);
-
-                if (shouldOpen) {
-                    // Snap to open.
-                    setSnapTransitions();
-                    setPanelY(0, false);
-
-                    setTimeout(function () {
-                        lexOverlay.style.transition = '';
-                        finalizeOpenState();
-                    }, SNAP_MS + 20);
-                } else {
-                    // Snap back closed.
-                    setSnapTransitions();
-                    setPanelY(closedY, false);
-
-                    setTimeout(function () {
-                        lexOverlay.style.transition = '';
-                        cleanupClosedState();
-                    }, SNAP_MS + 20);
-                }
-
-                return;
-            }
-
-            // Closing gesture (already open): decide close vs snap-back.
-            var closeThreshold = Math.max(120, closedY * CLOSE_RATIO);
-            var shouldClose = (currentY > closeThreshold) || (velocity >= CLOSE_VELOCITY);
-
-            if (shouldClose) {
-                setSnapTransitions();
-                setPanelY(closedY, false);
-
+            if (moved) {
+                window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
                 setTimeout(function () {
-                    lexOverlay.style.transition = '';
-                    finalizeClosedFromOpenState();
-                }, SNAP_MS + 20);
+                    window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
+                }, 300);
+                snap();
             } else {
-                setSnapTransitions();
-                setPanelY(0, false);
+                // No significant movement: let the tap handler toggle.
+            }
 
-                setTimeout(function () {
-                    lexOverlay.style.transition = '';
-                    restoreOpenAfterCanceledClose();
-                }, SNAP_MS + 20);
+            if (e && lexiconToggle.hasPointerCapture && lexiconToggle.hasPointerCapture(e.pointerId)) {
+                lexiconToggle.releasePointerCapture(e.pointerId);
             }
         }
 
-        lexiconToggle.addEventListener('pointerdown', beginGesture, { passive: true });
-        lexiconToggle.addEventListener('pointermove', updateGesture, { passive: false });
-        lexiconToggle.addEventListener('pointerup', function () { finishGesture(); }, true);
-        lexiconToggle.addEventListener('pointercancel', function () { finishGesture(); }, true);
+        lexiconToggle.addEventListener('pointerup', endDrag);
+        lexiconToggle.addEventListener('pointercancel', endDrag);
+        lexiconToggle.addEventListener('lostpointercapture', endDrag);
     })();
 
-    // NOTE: The old "drag down from top handle" behavior is intentionally disabled.
-    // Keep this file append-only and sacred: the seal is the sole drag gesture for closing on mobile.
-
-    function clearSentenceSelection() {
-        if (currentlySelectedSentence) {
-            currentlySelectedSentence.classList.remove('is-selected');
-            currentlySelectedSentence = null;
-            updateLexiconButtonState();
-        }
-    }
-
-    function handleSentenceClick(node) {
-        if (currentlySelectedSentence === node) {
-            clearSentenceSelection();
-        } else {
-            clearSentenceSelection();
-            currentlySelectedSentence = node;
-            node.classList.add('is-selected');
-            updateLexiconButtonState();
-        }
-    }
-
-    var sentenceNodes = document.querySelectorAll('.sentence');
-    Array.prototype.forEach.call(sentenceNodes, function (node) {
-        node.addEventListener('click', function (event) {
-            event.stopPropagation();
-            handleSentenceClick(node);
-        });
-
-        var lastTapTime = 0;
-        node.addEventListener('touchend', function (event) {
-            var currentTime = Date.now();
-            var tapLength = currentTime - lastTapTime;
-            if (tapLength < 300 && tapLength > 0) {
-                event.preventDefault();
-                event.stopPropagation();
-                handleSentenceClick(node);
-            }
-            lastTapTime = currentTime;
-        });
-    });
-
-    function handleOutsideInteraction(event) {
-        var isSentence = !!closestSafe(event.target, '.sentence');
-        var isLexicon = !!closestSafe(event.target, '#lexiconToggle');
-        var isPanel = !!closestSafe(event.target, '#lexiconPanel');
-        if (!isSentence && !isLexicon && !isPanel) {
-            clearSentenceSelection();
-        }
-    }
-
-    document.addEventListener('click', handleOutsideInteraction);
-
-    var glossaryTerms = document.querySelectorAll('.glossary-term');
-    var glossaryTermsArr = Array.prototype.slice.call(glossaryTerms);
-
-    Array.prototype.forEach.call(glossaryTerms, function (term) {
-        term.addEventListener('touchstart', function (e) {
-            if (this === currentlyActiveTooltip) return;
-            e.preventDefault();
-            clearActiveTooltip();
-            this.classList.add('tooltip-active');
-            currentlyActiveTooltip = this;
-        }, { passive: false });
-    });
-
-    document.addEventListener('touchstart', function (e) {
-        if (currentlyActiveTooltip) {
-            var touchedGlossaryTerm = glossaryTermsArr.some(function (term) {
-                return term && term.contains(e.target);
-            });
-            if (!touchedGlossaryTerm) {
-                clearActiveTooltip();
-            }
-        }
-
-        if (currentlySelectedSentence) {
-            var touchedCurrentSentence = currentlySelectedSentence.contains(e.target);
-            var touchedLexicon = !!closestSafe(e.target, '#lexiconToggle');
-            var touchedPanel = !!closestSafe(e.target, '#lexiconPanel');
-            if (!touchedCurrentSentence && !touchedLexicon && !touchedPanel) {
-                clearSentenceSelection();
-            }
-        }
-    }, { capture: true, passive: true });
-
-    // Exit fade + radiant nav pulse for Covenant section nav only (invocation.html → XII.html).
-    // Gate: requires lexicon panel + toggle + footer (keeps this off non-section pages).
-    (function initExitTransitions() {
-        if (!panel || !lexiconToggle || !navFooter || !container) return;
-
-        var PANEL_CLOSE_MS = 120;
-        var EXIT_MS = 380;
-
-        // "Press" nudge duration (separate from :active).
-        var NUDGE_MS = 120;
-
-        // Optional: subtle nav click sound. Muted by default.
-        var SOUND_KEY = 'covenant_nav_sound';
-        var audioCtx = null;
-
-        function getSoundPref() {
-            try {
-                return window.localStorage && localStorage.getItem(SOUND_KEY);
-            } catch (err) {
-                return null;
-            }
-        }
-
-        function setSoundPref(val) {
-            try {
-                if (!window.localStorage) return;
-                if (val === null || val === undefined) {
-                    localStorage.removeItem(SOUND_KEY);
-                } else {
-                    localStorage.setItem(SOUND_KEY, String(val));
-                }
-            } catch (err) { }
-        }
-
-        // Opt-in via query param:
-        //   ?sound=1  (enable and persist)
-        //   ?sound=0  (disable and persist)
-        (function initSoundQueryParam() {
-            try {
-                if (!window.URLSearchParams) return;
-                var params = new URLSearchParams(window.location.search);
-                if (!params.has('sound')) return;
-                var v = params.get('sound');
-                if (v === '1' || v === 'true' || v === 'on') {
-                    setSoundPref('1');
-                } else if (v === '0' || v === 'false' || v === 'off') {
-                    setSoundPref('0');
-                }
-
-                // Clean URL (so the covenant path stays clean after opting in).
-                params.delete('sound');
-                var newSearch = params.toString();
-                var nextUrl = window.location.pathname + (newSearch ? ('?' + newSearch) : '') + window.location.hash;
-                if (window.history && history.replaceState) {
-                    history.replaceState(null, document.title, nextUrl);
-                }
-            } catch (err) { }
-        })();
-
-        function soundEnabled() {
-            return getSoundPref() === '1';
-        }
-
-        function playClickTick() {
-            if (!soundEnabled()) return;
-            try {
-                var Ctx = window.AudioContext || window.webkitAudioContext;
-                if (!Ctx) return;
-                if (!audioCtx) audioCtx = new Ctx();
-                if (audioCtx.state === 'suspended' && audioCtx.resume) {
-                    audioCtx.resume();
-                }
-
-                var now = audioCtx.currentTime;
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-
-                // Tiny percussive "tick": quick down-sweep.
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(1100, now);
-                osc.frequency.exponentialRampToValueAtTime(520, now + 0.03);
-
-                // Very low gain (subtle).
-                gain.gain.setValueAtTime(0.0001, now);
-                gain.gain.exponentialRampToValueAtTime(0.018, now + 0.005);
-                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.06);
-
-                osc.onended = function () {
-                    try { osc.disconnect(); } catch (err) { }
-                    try { gain.disconnect(); } catch (err) { }
-                };
-            } catch (err) { }
-        }
-
-        function isModifiedClick(e) {
-            var nonPrimary = (typeof e.button === 'number') ? (e.button !== 0) : false;
-            return !!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || nonPrimary);
-        }
-
-        function pulse(el) {
-            if (!el) return;
-
-            // Radiant flare.
-            el.classList.remove('is-pulsing');
-            void el.offsetWidth;
-            el.classList.add('is-pulsing');
-            window.setTimeout(function () {
-                el.classList.remove('is-pulsing');
-            }, 700);
-
-            // Physical press: brief 1px travel, separate from :active.
-            el.classList.add('is-nudging');
-            window.setTimeout(function () {
-                el.classList.remove('is-nudging');
-            }, NUDGE_MS);
-        }
-
-        function ensureExitOverlay() {
-            var existing = document.getElementById('blackFadeOverlay');
-            if (existing) return existing;
-
-            var o = document.createElement('div');
-            o.id = 'blackFadeOverlay';
-            // Start transparent; CSS "fade-out" sets opacity:0, then body.is-exiting forces it back to 1.
-            o.className = 'fade-out';
-            o.setAttribute('data-exit-overlay', 'true');
-            document.body.appendChild(o);
-            // Force style flush so transition engages.
-            void o.offsetWidth;
-            return o;
-        }
-
-        function beginExitThenNavigate(href, pulseTarget) {
-            if (!href) return;
-            if (document.body.classList.contains('is-exiting')) return;
-
-            var panelOpen = panel.classList.contains('is-open');
-            var delay = panelOpen ? PANEL_CLOSE_MS : 0;
-
-            playClickTick();
-            pulse(pulseTarget);
-
-            // Close panel if open (intentional first).
-            if (panelOpen) {
-                closePanel();
-            }
-
-            // Wait for panel close, then start exit.
-            window.setTimeout(function () {
-                ensureExitOverlay();
-                document.body.classList.add('is-exiting');
-
-                window.setTimeout(function () {
-                    window.location.href = href;
-                }, EXIT_MS);
-            }, delay);
-        }
-
-        // Reset exit state if BFCache restores the page.
-        window.addEventListener('pageshow', function () {
-            document.body.classList.remove('is-exiting');
-            var o = document.getElementById('blackFadeOverlay');
-            if (o && o.getAttribute('data-exit-overlay') === 'true' && o.parentNode) {
-                o.parentNode.removeChild(o);
-            }
-        });
-
-        Array.prototype.forEach.call(document.querySelectorAll('a.nav-next, a.nav-prev'), function (link) {
-            link.addEventListener('click', function (e) {
-                if (isModifiedClick(e)) return;
-
-                var href = link.getAttribute('href');
-                if (!href || href.charAt(0) === '#') return;
-
-                e.preventDefault();
-                var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
-                beginExitThenNavigate(href, frame || link);
-            });
-        });
-    })();
 })();
