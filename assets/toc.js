@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.5 */
+/*! Covenant ToC Progress Journal v1.0.6 */
 (function () {
     'use strict';
 
@@ -23,13 +23,26 @@
     var tocDynamicContent = document.getElementById('tocDynamicContent');
     var tocLiveRegion = document.getElementById('tocLiveRegion');
 
+    // Anti-ghost-click window after opening (iOS Safari can dispatch a synthesized click that
+    // lands on the newly-opened overlay and immediately closes the panel).
+    var tocJustOpenedAt = 0;
+    var TOC_GHOST_GUARD_MS = 520;
+
     function escapeHtml(s) {
         return String(s)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
+            .replace(/\"/g, '&quot;')
             .replace(/'/g, '&#39;');
+    }
+
+    function stopEvent(e) {
+        if (!e) return;
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+        // Also stop any other listeners on the same element (helps on iOS).
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     }
 
     // Test if localStorage is available and writable.
@@ -161,7 +174,7 @@
         var lockedBtns = tocDynamicContent.querySelectorAll('.toc-locked-btn');
         Array.prototype.forEach.call(lockedBtns, function (btn) {
             btn.addEventListener('click', function (e) {
-                if (e && e.preventDefault) e.preventDefault();
+                stopEvent(e);
                 announceLockedAttempt();
             });
         });
@@ -200,6 +213,9 @@
 
     function openToC() {
         if (!tocPanel || !tocOverlay) return;
+
+        tocJustOpenedAt = Date.now();
+
         focusReturnEl = tocToggle;
         tocPanel.classList.add('is-open');
         tocOverlay.classList.add('is-open');
@@ -242,6 +258,10 @@
         }
     }
 
+    function withinGhostGuardWindow() {
+        return tocJustOpenedAt && (Date.now() - tocJustOpenedAt < TOC_GHOST_GUARD_MS);
+    }
+
     // iOS Safari reliability: activate on pointerdown for touch (before scroll/gesture wins).
     function bindActivate(el, handler) {
         if (!el || !handler) return;
@@ -271,13 +291,19 @@
     function wireControls() {
         if (tocToggle) {
             bindActivate(tocToggle, function (e) {
-                if (e && e.preventDefault) e.preventDefault();
+                stopEvent(e);
                 toggleToC();
             });
         }
 
         if (tocOverlay) {
-            bindActivate(tocOverlay, function () {
+            bindActivate(tocOverlay, function (e) {
+                // iOS ghost-click guard: ignore immediate post-open events.
+                if (withinGhostGuardWindow()) {
+                    stopEvent(e);
+                    return;
+                }
+                stopEvent(e);
                 closeToC();
             });
         }
@@ -286,7 +312,7 @@
             var closeBtns = tocPanel.querySelectorAll('.toc-panel-close');
             Array.prototype.forEach.call(closeBtns, function (btn) {
                 bindActivate(btn, function (e) {
-                    if (e && e.preventDefault) e.preventDefault();
+                    stopEvent(e);
                     closeToC();
                 });
             });
