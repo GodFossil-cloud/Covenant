@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.0.3 */
+/*! Covenant ToC Panel Styles v1.0.4 */
 
 /* ===== ToC Toggle (header-mounted by default) ===== */
 .section-header.has-toc-toggle {
@@ -39,7 +39,13 @@
     box-shadow:
         0 10px 18px rgba(0, 0, 0, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.55);
-    transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    transition:
+        transform 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease,
+        border-color 160ms ease,
+        opacity 160ms ease,
+        visibility 0ms linear 160ms;
 
     /* Typography: ceremonial, not "app UI". */
     font-family: 'Cormorant Garamond', serif;
@@ -51,6 +57,20 @@
 /* Keep it inside the header width and centered even if header is not flex. */
 .section-header.has-toc-toggle .toc-toggle {
     display: flex;
+}
+
+/* Hide the ToC toggle when:
+   - The ToC itself is open (so it never floats above the panel)
+   - The Lexicon is open (Lexicon sets html.lexicon-scroll-lock)
+*/
+.toc-toggle[aria-expanded="true"],
+html.lexicon-scroll-lock .toc-toggle {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 160ms ease,
+        visibility 0ms linear 160ms;
 }
 
 .toc-toggle-glyph {

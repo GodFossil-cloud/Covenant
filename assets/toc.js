@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.4 */
+/*! Covenant ToC Progress Journal v1.0.5 */
 (function () {
     'use strict';
 
@@ -242,24 +242,28 @@
         }
     }
 
-    // Match the Lexicon's proven activation strategy (pointerup + click fallback).
+    // iOS Safari reliability: activate on pointerdown for touch (before scroll/gesture wins).
     function bindActivate(el, handler) {
         if (!el || !handler) return;
 
-        var lastPointerUpAt = 0;
+        var lastPointerDownAt = 0;
 
         if (window.PointerEvent) {
-            el.addEventListener('pointerup', function (e) {
-                // Only left-click for mouse.
+            el.addEventListener('pointerdown', function (e) {
+                // Mouse: only primary.
                 if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
-                lastPointerUpAt = Date.now();
-                handler(e);
+
+                // Touch: fire immediately on pointerdown.
+                if (e && e.pointerType === 'touch') {
+                    lastPointerDownAt = Date.now();
+                    handler(e);
+                }
             });
         }
 
         el.addEventListener('click', function (e) {
-            // Avoid double-activation when iOS synthesizes click after pointerup.
-            if (Date.now() - lastPointerUpAt < 700) return;
+            // Avoid double-activation when iOS synthesizes click after pointerdown.
+            if (Date.now() - lastPointerDownAt < 700) return;
             handler(e);
         });
     }
