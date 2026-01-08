@@ -1842,6 +1842,8 @@ body {
 
    By splitting the seal surface into background-color + background-image, we ensure a stable
    painted base even if the gradient stack momentarily re-rasterizes.
+
+   We also animate only background-color (not gradients) so the seal returns with a softer tone.
    ======================================== */
 
 .nav-btn.center::after {
@@ -1849,6 +1851,7 @@ body {
   background-image:
     radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),
     linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40));
+  transition: background-color 120ms linear;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
@@ -1864,6 +1867,7 @@ body {
     radial-gradient(120% 120% at 28% 20%, rgba(255,255,255,0.12), rgba(255,255,255,0) 44%),
     linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.42)),
     linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
+  transition: background-color 120ms linear;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
