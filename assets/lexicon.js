@@ -798,7 +798,44 @@
             if (document.hidden && panel.classList.contains('is-open')) closePanel();
         });
     }
+    
+    // ---- Glossary Terms: two-tap on touch ----
+(function initGlossaryTwoTap() {
+    var terms = document.querySelectorAll('.glossary-term');
+    if (!terms || !terms.length) return;
 
+    // Only apply on touch/coarse-pointer devices; desktop keeps hover behavior.
+    function isTouchLikeEvent(e) {
+        return !!(isMobileGlyphMode || (e && e.pointerType && e.pointerType !== 'mouse'));
+    }
+
+    // Tap outside any glossary term closes the pinned tooltip.
+    document.addEventListener('pointerdown', function (e) {
+        var withinTerm = !!closestSafe(e.target, '.glossary-term');
+        if (!withinTerm) clearActiveTooltip();
+    }, true);
+
+    Array.prototype.forEach.call(terms, function (term) {
+        term.addEventListener('click', function (e) {
+            if (!isTouchLikeEvent(e)) return;
+
+            // First tap on a term: show tooltip only, do NOT select the sentence.
+            if (currentlyActiveTooltip !== term) {
+                if (e && e.preventDefault) e.preventDefault();
+                if (e && e.stopPropagation) e.stopPropagation();
+
+                clearActiveTooltip();
+                term.classList.add('tooltip-active');
+                currentlyActiveTooltip = term;
+                return;
+            }
+
+            // Second tap on same term: allow bubble to sentence click handler (selection happens).
+            // (Leave tooltip pinned; tapping elsewhere clears it.)
+        });
+    });
+})();
+    
     // ---- Sentence Selection ----
     (function initSentenceSelection() {
         var sentences = document.querySelectorAll('.sentence');
