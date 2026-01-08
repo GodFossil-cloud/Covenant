@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.2 */
+/*! Covenant ToC Progress Journal v1.0.3 */
 (function () {
     'use strict';
 
@@ -22,6 +22,30 @@
     var tocToggle = document.getElementById('tocToggle');
     var tocDynamicContent = document.getElementById('tocDynamicContent');
     var tocLiveRegion = document.getElementById('tocLiveRegion');
+
+    // --- Event options safety (iOS/Safari edge-cases) ---
+    var supportsPassive = false;
+    try {
+        var opts = Object.defineProperty({}, 'passive', {
+            get: function () {
+                supportsPassive = true;
+                return false;
+            }
+        });
+        window.addEventListener('covenant-passive-test', function () {}, opts);
+        window.removeEventListener('covenant-passive-test', function () {}, opts);
+    } catch (e) {
+        supportsPassive = false;
+    }
+
+    function on(el, type, handler, options) {
+        if (!el) return;
+        try {
+            el.addEventListener(type, handler, supportsPassive ? options : false);
+        } catch (e) {
+            el.addEventListener(type, handler, false);
+        }
+    }
 
     function escapeHtml(s) {
         return String(s)
@@ -180,7 +204,7 @@
         btn.setAttribute('aria-expanded', 'false');
         btn.setAttribute('aria-controls', 'tocPanel');
 
-        // Decorative text; readable and fits the page tone better than a raw "☰".
+        // Decorative text; readable and fits the page tone.
         btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span><span class="toc-toggle-label">Contents</span>';
 
         var header = document.querySelector('.section-header');
@@ -243,39 +267,52 @@
     }
 
     function wireControls() {
-        // Mobile reliability: prefer pointer/touch events; keep click as fallback.
+        // iOS Safari: keep it simple and resilient.
         var lastActivateAt = 0;
         function activate(e) {
             var now = Date.now();
-            if (now - lastActivateAt < 450) return; // prevent double-fire from touch->click
+            if (now - lastActivateAt < 450) return; // suppress touch->click double fire
             lastActivateAt = now;
 
-            if (e && e.cancelable) e.preventDefault();
+            // Prevent the synthesized click / unwanted text selection on touch.
+            if (e && (e.type === 'touchend' || e.type === 'touchstart')) {
+                if (e.cancelable) e.preventDefault();
+            }
+
             toggleToC();
         }
 
         if (tocToggle) {
-            tocToggle.addEventListener('pointerup', activate, { passive: false });
-            tocToggle.addEventListener('touchend', activate, { passive: false });
-            tocToggle.addEventListener('click', function (e) {
-                e.preventDefault();
-                activate(e);
-            });
+            // Preferred: touchend for iOS.
+            on(tocToggle, 'touchend', activate, { passive: false });
+            // Some Safari builds are finicky about dispatch; bind touchstart as a backup.
+            on(tocToggle, 'touchstart', activate, { passive: false });
+
+            // Pointer events (newer browsers) + click (desktop/fallback).
+            on(tocToggle, 'pointerup', activate, { passive: false });
+            on(tocToggle, 'click', activate, false);
         }
 
         if (tocOverlay) {
-            tocOverlay.addEventListener('click', function () {
+            on(tocOverlay, 'click', function () {
                 closeToC();
-            });
+            }, false);
+            on(tocOverlay, 'touchend', function () {
+                closeToC();
+            }, { passive: true });
         }
 
         if (tocPanel) {
             var closeBtns = tocPanel.querySelectorAll('.toc-panel-close');
             Array.prototype.forEach.call(closeBtns, function (btn) {
-                btn.addEventListener('click', function (e) {
+                on(btn, 'click', function (e) {
                     e.preventDefault();
                     closeToC();
-                });
+                }, false);
+                on(btn, 'touchend', function (e) {
+                    if (e.cancelable) e.preventDefault();
+                    closeToC();
+                }, { passive: false });
             });
         }
 

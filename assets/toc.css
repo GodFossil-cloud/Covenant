@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.0.2 */
+/*! Covenant ToC Panel Styles v1.0.3 */
 
 /* ===== ToC Toggle (header-mounted by default) ===== */
 .section-header.has-toc-toggle {
@@ -7,7 +7,9 @@
 
 .toc-toggle {
     /* Integrated pill button under the header ornaments/title. */
-    position: static;
+    position: relative;
+    z-index: 1500;
+
     width: auto;
     min-height: 44px;
     padding: 10px 16px;
@@ -26,9 +28,13 @@
     margin: 14px auto 0;
 
     cursor: pointer;
+    pointer-events: auto;
+
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+
     user-select: none;
+    -webkit-user-select: none;
 
     box-shadow:
         0 10px 18px rgba(0, 0, 0, 0.08),
@@ -81,7 +87,7 @@
     position: fixed;
     top: 14px;
     right: 14px;
-    z-index: 1300;
+    z-index: 1500;
     margin: 0;
     width: auto;
 }
