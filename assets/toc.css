@@ -1,325 +1,213 @@
-/* Covenant Table of Contents (progress journal) */
+/*! Covenant ToC Panel Styles v1.0.0 */
 
-/* Header toggle injected by assets/toc.js */
-.section-header {
-    position: relative;
-}
-
-.toc-toggle-header {
-    position: absolute;
-    top: 0;
-    right: 0;
-
-    padding: 0.45rem 0.7rem;
-    border-radius: 6px;
-    border: 1px solid rgba(139, 115, 85, 0.55);
-    background: rgba(250, 250, 248, 0.92);
-
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.92rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-
-    color: var(--primary-color);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-
-    transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.toc-toggle-header:hover,
-.toc-toggle-header:focus-visible {
-    background: rgba(245, 241, 237, 0.96);
-    border-color: rgba(139, 115, 85, 0.72);
-    box-shadow: 0 0 0 2px rgba(201, 169, 97, 0.18);
-    outline: none;
-}
-
-@media (max-width: 600px) {
-    .toc-toggle-header {
-        top: -4px;
-        right: -4px;
-        padding: 0.4rem 0.6rem;
-        font-size: 0.86rem;
-    }
-}
-
-/* Overlay */
+/* ===== ToC Overlay (matches Lexicon overlay pattern) ===== */
 .toc-overlay {
     position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 998;
     opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
-    z-index: 700;
+    pointer-events: none;
+    transition: opacity 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .toc-overlay.is-open {
     opacity: 1;
-    visibility: visible;
+    pointer-events: auto;
 }
 
-/* Panel */
+/* ===== ToC Panel (side panel, matches Lexicon structure) ===== */
 .toc-panel {
     position: fixed;
     top: 0;
     right: 0;
-    height: 100vh;
-    width: min(360px, 90vw);
-
-    background: transparent;
-    border-left: 1px solid #3a3a3a;
-
+    width: min(420px, 88vw);
+    height: 100%;
+    background-color: #f5f5f0;
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.15);
+    z-index: 999;
     transform: translateX(100%);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-    z-index: 1100;
+    transition: transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
     display: flex;
     flex-direction: column;
-
-    padding: 0;
-
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
     overflow: hidden;
 }
 
 .toc-panel.is-open {
     transform: translateX(0);
-    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.5);
 }
 
+.toc-panel[aria-hidden="true"] {
+    pointer-events: none;
+}
+
+.toc-panel[aria-hidden="false"] {
+    pointer-events: auto;
+}
+
+/* ===== Panel Header ===== */
 .toc-panel-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
-    background: #1a1a1a;
-    border-bottom: 1px solid rgba(242, 220, 154, 0.10);
-
-    padding: 22px 20px 14px;
-    margin: 0;
+    justify-content: space-between;
+    padding: 1.5rem 1.75rem 1.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: #fafaf8;
 }
 
 .toc-panel-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--glyph-gold);
+    font-size: 1.3rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: #1a1a1a;
+    margin: 0;
 }
 
-.toc-panel-mode {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #b8986a;
-    margin-top: 4px;
+.toc-panel-subtitle {
+    font-size: 0.85rem;
+    color: #7a7a7a;
+    letter-spacing: 0.04em;
+    margin-top: 0.25rem;
 }
 
 .toc-panel-close {
+    background: none;
     border: none;
-    background: transparent;
-    font-size: 1.8rem;
+    font-size: 2rem;
+    line-height: 1;
+    color: #4a4a4a;
     cursor: pointer;
-    color: var(--glyph-gold);
     padding: 0;
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    transition: color 0.2s ease, background-color 0.18s ease, box-shadow 0.18s ease, text-shadow 0.18s ease;
-    -webkit-tap-highlight-color: transparent;
+    transition: color 200ms ease, transform 200ms ease;
 }
 
 .toc-panel-close:hover,
 .toc-panel-close:focus-visible {
-    color: #e0bf7a;
-    outline: none;
+    color: #1a1a1a;
+    transform: scale(1.1);
 }
 
+.toc-panel-close:focus-visible {
+    outline: 2px solid #8a8a8a;
+    outline-offset: 2px;
+}
+
+/* ===== Panel Body ===== */
 .toc-panel-body {
-    font-size: 0.95rem;
-    color: #d4d4d4;
-    line-height: 1.6;
-    flex: 1 1 auto;
+    flex: 1;
     overflow-y: auto;
-
-    background: #141418;
-    padding: 16px 20px calc(var(--footer-total-height) + 18px) 20px;
-    padding-right: 12px;
-
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        inset 0 18px 30px rgba(0, 0, 0, 0.28);
-
-    scrollbar-width: thin;
-    scrollbar-color: var(--glyph-gold) #555;
+    padding: 1.5rem 1.75rem 2rem;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    touch-action: pan-y;
 }
 
-.toc-alert {
-    border-left: 2px solid rgba(242, 220, 154, 0.35);
-    background: rgba(38, 38, 42, 0.9);
-    padding: 0.75rem 0.9rem;
-    margin: 0 0 0.9rem 0;
-    font-size: 0.9rem;
-    color: rgba(236, 228, 206, 0.9);
-}
-
-.toc-nav {
-    margin-top: 0.25rem;
-}
-
+/* ===== ToC List ===== */
 .toc-list {
     list-style: none;
-    margin: 0;
     padding: 0;
-}
-
-.toc-item + .toc-item {
-    margin-top: 0.35rem;
-}
-
-.toc-link {
-    width: 100%;
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.8rem;
-
-    padding: 0.65rem 0.75rem;
-    border-radius: 10px;
-    border: 1px solid rgba(242, 220, 154, 0.12);
-
-    background: rgba(20, 20, 24, 0.55);
-    color: rgba(236, 228, 206, 0.92);
-
-    text-decoration: none;
-    cursor: pointer;
-
-    transition: background-color 0.18s ease, border-color 0.18s ease;
-}
-
-.toc-link:hover,
-.toc-link:focus-visible {
-    background: rgba(35, 35, 40, 0.70);
-    border-color: rgba(242, 220, 154, 0.22);
-    outline: none;
-}
-
-.toc-link.is-current {
-    border-color: rgba(242, 220, 154, 0.30);
-    box-shadow: 0 0 0 1px rgba(242, 220, 154, 0.10);
-}
-
-.toc-title {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.toc-lock {
-    flex: 0 0 auto;
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(184, 152, 106, 0.90);
-}
-
-.toc-link--locked {
-    opacity: 0.65;
-}
-
-.toc-divider {
-    margin: 1.1rem 0 0.7rem;
-    text-align: center;
-    color: rgba(242, 220, 154, 0.60);
-}
-
-.toc-ref-title {
-    font-family: 'Cormorant Garamond', serif;
-    letter-spacing: 0.10em;
-    text-transform: uppercase;
-    font-size: 0.95rem;
-    color: rgba(242, 220, 154, 0.85);
-    margin-bottom: 0.45rem;
-}
-
-.toc-ref-list {
-    list-style: none;
     margin: 0;
-    padding: 0;
+    counter-reset: toc-counter;
 }
 
-.toc-ref-list li + li {
-    margin-top: 0.35rem;
+.toc-item {
+    margin-bottom: 0.5rem;
+    counter-increment: toc-counter;
+    position: relative;
 }
 
-.toc-ref-link {
-    display: inline-block;
-    padding: 0.45rem 0.65rem;
-    border-radius: 10px;
-    border: 1px solid rgba(242, 220, 154, 0.12);
-    background: rgba(20, 20, 24, 0.40);
+.toc-item::before {
+    content: counter(toc-counter) ". ";
+    font-size: 0.9rem;
+    color: #8a8a8a;
+    margin-right: 0.5rem;
+    font-variant-numeric: tabular-nums;
+}
 
-    color: rgba(236, 228, 206, 0.92);
+/* Unlocked items (links) */
+.toc-item a {
+    display: inline;
+    color: #2c2c2c;
     text-decoration: none;
-
-    transition: background-color 0.18s ease, border-color 0.18s ease;
+    font-size: 1rem;
+    line-height: 1.6;
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms ease, color 200ms ease;
 }
 
-.toc-ref-link:hover,
-.toc-ref-link:focus-visible {
-    background: rgba(35, 35, 40, 0.65);
-    border-color: rgba(242, 220, 154, 0.22);
-    outline: none;
+.toc-item a:hover,
+.toc-item a:focus-visible {
+    color: #1a1a1a;
+    border-bottom-color: #8a8a8a;
 }
 
+.toc-item a:focus-visible {
+    outline: 2px solid #8a8a8a;
+    outline-offset: 2px;
+}
+
+/* Current page */
+.toc-item--current a {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* Locked items (buttons) */
+.toc-locked-btn {
+    display: inline;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    text-align: left;
+}
+
+.toc-locked-btn:focus-visible {
+    outline: 2px solid #c0c0c0;
+    outline-offset: 2px;
+}
+
+.toc-locked-label {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #b0b0b0;
+}
+
+/* Screen reader only (for announcements) */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ===== Mobile adjustments ===== */
 @media (max-width: 600px) {
     .toc-panel {
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
-        border-left: none;
-        border-top: 1px solid #3a3a3a;
-        border-radius: 12px 12px 0 0;
-        transform: translateY(100%);
-        z-index: 800;
+        width: 100%;
     }
 
-    @supports (height: 100dvh) {
-        .toc-panel {
-            height: 100dvh;
-            max-height: 100dvh;
-        }
+    .toc-panel-header {
+        padding: 1.25rem 1.5rem 1rem;
     }
 
-    .toc-panel.is-open {
-        transform: translateY(0);
-        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.5);
-    }
-
-    .toc-panel-close {
-        width: 44px;
-        height: 44px;
-        font-size: 2rem;
-    }
-}
-
-@media print {
-    .toc-panel,
-    .toc-overlay,
-    .toc-toggle-header {
-        display: none !important;
+    .toc-panel-body {
+        padding: 1.25rem 1.5rem 1.5rem;
     }
 }
