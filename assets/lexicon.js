@@ -440,6 +440,53 @@
 
     var lastCitationText = '';
 
+    // Roman numeral glyphs (Unicode) for Articles/§ labels.
+    var UNICODE_ROMAN_ARTICLE = {
+        'I': 'Ⅰ',
+        'II': 'Ⅱ',
+        'III': 'Ⅲ',
+        'IV': 'Ⅳ',
+        'V': 'Ⅴ',
+        'VI': 'Ⅵ',
+        'VII': 'Ⅶ',
+        'VIII': 'Ⅷ',
+        'IX': 'Ⅸ',
+        'X': 'Ⅹ',
+        'XI': 'Ⅺ',
+        'XII': 'Ⅻ'
+    };
+
+    var UNICODE_ROMAN_NUM = ['', 'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'];
+
+    function romanAsciiToUnicode(roman) {
+        roman = String(roman || '').trim();
+        return UNICODE_ROMAN_ARTICLE[roman] || roman;
+    }
+
+    function intToUnicodeRoman(n) {
+        var num = parseInt(n, 10);
+        if (!isFinite(num) || num <= 0) return String(n);
+        return UNICODE_ROMAN_NUM[num] || String(n);
+    }
+
+    function latinToCircled(letter) {
+        if (!letter) return '';
+        var s = String(letter);
+
+        // If already a circled letter (Ⓐ..Ⓩ), keep it.
+        if (/^[\u24B6-\u24CF]$/.test(s)) return s;
+
+        var up = s.toUpperCase();
+        if (up.length !== 1) return s;
+
+        var code = up.charCodeAt(0);
+        if (code >= 65 && code <= 90) {
+            return String.fromCharCode(0x24B6 + (code - 65));
+        }
+
+        return s;
+    }
+
     /**
      * Format citation based on page config and selection state.
      * @param {string|null} sentenceKey - The data-lexicon-key of selected sentence, or null for page overview
@@ -452,7 +499,22 @@
         if (sentenceKey) {
             // Article pages (I–XII) only: these are the *actual* Articles.
             if (isArticlePage) {
-                return 'Article §' + sentenceKey;
+                // Expected forms:
+                // - I.3
+                // - IV.10
+                // - IV.10.A  (optional subpart)
+                var m = String(sentenceKey).match(/^([IVX]+)\.(\d+)(?:\.([A-Za-z\u24B6-\u24CF]))?$/);
+
+                var articleAscii = m ? m[1] : pageConfig.pageId;
+                var sectionNum = m ? m[2] : null;
+                var subpart = m ? m[3] : null;
+
+                var articleUnicode = romanAsciiToUnicode(articleAscii);
+                var sectionUnicode = sectionNum ? intToUnicodeRoman(sectionNum) : String(sentenceKey);
+
+                var out = 'Article ' + articleUnicode + ', §.' + sectionUnicode;
+                if (subpart) out += '.' + latinToCircled(subpart);
+                return out;
             }
 
             // Invocation page: sentence 1 = Invocation of Witness; 2-5 = Preamble.
@@ -482,7 +544,7 @@
         } else if (pageConfig.pageId === 'declaration') {
             return 'Declaration';
         } else if (pageConfig.pageId && pageConfig.pageId.match(/^[IVX]+$/)) {
-            return 'Article ' + pageConfig.pageId;
+            return 'Article ' + romanAsciiToUnicode(pageConfig.pageId);
         }
 
         return pageLabel;
@@ -798,44 +860,44 @@
             if (document.hidden && panel.classList.contains('is-open')) closePanel();
         });
     }
-    
+
     // ---- Glossary Terms: two-tap on touch ----
-(function initGlossaryTwoTap() {
-    var terms = document.querySelectorAll('.glossary-term');
-    if (!terms || !terms.length) return;
+    (function initGlossaryTwoTap() {
+        var terms = document.querySelectorAll('.glossary-term');
+        if (!terms || !terms.length) return;
 
-    // Only apply on touch/coarse-pointer devices; desktop keeps hover behavior.
-    function isTouchLikeEvent(e) {
-        return !!(isMobileGlyphMode || (e && e.pointerType && e.pointerType !== 'mouse'));
-    }
+        // Only apply on touch/coarse-pointer devices; desktop keeps hover behavior.
+        function isTouchLikeEvent(e) {
+            return !!(isMobileGlyphMode || (e && e.pointerType && e.pointerType !== 'mouse'));
+        }
 
-    // Tap outside any glossary term closes the pinned tooltip.
-    document.addEventListener('pointerdown', function (e) {
-        var withinTerm = !!closestSafe(e.target, '.glossary-term');
-        if (!withinTerm) clearActiveTooltip();
-    }, true);
+        // Tap outside any glossary term closes the pinned tooltip.
+        document.addEventListener('pointerdown', function (e) {
+            var withinTerm = !!closestSafe(e.target, '.glossary-term');
+            if (!withinTerm) clearActiveTooltip();
+        }, true);
 
-    Array.prototype.forEach.call(terms, function (term) {
-        term.addEventListener('click', function (e) {
-            if (!isTouchLikeEvent(e)) return;
+        Array.prototype.forEach.call(terms, function (term) {
+            term.addEventListener('click', function (e) {
+                if (!isTouchLikeEvent(e)) return;
 
-            // First tap on a term: show tooltip only, do NOT select the sentence.
-            if (currentlyActiveTooltip !== term) {
-                if (e && e.preventDefault) e.preventDefault();
-                if (e && e.stopPropagation) e.stopPropagation();
+                // First tap on a term: show tooltip only, do NOT select the sentence.
+                if (currentlyActiveTooltip !== term) {
+                    if (e && e.preventDefault) e.preventDefault();
+                    if (e && e.stopPropagation) e.stopPropagation();
 
-                clearActiveTooltip();
-                term.classList.add('tooltip-active');
-                currentlyActiveTooltip = term;
-                return;
-            }
+                    clearActiveTooltip();
+                    term.classList.add('tooltip-active');
+                    currentlyActiveTooltip = term;
+                    return;
+                }
 
-            // Second tap on same term: allow bubble to sentence click handler (selection happens).
-            // (Leave tooltip pinned; tapping elsewhere clears it.)
+                // Second tap on same term: allow bubble to sentence click handler (selection happens).
+                // (Leave tooltip pinned; tapping elsewhere clears it.)
+            });
         });
-    });
-})();
-    
+    })();
+
     // ---- Sentence Selection ----
     (function initSentenceSelection() {
         var sentences = document.querySelectorAll('.sentence');
