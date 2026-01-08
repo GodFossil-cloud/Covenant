@@ -56,6 +56,11 @@
     }
 
     var currentlySelectedSentence = null;
+    var currentlySelectedSubpart = null;
+    var currentlySelectedKey = null;
+    var currentlySelectedQuoteText = '';
+    var currentlySelectedFallbackKey = null;
+
     var currentlyActiveTooltip = null;
     var focusReturnEl = null;
     var scrollLockY = 0;
@@ -96,6 +101,10 @@
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
+    }
+
+    function normalizeWhitespace(value) {
+        return String(value || '').replace(/\s+/g, ' ').trim();
     }
 
     function isBottomSheetMode() {
@@ -169,6 +178,27 @@
         if (!currentlyActiveTooltip) return;
         currentlyActiveTooltip.classList.remove('tooltip-active');
         currentlyActiveTooltip = null;
+    }
+
+    function clearSubpartSelection() {
+        if (!currentlySelectedSubpart) return;
+        currentlySelectedSubpart.classList.remove('is-subpart-selected');
+        currentlySelectedSubpart = null;
+    }
+
+    function clearAllSelectionVisuals() {
+        if (currentlySelectedSentence) {
+            currentlySelectedSentence.classList.remove('is-selected');
+        }
+        clearSubpartSelection();
+    }
+
+    function clearSelectionState() {
+        currentlySelectedSentence = null;
+        currentlySelectedKey = null;
+        currentlySelectedQuoteText = '';
+        currentlySelectedFallbackKey = null;
+        clearSubpartSelection();
     }
 
     function bindActivate(el, handler) {
@@ -262,7 +292,7 @@
         if (!lexiconToggle || !panel) return;
 
         var isOpen = panel.classList.contains('is-open');
-        var hasSelection = !!currentlySelectedSentence;
+        var hasSelection = !!currentlySelectedKey;
         var glyphTarget = lexiconToggle.querySelector('.lexicon-glyph') || lexiconToggle;
 
         if (isMobileGlyphMode) {
@@ -487,6 +517,22 @@
         return s;
     }
 
+    function circledToLatin(letter) {
+        if (!letter) return '';
+        var s = String(letter).trim();
+
+        // If already ASCII A-Z, keep it.
+        if (/^[A-Za-z]$/.test(s)) return s.toUpperCase();
+
+        // Circled capital letters (Ⓐ..Ⓩ)
+        if (/^[\u24B6-\u24CF]$/.test(s)) {
+            var code = s.charCodeAt(0);
+            return String.fromCharCode(65 + (code - 0x24B6));
+        }
+
+        return '';
+    }
+
     /**
      * Format citation based on page config and selection state.
      * @param {string|null} sentenceKey - The data-lexicon-key of selected sentence, or null for page overview
@@ -610,7 +656,7 @@
 
     function updateLexiconButtonState() {
         if (!lexiconToggle) return;
-        lexiconToggle.classList.toggle('has-selection', !!currentlySelectedSentence);
+        lexiconToggle.classList.toggle('has-selection', !!currentlySelectedKey);
         setLexiconGlyph();
     }
 
@@ -773,9 +819,9 @@
         }, 150);
     }
 
-    function renderSentenceExplanation(key, sentenceText) {
+    function renderSentenceExplanation(key, sentenceText, fallbackKey) {
         if (!dynamicContent) return;
-        var explanation = sentenceExplanations[key];
+        var explanation = sentenceExplanations[key] || (fallbackKey ? sentenceExplanations[fallbackKey] : null);
         if (!explanation) {
             renderOverview();
             return;
@@ -824,8 +870,8 @@
             if (panel.classList.contains('is-open')) {
                 closePanel();
             } else {
-                if (currentlySelectedSentence && currentlySelectedSentence.dataset.lexiconKey) {
-                    renderSentenceExplanation(currentlySelectedSentence.dataset.lexiconKey, currentlySelectedSentence.dataset.sentenceText);
+                if (currentlySelectedKey) {
+                    renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
                 } else {
                     renderOverview();
                 }
@@ -892,8 +938,71 @@
                     return;
                 }
 
-                // Second tap on same term: allow bubble to sentence click handler (selection happens).
+                // Second tap on same term: allow bubble to selection handler.
                 // (Leave tooltip pinned; tapping elsewhere clears it.)
+            });
+        });
+    })();
+
+    // ---- Subpart Selection (Ⓐ/Ⓑ/Ⓒ...) ----
+    (function initSubpartSelection() {
+        var subparts = document.querySelectorAll('.sentence.has-subparts .subpart');
+        if (!subparts || !subparts.length) return;
+
+        Array.prototype.forEach.call(subparts, function (subpart) {
+            subpart.addEventListener('click', function (e) {
+                if (e && e.preventDefault) e.preventDefault();
+                if (e && e.stopPropagation) e.stopPropagation();
+
+                clearActiveTooltip();
+
+                var sentence = closestSafe(subpart, '.sentence');
+                if (!sentence) return;
+
+                var baseKey = (sentence.dataset && sentence.dataset.lexiconKey) ? String(sentence.dataset.lexiconKey) : '';
+                if (!baseKey) return;
+
+                var markerEl = subpart.querySelector('.subpart-marker');
+                var letter = circledToLatin(markerEl ? normalizeWhitespace(markerEl.textContent) : '');
+                if (!letter) return;
+
+                var key = baseKey + '.' + letter;
+                var quoteEl = subpart.querySelector('.subpart-content') || subpart;
+                var quoteText = normalizeWhitespace(quoteEl.textContent);
+
+                var hadPreviousSelection = !!currentlySelectedKey;
+                var isSameSelection = (currentlySelectedKey === key);
+
+                // Clear previous visuals
+                if (currentlySelectedSentence && currentlySelectedSentence !== sentence) {
+                    currentlySelectedSentence.classList.remove('is-selected');
+                }
+                clearSubpartSelection();
+
+                if (isSameSelection) {
+                    // Toggle off to overview
+                    sentence.classList.remove('is-selected');
+                    clearSelectionState();
+                    updateLexiconButtonState();
+                    updateCitationLabel(null, true);
+                    renderOverview();
+                    return;
+                }
+
+                // Mark new selection
+                sentence.classList.add('is-selected');
+                currentlySelectedSentence = sentence;
+
+                subpart.classList.add('is-subpart-selected');
+                currentlySelectedSubpart = subpart;
+
+                currentlySelectedKey = key;
+                currentlySelectedFallbackKey = baseKey;
+                currentlySelectedQuoteText = quoteText;
+
+                updateLexiconButtonState();
+                updateCitationLabel(key, hadPreviousSelection);
+                renderSentenceExplanation(key, quoteText, baseKey);
             });
         });
     })();
@@ -904,30 +1013,42 @@
         if (!sentences || !sentences.length) return;
 
         Array.prototype.forEach.call(sentences, function (sentence) {
-            sentence.addEventListener('click', function () {
-                var wasSelected = sentence.classList.contains('is-selected');
-                var hadPreviousSelection = !!currentlySelectedSentence;
+            sentence.addEventListener('click', function (e) {
+                // If the click was inside a subpart, subpart handler owns it.
+                if (closestSafe(e && e.target, '.subpart')) return;
 
-                // Clear previous selection
-                if (currentlySelectedSentence) {
+                clearActiveTooltip();
+
+                var wasSelected = sentence.classList.contains('is-selected');
+                var hadPreviousSelection = !!currentlySelectedKey;
+                var hadSubpartInThisSentence = !!(currentlySelectedSubpart && currentlySelectedSentence === sentence);
+
+                // Clear previous selection visuals (other sentence)
+                if (currentlySelectedSentence && currentlySelectedSentence !== sentence) {
                     currentlySelectedSentence.classList.remove('is-selected');
                 }
+                clearSubpartSelection();
 
-                if (wasSelected) {
+                if (wasSelected && !hadSubpartInThisSentence && currentlySelectedSentence === sentence) {
                     // Deselect: go back to page overview
-                    currentlySelectedSentence = null;
+                    sentence.classList.remove('is-selected');
+                    clearSelectionState();
                     updateLexiconButtonState();
                     updateCitationLabel(null, true);
                     renderOverview();
                 } else {
-                    // Select new sentence
+                    // Select whole sentence
                     sentence.classList.add('is-selected');
                     currentlySelectedSentence = sentence;
-                    updateLexiconButtonState();
 
                     var key = sentence.dataset.lexiconKey;
                     var text = sentence.dataset.sentenceText || sentence.textContent.replace(/^[0-9]+\.\s*/, '');
 
+                    currentlySelectedKey = key;
+                    currentlySelectedQuoteText = text;
+                    currentlySelectedFallbackKey = null;
+
+                    updateLexiconButtonState();
                     updateCitationLabel(key, hadPreviousSelection);
                     renderSentenceExplanation(key, text);
                 }
