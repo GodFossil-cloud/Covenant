@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.1 */
+/*! Covenant ToC Progress Journal v1.0.2 */
 (function () {
     'use strict';
 
@@ -179,7 +179,9 @@
         btn.setAttribute('aria-label', 'Open Contents');
         btn.setAttribute('aria-expanded', 'false');
         btn.setAttribute('aria-controls', 'tocPanel');
-        btn.textContent = '☰';
+
+        // Decorative text; readable and fits the page tone better than a raw "☰".
+        btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span><span class="toc-toggle-label">Contents</span>';
 
         var header = document.querySelector('.section-header');
         if (header) {
@@ -241,10 +243,23 @@
     }
 
     function wireControls() {
+        // Mobile reliability: prefer pointer/touch events; keep click as fallback.
+        var lastActivateAt = 0;
+        function activate(e) {
+            var now = Date.now();
+            if (now - lastActivateAt < 450) return; // prevent double-fire from touch->click
+            lastActivateAt = now;
+
+            if (e && e.cancelable) e.preventDefault();
+            toggleToC();
+        }
+
         if (tocToggle) {
+            tocToggle.addEventListener('pointerup', activate, { passive: false });
+            tocToggle.addEventListener('touchend', activate, { passive: false });
             tocToggle.addEventListener('click', function (e) {
                 e.preventDefault();
-                toggleToC();
+                activate(e);
             });
         }
 
