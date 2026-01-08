@@ -1474,6 +1474,10 @@ body.is-exiting #blackFadeOverlay {
   /* Cradle highlight line (footer-only). */
   --footer-cradle-line: rgba(242, 220, 154, 0.22);
 
+  /* Citation label (footer-only). */
+  --citation-color: rgba(242, 220, 154, 0.95);
+  --citation-shadow: rgba(242, 220, 154, 0.12);
+
   /* Notch geometry (engineered "seat" behind the medallion).
      The notch height must be >= radius or you only see side "quarter" accents.
      Keeping these proportional produces a single continuous semicircle cradle. */
@@ -1680,6 +1684,98 @@ body {
   filter: brightness(0.98);
 }
 
+/* ========================================
+   Citation Label (Dynamic Page/Passage Indicator)
+   ======================================== */
+
+.citation-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18px;
+  margin-top: 10px;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.citation-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: none;
+  font-variant-caps: all-small-caps;
+  color: var(--citation-color);
+  line-height: 1;
+  white-space: nowrap;
+  
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.96),
+    0 0 8px var(--citation-shadow);
+  
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Transition states for citation label */
+@keyframes citationSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes citationSlideUpDramatic {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes citationSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Applied by JS based on transition type */
+.citation-text.slide-up {
+  animation: citationSlideUp 200ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.citation-text.slide-up-dramatic {
+  animation: citationSlideUpDramatic 280ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.citation-text.slide-down {
+  animation: citationSlideDown 280ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .citation-text.slide-up,
+  .citation-text.slide-up-dramatic,
+  .citation-text.slide-down {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (max-width: 600px) {
   /* When the sheet is fully open, drop the seal slightly so it sits flush with the sheet lip. */
   #lexiconToggle[aria-expanded="true"] {
@@ -1706,6 +1802,11 @@ body {
   /* While finger-dragging the seal, remove transform easing (prevents lag/jank). */
   #lexiconToggle.is-seal-dragging {
     transition: none !important;
+  }
+
+  .citation-text {
+    font-size: 0.88rem;
+    letter-spacing: 0.14em;
   }
 }
 
