@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.29 */
+/*! Covenant Lexicon UI v0.2.30 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.29';
+    window.COVENANT_LEXICON_VERSION = '0.2.30';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -1083,7 +1083,7 @@
         var startWasOpen = false;
 
         // closedY is the sheet's "tucked" resting translateY, measured from fully-open (0).
-        // For the Covenant footer seal, we treat the closed rest position as (panelHeight - footerHeight),
+        // For the Covenant footer seal, we treat the closed rest position as (panelHeight - footerHeight - closedPeek),
         // so the sheet lip emerges immediately beneath the footer.
         var closedY = 0;
         var currentY = 0;
@@ -1108,11 +1108,22 @@
             return isBottomSheetMode && isBottomSheetMode();
         }
 
+        function getClosedPeek() {
+            try {
+                var style = window.getComputedStyle(document.documentElement);
+                var val = style.getPropertyValue('--lexicon-panel-closed-peek').trim();
+                return parseFloat(val) || 0;
+            } catch (err) {
+                return 0;
+            }
+        }
+
         function computeClosedY() {
             var rect = panel.getBoundingClientRect();
             var panelH = (rect && rect.height) ? rect.height : 1;
             var footerH = getFooterHeightSafe();
-            closedY = Math.max(1, panelH - footerH);
+            var peek = getClosedPeek(); // must match CSS translateY formula
+            closedY = Math.max(1, panelH - (footerH + peek));
         }
 
         function setPanelY(y, sealDragging) {
