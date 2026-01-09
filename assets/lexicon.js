@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.28 */
+/*! Covenant Lexicon UI v0.2.29 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.28';
+    window.COVENANT_LEXICON_VERSION = '0.2.29';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -702,6 +702,18 @@
         lexiconToggle.classList.toggle('is-seal-dragging', !!draggingNow);
     }
 
+    function clearSealDragOffset() {
+        if (!lexiconToggle) return;
+
+        if (sealClearTimer) {
+            window.clearTimeout(sealClearTimer);
+            sealClearTimer = null;
+        }
+
+        lexiconToggle.style.removeProperty('--seal-drag-y');
+        lexiconToggle.classList.remove('is-seal-dragging');
+    }
+
     function clearSealDragOffsetSoon(ms) {
         if (!lexiconToggle) return;
 
@@ -712,9 +724,7 @@
 
         sealClearTimer = window.setTimeout(function () {
             sealClearTimer = null;
-            if (!lexiconToggle) return;
-            lexiconToggle.style.removeProperty('--seal-drag-y');
-            lexiconToggle.classList.remove('is-seal-dragging');
+            clearSealDragOffset();
         }, ms || 0);
     }
 
@@ -729,9 +739,9 @@
     }
 
     function setSealToClosedPosition() {
-        // Seal sits in the footer notch.
-        setSealDragOffset(0, false);
-        clearSealDragOffsetSoon(520);
+        // Seal sits in the footer notch at its natural CSS position.
+        // Immediately clear the drag offset so CSS takes over.
+        clearSealDragOffset();
     }
 
     // Read the CSS seating nudge (upward offset while closed).
@@ -1170,7 +1180,16 @@
                     setLexiconGlyph();
                 }
             } else {
-                setPanelY(closedY, false);
+                // FIX: When snapping closed, don't call setPanelY with sealDragging=false first.
+                // Instead, set panel position directly, then immediately clear seal offset.
+                currentY = closedY;
+                panel.style.transform = 'translateY(' + closedY + 'px)';
+                
+                // Fade out overlay
+                if (lexOverlay) {
+                    lexOverlay.style.opacity = '0';
+                }
+
                 if (panel.classList.contains('is-open')) {
                     panel.classList.remove('is-open');
                     lexOverlay.classList.remove('is-open');
@@ -1180,10 +1199,9 @@
                     unlockBodyScroll();
                     setLexiconGlyph();
                 }
-                // FIX: Ensure seal finishes at correct closed position before clearing.
-                // Seal should sit at offset 0 (footer notch position) when panel is closed.
-                setSealDragOffset(0, false);
-                clearSealDragOffsetSoon(SNAP_MS + 100);
+                
+                // Clear seal offset immediately so it transitions to natural position (footer notch).
+                clearSealDragOffset();
             }
 
             setTimeout(function () {
