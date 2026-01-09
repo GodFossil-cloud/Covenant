@@ -1184,7 +1184,7 @@
                 // Instead, set panel position directly, then immediately clear seal offset.
                 currentY = closedY;
                 panel.style.transform = 'translateY(' + closedY + 'px)';
-                
+
                 // Fade out overlay
                 if (lexOverlay) {
                     lexOverlay.style.opacity = '0';
@@ -1199,7 +1199,7 @@
                     unlockBodyScroll();
                     setLexiconGlyph();
                 }
-                
+
                 // Clear seal offset immediately so it transitions to natural position (footer notch).
                 clearSealDragOffset();
             }
@@ -1243,7 +1243,13 @@
             if (!dragging || e.pointerId !== pointerId) return;
 
             var deltaY = e.clientY - startY;
-            if (!moved && Math.abs(deltaY) > MOVE_SLOP) moved = true;
+            if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
+                moved = true;
+
+                // Critical for iOS Safari: pointerup fires the tap-toggle handler before endDrag runs.
+                // Mark this as a drag as soon as we cross the slop threshold so the toggle handler bails.
+                window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
+            }
             if (!moved) return;
 
             var now = Date.now();
