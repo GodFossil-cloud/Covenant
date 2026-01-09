@@ -32,6 +32,19 @@ jobs:
           # Prevent GitHub Pages from trying to run Jekyll again on the published branch.
           touch _site/.nojekyll
 
+      - name: Copy critical files excluded from Jekyll build
+        run: |
+          echo "📦 Copying additional files to _site..."
+          
+          # Copy CSS integrity guard workflow (excluded from Jekyll but needed for reference)
+          mkdir -p _site/.github/workflows
+          cp .github/workflows/css-guard.yml _site/.github/workflows/
+          
+          echo "✅ Additional files copied:"
+          echo "  - .github/workflows/css-guard.yml"
+          echo "  - docs/ (auto-included by Jekyll)"
+          echo "  - _visual-check.html (auto-included by Jekyll via _config.yml)"
+
       - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
