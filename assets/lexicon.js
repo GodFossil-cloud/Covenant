@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.30 */
+/*! Covenant Lexicon UI v0.2.31 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.30';
+    window.COVENANT_LEXICON_VERSION = '0.2.31';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -729,13 +729,14 @@
     }
 
     function setSealToOpenPosition() {
-        // On mobile bottom-sheet, the seal should meet the sheet lip.
-        // The seal lives inside the footer, so subtract the footer height from the panel height.
-        // NOTE: In mobile sheet mode we keep the seat nudge active (CSS), so we counterbalance it here.
         var h = getPanelHeightSafe();
         var f = getFooterHeightSafe();
         var n = getSeatNudge();
-        if (h > 0) setSealDragOffset(-(h - f) + n, false);
+
+        // Tiny visual correction: drop the seal slightly when fully open.
+        var OPEN_DROP_PX = 6;
+
+        if (h > 0) setSealDragOffset(-(h - f) + n + OPEN_DROP_PX, false);
     }
 
     function setSealToClosedPosition() {
