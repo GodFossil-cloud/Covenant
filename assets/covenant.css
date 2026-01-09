@@ -1888,3 +1888,19 @@ body {
 .subpart.is-subpart-selected .subpart-marker {
     color: var(--primary-color);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Touch input: stop sticky :hover on the seal; use :active tint instead. */
+/* -------------------------------------------------------------------------- */
+@media (hover: none), (pointer: coarse) {
+  /* Some mobile browsers "stick" :hover after a tap, leaving the seal tinted while closed.
+     Neutralize hover/focus-visible tint on touch and rely on :active for the flash instead. */
+  #lexiconToggle:hover::after,
+  #lexiconToggle:focus-visible::after {
+    background-color: var(--obsidian-1);
+  }
+
+  #lexiconToggle:active::after {
+    background-color: #7a2929;
+  }
+}
