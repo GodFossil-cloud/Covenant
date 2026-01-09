@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.27 */
+/*! Covenant Lexicon UI v0.2.28 */
 (function () {
     'use strict';
 
     // Exposed for quick verification during future page migrations.
-    window.COVENANT_LEXICON_VERSION = '0.2.27';
+    window.COVENANT_LEXICON_VERSION = '0.2.28';
 
     var pageConfig = window.COVENANT_PAGE || {};
     var pageId = pageConfig.pageId || '';
@@ -1180,6 +1180,9 @@
                     unlockBodyScroll();
                     setLexiconGlyph();
                 }
+                // FIX: Ensure seal finishes at correct closed position before clearing.
+                // Seal should sit at offset 0 (footer notch position) when panel is closed.
+                setSealDragOffset(0, false);
                 clearSealDragOffsetSoon(SNAP_MS + 100);
             }
 
