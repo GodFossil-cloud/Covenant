@@ -1,0 +1,89 @@
+name: CSS Integrity Guard
+
+on:
+  pull_request:
+    paths:
+      - 'assets/covenant.css'
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/covenant.css'
+
+jobs:
+  validate-css:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Validate covenant.css integrity
+        run: |
+          echo "🔍 Validating assets/covenant.css..."
+          
+          # Check file exists
+          if [ ! -f "assets/covenant.css" ]; then
+            echo "❌ FATAL: assets/covenant.css not found"
+            exit 1
+          fi
+          
+          # Count lines (minimum threshold: 1400 lines for full file)
+          LINE_COUNT=$(wc -l < assets/covenant.css)
+          MIN_LINES=1400
+          
+          echo "📊 Line count: $LINE_COUNT (minimum: $MIN_LINES)"
+          
+          if [ "$LINE_COUNT" -lt "$MIN_LINES" ]; then
+            echo "❌ FAILED: covenant.css appears truncated ($LINE_COUNT lines < $MIN_LINES)"
+            exit 1
+          fi
+          
+          # Check for required marker comments (sacred architectural boundaries)
+          echo "🔍 Checking for required CSS markers..."
+          
+          MARKERS=(
+            "Obsidian & Gold Leaf"
+            "Lexicon Panel"
+            "Subpart-level selection"
+            "Citation Label"
+            "Navigation Buttons"
+          )
+          
+          MISSING=0
+          
+          for MARKER in "${MARKERS[@]}"; do
+            if ! grep -q "$MARKER" assets/covenant.css; then
+              echo "❌ Missing required marker: '$MARKER'"
+              MISSING=$((MISSING + 1))
+            else
+              echo "✅ Found marker: '$MARKER'"
+            fi
+          done
+          
+          if [ "$MISSING" -gt 0 ]; then
+            echo ""
+            echo "❌ FAILED: $MISSING required CSS markers missing"
+            echo "This may indicate file corruption or incomplete merge."
+            echo "See docs/STYLE-GUARDS.md for architectural requirements."
+            exit 1
+          fi
+          
+          # Check for malformed CSS (basic syntax check)
+          echo "🔍 Checking CSS syntax..."
+          
+          # Count opening vs closing braces
+          OPEN_BRACES=$(grep -o '{' assets/covenant.css | wc -l)
+          CLOSE_BRACES=$(grep -o '}' assets/covenant.css | wc -l)
+          
+          echo "📊 Braces: { $OPEN_BRACES } $CLOSE_BRACES"
+          
+          if [ "$OPEN_BRACES" -ne "$CLOSE_BRACES" ]; then
+            echo "❌ FAILED: Brace mismatch (${OPEN_BRACES} opening, ${CLOSE_BRACES} closing)"
+            echo "CSS syntax may be malformed."
+            exit 1
+          fi
+          
+          echo ""
+          echo "✅ All integrity checks passed"
+          echo "covenant.css is intact and contains all required architectural blocks."
