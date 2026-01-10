@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.6 */
+/*! Covenant ToC Progress Journal v1.0.7 */
 (function () {
     'use strict';
 
@@ -193,8 +193,8 @@
         btn.setAttribute('aria-expanded', 'false');
         btn.setAttribute('aria-controls', 'tocPanel');
 
-        // Decorative text; readable and fits the page tone.
-        btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span><span class="toc-toggle-label">Contents</span>';
+        // Embedded sigil control (glyph-only).
+        btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span>';
 
         var header = document.querySelector('.section-header');
         if (header) {
