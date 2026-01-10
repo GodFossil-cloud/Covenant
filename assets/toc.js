@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.7 */
+/*! Covenant ToC Progress Journal v1.0.8 */
 (function () {
     'use strict';
 
@@ -208,6 +208,25 @@
         tocToggle = btn;
     }
 
+    function positionDropdownPanel() {
+        if (!tocPanel) return;
+
+        var header = document.querySelector('.section-header');
+        var topPx = 16;
+
+        if (header && header.getBoundingClientRect) {
+            var rect = header.getBoundingClientRect();
+            topPx = Math.round(rect.bottom + 10);
+        }
+
+        // For fixed-position elements, top is relative to the viewport.
+        tocPanel.style.top = topPx + 'px';
+
+        // Keep a small bottom gutter so the sheet doesn't collide with the footer dock.
+        var maxH = Math.max(220, window.innerHeight - topPx - 18);
+        tocPanel.style.maxHeight = maxH + 'px';
+    }
+
     // Panel open/close.
     var focusReturnEl = null;
 
@@ -217,6 +236,9 @@
         tocJustOpenedAt = Date.now();
 
         focusReturnEl = tocToggle;
+
+        positionDropdownPanel();
+
         tocPanel.classList.add('is-open');
         tocOverlay.classList.add('is-open');
         tocPanel.setAttribute('aria-hidden', 'false');
@@ -322,6 +344,14 @@
             if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) {
                 closeToC();
             }
+        });
+
+        // Reposition if viewport changes while the panel is open.
+        window.addEventListener('resize', function () {
+            if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
+        });
+        window.addEventListener('orientationchange', function () {
+            if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
         });
 
         window.addEventListener('blur', function () {
