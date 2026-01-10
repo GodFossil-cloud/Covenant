@@ -1990,3 +1990,46 @@ body {
     background-color: #7a2929;
   }
 }
+
+/* =========================================================
+   Compact header mode (journey pages)
+
+   Apply by adding `compact-header` to <body>.
+   ========================================================= */
+
+body.compact-header .container {
+    padding-top: 44px;
+    padding-bottom: 38px;
+}
+
+body.compact-header .section-header {
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+}
+
+body.compact-header .section-header h1 {
+    font-size: 2.1em;
+    margin: 10px 0 8px;
+}
+
+/* Preserve Invocation's tighter tail gap under its end divider. */
+body.page-invocation #invocation .section-divider {
+    margin-bottom: 0.35rem;
+}
+
+@media (max-width: 768px) {
+    body.compact-header .container {
+        padding-top: 30px;
+        padding-bottom: 24px;
+    }
+
+    body.compact-header .section-header h1 {
+        font-size: 1.6em;
+    }
+}
+
+@media (max-width: 480px) {
+    body.compact-header .section-header h1 {
+        font-size: 1.35em;
+    }
+}

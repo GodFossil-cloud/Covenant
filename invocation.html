@@ -12,50 +12,6 @@ layout: none
 
     <link rel="stylesheet" href="assets/covenant.css">
 
-    <style>
-        /* Compact header experiment: invocation.html only (keeps other pages untouched). */
-        body.page-invocation .container {
-            padding-top: 44px;
-            padding-bottom: 38px;
-        }
-
-        body.page-invocation .section-header {
-            margin-bottom: 28px;
-            padding-bottom: 16px;
-        }
-
-        body.page-invocation .section-header .ornament {
-            display: none;
-        }
-
-        body.page-invocation .section-header h1 {
-            font-size: 2.1em;
-            margin: 10px 0 8px;
-        }
-
-        /* Reduce the "tail" gap under the bottom divider on this page. */
-        body.page-invocation #invocation .section-divider {
-            margin-bottom: 0.35rem;
-        }
-
-        @media (max-width: 768px) {
-            body.page-invocation .container {
-                padding-top: 30px;
-                padding-bottom: 24px;
-            }
-
-            body.page-invocation .section-header h1 {
-                font-size: 1.6em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body.page-invocation .section-header h1 {
-                font-size: 1.35em;
-            }
-        }
-    </style>
-
     <script>
     window.COVENANT_PAGE = {
         pageId: 'invocation',
@@ -85,7 +41,7 @@ layout: none
     </script>
     <script src="assets/lexicon.js" defer></script>
 </head>
-<body class="page-invocation">
+<body class="page-invocation compact-header">
     <div id="loadingIcon">֎</div>
     <div id="blackFadeOverlay"></div>
 
