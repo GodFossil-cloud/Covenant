@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.1.0 */
+/*! Covenant ToC Panel Styles v1.1.1 */
 
 /* ===== ToC Toggle (header-mounted by default) ===== */
 .section-header.has-toc-toggle {
@@ -256,14 +256,22 @@ html.toc-open .section-header h1 {
     margin-bottom: 0.35rem;
 }
 
+/* Match the on-page H1 typography so the "Selected" title feels like it lives inside the scroll. */
 .toc-selection-title {
     font-family: 'Crimson Text', serif;
-    font-size: 1.1rem;
+    font-size: 2.5em;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 2px;
+    margin: 20px 0;
+    color: var(--primary-color);
     text-transform: uppercase;
-    color: #1a1a1a;
-    line-height: 1.25;
+    text-align: center;
+}
+
+/* Compact-header pages scale the H1 down; mirror that in the selection well, too. */
+body.compact-header .toc-selection-title {
+    font-size: 2.1em;
+    margin: 10px 0 8px;
 }
 
 .toc-selection-hint {
@@ -384,5 +392,31 @@ html.toc-open .section-header h1 {
 
     .toc-list {
         padding: 0.95rem 1.25rem 1.2rem;
+    }
+}
+
+/* Mirror responsive H1 sizing (so the illusion stays true on small screens). */
+@media (max-width: 768px) {
+    .toc-selection-title {
+        font-size: 1.8em;
+        letter-spacing: 2px;
+        margin: 16px 0;
+    }
+
+    body.compact-header .toc-selection-title {
+        font-size: 1.6em;
+        margin: 10px 0 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .toc-selection-title {
+        font-size: 1.5em;
+        letter-spacing: 1px;
+        margin: 14px 0;
+    }
+
+    body.compact-header .toc-selection-title {
+        font-size: 1.35em;
     }
 }
