@@ -1,1 +1,1980 @@
-<CONTENT_REMOVED_IN_TOOL_CALL_SUMMARY>
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #8b7355;
+    --text-color: #1a1a1a;
+    --bg-color: #fafaf8;
+    --border-color: #d4c5b9;
+    --highlight-color: #f5f1ed;
+    --sentence-highlight: #f0e3d4;
+    --glyph-red: #8b2f2f;
+    --glyph-gold: #c9a961;
+
+    --footer-height: 70px;
+    --footer-safe: env(safe-area-inset-bottom, 0px);
+    --footer-total-height: calc(var(--footer-height) + var(--footer-safe));
+
+    /* Footer palette tokens live in the Obsidian & Gold Leaf block near the bottom. */
+
+    /* Keep this at 0 so the lexicon control sits perfectly centered in the footer. */
+    --lexicon-frame-raise: 0px;
+
+    /* Reliquary / mechanical refinements */
+    --focus-ring: rgba(201, 169, 97, 0.48);
+    --focus-ring-outer: rgba(0, 0, 0, 0.72);
+
+    /* Intro sequence durations (override per-page via lexicon.js). */
+    --intro-icon-duration: 0.5s;
+    --intro-overlay-duration: 1.5s;
+    --intro-container-duration: 1s;
+    --intro-footer-duration: 0.5s;
+    --intro-panel-duration: 2.5s;
+
+    /* Exit sequence durations (Covenant section pages). */
+    --exit-overlay-duration: 360ms;
+    --exit-container-duration: 260ms;
+    --exit-footer-duration: 240ms;
+
+    /* Navigation interaction feedback. */
+    --nav-pulse-duration: 520ms;
+
+    /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
+    --nav-pill-width: 78px;
+    --nav-pill-height: 40px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    font-family: 'Lora', serif;
+    background-color: #000;
+    font-size: 16px;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.7;
+    margin: 0 auto;
+    padding: 40px 20px calc(var(--footer-height) + 40px + var(--footer-safe));
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+
+    /* Prevent sacred text from auto-hyphenating mid-word. */
+    -webkit-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+/* A11y: visually hidden but screen-reader available */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Scroll lock */
+html.lexicon-scroll-lock,
+body.lexicon-scroll-lock {
+    overflow: hidden;
+    height: 100%;
+}
+
+body.lexicon-scroll-lock {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    right: 0;
+}
+
+/* Loading Overlay */
+#loadingIcon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    color: var(--accent-color);
+    z-index: 10001;
+    animation: rotateGlyph 2s linear infinite;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity var(--intro-icon-duration) ease-out;
+}
+
+#loadingIcon.fade-out {
+    opacity: 0;
+}
+
+@keyframes rotateGlyph {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+#blackFadeOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: #000;
+    z-index: 10000;
+    pointer-events: none;
+    transition: opacity var(--intro-overlay-duration) ease-out;
+}
+
+#blackFadeOverlay.fade-out {
+    opacity: 0;
+}
+
+/* Main Content Container */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg-color);
+    padding: 60px;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity var(--intro-container-duration) ease-in;
+}
+
+.container.fade-in {
+    opacity: 1;
+}
+
+/* Section Header */
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 30px;
+}
+
+.ornament {
+    font-size: 28px;
+    letter-spacing: 12px;
+    margin-bottom: 20px;
+    color: var(--accent-color);
+}
+
+h1 {
+    font-family: 'Crimson Text', serif;
+    font-size: 2.5em;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin: 20px 0;
+    color: var(--primary-color);
+    text-transform: uppercase;
+}
+
+h2 {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+/* Text Content */
+p {
+    margin-bottom: 18px;
+    text-align: justify;
+}
+
+p.preamble {
+    font-style: italic;
+    color: #555;
+    font-size: 0.95em;
+}
+
+.section-divider {
+    text-align: center;
+    color: var(--glyph-gold);
+    font-size: 0.9rem;
+    margin: 1rem 0;
+    user-select: none;
+}
+
+/* Foundation-only layout (kept in shared CSS to reduce per-page divergence) */
+.foundation-principles {
+    text-align: center;
+    margin: 30px 0;
+    line-height: 2;
+}
+
+.foundation-principles p {
+    text-align: center;
+    margin: 10px 0;
+    font-weight: 600;
+}
+
+/* Article layout (I–XII): subsection blocks */
+.subsection {
+    margin-bottom: 28px;
+    padding: 16px 20px;
+    background: var(--highlight-color);
+    border-left: 3px solid var(--accent-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subsection.is-selected {
+    background-color: var(--sentence-highlight);
+    box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.3);
+}
+
+.subsection-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-right: 12px;
+    display: inline-block;
+    min-width: 40px;
+    font-variant-numeric: lining-nums;
+}
+
+.subsection-text {
+    display: inline;
+    text-align: justify;
+
+    /* Absolutely no auto-hyphenation. */
+    -webkit-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+
+    /* Don't split words; only break at normal opportunities (spaces / punctuation). */
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
+/* Special layout: subsection has internal subparts (Ⓐ/Ⓑ/Ⓒ) */
+.subsection.has-subparts {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.subsection.has-subparts .subsection-num {
+    margin-right: 0;
+    flex: 0 0 auto;
+}
+
+.subsection.has-subparts .subsection-text {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Article subparts (Ⓐ Ⓑ Ⓒ etc.) */
+.subsection-title {
+    display: block;
+    font-weight: 600;
+    font-size: 0.92em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-variant-numeric: lining-nums;
+}
+
+.subsection-body {
+    display: block;
+}
+
+.subpart {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.subpart:first-child {
+    margin-top: 0;
+}
+
+.subpart-marker {
+    flex: 0 0 auto;
+    min-width: 2.2em;
+    font-weight: 600;
+    color: var(--accent-color);
+    line-height: 1.3;
+    transform: translateY(1px);
+    font-variant-numeric: lining-nums;
+}
+
+.subpart-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.55;
+
+    /* Subtle "hanging indent" feel (wrapped lines tuck under, without looking indented). */
+    padding-left: 0.05em;
+
+    /* Reduce awkward wraps (supported browsers only; safe to ignore elsewhere). */
+    text-wrap: pretty;
+
+    /* Only break long/unbreakable tokens if needed to prevent horizontal overflow. */
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+/* Article classifications (e.g., Error / Breach / Profanation) */
+.classification {
+    margin-top: 12px;
+    line-height: 1.55;
+}
+
+.classification:first-child {
+    margin-top: 0;
+}
+
+.classification-label {
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-right: 6px;
+    letter-spacing: 0.04em;
+}
+
+/* Glossary Terms & Tooltips */
+.glossary-term {
+    cursor: help;
+    border-bottom: 1px dotted var(--accent-color);
+    position: relative;
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.glossary-term:hover {
+    background-color: rgba(139, 115, 85, 0.1);
+}
+
+.glossary-ref {
+    vertical-align: super;
+    font-size: 0.75em;
+    margin-left: 2px;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.tooltip {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-style: normal;
+    font-weight: 400;
+    max-width: 280px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: none;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--primary-color) transparent transparent transparent;
+}
+
+.glossary-term:hover .tooltip,
+.glossary-term.tooltip-active .tooltip {
+    visibility: visible;
+}
+
+/* Sentence Selection */
+.sentence {
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sentence.is-selected {
+    background-color: var(--sentence-highlight);
+    box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.25);
+}
+
+.sentence-label {
+    font-size: 0.7em;
+    vertical-align: super;
+    color: #b79a76;
+    margin-right: 0.2em;
+    user-select: none;
+    transition: color 0.2s ease;
+    font-variant-numeric: lining-nums;
+}
+
+.sentence.is-selected .sentence-label {
+    color: var(--glyph-gold);
+}
+
+/* Sticky Footer Navigation */
+.nav-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--footer-total-height);
+    padding-bottom: var(--footer-safe);
+
+    /* Legacy fallback: Obsidian & Gold Leaf overrides .nav-footer later in this file. */
+    background: linear-gradient(to bottom, var(--footer-top) 0%, var(--footer-mid) 45%, var(--footer-bottom) 100%);
+
+    border-top: 1px solid rgba(0, 0, 0, 0.55);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.85);
+    box-shadow: 0 -10px 18px -10px rgba(0, 0, 0, 0.65), inset 0 -6px 14px -10px rgba(0, 0, 0, 0.45);
+    z-index: 1200;
+    opacity: 0;
+    transition: opacity var(--intro-footer-duration) ease-in;
+}
+
+.nav-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--footer-hairline);
+    pointer-events: none;
+}
+
+.nav-footer.fade-in {
+    opacity: 1;
+}
+
+/* Exit state (Covenant section pages). */
+body.is-exiting .container {
+    opacity: 0;
+    transition: opacity var(--exit-container-duration) ease-in !important;
+}
+
+body.is-exiting .nav-footer {
+    opacity: 0;
+    transition: opacity var(--exit-footer-duration) ease-in !important;
+    pointer-events: none;
+}
+
+/* Overlay default is black; during intro it gets .fade-out to go transparent.
+   On exit we bring it back to opaque (lexicon.js will ensure an overlay exists if it was removed). */
+body.is-exiting #blackFadeOverlay {
+    opacity: 1 !important;
+    transition: opacity var(--exit-overlay-duration) ease-in !important;
+}
+
+.nav-footer-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    height: var(--footer-height);
+    padding: 0 10px;
+    display: grid;
+    grid-template-columns: 100px 1fr 100px;
+    align-items: center;
+}
+
+.nav-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    align-self: stretch;
+    height: 100%;
+    padding-top: 8px;
+}
+
+/* Navigation Buttons - Base Styles */
+.nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 1.55rem;
+    color: var(--glyph-gold);
+    cursor: pointer;
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+.nav-btn:hover:not(:disabled),
+.nav-btn:focus-visible:not(:disabled) {
+    color: #f5d98c;
+    text-shadow: 0 0 8px rgba(201, 169, 97, 0.28);
+}
+
+.nav-btn:active:not(:disabled) {
+    filter: brightness(0.96);
+}
+
+.nav-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* Arrow Buttons - Borders */
+.nav-btn:not(.center)::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border: 0.75px solid #571619;
+    border-radius: 4px;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    pointer-events: none;
+}
+
+.nav-btn:not(.center):hover::before,
+.nav-btn:not(.center):focus-visible::before {
+    border-color: #6a1f20;
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95);
+}
+
+.nav-btn:not(.center):disabled::before {
+    border-color: rgba(87, 22, 25, 0.15);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Arrow Buttons - Background (specular edge highlight; hover = sharper edge, not bigger glow) */
+.nav-btn:not(.center)::after {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border-radius: 4px;
+    z-index: -1;
+    transition: background 0.2s ease;
+    pointer-events: none;
+    background:
+        linear-gradient(to bottom, var(--specular-soft) 0%, rgba(255, 242, 210, 0) 14px),
+        linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
+}
+
+.nav-btn:not(.center):hover::after,
+.nav-btn:not(.center):focus-visible::after {
+    background:
+        linear-gradient(to bottom, var(--specular-bright) 0%, rgba(255, 242, 210, 0) 14px),
+        linear-gradient(to bottom, rgba(255, 235, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
+}
+
+.nav-btn:not(.center):disabled::after {
+    background:
+        linear-gradient(to bottom, rgba(255, 242, 210, 0.12) 0%, rgba(255, 242, 210, 0) 14px),
+        linear-gradient(to bottom, rgba(255, 232, 180, 0.06) 0%, rgba(0, 0, 0, 0.26) 100%);
+}
+
+.nav-btn-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.nav-btn-icon.nav-btn-icon--arrow {
+    display: inline-block;
+    transform: scale(1.06);
+    transform-origin: center;
+
+    /* Prefer Noto Sans Symbols 2 for nav glyphs; fallback to platform symbol fonts. */
+    font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
+
+    /* Ask for text presentation when the codepoint supports emoji/text variants (safe if ignored). */
+    font-variant-emoji: text;
+}
+
+/* Prev/Next blocks (labels under framed arrows) */
+.nav-next,
+.nav-prev {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-next-frame,
+.nav-prev-frame {
+    position: relative;
+    width: var(--nav-pill-width);
+    height: var(--nav-pill-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--glyph-gold);
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 0.08s ease;
+    z-index: 0;
+
+    /* Tiny breathing room from the top edge of the dock (without shifting the whole grid). */
+    margin-top: 1px;
+}
+
+.nav-next-frame::before,
+.nav-prev-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 0.75px solid #571619;
+    border-radius: 4px;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    pointer-events: none;
+}
+
+.nav-next-frame::after,
+.nav-prev-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    z-index: -1;
+    transition: background 0.2s ease;
+    pointer-events: none;
+    background:
+        linear-gradient(to bottom, var(--specular-soft) 0%, rgba(255, 242, 210, 0) 14px),
+        linear-gradient(to bottom, rgba(255, 232, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
+}
+
+.nav-next:hover .nav-next-frame,
+.nav-next:focus-visible .nav-next-frame,
+.nav-prev:hover .nav-prev-frame,
+.nav-prev:focus-visible .nav-prev-frame {
+    color: #f5d98c;
+    text-shadow: 0 0 8px rgba(201, 169, 97, 0.28);
+}
+
+.nav-next:hover .nav-next-frame::before,
+.nav-next:focus-visible .nav-next-frame::before,
+.nav-prev:hover .nav-prev-frame::before,
+.nav-prev:focus-visible .nav-prev-frame::before {
+    border-color: #6a1f20;
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95);
+}
+
+.nav-next:hover .nav-next-frame::after,
+.nav-next:focus-visible .nav-next-frame::after,
+.nav-prev:hover .nav-prev-frame::after,
+.nav-prev:focus-visible .nav-prev-frame::after {
+    background:
+        linear-gradient(to bottom, var(--specular-bright) 0%, rgba(255, 242, 210, 0) 14px),
+        linear-gradient(to bottom, rgba(255, 235, 180, 0.14) 0%, rgba(0, 0, 0, 0.30) 100%);
+}
+
+.nav-next:active .nav-next-frame,
+.nav-prev:active .nav-prev-frame {
+    filter: brightness(0.96);
+}
+
+.nav-next .nav-btn-icon--arrow {
+    transform: scale(1.12);
+}
+
+.nav-prev .nav-btn-icon--arrow {
+    transform: scale(1.12);
+}
+
+/* Lexicon Button - Center */
+.nav-btn.center {
+    width: var(--nav-pill-width);
+    height: var(--nav-pill-height);
+    padding: 0 14px;
+    max-width: none;
+    font-size: 1.52rem;
+    white-space: nowrap;
+    line-height: 1;
+    text-align: center;
+    letter-spacing: 0.04em;
+    font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', 'Lora', serif;
+    transform: none;
+
+    /* Match the left/right framed controls. */
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+.nav-btn.center .lexicon-glyph {
+    display: inline-block;
+    line-height: 1;
+    transform: translateY(0.5px);
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+/* Fixed rotation box for the middle 𖤓 (prevents layout jitter while spinning) */
+.nav-btn.center .lexicon-glyph-mid {
+    display: inline-grid;
+    place-items: center;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    vertical-align: -0.06em;
+}
+
+/* The actual rotating glyph (inner element) */
+.nav-btn.center .lexicon-glyph-mid-inner {
+    display: inline-block;
+    line-height: 1;
+    transform-origin: 50% 50%;
+}
+
+.nav-btn.center::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 0.75px solid #571619;
+    border-radius: 4px;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    pointer-events: none;
+}
+
+.nav-btn.center:hover::before,
+.nav-btn.center:focus-visible::before {
+    border-color: #6a1f20;
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95);
+}
+
+.nav-btn.center::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--glyph-red);
+    border-radius: 4px;
+    z-index: -1;
+    transition: background-color 0.2s ease;
+    pointer-events: none;
+}
+
+.nav-btn.center:hover::after,
+.nav-btn.center:focus-visible::after {
+    background-color: #7a2929;
+}
+
+/* Lexicon Button - Active State */
+.nav-btn.center.has-selection {
+    color: #e8c782;
+    text-shadow: 0 0 8px rgba(201, 169, 97, 0.32), 0 0 14px rgba(201, 169, 97, 0.18);
+}
+
+.nav-btn.center.has-selection::before {
+    transform: translateY(-1px);
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
+                inset 0 0 10px rgba(201, 169, 97, 0.22),
+                inset 0 0 20px 3px rgba(201, 169, 97, 0.22),
+                inset 0 0 32px 8px rgba(201, 169, 97, 0.1);
+}
+
+.nav-btn.center.has-selection::after {
+    background-color: #5f1b1b;
+    transform: translateY(-1px);
+}
+
+/* Focus-visible "inspection ring" */
+.nav-btn:focus-visible:not(:disabled) {
+    outline: none;
+}
+
+.nav-btn:focus-visible:not(:disabled)::before {
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
+                0 0 0 2px var(--focus-ring),
+                0 0 0 4px var(--focus-ring-outer);
+}
+
+.nav-next:focus-visible,
+.nav-prev:focus-visible {
+    outline: none;
+}
+
+.nav-next:focus-visible .nav-next-frame::before,
+.nav-prev:focus-visible .nav-prev-frame::before {
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
+                0 0 0 2px var(--focus-ring),
+                0 0 0 4px var(--focus-ring-outer);
+}
+
+/* Mechanical press: 1px travel + deeper inset shadow */
+.nav-btn:not(.center):active:not(:disabled) {
+    transform: translateY(1px);
+    filter: brightness(0.96);
+}
+
+.nav-btn:not(.center):active:not(:disabled)::before {
+    border-color: #4f1618;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.98),
+                inset 0 2px 10px rgba(0, 0, 0, 0.55);
+}
+
+.nav-next:active .nav-next-frame,
+.nav-prev:active .nav-prev-frame {
+    transform: translateY(1px);
+    filter: brightness(0.96);
+}
+
+.nav-next:active .nav-next-frame::before,
+.nav-prev:active .nav-prev-frame::before {
+    border-color: #4f1618;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.98),
+                inset 0 2px 10px rgba(0, 0, 0, 0.55);
+}
+
+.nav-btn.center:active:not(:disabled) {
+    transform: translateY(1px);
+    filter: brightness(0.98);
+}
+
+/* Labels: plain text (still inside the clickable Prev/Next link) */
+.nav-next-label,
+.nav-prev-label {
+    display: inline-block;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+
+    text-transform: none;
+    font-variant-caps: all-small-caps;
+
+    color: var(--footer-label);
+    line-height: 1;
+    user-select: none;
+    white-space: nowrap;
+
+    text-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.92),
+        0 -1px 0 rgba(255, 255, 255, 0.08);
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Labels do not visually respond (the framed arrow still does). */
+.nav-next:hover .nav-next-label,
+.nav-next:focus-visible .nav-next-label,
+.nav-prev:hover .nav-prev-label,
+.nav-prev:focus-visible .nav-prev-label {
+    color: var(--footer-label);
+    border: none;
+    background: transparent;
+}
+
+.nav-next:active .nav-next-label,
+.nav-prev:active .nav-prev-label {
+    transform: none;
+    filter: none;
+}
+
+/* Radiant pulse feedback (triggered via JS: .is-pulsing) */
+@keyframes navRadiantPulse {
+    0% {
+        filter: drop-shadow(0 0 0 rgba(201,169,97,0.0));
+    }
+    35% {
+        filter:
+            drop-shadow(0 0 11px rgba(201,169,97,0.32))
+            drop-shadow(0 0 24px rgba(201,169,97,0.18));
+    }
+    100% {
+        filter: drop-shadow(0 0 0 rgba(201,169,97,0.0));
+    }
+}
+
+.nav-next-frame.is-pulsing,
+.nav-prev-frame.is-pulsing,
+.nav-btn.center.is-pulsing {
+    animation: navRadiantPulse var(--nav-pulse-duration) ease-out 1;
+
+    /* Always-visible halo (even if filter animation is subtle). */
+    box-shadow:
+        0 0 0 1px rgba(201, 169, 97, 0.26),
+        0 0 18px rgba(201, 169, 97, 0.20),
+        0 0 34px rgba(201, 169, 97, 0.12);
+}
+
+.nav-next-frame.is-pulsing::before,
+.nav-prev-frame.is-pulsing::before {
+    border-color: rgba(201, 169, 97, 0.55);
+    box-shadow:
+        inset 0 0 14px rgba(0, 0, 0, 0.95),
+        0 0 0 1px rgba(201, 169, 97, 0.20),
+        0 0 18px rgba(201, 169, 97, 0.16);
+}
+
+.nav-next-frame.is-pulsing::after,
+.nav-prev-frame.is-pulsing::after {
+    background:
+        linear-gradient(to bottom, rgba(255, 242, 210, 0.22) 0%, rgba(255, 242, 210, 0) 14px),
+        linear-gradient(to bottom, rgba(255, 232, 180, 0.18) 0%, rgba(0, 0, 0, 0.26) 100%);
+}
+
+.nav-btn.center.is-pulsing::before {
+    border-color: rgba(201, 169, 97, 0.55);
+    box-shadow:
+        inset 0 0 14px rgba(0, 0, 0, 0.95),
+        0 0 0 1px rgba(201, 169, 97, 0.20),
+        0 0 18px rgba(201, 169, 97, 0.16);
+}
+
+.nav-btn.center.is-pulsing::after {
+    background-color: #7a2929;
+}
+
+/* Brief "press down" nudge that can be applied independently of :active.
+   JS adds .is-nudging for ~120ms on click, so even ultra-fast taps read as a physical press. */
+.nav-next-frame.is-nudging,
+.nav-prev-frame.is-nudging {
+    transform: translateY(1px);
+    filter: brightness(0.96);
+}
+
+.nav-next-frame.is-nudging::before,
+.nav-prev-frame.is-nudging::before {
+    border-color: #4f1618;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.98),
+                inset 0 2px 10px rgba(0, 0, 0, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-next-frame.is-pulsing,
+    .nav-prev-frame.is-pulsing,
+    .nav-btn.center.is-pulsing {
+        animation: none;
+    }
+}
+
+/* Lexicon Overlay */
+.lexicon-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    z-index: 700;
+}
+
+.lexicon-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Lexicon Panel */
+.lexicon-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(360px, 90vw);
+
+    /* Panel itself is transparent; header/body paint their own surfaces. */
+    background: transparent;
+
+    border-left: 1px solid #3a3a3a;
+    box-shadow: none;
+    transform: translateX(100%);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity var(--intro-panel-duration) ease-in;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+
+    /* Remove parent padding; header/body handle their own padding. */
+    padding: 0;
+
+    opacity: 0;
+    overscroll-behavior: contain;
+
+    /* Restore subtle curve + clip inner surfaces to the curve. */
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    overflow: hidden;
+}
+
+.lexicon-panel.fade-in {
+    opacity: 1;
+}
+
+.lexicon-panel.is-open {
+    transform: translateX(0);
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.5);
+}
+
+.lexicon-panel.is-dragging {
+    transition: none !important;
+}
+
+.lexicon-drag-region {
+    display: none;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 0 10px;
+    margin: -10px 0 8px;
+    user-select: none;
+    cursor: grab;
+    touch-action: none;
+}
+
+.lexicon-drag-pill {
+    width: 76px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(210, 191, 150, 0.58);
+    transform: translateY(-2px);
+    box-shadow: 0 0 8px rgba(201, 169, 97, 0.14), 0 0 16px rgba(0, 0, 0, 0.75);
+    transition: box-shadow 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+.lexicon-drag-pill.is-pressed {
+    background: rgba(210, 191, 150, 0.82);
+    box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.38),
+                0 0 18px rgba(201, 169, 97, 0.22),
+                0 0 22px rgba(0, 0, 0, 0.85);
+    transform: translateY(-2px) scaleX(1.02);
+}
+
+.lexicon-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* Opaque header (not glass) */
+    background: #1a1a1a;
+    border-bottom: 1px solid rgba(242, 220, 154, 0.10);
+
+    padding: 22px 20px 14px;
+    margin: 0;
+}
+
+.lexicon-panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--glyph-gold);
+}
+
+.lexicon-panel-mode {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #b8986a;
+    margin-top: 4px;
+}
+
+.lexicon-panel-close {
+    border: none;
+    background: transparent;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--glyph-gold);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: color 0.2s ease, background-color 0.18s ease, box-shadow 0.18s ease, text-shadow 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lexicon-panel-close:hover,
+.lexicon-panel-close:focus-visible {
+    color: #e0bf7a;
+}
+
+.lexicon-panel-close.is-pressed {
+    color: #f5d98c;
+    background: rgba(201, 169, 97, 0.10);
+    box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.28),
+                0 0 16px rgba(201, 169, 97, 0.18);
+    text-shadow: 0 0 10px rgba(201, 169, 97, 0.22);
+}
+
+.lexicon-panel-body {
+    font-size: 0.95rem;
+    color: #d4d4d4;
+    line-height: 1.6;
+    flex: 1 1 auto;
+    overflow-y: auto;
+
+    /* Fallback surface (readable even without blur support). */
+    background: #141418;
+    padding: 16px 20px calc(var(--footer-total-height) + 18px) 20px;
+    padding-right: 12px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        inset 0 18px 30px rgba(0, 0, 0, 0.28);
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--glyph-gold) #555;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+
+@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+    .lexicon-panel-body {
+        background: linear-gradient(
+            to bottom,
+            rgba(14, 14, 18, 0.52),
+            rgba(10, 10, 12, 0.66)
+        );
+        -webkit-backdrop-filter: blur(10px) saturate(120%);
+        backdrop-filter: blur(10px) saturate(120%);
+    }
+}
+
+.lexicon-panel-body::-webkit-scrollbar { width: 10px; }
+.lexicon-panel-body::-webkit-scrollbar-track { background: #555; }
+.lexicon-panel-body::-webkit-scrollbar-thumb { background: var(--glyph-gold); }
+.lexicon-panel-body::-webkit-scrollbar-thumb:hover { background: #d4b070; }
+
+.lexicon-panel-body p { padding-right: 20px; }
+.lexicon-panel-body p + p { margin-top: 0.9rem; }
+
+/* Added: make JS opacity changes actually animate. */
+#lexiconDynamicContent { transition: opacity 150ms ease; }
+
+.lexicon-sentence-quote {
+    font-size: 0.88rem;
+    font-style: italic;
+    color: #a8a8a8;
+    margin-bottom: 1rem;
+    padding: 0.6rem 1rem;
+    background: #262626;
+    border-left: 2px solid var(--glyph-gold);
+    line-height: 1.5;
+}
+
+.lexicon-link {
+    display: inline-block;
+    margin-top: 1.2rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 2px;
+    border: 1px solid var(--glyph-gold);
+    color: var(--glyph-gold);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    background-color: #262626;
+}
+
+.lexicon-link:hover,
+.lexicon-link:focus-visible {
+    background-color: var(--glyph-gold);
+    color: #1a1a1a;
+}
+
+.lexicon-glossary-footer {
+    margin-top: 1.6rem;
+    padding-top: 1rem;
+    border-top: 1px solid #3a3a3a;
+    font-size: 0.85rem;
+}
+
+.lexicon-glossary-footer h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    color: var(--glyph-gold);
+}
+
+.lexicon-term-list { list-style: none; }
+.lexicon-term-list li + li { margin-top: 0.5rem; }
+
+.lexicon-term-label {
+    font-weight: 600;
+    color: #e0bf7a;
+}
+
+.lexicon-term-ref {
+    font-size: 0.75rem;
+    vertical-align: super;
+    color: var(--glyph-gold);
+    margin-left: 2px;
+}
+
+/* Media Queries */
+@media print {
+    #loadingIcon,
+    #blackFadeOverlay,
+    .nav-footer,
+    .lexicon-panel,
+    .lexicon-overlay {
+        display: none !important;
+    }
+
+    html,
+    body {
+        background-color: white;
+    }
+
+    body { padding: 0; }
+
+    .container {
+        padding: 0;
+        opacity: 1 !important;
+    }
+
+    .tooltip { display: none; }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --nav-pill-width: 70px;
+        --nav-pill-height: 36px;
+    }
+
+    body {
+        padding: 20px 10px calc(var(--footer-height) + 30px + var(--footer-safe));
+        font-size: 15px;
+    }
+
+    .container { padding: 30px 20px; }
+
+    h1 { font-size: 1.8em; }
+
+    h2 { font-size: 1.3em; }
+
+    #loadingIcon { font-size: 36px; }
+
+    .tooltip { max-width: 240px; }
+
+    .subsection { padding: 12px 16px; }
+
+    .nav-btn { font-size: 1.35rem; }
+
+    .nav-btn-icon { font-size: 1.25rem; }
+
+    .nav-next-label,
+    .nav-prev-label {
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
+    }
+}
+
+@media (max-width: 600px) {
+    .lexicon-drag-region {
+        display: flex;
+        padding: 12px 0 14px;
+        margin: 0 0 6px; /* was -14px 0 6px */
+        min-height: 44px;
+    }
+
+    .lexicon-drag-pill {
+        width: 86px;
+        height: 5px;
+    }
+
+    .lexicon-panel-close {
+        width: 44px;
+        height: 44px;
+        font-size: 2rem;
+    }
+
+    .lexicon-panel {
+        top: 0;
+        bottom: 0;
+        right: 0;
+    	left: 0;
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-left: none;
+        border-top: 1px solid #3a3a3a;
+        border-radius: 12px 12px 0 0;
+        transform: translateY(calc(100% - (var(--footer-total-height) + var(--lexicon-panel-closed-peek))));
+        z-index: 800;
+    }
+
+    @supports (height: 100dvh) {
+        .lexicon-panel {
+            height: 100dvh;
+            max-height: 100dvh;
+        }
+    }
+
+    .lexicon-panel.is-open {
+        transform: translateY(0);
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.5);
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --nav-pill-width: 66px;
+        --nav-pill-height: 34px;
+    }
+
+    .container { padding: 20px 15px; }
+
+    h1 {
+        font-size: 1.5em;
+        letter-spacing: 1px;
+    }
+
+    h2 { font-size: 1.1em; }
+
+    .ornament {
+        font-size: 20px;
+        letter-spacing: 8px;
+    }
+
+    #loadingIcon { font-size: 32px; }
+
+    .tooltip { max-width: 200px; }
+
+    .subsection { padding: 10px 12px; }
+
+    .subsection-num {
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .subsection.has-subparts {
+        display: block;
+    }
+
+    .subpart {
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .subpart-marker {
+        min-width: 2.0em;
+    }
+
+    .nav-btn { font-size: 1.25rem; }
+
+    .nav-btn-icon { font-size: 1.15rem; }
+
+    .nav-next-label,
+    .nav-prev-label {
+        font-size: 0.80rem;
+        letter-spacing: 0.11em;
+    }
+}
+
+@media (max-width: 360px) {
+    :root {
+        --nav-pill-width: 60px;
+        --nav-pill-height: 32px;
+    }
+
+    .nav-footer-inner {
+        grid-template-columns: 86px 1fr 86px;
+    }
+}
+
+
+/* =========================================================
+   Obsidian & Gold Leaf — Cenotaph Seal Footer (Round Medallion)
+   (Overrides; keep the rest of the site intact.)
+
+   NOTE: This block intentionally re-declares :root and body/nav styles as overrides.
+   Keep it append-only unless the footer system is being redesigned.
+   ========================================================= */
+
+:root {
+  /* Declarative medallion lift. */
+  --seal-lift: 12px;
+  --seal-rise: 10px;   /* how far seal rises above dock */
+  --seal-depth: 10px;  /* legacy: how far tab extends into dock (kept for compatibility) */
+
+  /* Fine seating adjustment: raise the seal a touch when closed, so it sits "in" the cradle. */
+  --seal-seat-nudge-closed: 25px;
+
+  /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
+  --lexicon-panel-closed-peek: 6px;
+    
+  /* Medallion sizing (desktop baseline). */
+  --seal-size: 58px;
+
+  /* Obsidian plate palette (footer-only). */
+  --obsidian-0: #050506;
+  --obsidian-1: #0b0c0e;
+  --obsidian-2: #121318;
+
+  /* Antique brass default (resting state). */
+  --brass-0: #5f4a1b;   /* aged shadow */
+  --brass-1: #9a7726;   /* main antique brass */
+  --brass-2: #c09a3f;   /* hover/focus brass highlight */
+
+  /* Sacred leaf (reserved for selection emphasis). */
+  --leaf-0: #f2dc9a;
+  --leaf-1: #ffd77a;
+
+  /* Legacy footer gradient tokens (kept for compatibility; aliased to obsidian). */
+  --footer-top: var(--obsidian-2);
+  --footer-mid: var(--obsidian-1);
+  --footer-bottom: var(--obsidian-0);
+
+  /* Footer text/label tones (footer-only). */
+  --footer-label: rgba(236, 228, 206, 0.82);
+  --footer-label-hover: rgba(245, 236, 214, 0.95);
+
+  /* Focus ring (footer-only override): harmonize keyboard focus with brass/leaf. */
+  --focus-ring: rgba(242, 220, 154, 0.34);
+
+  /* Specular + engraved plate tokens used by shared footer components. */
+  --specular-soft: rgba(255, 242, 210, 0.18);
+  --specular-bright: rgba(255, 242, 210, 0.28);
+
+  --plate-border: rgba(201, 169, 97, 0.22);
+  --plate-hi: rgba(255, 235, 195, 0.10);
+  --plate-lo: rgba(0, 0, 0, 0.38);
+
+  /* Frame lines in footer (footer-only). */
+  --footer-frame: rgba(154, 119, 38, 0.72);
+
+  /* Hairline accent across the footer slab (footer-only). */
+  --footer-hairline: rgba(154, 119, 38, 0.18);
+
+  /* Cradle highlight line (footer-only). */
+  --footer-cradle-line: rgba(242, 220, 154, 0.22);
+
+  /* Citation label (footer-only). */
+  --citation-color: rgba(242, 220, 154, 0.95);
+  --citation-shadow: rgba(242, 220, 154, 0.12);
+
+  /* Notch geometry (engineered "seat" behind the medallion).
+     The notch height must be >= radius or you only see side "quarter" accents.
+     Keeping these proportional produces a single continuous semicircle cradle. */
+  --seal-notch-radius: calc(var(--seal-size) * 0.52);
+  --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
+}
+
+/* Ensure page content never sits under the lifted seal. */
+body {
+  padding-bottom: calc(var(--footer-height) + var(--seal-lift) + 40px + var(--footer-safe));
+}
+
+/* Footer slab: obsidian plate + restrained brass hairline. */
+.nav-footer {
+  background:
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+  border-top: 1px solid rgba(0, 0, 0, 0.70);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.92);
+  box-shadow:
+    0 -14px 22px -14px rgba(0, 0, 0, 0.78),
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+}
+
+.nav-footer::before {
+  background: var(--footer-hairline);
+}
+
+/* Engineered cradle highlight behind the seal (single upward-facing semicircle). */
+.nav-footer::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--seal-notch-height);
+  pointer-events: none;
+
+  /* A single semicircle "nest" under the seal:
+     - inner dark shading to suggest a carved seat
+     - thin leaf-toned hairline tracing the curve */
+  background:
+    radial-gradient(circle at 50% 0%,
+      rgba(0,0,0,0.62) 0 calc(var(--seal-notch-radius) - 12px),
+      rgba(0,0,0,0.00) calc(var(--seal-notch-radius) - 2px)
+    ),
+    radial-gradient(circle at 50% 0%,
+      transparent 0 calc(var(--seal-notch-radius) - 1px),
+      var(--footer-cradle-line) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 1px),
+      transparent calc(var(--seal-notch-radius) + 2px)
+    );
+
+  opacity: 0.90;
+}
+
+/* Footer control color (antique brass by default). */
+.nav-btn {
+  color: var(--brass-1);
+}
+
+.nav-btn:hover:not(:disabled),
+.nav-btn:focus-visible:not(:disabled) {
+  color: var(--brass-2);
+  text-shadow: 0 0 10px rgba(242,220,154,0.10);
+}
+
+/* Keep side frames antique even when the seal is luminous. */
+.nav-next-frame,
+.nav-prev-frame {
+  color: var(--brass-1);
+  text-shadow: none;
+}
+
+.nav-next-frame::before,
+.nav-prev-frame::before {
+  border: 0.75px solid var(--footer-frame);
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.92),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.nav-next-frame::after,
+.nav-prev-frame::after {
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 14px),
+    linear-gradient(to bottom, rgba(154,119,38,0.06) 0%, rgba(0,0,0,0.38) 100%);
+}
+
+.nav-next:hover .nav-next-frame,
+.nav-next:focus-visible .nav-next-frame,
+.nav-prev:hover .nav-prev-frame,
+.nav-prev:focus-visible .nav-prev-frame {
+  color: var(--brass-2);
+}
+
+.nav-next:hover .nav-next-frame::before,
+.nav-next:focus-visible .nav-next-frame::before,
+.nav-prev:hover .nav-prev-frame::before,
+.nav-prev:focus-visible .nav-prev-frame::before {
+  border-color: rgba(192,154,63,0.62);
+}
+
+/* Center: circular seal (no gold border). */
+.nav-btn.center {
+  width: var(--seal-size);
+  height: var(--seal-size);
+  padding: 0;
+  border-radius: 999px;
+  overflow: hidden;
+
+  /* Default = closed state: nudge upward slightly so it seats into the cradle. */
+  --seal-seat-nudge: var(--seal-seat-nudge-closed);
+
+  --seal-translate: calc(-1 * var(--seal-rise));
+
+  /* Allow JS to add temporary drag without clobbering the base lift.
+     NOTE: --seal-drag-y is driven by assets/lexicon.js (single-seal continuous motion). */
+  transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+
+  z-index: 2;
+  margin-top: 0;
+
+  /* Slightly larger glyph in a circular seal. */
+  font-size: 1.6rem;
+}
+
+/* When the panel is open, remove the extra seating nudge.
+   IMPORTANT: while finger-dragging, keep the nudge so the seal doesn't "snap" downward the instant aria-expanded flips. */
+#lexiconToggle[aria-expanded="true"]:not(.is-seal-dragging) {
+  --seal-seat-nudge: 0px;
+}
+
+.nav-btn.center::before {
+  inset: 0;
+  border-radius: 999px;
+
+  /* Remove the gold/brass outline; keep only a quiet dark rim for definition. */
+  border: 0.75px solid rgba(0, 0, 0, 0.72);
+
+  /* Small, tight, non-glow cast shadow to "stamp" the seal into the slab. */
+  box-shadow:
+    inset 0 0 18px rgba(0,0,0,0.84),
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 10px 18px -14px rgba(0,0,0,0.90),
+    0 14px 10px -12px rgba(0,0,0,0.92);
+}
+
+.nav-btn.center::after {
+  inset: 0;
+  border-radius: 999px;
+  background:
+    radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40)),
+    var(--obsidian-1);
+}
+
+.nav-btn.center:hover::before,
+.nav-btn.center:focus-visible::before {
+  border-color: rgba(0, 0, 0, 0.62);
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,0.96),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 14px 10px -12px rgba(0,0,0,0.92);
+}
+
+/* Ensure pulse state doesn't reintroduce a gold border from earlier rules. */
+.nav-btn.center.is-pulsing::before {
+  border-color: rgba(0, 0, 0, 0.62);
+}
+
+/* Selection state = sacred leaf + textured fleck (not neon glow). */
+.nav-btn.center.has-selection {
+  color: var(--leaf-1);
+  text-shadow: 0 0 10px rgba(242,220,154,0.16);
+}
+
+.nav-btn.center.has-selection::before {
+  transform: none;
+  border-color: rgba(0, 0, 0, 0.62);
+  box-shadow:
+    inset 0 0 22px rgba(0,0,0,0.96),
+    inset 0 0 0 1px rgba(242,220,154,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 14px 10px -12px rgba(0,0,0,0.92);
+}
+
+.nav-btn.center.has-selection::after {
+  transform: none;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(242,220,154,0.20) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 30%, rgba(242,220,154,0.16) 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 78%, rgba(242,220,154,0.14) 0 1px, transparent 2px),
+    radial-gradient(circle at 82% 74%, rgba(242,220,154,0.12) 0 1px, transparent 2px),
+    radial-gradient(120% 120% at 28% 20%, rgba(255,255,255,0.12), rgba(255,255,255,0) 44%),
+    linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.42)),
+    linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
+}
+
+/* Seal press: sacred stillness (no tactile travel). */
+.nav-btn.center:active:not(:disabled),
+.nav-btn.center.is-nudging {
+  transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  filter: brightness(0.98);
+}
+
+/* ========================================
+   Citation Label (Dynamic Page/Passage Indicator)
+   ======================================== */
+
+.citation-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  margin-top: 6px;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.citation-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: none;
+  font-variant-caps: all-small-caps;
+  color: var(--citation-color);
+  line-height: 1;
+  white-space: nowrap;
+  
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.96),
+    0 0 8px var(--citation-shadow);
+  
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Transition states for citation label */
+@keyframes citationSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes citationSlideUpDramatic {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes citationSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Applied by JS based on transition type */
+.citation-text.slide-up {
+  animation: citationSlideUp 200ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.citation-text.slide-up-dramatic {
+  animation: citationSlideUpDramatic 280ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.citation-text.slide-down {
+  animation: citationSlideDown 280ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .citation-text.slide-up,
+  .citation-text.slide-up-dramatic,
+  .citation-text.slide-down {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  /* When the sheet is fully open, drop the seal slightly so it sits flush with the sheet lip. */
+  #lexiconToggle[aria-expanded="true"] {
+    --seal-translate: 0px;
+  }
+
+  /* In bottom-sheet mode: keep seat-nudge constant even while open so the seal settles in one motion.
+     (JS counterbalances while open; this prevents a second "drop" at the end.) */
+  #lexiconToggle[aria-expanded="true"]:not(.is-seal-dragging) {
+    --seal-seat-nudge: var(--seal-seat-nudge-closed);
+  }
+
+  /* Important for reliable pointer dragging on mobile Safari/Chrome. */
+  #lexiconToggle {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+
+    /* Smooth travel when snapping open/closed (JS drives --seal-drag-y).
+       SYNCED WITH PANEL: 420ms to match the snap timing. */
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* While finger-dragging the seal, remove transform easing (prevents lag/jank). */
+  #lexiconToggle.is-seal-dragging {
+    transition: none !important;
+  }
+
+  .citation-text {
+    font-size: 0.84rem;
+    letter-spacing: 0.13em;
+  }
+}
+
+/* Responsive: ensure body padding stays clear at smaller breakpoints. */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(var(--footer-height) + var(--seal-lift) + 30px + var(--footer-safe));
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --seal-size: 54px;
+    --seal-lift: 8px;
+  }
+}
+
+/* Seal drag: suppress the 1px :active press snap during the drag-open gesture (mobile). */
+@media (max-width: 600px) {
+  #lexiconToggle.is-seal-dragging:active:not(:disabled) {
+    transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  }
+}
+
+/* ========================================
+   Hotfix: prevent seal flash on deselect
+
+   Some mobile browsers (notably iOS Safari) can briefly drop a pseudo-element's background
+   when switching between two complex `background:` shorthands.
+
+   By splitting the seal surface into background-color + background-image, we ensure a stable
+   painted base even if the gradient stack momentarily re-rasterizes.
+
+   We also animate only background-color (not gradients) so the seal returns with a softer tone.
+   ======================================== */
+
+.nav-btn.center::after {
+  background-color: var(--obsidian-1);
+  background-image:
+    radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40));
+  transition: background-color 120ms linear;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.nav-btn.center.has-selection::after {
+  background-color: var(--obsidian-0);
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(242,220,154,0.20) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 30%, rgba(242,220,154,0.16) 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 78%, rgba(242,220,154,0.14) 0 1px, transparent 2px),
+    radial-gradient(circle at 82% 74%, rgba(242,220,154,0.12) 0 1px, transparent 2px),
+    radial-gradient(120% 120% at 28% 20%, rgba(255,255,255,0.12), rgba(255,255,255,0) 44%),
+    linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.42)),
+    linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
+  transition: background-color 120ms linear;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Subpart selection highlight (restored after CSS rollback) */
+/* -------------------------------------------------------------------------- */
+
+/* Subpart-level selection (Ⓐ/Ⓑ/…) */
+.subpart.is-subpart-selected {
+    background: rgba(240, 227, 212, 0.55);
+    border-radius: 6px;
+    padding: 8px 10px;
+    box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.20);
+}
+
+.subpart.is-subpart-selected .subpart-marker {
+    color: var(--primary-color);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Touch input: stop sticky :hover on the seal; use :active tint instead. */
+/* -------------------------------------------------------------------------- */
+@media (hover: none), (pointer: coarse) {
+  /* Some mobile browsers "stick" :hover after a tap, leaving the seal tinted while closed.
+     Neutralize hover/focus-visible tint on touch and rely on :active for the flash instead. */
+  #lexiconToggle:hover::after,
+  #lexiconToggle:focus-visible::after {
+    background-color: var(--obsidian-1);
+  }
+
+  #lexiconToggle:active::after {
+    background-color: #7a2929;
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Touch feedback: highlighted (has-selection) seal gets its own “leaf flare”  */
+/* -------------------------------------------------------------------------- */
+@media (hover: none), (pointer: coarse) {
+  /* Subtle, immediate tactile response (no movement; just light). */
+  #lexiconToggle.has-selection {
+    transition: filter 120ms ease;
+  }
+
+  #lexiconToggle.has-selection:active {
+    filter: brightness(1.06) saturate(1.08);
+  }
+
+  /* Tight gilded rim + quiet halo (complements the leaf scheme). */
+  #lexiconToggle.has-selection:active::before {
+    box-shadow:
+      inset 0 0 22px rgba(0,0,0,0.96),
+      inset 0 0 0 1px rgba(242,220,154,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 0 0 1px rgba(242,220,154,0.22),
+      0 0 18px rgba(242,220,154,0.14),
+      0 14px 10px -12px rgba(0,0,0,0.92);
+  }
+
+  /* Slight surface “lift” while pressed (keeps the fleck texture). */
+  #lexiconToggle.has-selection:active::after {
+    background-color: var(--obsidian-2);
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Drag feedback: keep the red flash for the full seal-drag duration.          */
+/* -------------------------------------------------------------------------- */
+@media (hover: none), (pointer: coarse) {
+  /* lexicon.js toggles .is-seal-dragging while the bottom-sheet is being dragged.
+     Painting the red tint here makes the flash persist through the gesture, not just :active. */
+  #lexiconToggle.is-seal-dragging::after {
+    background-color: #7a2929;
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Drag feedback override: selection mode gets “leaf flare” through drag.      */
+/* -------------------------------------------------------------------------- */
+@media (hover: none), (pointer: coarse) {
+  /* When a passage is highlighted, keep the interaction feedback in the leaf palette,
+     so dragging still reads as responsive without shifting into the red “closed seal” alarm. */
+  #lexiconToggle.has-selection.is-seal-dragging {
+    filter: brightness(1.06) saturate(1.08);
+  }
+
+  #lexiconToggle.has-selection.is-seal-dragging::before {
+    box-shadow:
+      inset 0 0 22px rgba(0,0,0,0.96),
+      inset 0 0 0 1px rgba(242,220,154,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 0 0 1px rgba(242,220,154,0.22),
+      0 0 18px rgba(242,220,154,0.14),
+      0 14px 10px -12px rgba(0,0,0,0.92);
+  }
+
+  #lexiconToggle.has-selection.is-seal-dragging::after {
+    background-color: var(--obsidian-2);
+  }
+
+  /* Default drag tint (when NOT highlighted). */
+  #lexiconToggle.is-seal-dragging:not(.has-selection)::after {
+    background-color: #7a2929;
+  }
+}
