@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.0.8 */
+/*! Covenant ToC Panel Styles v1.1.0 */
 
 /* ===== ToC Toggle (header-mounted by default) ===== */
 .section-header.has-toc-toggle {
@@ -37,6 +37,11 @@
 
     color: rgba(44, 62, 80, 0.72);
     transition: color 160ms ease, opacity 160ms ease, visibility 0ms linear 160ms;
+}
+
+/* Compact-header pages sit differently; center the toggle relative to the title. */
+body.compact-header .toc-toggle {
+    top: 50%;
 }
 
 /* Hide the ToC toggle when:
@@ -79,6 +84,32 @@ html.lexicon-scroll-lock .toc-toggle {
     width: 44px;
     height: 44px;
     transform: none;
+}
+
+/* ===== Scroll lock + Lexicon conflict protection ===== */
+html.toc-scroll-lock {
+    overflow: hidden;
+}
+
+body.toc-scroll-lock {
+    position: fixed;
+    width: 100%;
+}
+
+/* While ToC is open, suppress Lexicon activation so the header slot stays the focus. */
+html.toc-open #lexiconToggle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ===== Header title swap (preview slot behavior) ===== */
+html.toc-open .section-header h1 {
+    transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.section-header.toc-previewing h1.toc-title-swapping {
+    opacity: 0;
+    transform: translateY(-4px);
 }
 
 /* ===== ToC Overlay (matches Lexicon overlay pattern) ===== */

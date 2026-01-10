@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.9 */
+/*! Covenant ToC Progress Journal v1.1.0 */
 (function () {
     'use strict';
 
@@ -24,6 +24,10 @@
     var tocLiveRegion = document.getElementById('tocLiveRegion');
 
     // Two-step selection: select (pending) → close to commit.
+    // Option 1 behavior:
+    // - First click on an unlocked item sets pending + previews in the page header title.
+    // - Second click on the SAME pending item travels immediately.
+    // - Closing the ToC commits (travels) if pending != current.
     var pendingPageId = '';
     var pendingHref = '';
     var pendingTitle = '';
@@ -35,6 +39,135 @@
 
     // Delay navigation slightly so the close animation reads as a ritual "folding".
     var NAV_DELAY_MS = 260;
+
+    // ----------------------------------------
+    // Header title preview slot
+    // ----------------------------------------
+    var headerEl = document.querySelector('.section-header');
+    var headerTitleEl = headerEl ? headerEl.querySelector('h1') : null;
+    var originalHeaderTitleText = headerTitleEl ? String(headerTitleEl.textContent || '') : '';
+
+    function ensureOriginalHeaderTitleCaptured() {
+        if (!headerTitleEl) return;
+        if (originalHeaderTitleText) return;
+        originalHeaderTitleText = String(headerTitleEl.textContent || '');
+    }
+
+    function setHeaderPreviewState(isPreviewing) {
+        if (!headerEl) return;
+        headerEl.classList.toggle('toc-previewing', !!isPreviewing);
+    }
+
+    function animateHeaderTitleTo(title) {
+        if (!headerTitleEl) return;
+        ensureOriginalHeaderTitleCaptured();
+
+        title = String(title || '').trim();
+        if (!title) return;
+
+        var current = String(headerTitleEl.textContent || '').trim();
+        if (current === title) {
+            setHeaderPreviewState(true);
+            return;
+        }
+
+        setHeaderPreviewState(true);
+        headerTitleEl.classList.add('toc-title-swapping');
+
+        setTimeout(function () {
+            headerTitleEl.textContent = title;
+            headerTitleEl.classList.remove('toc-title-swapping');
+        }, 140);
+    }
+
+    function restoreHeaderTitle() {
+        if (!headerTitleEl) return;
+        ensureOriginalHeaderTitleCaptured();
+
+        var target = String(originalHeaderTitleText || '').trim();
+        if (!target) return;
+
+        headerTitleEl.classList.add('toc-title-swapping');
+        setTimeout(function () {
+            headerTitleEl.textContent = target;
+            headerTitleEl.classList.remove('toc-title-swapping');
+            setHeaderPreviewState(false);
+        }, 140);
+    }
+
+    // ----------------------------------------
+    // Scroll lock (mirrors Lexicon approach)
+    // ----------------------------------------
+    var root = document.documentElement;
+    var scrollLockY = 0;
+
+    var isIOS = (function () {
+        try {
+            var ua = navigator.userAgent || '';
+            var platform = navigator.platform || '';
+            var iOSDevice = /iPad|iPhone|iPod/.test(ua);
+            var iPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+            return iOSDevice || iPadOS;
+        } catch (err) {
+            return false;
+        }
+    })();
+
+    var iosTouchMoveBlocker = null;
+    var IOS_TOUCHMOVE_OPTS = { capture: true, passive: false };
+
+    function enableIOSTouchScrollLock() {
+        if (iosTouchMoveBlocker) return;
+
+        iosTouchMoveBlocker = function (e) {
+            if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
+            if (e && e.cancelable) e.preventDefault();
+        };
+
+        document.addEventListener('touchmove', iosTouchMoveBlocker, IOS_TOUCHMOVE_OPTS);
+    }
+
+    function disableIOSTouchScrollLock() {
+        if (!iosTouchMoveBlocker) return;
+        document.removeEventListener('touchmove', iosTouchMoveBlocker, IOS_TOUCHMOVE_OPTS);
+        iosTouchMoveBlocker = null;
+    }
+
+    function lockBodyScroll() {
+        if (root.classList.contains('toc-scroll-lock')) return;
+
+        scrollLockY = window.scrollY || window.pageYOffset || 0;
+        root.classList.add('toc-scroll-lock', 'toc-open');
+
+        if (isIOS) {
+            document.body.style.overflow = 'hidden';
+            enableIOSTouchScrollLock();
+            return;
+        }
+
+        document.body.classList.add('toc-scroll-lock');
+        document.body.style.top = (-scrollLockY) + 'px';
+    }
+
+    function unlockBodyScroll() {
+        if (!root.classList.contains('toc-scroll-lock')) {
+            root.classList.remove('toc-open');
+            return;
+        }
+
+        root.classList.remove('toc-scroll-lock', 'toc-open');
+
+        if (isIOS) {
+            disableIOSTouchScrollLock();
+            document.body.style.overflow = '';
+            window.scrollTo(0, scrollLockY);
+            return;
+        }
+
+        document.body.classList.remove('toc-scroll-lock');
+        document.body.style.top = '';
+        window.scrollTo(0, scrollLockY);
+    }
 
     function escapeHtml(s) {
         return String(s)
@@ -174,6 +307,8 @@
         var titleEl = document.getElementById('tocSelectionTitle');
         if (titleEl) titleEl.textContent = pendingTitle;
 
+        animateHeaderTitleTo(pendingTitle);
+
         // Update list highlight.
         if (tocDynamicContent) {
             var items = tocDynamicContent.querySelectorAll('.toc-item');
@@ -188,7 +323,7 @@
         }
 
         if (!silent) {
-            announce('Selected: ' + pendingTitle + '. Close Contents to travel.');
+            announce('Selected: ' + pendingTitle + '. Close Contents to travel, or tap again to travel now.');
         }
     }
 
@@ -253,6 +388,13 @@
                 stopEvent(e);
                 var pid = btn.getAttribute('data-page-id') || '';
                 if (!pid) return;
+
+                // Option 1: second click on same pending item travels immediately.
+                if (pid === pendingPageId) {
+                    closeToC(true);
+                    return;
+                }
+
                 setPending(pid, false);
             });
         });
@@ -315,6 +457,8 @@
 
         focusReturnEl = tocToggle;
 
+        ensureOriginalHeaderTitleCaptured();
+        lockBodyScroll();
         positionDropdownPanel();
 
         // Default pending selection = current page.
@@ -329,6 +473,8 @@
             pendingHref = '';
             pendingTitle = '';
         }
+
+        if (pendingTitle) animateHeaderTitleTo(pendingTitle);
 
         tocPanel.classList.add('is-open');
         tocOverlay.classList.add('is-open');
@@ -360,12 +506,22 @@
         tocOverlay.setAttribute('aria-hidden', 'true');
         if (tocToggle) tocToggle.setAttribute('aria-expanded', 'false');
 
+        unlockBodyScroll();
+
+        // If this was a cancel (blur/visibility), restore the original title immediately.
+        if (!commit) {
+            restoreHeaderTitle();
+        }
+
         if (shouldNavigate) {
             setTimeout(function () {
                 window.location.href = hrefToNavigate;
             }, NAV_DELAY_MS);
             return;
         }
+
+        // No navigation: restore original title (we were just previewing the current page title).
+        restoreHeaderTitle();
 
         setTimeout(function () {
             var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
