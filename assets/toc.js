@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.1.4 */
+/*! Covenant ToC Progress Journal v1.1.5 */
 (function () {
     'use strict';
 
@@ -97,6 +97,14 @@
 
         var target = String(originalHeaderTitleText || '').trim();
         if (!target) return;
+
+        // Guard: avoid redundant swap animations if the header title never changed.
+        var current = String(headerTitleEl.textContent || '').trim();
+        if (current === target) {
+            headerTitleEl.classList.remove('toc-title-swapping');
+            setHeaderPreviewState(false);
+            return;
+        }
 
         headerTitleEl.classList.add('toc-title-swapping');
         setTimeout(function () {
