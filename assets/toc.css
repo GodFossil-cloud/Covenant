@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.2.5 */
+/*! Covenant ToC Panel Styles v1.2.6 */
 
 /* ===== ToC Toggle (header title itself) ===== */
 .section-header.has-toc-toggle {
@@ -154,6 +154,8 @@ html.toc-open .section-header h1 {
 
     display: flex;
     flex-direction: column;
+
+    /* Hard stop: panel itself must never scroll sideways. */
     overflow: hidden;
 }
 
@@ -237,9 +239,19 @@ html.toc-open .section-header h1 {
 /* ===== Panel Body ===== */
 .toc-panel-body {
     flex: 1;
+
+    /* Vertical only. */
     overflow-y: auto;
+    overflow-x: hidden;
+
     padding: 0;
     -webkit-overflow-scrolling: touch;
+
+    /* Guard against sideways rubber-banding on some browsers. */
+    overscroll-behavior-x: none;
+
+    /* Ensure touch gestures here resolve as vertical scroll only. */
+    touch-action: pan-y;
 
     /* Selection slot geometry. */
     --toc-selection-top: 64px;
@@ -311,6 +323,11 @@ html.toc-open .section-header h1 {
 /* ===== ToC List ===== */
 .toc-list {
     list-style: none;
+
+    /* Ensure padding never pushes the scroll width beyond the container. */
+    box-sizing: border-box;
+    max-width: 100%;
+
     padding: 1.15rem 1.5rem 1.35rem;
     margin: 0;
 }
@@ -324,6 +341,7 @@ html.toc-open .section-header h1 {
     align-items: baseline;
 
     width: 100%;
+    max-width: 100%;
 
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -350,6 +368,11 @@ html.toc-open .section-header h1 {
 
     color: #2c2c2c;
     text-align: center;
+
+    /* Prevent long titles from forcing horizontal scroll. */
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
 
     border-bottom: 1px solid transparent;
     cursor: pointer;
@@ -408,6 +431,10 @@ html.toc-open .section-header h1 {
     color: #a0a0a0;
     cursor: not-allowed;
     text-align: center;
+
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .toc-locked-btn:focus-visible {
