@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.1.2 */
+/*! Covenant ToC Progress Journal v1.1.3 */
 (function () {
     'use strict';
 
@@ -39,6 +39,9 @@
 
     // Delay navigation slightly so the close animation reads as a ritual "folding".
     var NAV_DELAY_MS = 260;
+
+    // When opening, auto-scroll the panel body so the current/pending entry is visible.
+    var TOC_AUTOSCROLL_PAD_PX = 18;
 
     function closestSafe(target, selector) {
         if (!target) return null;
@@ -339,6 +342,39 @@
         }
     }
 
+    function scrollToActiveItem() {
+        if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
+        if (!tocDynamicContent) return;
+
+        var body = tocPanel.querySelector('.toc-panel-body');
+        if (!body) return;
+
+        var active = tocDynamicContent.querySelector('.toc-item--pending') || tocDynamicContent.querySelector('.toc-item--current');
+        if (!active) return;
+
+        // If already visible in the viewport of the scroll container, do nothing.
+        var bodyRect = body.getBoundingClientRect();
+        var activeRect = active.getBoundingClientRect();
+        var isFullyVisible = activeRect.top >= bodyRect.top && activeRect.bottom <= bodyRect.bottom;
+        if (isFullyVisible) return;
+
+        var well = tocDynamicContent.querySelector('.toc-selection');
+        var wellH = well ? well.offsetHeight : 0;
+
+        // Move the active item just beneath the sticky title well.
+        // Use geometry deltas so we don't depend on offsetParent quirks.
+        var deltaTop = activeRect.top - bodyRect.top;
+        var desiredTop = wellH + TOC_AUTOSCROLL_PAD_PX;
+        var nextTop = body.scrollTop + (deltaTop - desiredTop);
+
+        // Clamp.
+        var maxTop = Math.max(0, body.scrollHeight - body.clientHeight);
+        if (nextTop < 0) nextTop = 0;
+        if (nextTop > maxTop) nextTop = maxTop;
+
+        body.scrollTo({ top: nextTop, left: 0, behavior: 'auto' });
+    }
+
     function renderToC() {
         if (!tocDynamicContent) return;
 
@@ -497,7 +533,10 @@
 
         renderToC();
 
+        // After layout, ensure the current/pending item is revealed immediately.
         setTimeout(function () {
+            scrollToActiveItem();
+
             var closeBtn = tocPanel.querySelector('.toc-panel-close');
             if (closeBtn && closeBtn.focus) {
                 closeBtn.focus();
