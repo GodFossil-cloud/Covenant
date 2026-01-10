@@ -1,9 +1,22 @@
-/*! Covenant ToC Panel Styles v1.2.2 */
+/*! Covenant ToC Panel Styles v1.2.3 */
 
 /* ===== ToC Toggle (header title itself) ===== */
 .section-header.has-toc-toggle {
     /* Provide a positioning context for the invisible title-overlay control. */
     position: relative;
+}
+
+/* Subtle sheen on the *title text* when the (invisible) toggle is hovered/focused. */
+.section-header.has-toc-toggle h1 {
+    transition: text-shadow 220ms ease, filter 220ms ease;
+}
+
+.section-header.toc-title-sheen h1 {
+    /* Quiet brass glow; reads as ritual attention, not UI emphasis. */
+    text-shadow:
+        0 0 14px rgba(201, 169, 97, 0.18),
+        0 0 1px rgba(255, 255, 255, 0.16);
+    filter: brightness(1.02);
 }
 
 /* An invisible button positioned by JS to sit directly over the H1 text. */
@@ -77,7 +90,7 @@ html.toc-open #lexiconToggle {
 
 /* ===== Header title swap (selection well behavior) ===== */
 html.toc-open .section-header h1 {
-    transition: opacity 140ms ease, transform 140ms ease;
+    transition: opacity 140ms ease, transform 140ms ease, text-shadow 220ms ease, filter 220ms ease;
 }
 
 .section-header.toc-previewing h1.toc-title-swapping {

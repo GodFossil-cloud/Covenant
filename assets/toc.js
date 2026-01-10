@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.2.1 */
+/*! Covenant ToC Progress Journal v1.2.2 */
 (function () {
     'use strict';
 
@@ -74,6 +74,11 @@
     function setHeaderPreviewState(isPreviewing) {
         if (!headerEl) return;
         headerEl.classList.toggle('toc-previewing', !!isPreviewing);
+    }
+
+    function setTitleSheen(isOn) {
+        if (!headerEl) return;
+        headerEl.classList.toggle('toc-title-sheen', !!isOn);
     }
 
     function animateHeaderTitleTo(title) {
@@ -650,6 +655,7 @@
         tocJustOpenedAt = Date.now();
         focusReturnEl = tocToggle;
 
+        setTitleSheen(false);
         ensureOriginalHeaderTitleCaptured();
         lockBodyScroll();
         positionDropdownPanel();
@@ -705,6 +711,7 @@
     function closeToC(commit) {
         if (!tocPanel || !tocOverlay) return;
 
+        setTitleSheen(false);
         detachScrollSync();
 
         var shouldNavigate = !!commit && pendingHref && pendingPageId && pendingPageId !== currentPageId;
@@ -788,6 +795,12 @@
 
     function wireControls() {
         if (tocToggle) {
+            // Title sheen: hover + keyboard focus only.
+            tocToggle.addEventListener('mouseenter', function () { setTitleSheen(true); });
+            tocToggle.addEventListener('mouseleave', function () { setTitleSheen(false); });
+            tocToggle.addEventListener('focus', function () { setTitleSheen(true); });
+            tocToggle.addEventListener('blur', function () { setTitleSheen(false); });
+
             bindActivate(tocToggle, function (e) {
                 stopEvent(e);
                 toggleToC();
