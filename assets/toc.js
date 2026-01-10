@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.1.0 */
+/*! Covenant ToC Progress Journal v1.1.1 */
 (function () {
     'use strict';
 
@@ -39,6 +39,13 @@
 
     // Delay navigation slightly so the close animation reads as a ritual "folding".
     var NAV_DELAY_MS = 260;
+
+    function closestSafe(target, selector) {
+        if (!target) return null;
+        var el = (target.nodeType === 1) ? target : target.parentElement;
+        if (!el || !el.closest) return null;
+        return el.closest(selector);
+    }
 
     // ----------------------------------------
     // Header title preview slot
@@ -121,6 +128,11 @@
 
         iosTouchMoveBlocker = function (e) {
             if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
+
+            // Allow scrolling INSIDE the ToC panel body.
+            // (Without this exception, iOS cannot scroll the panel content.)
+            if (closestSafe(e.target, '#tocPanel .toc-panel-body')) return;
+
             if (e && e.cancelable) e.preventDefault();
         };
 
