@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.2.6 */
+/*! Covenant ToC Progress Journal v1.2.7 */
 (function () {
     'use strict';
 
@@ -108,6 +108,22 @@
         var prevIdx = idx - 1;
         if (prevIdx > maxIndexUnlocked) return '';
         var prev = window.COVENANT_JOURNEY[prevIdx];
+        return prev && prev.id ? prev.id : '';
+    }
+
+    // Alignment helpers for open-state geometry.
+    // These ignore unlock status so the journey always opens with a clear "ahead/behind" posture.
+    function getNextPageIdAfterAny(pageId) {
+        var idx = window.getJourneyIndex(pageId);
+        if (idx < 0) return '';
+        var next = window.COVENANT_JOURNEY[idx + 1];
+        return next && next.id ? next.id : '';
+    }
+
+    function getPrevPageIdBeforeAny(pageId) {
+        var idx = window.getJourneyIndex(pageId);
+        if (idx <= 0) return '';
+        var prev = window.COVENANT_JOURNEY[idx - 1];
         return prev && prev.id ? prev.id : '';
     }
 
@@ -810,7 +826,12 @@
 
         // Align list so that the NEXT page is the first item beneath the selection well.
         // (If no next page exists, align to the previous page so the list still opens gracefully.)
-        var alignId = getNextUnlockedPageIdAfter(currentPageId) || getPrevUnlockedPageIdBefore(currentPageId);
+        // NOTE: Alignment is independent of unlock status; locked pages can be seen but not selected.
+        var alignId = getNextPageIdAfterAny(currentPageId)
+            || getPrevPageIdBeforeAny(currentPageId)
+            || getNextUnlockedPageIdAfter(currentPageId)
+            || getPrevUnlockedPageIdBefore(currentPageId);
+
         if (alignId) {
             // Suppress any incidental debounce run (even though we're unarmed, this keeps things quiet).
             setScrollSyncSuppressed(240);
