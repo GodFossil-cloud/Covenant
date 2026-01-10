@@ -1935,3 +1935,15 @@ body {
     background-color: var(--obsidian-2);
   }
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* Drag feedback: keep the red flash for the full seal-drag duration.          */
+/* -------------------------------------------------------------------------- */
+@media (hover: none), (pointer: coarse) {
+  /* lexicon.js toggles .is-seal-dragging while the bottom-sheet is being dragged.
+     Painting the red tint here makes the flash persist through the gesture, not just :active. */
+  #lexiconToggle.is-seal-dragging::after {
+    background-color: #7a2929;
+  }
+}
