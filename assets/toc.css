@@ -1,30 +1,21 @@
-/*! Covenant ToC Panel Styles v1.2.1 */
+/*! Covenant ToC Panel Styles v1.2.2 */
 
-/* ===== ToC Toggle (header-mounted by default) ===== */
+/* ===== ToC Toggle (header title itself) ===== */
 .section-header.has-toc-toggle {
-    /* Provide a positioning context for the embedded sigil control. */
+    /* Provide a positioning context for the invisible title-overlay control. */
     position: relative;
 }
 
-/* Embedded sigil (glyph-only) tucked near the title (not aligned with ornaments). */
+/* An invisible button positioned by JS to sit directly over the H1 text. */
 .toc-toggle {
     position: absolute;
-    left: 10px;
-    top: 56%;
-    transform: translateY(-50%);
+    z-index: 1500;
 
-    width: 44px;
-    height: 44px;
     padding: 0;
     margin: 0;
 
     border: none;
     background: transparent;
-
-    display: inline-grid;
-    place-items: center;
-
-    z-index: 1500;
 
     cursor: pointer;
     pointer-events: auto;
@@ -34,38 +25,25 @@
 
     user-select: none;
     -webkit-user-select: none;
+}
+
+.toc-toggle:focus-visible {
+    outline: 2px solid rgba(201, 169, 97, 0.45);
+    outline-offset: 4px;
+}
+
+/* Rare fallback: if a page lacks .section-header, float gently. */
+.toc-toggle--floating {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    width: 44px;
+    height: 44px;
+
+    display: inline-grid;
+    place-items: center;
 
     color: rgba(44, 62, 80, 0.72);
-    transition: color 160ms ease, opacity 160ms ease, visibility 0ms linear 160ms;
-}
-
-/* Compact-header pages sit differently; center the toggle relative to the title. */
-body.compact-header .toc-toggle {
-    top: 50%;
-}
-
-/* Hide the ToC toggle when:
-   - The ToC itself is open (so it never floats above the panel)
-   - The Lexicon is open (Lexicon sets html.lexicon-scroll-lock)
-*/
-.toc-toggle[aria-expanded="true"],
-html.lexicon-scroll-lock .toc-toggle {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition:
-        opacity 160ms ease,
-        visibility 0ms linear 160ms;
-}
-
-.toc-toggle:hover,
-.toc-toggle:focus-visible {
-    color: rgba(44, 62, 80, 0.94);
-}
-
-.toc-toggle:focus-visible {
-    outline: 2px solid rgba(201, 169, 97, 0.55);
-    outline-offset: 2px;
 }
 
 .toc-toggle-glyph {
@@ -74,16 +52,11 @@ html.lexicon-scroll-lock .toc-toggle {
     transform: translateY(-0.5px);
 }
 
-/* Fallback: if a page lacks .section-header, float gently (rare). */
-.toc-toggle--floating {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 1500;
-    margin: 0;
-    width: 44px;
-    height: 44px;
-    transform: none;
+/* Hide the ToC toggle when Lexicon is open (Lexicon sets html.lexicon-scroll-lock). */
+html.lexicon-scroll-lock .toc-toggle {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* ===== Scroll lock + Lexicon conflict protection ===== */
@@ -150,7 +123,7 @@ html.toc-open .section-header h1 {
     /* Scroll unfurl illusion: flat lip at the top (it "emerges" from the divider). */
     border-radius: 0 0 16px 16px;
 
-    /* Above the footer dock; below the toggle (if floating). */
+    /* Above the footer dock. */
     z-index: 1401;
 
     opacity: 0;
@@ -261,7 +234,6 @@ html.toc-open .section-header h1 {
     height: 1px;
     pointer-events: none;
 
-    /* Gentle brass hairline that fades at the edges (keeps it "ritual," not UI-loud). */
     background:
         linear-gradient(
             to right,
@@ -280,30 +252,20 @@ html.toc-open .section-header h1 {
     list-style: none;
     padding: 1.05rem 1.5rem 1.35rem;
     margin: 0;
-    counter-reset: toc-counter;
 }
 
-/* Center each row (number + title) as a single unit. */
+/* Center each row as a single unit (no numeric prefix). */
 .toc-item {
     margin-bottom: 0.5rem;
-    counter-increment: toc-counter;
 
     display: flex;
     justify-content: center;
     align-items: baseline;
-    gap: 0.5rem;
 
     width: 100%;
 
     scroll-snap-align: start;
     scroll-snap-stop: always;
-}
-
-.toc-item::before {
-    content: counter(toc-counter) ".";
-    font-size: 0.9rem;
-    color: #8a8a8a;
-    font-variant-numeric: tabular-nums;
 }
 
 /* Unlocked items are buttons (tap-to-select + auto-snap into the slot). */
@@ -363,10 +325,6 @@ html.toc-open .section-header h1 {
     opacity: 0.78;
 
     transform: translateY(-0.5px);
-}
-
-.toc-item--pending::before {
-    color: rgba(139, 115, 85, 0.85);
 }
 
 /* Locked items (unchanged) */

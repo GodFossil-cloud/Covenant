@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.2.0 */
+/*! Covenant ToC Progress Journal v1.2.1 */
 (function () {
     'use strict';
 
@@ -561,7 +561,30 @@
         });
     }
 
-    // Create a header-mounted toggle so we do not disturb the footer seal geometry.
+    // ----------------------------------------
+    // Title-as-toggle (no sigil button)
+    // ----------------------------------------
+    function positionTitleToggle() {
+        if (!tocToggle) return;
+        if (!headerEl || !headerTitleEl) return;
+
+        if (!tocToggle.classList.contains('toc-toggle--title')) return;
+
+        var headerRect = headerEl.getBoundingClientRect();
+        var titleRect = headerTitleEl.getBoundingClientRect();
+
+        var top = Math.max(0, Math.round(titleRect.top - headerRect.top));
+        var left = Math.max(0, Math.round(titleRect.left - headerRect.left));
+        var w = Math.max(10, Math.round(titleRect.width));
+        var h = Math.max(10, Math.round(titleRect.height));
+
+        tocToggle.style.top = top + 'px';
+        tocToggle.style.left = left + 'px';
+        tocToggle.style.width = w + 'px';
+        tocToggle.style.height = h + 'px';
+    }
+
+    // Create a header-mounted toggle that *covers the title text*.
     function ensureToggleExists() {
         if (tocToggle) return;
         if (!tocPanel) return;
@@ -569,24 +592,31 @@
         var btn = document.createElement('button');
         btn.id = 'tocToggle';
         btn.type = 'button';
-        btn.className = 'toc-toggle';
+        btn.className = 'toc-toggle toc-toggle--title';
         btn.setAttribute('aria-label', 'Open Contents');
         btn.setAttribute('aria-expanded', 'false');
         btn.setAttribute('aria-controls', 'tocPanel');
 
-        // Embedded sigil control (glyph-only).
-        btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span>';
+        // Invisible control (the title itself is the visible affordance).
+        btn.innerHTML = '<span class="sr-only">Toggle Contents</span>';
 
-        var header = document.querySelector('.section-header');
-        if (header) {
-            header.classList.add('has-toc-toggle');
-            header.appendChild(btn);
+        if (headerEl && headerTitleEl) {
+            headerEl.classList.add('has-toc-toggle');
+            headerEl.appendChild(btn);
         } else {
+            // Rare fallback: if a page lacks the standard header.
+            btn.classList.remove('toc-toggle--title');
             btn.classList.add('toc-toggle--floating');
+            btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span>';
             document.body.appendChild(btn);
         }
 
         tocToggle = btn;
+        positionTitleToggle();
+
+        // Keep the overlay aligned if fonts/layout shift after load.
+        setTimeout(positionTitleToggle, 0);
+        setTimeout(positionTitleToggle, 250);
     }
 
     function positionDropdownPanel() {
@@ -607,6 +637,8 @@
         // Keep a small bottom gutter so the sheet doesn't collide with the footer dock.
         var maxH = Math.max(220, window.innerHeight - topPx - 18);
         tocPanel.style.maxHeight = maxH + 'px';
+
+        positionTitleToggle();
     }
 
     // Panel open/close.
@@ -641,7 +673,10 @@
         tocOverlay.classList.add('is-open');
         tocPanel.setAttribute('aria-hidden', 'false');
         tocOverlay.setAttribute('aria-hidden', 'false');
-        if (tocToggle) tocToggle.setAttribute('aria-expanded', 'true');
+        if (tocToggle) {
+            tocToggle.setAttribute('aria-expanded', 'true');
+            tocToggle.setAttribute('aria-label', 'Close Contents');
+        }
 
         renderToC();
         attachScrollSync();
@@ -679,7 +714,10 @@
         tocOverlay.classList.remove('is-open');
         tocPanel.setAttribute('aria-hidden', 'true');
         tocOverlay.setAttribute('aria-hidden', 'true');
-        if (tocToggle) tocToggle.setAttribute('aria-expanded', 'false');
+        if (tocToggle) {
+            tocToggle.setAttribute('aria-expanded', 'false');
+            tocToggle.setAttribute('aria-label', 'Open Contents');
+        }
 
         unlockBodyScroll();
 
@@ -786,9 +824,11 @@
 
         // Reposition if viewport changes while the panel is open.
         window.addEventListener('resize', function () {
+            positionTitleToggle();
             if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
         });
         window.addEventListener('orientationchange', function () {
+            positionTitleToggle();
             if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
         });
 
