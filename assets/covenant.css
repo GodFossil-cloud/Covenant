@@ -37,6 +37,10 @@
     /* Navigation interaction feedback. */
     --nav-pulse-duration: 520ms;
 
+    /* Shared snap timing (mobile seal + lexicon sheet). */
+    --lexicon-snap-duration: 420ms;
+    --lexicon-snap-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
     --nav-pill-width: 78px;
     --nav-pill-height: 40px;
@@ -1297,10 +1301,11 @@ body.is-exiting #blackFadeOverlay {
 }
 
 @media (max-width: 600px) {
-    /* Sync click/tap open/close with the seal's 420ms snap. */
+    /* Sync click/tap open/close with the seal's snap timing. */
     .lexicon-overlay {
-        transition: opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
-                    visibility 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        transition:
+            opacity var(--lexicon-snap-duration) var(--lexicon-snap-ease),
+            visibility var(--lexicon-snap-duration) var(--lexicon-snap-ease);
     }
 
     .lexicon-drag-region {
@@ -1325,7 +1330,7 @@ body.is-exiting #blackFadeOverlay {
         top: 0;
         bottom: 0;
         right: 0;
-    	left: 0;
+        left: 0;
         width: 100vw;
         height: 100vh;
         max-height: 100vh;
@@ -1333,9 +1338,10 @@ body.is-exiting #blackFadeOverlay {
         border-top: 1px solid #3a3a3a;
         border-radius: 12px 12px 0 0;
         transform: translateY(calc(100% - (var(--footer-total-height) + var(--lexicon-panel-closed-peek))));
-        transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
-                    box-shadow 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
-                    opacity var(--intro-panel-duration) ease-in;
+        transition:
+            transform var(--lexicon-snap-duration) var(--lexicon-snap-ease),
+            box-shadow var(--lexicon-snap-duration) var(--lexicon-snap-ease),
+            opacity var(--intro-panel-duration) ease-in;
         z-index: 800;
     }
 
@@ -1438,7 +1444,7 @@ body.is-exiting #blackFadeOverlay {
 
   /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
   --lexicon-panel-closed-peek: 6px;
-    
+
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
 
@@ -1722,11 +1728,11 @@ body {
   color: var(--citation-color);
   line-height: 1;
   white-space: nowrap;
-  
+
   text-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
     0 0 8px var(--citation-shadow);
-  
+
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -1807,8 +1813,8 @@ body {
     -webkit-user-select: none;
 
     /* Smooth travel when snapping open/closed (JS drives --seal-drag-y).
-       SYNCED WITH PANEL: 420ms to match the snap timing. */
-    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+       SYNCED WITH PANEL. */
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform var(--lexicon-snap-duration) var(--lexicon-snap-ease);
   }
 
   /* While finger-dragging the seal, remove transform easing (prevents lag/jank). */
@@ -1899,7 +1905,7 @@ body {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Touch input: stop sticky :hover on the seal; use :active tint instead. */
+/* Touch/drag feedback (coarse pointers): consolidated for maintainability.    */
 /* -------------------------------------------------------------------------- */
 @media (hover: none), (pointer: coarse) {
   /* Some mobile browsers "stick" :hover after a tap, leaving the seal tinted while closed.
@@ -1912,17 +1918,11 @@ body {
   #lexiconToggle:active::after {
     background-color: #7a2929;
   }
-}
 
-
-/* -------------------------------------------------------------------------- */
-/* Touch feedback: highlighted (has-selection) seal gets its own “leaf flare”  */
-/* -------------------------------------------------------------------------- */
-@media (hover: none), (pointer: coarse) {
   /* Subtle, immediate tactile response (no movement; just light).
      IMPORTANT: do not override away transform timing, or the seal will snap when JS adjusts --seal-drag-y on tap-open. */
   #lexiconToggle.has-selection {
-    transition: color 0.2s ease, text-shadow 0.2s ease, filter 120ms ease, transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 120ms ease, transform var(--lexicon-snap-duration) var(--lexicon-snap-ease);
   }
 
   #lexiconToggle.has-selection:active {
@@ -1944,25 +1944,13 @@ body {
   #lexiconToggle.has-selection:active::after {
     background-color: var(--obsidian-2);
   }
-}
 
-
-/* -------------------------------------------------------------------------- */
-/* Drag feedback: keep the red flash for the full seal-drag duration.          */
-/* -------------------------------------------------------------------------- */
-@media (hover: none), (pointer: coarse) {
   /* lexicon.js toggles .is-seal-dragging while the bottom-sheet is being dragged.
      Painting the red tint here makes the flash persist through the gesture, not just :active. */
   #lexiconToggle.is-seal-dragging::after {
     background-color: #7a2929;
   }
-}
 
-
-/* -------------------------------------------------------------------------- */
-/* Drag feedback override: selection mode gets a bold “gold leaf heat” flare.  */
-/* -------------------------------------------------------------------------- */
-@media (hover: none), (pointer: coarse) {
   /* When a passage is highlighted, keep the interaction feedback in the leaf palette,
      and make it unmissable: brighter glyph + stronger rim + interior gilded wash. */
   #lexiconToggle.has-selection.is-seal-dragging {
