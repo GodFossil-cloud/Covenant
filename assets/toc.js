@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.0.8 */
+/*! Covenant ToC Progress Journal v1.0.9 */
 (function () {
     'use strict';
 
@@ -23,10 +23,18 @@
     var tocDynamicContent = document.getElementById('tocDynamicContent');
     var tocLiveRegion = document.getElementById('tocLiveRegion');
 
+    // Two-step selection: select (pending) → close to commit.
+    var pendingPageId = '';
+    var pendingHref = '';
+    var pendingTitle = '';
+
     // Anti-ghost-click window after opening (iOS Safari can dispatch a synthesized click that
     // lands on the newly-opened overlay and immediately closes the panel).
     var tocJustOpenedAt = 0;
     var TOC_GHOST_GUARD_MS = 520;
+
+    // Delay navigation slightly so the close animation reads as a ritual "folding".
+    var NAV_DELAY_MS = 260;
 
     function escapeHtml(s) {
         return String(s)
@@ -43,6 +51,27 @@
         if (e.stopPropagation) e.stopPropagation();
         // Also stop any other listeners on the same element (helps on iOS).
         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    }
+
+    function getJourneyPageById(pageId) {
+        if (!pageId) return null;
+        for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
+            if (window.COVENANT_JOURNEY[i].id === pageId) return window.COVENANT_JOURNEY[i];
+        }
+        return null;
+    }
+
+    function isUnlockedPageId(pageId) {
+        var idx = window.getJourneyIndex(pageId);
+        return idx >= 0 && idx <= maxIndexUnlocked;
+    }
+
+    function announce(message) {
+        if (!tocLiveRegion) return;
+        tocLiveRegion.textContent = message;
+        setTimeout(function () {
+            if (tocLiveRegion.textContent === message) tocLiveRegion.textContent = '';
+        }, 2500);
     }
 
     // Test if localStorage is available and writable.
@@ -130,32 +159,71 @@
     }
 
     function announceLockedAttempt() {
-        if (!tocLiveRegion) return;
-        tocLiveRegion.textContent = 'This page is locked until you reach it through the journey.';
-        setTimeout(function () {
-            tocLiveRegion.textContent = '';
-        }, 3000);
+        announce('This page is locked until you reach it through the journey.');
+    }
+
+    function setPending(pageId, silent) {
+        var page = getJourneyPageById(pageId);
+        if (!page) return;
+        if (!isUnlockedPageId(pageId)) return;
+
+        pendingPageId = page.id;
+        pendingHref = page.href;
+        pendingTitle = page.title;
+
+        var titleEl = document.getElementById('tocSelectionTitle');
+        if (titleEl) titleEl.textContent = pendingTitle;
+
+        // Update list highlight.
+        if (tocDynamicContent) {
+            var items = tocDynamicContent.querySelectorAll('.toc-item');
+            Array.prototype.forEach.call(items, function (li) {
+                if (!li) return;
+                if (li.getAttribute('data-page-id') === pendingPageId) {
+                    li.classList.add('toc-item--pending');
+                } else {
+                    li.classList.remove('toc-item--pending');
+                }
+            });
+        }
+
+        if (!silent) {
+            announce('Selected: ' + pendingTitle + '. Close Contents to travel.');
+        }
     }
 
     function renderToC() {
         if (!tocDynamicContent) return;
 
-        var html = '<nav aria-label="Journey contents"><ol class="toc-list">';
+        var currentPage = getJourneyPageById(currentPageId);
+        var selectionTitle = pendingTitle || (currentPage ? currentPage.title : (pageConfig.modeLabel || ''));
+
+        var html = '';
+
+        html += '<div class="toc-selection" role="region" aria-label="Pending destination">';
+        html += '<div class="toc-selection-label">Selected</div>';
+        html += '<div class="toc-selection-title" id="tocSelectionTitle">' + escapeHtml(selectionTitle) + '</div>';
+        html += '<div class="toc-selection-hint" aria-hidden="true">Close to travel</div>';
+        html += '</div>';
+
+        html += '<nav aria-label="Journey contents"><ol class="toc-list">';
 
         for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
             var page = window.COVENANT_JOURNEY[i];
             var isUnlocked = i <= maxIndexUnlocked;
             var isCurrent = page.id === currentPageId;
+            var isPending = page.id === pendingPageId;
 
             html += '<li class="toc-item';
             if (isCurrent) html += ' toc-item--current';
+            if (isPending) html += ' toc-item--pending';
             if (!isUnlocked) html += ' toc-item--locked';
-            html += '">';
+            html += '" data-page-id="' + escapeHtml(page.id) + '">';
 
             if (isUnlocked) {
-                html += '<a href="' + escapeHtml(page.href) + '"';
+                html += '<button type="button" class="toc-item-btn" data-page-id="' + escapeHtml(page.id) + '"';
                 if (isCurrent) html += ' aria-current="page"';
-                html += '>' + escapeHtml(page.title) + '</a>';
+                html += '>' + escapeHtml(page.title) + '</button>';
             } else {
                 html += '<button type="button" class="toc-locked-btn" aria-disabled="true" data-page-id="' + escapeHtml(page.id) + '">';
                 html += escapeHtml(page.title);
@@ -176,6 +244,16 @@
             btn.addEventListener('click', function (e) {
                 stopEvent(e);
                 announceLockedAttempt();
+            });
+        });
+
+        var itemBtns = tocDynamicContent.querySelectorAll('.toc-item-btn');
+        Array.prototype.forEach.call(itemBtns, function (btn) {
+            btn.addEventListener('click', function (e) {
+                stopEvent(e);
+                var pid = btn.getAttribute('data-page-id') || '';
+                if (!pid) return;
+                setPending(pid, false);
             });
         });
     }
@@ -239,6 +317,19 @@
 
         positionDropdownPanel();
 
+        // Default pending selection = current page.
+        var defaultPending = currentPageId;
+        if (defaultPending && isUnlockedPageId(defaultPending)) {
+            var p = getJourneyPageById(defaultPending);
+            pendingPageId = p ? p.id : '';
+            pendingHref = p ? p.href : '';
+            pendingTitle = p ? p.title : '';
+        } else {
+            pendingPageId = '';
+            pendingHref = '';
+            pendingTitle = '';
+        }
+
         tocPanel.classList.add('is-open');
         tocOverlay.classList.add('is-open');
         tocPanel.setAttribute('aria-hidden', 'false');
@@ -257,13 +348,24 @@
         }, 0);
     }
 
-    function closeToC() {
+    function closeToC(commit) {
         if (!tocPanel || !tocOverlay) return;
+
+        var shouldNavigate = !!commit && pendingHref && pendingPageId && pendingPageId !== currentPageId;
+        var hrefToNavigate = pendingHref;
+
         tocPanel.classList.remove('is-open');
         tocOverlay.classList.remove('is-open');
         tocPanel.setAttribute('aria-hidden', 'true');
         tocOverlay.setAttribute('aria-hidden', 'true');
         if (tocToggle) tocToggle.setAttribute('aria-expanded', 'false');
+
+        if (shouldNavigate) {
+            setTimeout(function () {
+                window.location.href = hrefToNavigate;
+            }, NAV_DELAY_MS);
+            return;
+        }
 
         setTimeout(function () {
             var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
@@ -274,7 +376,7 @@
 
     function toggleToC() {
         if (tocPanel && tocPanel.classList.contains('is-open')) {
-            closeToC();
+            closeToC(true);
         } else {
             openToC();
         }
@@ -326,7 +428,7 @@
                     return;
                 }
                 stopEvent(e);
-                closeToC();
+                closeToC(true);
             });
         }
 
@@ -335,14 +437,14 @@
             Array.prototype.forEach.call(closeBtns, function (btn) {
                 bindActivate(btn, function (e) {
                     stopEvent(e);
-                    closeToC();
+                    closeToC(true);
                 });
             });
         }
 
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) {
-                closeToC();
+                closeToC(true);
             }
         });
 
@@ -354,11 +456,12 @@
             if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
         });
 
+        // Cancel (do not commit) on blur/visibility hide.
         window.addEventListener('blur', function () {
-            if (tocPanel && tocPanel.classList.contains('is-open')) closeToC();
+            if (tocPanel && tocPanel.classList.contains('is-open')) closeToC(false);
         });
         document.addEventListener('visibilitychange', function () {
-            if (document.hidden && tocPanel && tocPanel.classList.contains('is-open')) closeToC();
+            if (document.hidden && tocPanel && tocPanel.classList.contains('is-open')) closeToC(false);
         });
     }
 
