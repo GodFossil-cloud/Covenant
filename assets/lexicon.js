@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.32 */
+/*! Covenant Lexicon UI v0.2.33 */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.2.32';
+  window.COVENANT_LEXICON_VERSION = '0.2.33';
 
   var doc = document;
   var root = doc.documentElement;
@@ -61,6 +61,48 @@
   var pageId = pageConfig.pageId || '';
   var sentenceExplanations = pageConfig.sentenceExplanations || {};
   var logPrefix = pageId ? ('[Covenant Lexicon / ' + pageId + ']') : '[Covenant Lexicon]';
+
+  // ----------------------------------------------------------
+  // Covenant Journey Header Standardization
+  // ----------------------------------------------------------
+  // Policy: Invocation → XII use the compact header style.
+  // This ensures Foundation/Declaration and Articles II–X conform
+  // without having to hand-edit each page during migration.
+  // (rituals.html is intentionally excluded.)
+  function applyJourneyCompactHeader() {
+    var ids = {
+      invocation: true,
+      foundation: true,
+      declaration: true,
+      I: true,
+      II: true,
+      III: true,
+      IV: true,
+      V: true,
+      VI: true,
+      VII: true,
+      VIII: true,
+      IX: true,
+      X: true,
+      XI: true,
+      XII: true
+    };
+
+    if (!ids[pageId]) return;
+    if (!doc.body) return;
+
+    doc.body.classList.add('compact-header');
+
+    var header = qs('.section-header');
+    if (!header) return;
+
+    var ornaments = qsa('.ornament', header);
+    for (var i = 0; i < ornaments.length; i++) {
+      if (ornaments[i] && ornaments[i].parentNode) ornaments[i].parentNode.removeChild(ornaments[i]);
+    }
+  }
+
+  applyJourneyCompactHeader();
 
   var loadingIcon = byId('loadingIcon');
   var overlay = byId('blackFadeOverlay');
