@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.1.1 */
+/*! Covenant ToC Progress Journal v1.1.2 */
 (function () {
     'use strict';
 
@@ -348,9 +348,10 @@
         var html = '';
 
         html += '<div class="toc-selection" role="region" aria-label="Pending destination">';
-        html += '<div class="toc-selection-label">Selected</div>';
+        // Visually remove the "Selected" label/hint to strengthen the "title lives in the scroll" illusion.
+        // Keep a silent label for screen readers.
+        html += '<div class="sr-only">Selected destination</div>';
         html += '<div class="toc-selection-title" id="tocSelectionTitle">' + escapeHtml(selectionTitle) + '</div>';
-        html += '<div class="toc-selection-hint" aria-hidden="true">Close to travel</div>';
         html += '</div>';
 
         html += '<nav aria-label="Journey contents"><ol class="toc-list">';
