@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.2.4 */
+/*! Covenant ToC Progress Journal v1.2.5 */
 (function () {
     'use strict';
 
@@ -26,6 +26,8 @@
     // Two-step selection: select (pending) → close to commit.
     // Behavior:
     // - The header title is the selection well for the CURRENT page when opening.
+    // - The ToC list omits the current page (so the title does not appear twice).
+    // - On open, the list auto-scrolls so the NEXT page is the first item below the well.
     // - Scrolling the list moves the "candidate" into the slot; header previews that candidate.
     // - Touch/click on an unlocked item sets pending + previews in the header title,
     //   and auto-scrolls the list so that item locks into the selection slot.
@@ -63,6 +65,11 @@
         return Number.isFinite(n) ? n : fallback;
     }
 
+    function getBodyScrollEl() {
+        if (!tocPanel) return null;
+        return tocPanel.querySelector('.toc-panel-body');
+    }
+
     function updateSelectionTopPx() {
         var body = getBodyScrollEl();
         if (!body || !window.getComputedStyle) return;
@@ -70,6 +77,37 @@
         // CSS defines --toc-selection-top (e.g. 64px desktop / 56px mobile).
         var cssVal = getComputedStyle(body).getPropertyValue('--toc-selection-top');
         TOC_SELECTION_TOP_PX = parsePx(cssVal, TOC_SELECTION_TOP_PX);
+    }
+
+    function getJourneyPageById(pageId) {
+        if (!pageId) return null;
+        for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
+            if (window.COVENANT_JOURNEY[i].id === pageId) return window.COVENANT_JOURNEY[i];
+        }
+        return null;
+    }
+
+    function isUnlockedPageId(pageId) {
+        var idx = window.getJourneyIndex(pageId);
+        return idx >= 0 && idx <= maxIndexUnlocked;
+    }
+
+    function getNextUnlockedPageIdAfter(pageId) {
+        var idx = window.getJourneyIndex(pageId);
+        if (idx < 0) return '';
+        var nextIdx = idx + 1;
+        if (nextIdx > maxIndexUnlocked) return '';
+        var next = window.COVENANT_JOURNEY[nextIdx];
+        return next && next.id ? next.id : '';
+    }
+
+    function getPrevUnlockedPageIdBefore(pageId) {
+        var idx = window.getJourneyIndex(pageId);
+        if (idx <= 0) return '';
+        var prevIdx = idx - 1;
+        if (prevIdx > maxIndexUnlocked) return '';
+        var prev = window.COVENANT_JOURNEY[prevIdx];
+        return prev && prev.id ? prev.id : '';
     }
 
     // ----------------------------------------
@@ -132,7 +170,6 @@
         var target = String(originalHeaderTitleText || '').trim();
         if (!target) return;
 
-        // Guard: avoid redundant swap animations if the header title never changed.
         var current = String(headerTitleEl.textContent || '').trim();
         if (current === target) {
             headerTitleEl.classList.remove('toc-title-swapping');
@@ -180,10 +217,7 @@
 
         iosTouchMoveBlocker = function (e) {
             if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
-
-            // Allow scrolling INSIDE the ToC panel body.
             if (closestSafe(e.target, '#tocPanel .toc-panel-body')) return;
-
             if (e && e.cancelable) e.preventDefault();
         };
 
@@ -245,21 +279,7 @@
         if (!e) return;
         if (e.preventDefault) e.preventDefault();
         if (e.stopPropagation) e.stopPropagation();
-        // Also stop any other listeners on the same element (helps on iOS).
         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-    }
-
-    function getJourneyPageById(pageId) {
-        if (!pageId) return null;
-        for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
-            if (window.COVENANT_JOURNEY[i].id === pageId) return window.COVENANT_JOURNEY[i];
-        }
-        return null;
-    }
-
-    function isUnlockedPageId(pageId) {
-        var idx = window.getJourneyIndex(pageId);
-        return idx >= 0 && idx <= maxIndexUnlocked;
     }
 
     function announce(message) {
@@ -332,15 +352,13 @@
         }
     }
 
-    // Soft page-load gate: redirect if user jumped ahead.
     function enforceSoftGate() {
         if (!currentPageId) return;
-        if (!storageAvailable) return; // Fail open when storage unavailable
+        if (!storageAvailable) return;
 
         var currentIdx = window.getJourneyIndex(currentPageId);
-        if (currentIdx < 0) return; // Not a journey page
+        if (currentIdx < 0) return;
 
-        // Allow if within unlocked range OR exactly one step ahead (normal progression).
         if (currentIdx <= maxIndexUnlocked + 1) {
             return;
         }
@@ -387,11 +405,6 @@
         }
     }
 
-    function getBodyScrollEl() {
-        if (!tocPanel) return null;
-        return tocPanel.querySelector('.toc-panel-body');
-    }
-
     function scrollItemToSelection(pageId, behavior) {
         var body = getBodyScrollEl();
         if (!body || !tocDynamicContent) return;
@@ -408,7 +421,6 @@
         var deltaTop = liRect.top - selectionY;
         var nextTop = body.scrollTop + deltaTop;
 
-        // Clamp.
         var maxTop = Math.max(0, body.scrollHeight - body.clientHeight);
         if (nextTop < 0) nextTop = 0;
         if (nextTop > maxTop) nextTop = maxTop;
@@ -449,7 +461,6 @@
         var bodyRect = body.getBoundingClientRect();
         var selectionY = bodyRect.top + TOC_SELECTION_TOP_PX;
 
-        // Tuned to keep it sacred/subtle.
         var SCALE_MAX = 1.16;
         var SCALE_MIN = 0.94;
         var ALPHA_MIN = 0.36;
@@ -461,8 +472,6 @@
 
             var r = li.getBoundingClientRect();
             var d = Math.abs(r.top - selectionY);
-
-            // 0..1 proximity (1 = in the slot).
             var p = 1 - Math.min(1, d / 160);
 
             var scale = SCALE_MIN + (SCALE_MAX - SCALE_MIN) * p;
@@ -516,12 +525,10 @@
         if (pid === lastScrollSelectedId) return;
 
         lastScrollSelectedId = pid;
-        // Silent: do not spam aria-live while scrolling.
         setPending(pid, true);
     }
 
     function onToCBodyScroll() {
-        // Always update wheel styling (purely visual).
         applyWheelStyling();
 
         if (suppressScrollSync) return;
@@ -548,7 +555,6 @@
 
         body.addEventListener('scroll', onToCBodyScroll, { passive: true });
 
-        // Initial visual pass.
         setTimeout(function () {
             applyWheelStyling();
             if (!skipInitialSync) syncPendingFromScroll();
@@ -579,7 +585,6 @@
         if (!tocDynamicContent) return;
 
         var html = '';
-
         html += '<nav aria-label="Journey contents"><ol class="toc-list">';
 
         for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
@@ -588,16 +593,21 @@
             var isCurrent = page.id === currentPageId;
             var isPending = page.id === pendingPageId;
 
+            // The header already displays the current page title as the selection well.
+            // Do not duplicate it inside the list.
+            if (isCurrent) {
+                continue;
+            }
+
             html += '<li class="toc-item';
-            if (isCurrent) html += ' toc-item--current';
             if (isPending) html += ' toc-item--pending';
             if (!isUnlocked) html += ' toc-item--locked';
             html += '" data-page-id="' + escapeHtml(page.id) + '">';
 
             if (isUnlocked) {
-                html += '<button type="button" class="toc-item-btn" data-page-id="' + escapeHtml(page.id) + '"';
-                if (isCurrent) html += ' aria-current="page"';
-                html += '>' + escapeHtml(page.title) + '</button>';
+                html += '<button type="button" class="toc-item-btn" data-page-id="' + escapeHtml(page.id) + '">';
+                html += escapeHtml(page.title);
+                html += '</button>';
             } else {
                 html += '<button type="button" class="toc-locked-btn" aria-disabled="true" data-page-id="' + escapeHtml(page.id) + '">';
                 html += escapeHtml(page.title);
@@ -628,7 +638,6 @@
                 var pid = btn.getAttribute('data-page-id') || '';
                 if (!pid) return;
 
-                // Second click on same pending item travels immediately.
                 if (pid === pendingPageId) {
                     closeToC(true);
                     return;
@@ -663,7 +672,6 @@
         tocToggle.style.height = h + 'px';
     }
 
-    // Create a header-mounted toggle that *covers the title text*.
     function ensureToggleExists() {
         if (tocToggle) return;
         if (!tocPanel) return;
@@ -675,15 +683,12 @@
         btn.setAttribute('aria-label', 'Open Contents');
         btn.setAttribute('aria-expanded', 'false');
         btn.setAttribute('aria-controls', 'tocPanel');
-
-        // Invisible control (the title itself is the visible affordance).
         btn.innerHTML = '<span class="sr-only">Toggle Contents</span>';
 
         if (headerEl && headerTitleEl) {
             headerEl.classList.add('has-toc-toggle');
             headerEl.appendChild(btn);
         } else {
-            // Rare fallback: if a page lacks the standard header.
             btn.classList.remove('toc-toggle--title');
             btn.classList.add('toc-toggle--floating');
             btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span>';
@@ -693,7 +698,6 @@
         tocToggle = btn;
         positionTitleToggle();
 
-        // Keep the overlay aligned if fonts/layout shift after load.
         setTimeout(positionTitleToggle, 0);
         setTimeout(positionTitleToggle, 250);
     }
@@ -706,14 +710,11 @@
 
         if (header && header.getBoundingClientRect) {
             var rect = header.getBoundingClientRect();
-            // Sit flush to the header divider line.
             topPx = Math.round(rect.bottom);
         }
 
-        // For fixed-position elements, top is relative to the viewport.
         tocPanel.style.top = topPx + 'px';
 
-        // Keep a small bottom gutter so the sheet doesn't collide with the footer dock.
         var maxH = Math.max(220, window.innerHeight - topPx - 18);
         tocPanel.style.maxHeight = maxH + 'px';
 
@@ -735,7 +736,7 @@
         lockBodyScroll();
         positionDropdownPanel();
 
-        // Default pending selection = current page.
+        // Pending begins as CURRENT page.
         var defaultPending = currentPageId;
         if (defaultPending && isUnlockedPageId(defaultPending)) {
             var p = getJourneyPageById(defaultPending);
@@ -748,7 +749,7 @@
             pendingTitle = '';
         }
 
-        // The header selection well is the current page title on open.
+        // Header selection well remains the current page title on open.
         if (pendingTitle) animateHeaderTitleTo(pendingTitle);
 
         tocPanel.classList.add('is-open');
@@ -762,22 +763,20 @@
 
         renderToC();
 
-        // Attach scroll sync.
+        // Attach scroll sync, but prevent any auto-pending changes caused by the initial positioning.
         attachScrollSync(true);
+        setScrollSyncSuppressed(360);
 
-        // Align the CURRENT page into the slot.
-        // This ensures items before are visible above, and items after are visible below;
-        // and the first item "down" is the next page.
-        if (pendingPageId) {
-            scrollItemToSelection(pendingPageId, 'auto');
+        // Align list so that the NEXT page is the first item beneath the selection well.
+        // (If no next page exists, align to the previous page so the list still opens gracefully.)
+        var alignId = getNextUnlockedPageIdAfter(currentPageId) || getPrevUnlockedPageIdBefore(currentPageId);
+        if (alignId) {
+            scrollItemToSelection(alignId, 'auto');
         }
 
-        // After layout, paint wheel styling and allow scroll-sync.
-        setScrollSyncSuppressed(180);
+        // Paint wheel styling after layout; do NOT sync pending from scroll on open.
         setTimeout(function () {
             applyWheelStyling();
-            // Now safe to reconcile pending from scroll (should still be current).
-            syncPendingFromScroll();
         }, 0);
 
         // Focus.
@@ -853,7 +852,6 @@
         return tocJustOpenedAt && (Date.now() - tocJustOpenedAt < TOC_GHOST_GUARD_MS);
     }
 
-    // iOS Safari reliability: activate on pointerdown for touch (before scroll/gesture wins).
     function bindActivate(el, handler) {
         if (!el || !handler) return;
 
@@ -861,10 +859,7 @@
 
         if (window.PointerEvent) {
             el.addEventListener('pointerdown', function (e) {
-                // Mouse: only primary.
                 if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
-
-                // Touch: fire immediately on pointerdown.
                 if (e && e.pointerType === 'touch') {
                     lastPointerDownAt = Date.now();
                     handler(e);
@@ -873,7 +868,6 @@
         }
 
         el.addEventListener('click', function (e) {
-            // Avoid double-activation when iOS synthesizes click after pointerdown.
             if (Date.now() - lastPointerDownAt < 700) return;
             handler(e);
         });
@@ -881,14 +875,11 @@
 
     function wireControls() {
         if (tocToggle) {
-            // Title sheen: hover + keyboard focus only.
             tocToggle.addEventListener('mouseenter', function () { setTitleSheen(true); });
             tocToggle.addEventListener('mouseleave', function () { setTitleSheen(false); });
             tocToggle.addEventListener('focus', function () { setTitleSheen(true); });
             tocToggle.addEventListener('blur', function () { setTitleSheen(false); });
 
-            // Deliberate activation on touch: do NOT trigger on pointerdown.
-            // Only toggle on click if the pointer did not move (i.e. not a scroll gesture).
             var touchStartX = 0;
             var touchStartY = 0;
             var touchMoved = false;
@@ -906,10 +897,6 @@
                     var dx = Math.abs((e.clientX || 0) - touchStartX);
                     var dy = Math.abs((e.clientY || 0) - touchStartY);
                     if (dx > 10 || dy > 10) touchMoved = true;
-                }, { passive: true });
-
-                tocToggle.addEventListener('pointerup', function (e) {
-                    if (!e || e.pointerType !== 'touch') return;
                 }, { passive: true });
 
                 tocToggle.addEventListener('pointercancel', function (e) {
@@ -952,7 +939,6 @@
             }
         });
 
-        // Reposition if viewport changes while the panel is open.
         window.addEventListener('resize', function () {
             positionTitleToggle();
             if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
@@ -962,7 +948,6 @@
             if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
         });
 
-        // Cancel (do not commit) on blur/visibility hide.
         window.addEventListener('blur', function () {
             if (tocPanel && tocPanel.classList.contains('is-open')) closeToC(false);
         });
