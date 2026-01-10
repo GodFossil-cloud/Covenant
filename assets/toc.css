@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.2.0 */
+/*! Covenant ToC Panel Styles v1.2.1 */
 
 /* ===== ToC Toggle (header-mounted by default) ===== */
 .section-header.has-toc-toggle {
@@ -246,6 +246,33 @@ html.toc-open .section-header h1 {
     scroll-snap-type: y mandatory;
     scroll-padding-top: 18px;
     overscroll-behavior: contain;
+
+    /* Slot indicator anchor. */
+    position: relative;
+}
+
+/* Faint sacred slot indicator (aligned to scroll-padding-top). */
+.toc-panel-body::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    pointer-events: none;
+
+    /* Gentle brass hairline that fades at the edges (keeps it "ritual," not UI-loud). */
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            rgba(201, 169, 97, 0.18),
+            rgba(201, 169, 97, 0.30),
+            rgba(201, 169, 97, 0.18),
+            transparent
+        );
+
+    opacity: 0.85;
 }
 
 /* ===== ToC List ===== */
