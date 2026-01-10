@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.1.3 */
+/*! Covenant ToC Progress Journal v1.1.4 */
 (function () {
     'use strict';
 
@@ -37,8 +37,9 @@
     var tocJustOpenedAt = 0;
     var TOC_GHOST_GUARD_MS = 520;
 
-    // Delay navigation slightly so the close animation reads as a ritual "folding".
-    var NAV_DELAY_MS = 260;
+    // Delay navigation slightly so the close animation fully reads before page unload.
+    // (Target: 200–260ms.)
+    var NAV_DELAY_MS = 240;
 
     // When opening, auto-scroll the panel body so the current/pending entry is visible.
     var TOC_AUTOSCROLL_PAD_PX = 18;
@@ -566,9 +567,14 @@
         }
 
         if (shouldNavigate) {
-            setTimeout(function () {
-                window.location.href = hrefToNavigate;
-            }, NAV_DELAY_MS);
+            // Ensure at least one paint of the closing state before scheduling navigation.
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    setTimeout(function () {
+                        window.location.href = hrefToNavigate;
+                    }, NAV_DELAY_MS);
+                });
+            });
             return;
         }
 
