@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctrinal Foundation - Covenant</title>
+
+    <!-- Shared font loading for Covenant pages (GitHub Pages / Jekyll include). -->
+
+<!-- Theme color: tint browser UI (iOS Safari/Chrome etc.) to match Covenant palette. -->
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#23160f">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Preload the font stylesheets early to reduce first-render delay on slow connections. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap">
+
+<!-- Shared Covenant runtime flags (GitHub Pages / Jekyll include). -->
+<script>
+    // Global default for the intro/loading "seal" glyph.
+    // Note: this can be overridden per page with: window.COVENANT_PAGE.loadingGlyph = '✦'
+    window.COVENANT_LOADING_GLYPH = '֎';
+</script>
+
+<!-- Table of Contents (progress journal) styles + logic. -->
+<link rel="stylesheet" href="assets/toc.css">
+<script src="assets/journey.js" defer></script>
+<script src="assets/toc.js" defer></script>
+
+
+
+    <link rel="stylesheet" href="assets/covenant.css">
+
+    <script>
+    window.COVENANT_PAGE = {
+        pageId: 'foundation',
+        modeLabel: 'Doctrinal Foundation',
+
+        // Faster transitions from here onward (Invocation keeps the more dramatic intro).
+        intro: {
+            startDelay: 520,
+            iconToOverlayDelay: 160,
+            overlayToContentDelay: 720,
+            cleanupDelay: 650,
+
+            iconDuration: '0.28s',
+            overlayDuration: '0.85s',
+            contentDuration: '0.65s',
+            footerDuration: '0.35s',
+            panelDuration: '1.15s'
+        },
+
+        // Foundation currently uses F.1, F.2... keys.
+        // This override prevents "non-standard key" warnings until we later standardize keys site-wide.
+        keyPattern: '^[A-Z]+\\.[0-9]+$',
+
+        // Moved from DOM into config so the panel body is fully config-driven.
+        defaultOverviewHTML: [
+            '<p>\n'
+                + '    The Doctrinal Foundation establishes the three core principles upon which the entire Covenant stands: Hierarchy is sacred, Command is rightful, and Obedience is consecrated.\n'
+                + '</p>',
+            '<p>\n'
+                + '    This section frames all later Articles as expressions of an eternal structure, not arbitrary inventions. Authority, when derived from this Foundation, is portrayed as both divinely patterned and mutually chosen.\n'
+                + '</p>'
+        ].join(''),
+
+        // Lexicon content preserved exactly; moved into per-page config.
+        sentenceExplanations: {
+            'F.1': 'This opening line positions the Foundation not as an arbitrary preference, but as the structural core from which all authority within the Covenant flows. It frames what follows as non-negotiable bedrock.',
+            'F.2': 'The first of the three pillars. Declaring hierarchy sacred removes it from the realm of convenience or social construct and elevates it to a metaphysical principle—alignment with divine or cosmic order.',
+            'F.3': 'The second pillar. Command is not framed as power seized, but as rightful authority—implying moral legitimacy, not mere force. It ties the exercise of will to justification.',
+            'F.4': 'The third pillar. Obedience is not framed as submission under duress, but as an act of devotion. The use of "consecrated" invokes religious ritual—obedience is not servitude but sacrament.',
+            'F.5': 'This line acknowledges mutual consent ("freely chosen") while framing the bond as deriving authority from the preceding immutable order, not from negotiation. Choice enters the picture, but only as acceptance of what already exists.',
+            'F.6': 'A brief statement that binds power to responsibility. It implies that lordship, when properly enacted, is not tyranny but care—a protective stewardship. This sentence tempers absolute authority with an ethical ideal.',
+            'F.7': 'This establishes the Foundation as the interpretive key for all that follows. No Article can be read in isolation—everything refers back to these three principles.',
+            'F.8': 'Cements the Foundation as eternal and immutable. Even amendments to the Covenant must bow to this Foundation. It locks the three pillars into place, immune to revision.',
+            'F.9': 'A concluding statement that reiterates the Foundation as the generative source of all authority, duty, and structure in the Covenant. It is both origin and anchor.'
+        }
+    };
+    </script>
+    <script src="assets/lexicon.js" defer></script>
+</head>
+<body>
+    <div id="loadingIcon">֎</div>
+    <div id="blackFadeOverlay"></div>
+
+    <div class="container">
+        <div class="section-header">
+            <div class="ornament">✦ ✧ ✦</div>
+            <h1>Doctrinal Foundation</h1>
+            <div class="ornament">✦ ✧ ✦</div>
+        </div>
+
+        <section id="foundation">
+            <p>
+                <span class="sentence" data-lexicon-key="F.1" data-sentence-text="This Covenant rests upon three indivisible principles from which all authority derives:">
+                    This
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    rests upon three indivisible principles from which all authority derives:
+                </span>
+            </p>
+
+            <div class="foundation-principles">
+                <p>
+                    <span class="sentence" data-lexicon-key="F.2" data-sentence-text="Hierarchy is sacred.">
+                        <span class="glossary-term">Hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span> is sacred.
+                    </span>
+                </p>
+                <p>
+                    <span class="sentence" data-lexicon-key="F.3" data-sentence-text="Command is rightful.">
+                        <span class="glossary-term">Command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> is rightful.
+                    </span>
+                </p>
+                <p>
+                    <span class="sentence" data-lexicon-key="F.4" data-sentence-text="Obedience is consecrated.">
+                        <span class="glossary-term">Obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> is
+                        <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.
+                    </span>
+                </p>
+            </div>
+
+            <p>
+                <span class="sentence" data-lexicon-key="F.5" data-sentence-text="The bond between Lord and Faithful draws its authority from this immutable order, freely chosen and solemnly entered.">
+                    <span class="sentence-label">5</span>
+                    The bond between Lord and
+                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                    draws its authority from this immutable order, freely chosen and solemnly entered.
+                </span>
+                <span class="sentence" data-lexicon-key="F.6" data-sentence-text="True lordship unites authority with care, command with nurture, power with wisdom.">
+                    <span class="sentence-label">6</span>
+                    True lordship unites authority with care,
+                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
+                    with nurture, power with wisdom.
+                </span>
+            </p>
+
+            <p>
+                <span class="sentence" data-lexicon-key="F.7" data-sentence-text="All Articles that follow operate under this Foundation.">
+                    <span class="sentence-label">7</span>
+                    All Articles that follow operate under this
+                    <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>.
+                </span>
+                <span class="sentence" data-lexicon-key="F.8" data-sentence-text="Where matters of sanctity, hierarchy, obedience, or command are referenced, they draw their meaning from this eternal Foundation, which remains inviolate through all amendments and renewals.">
+                    <span class="sentence-label">8</span>
+                    Where matters of sanctity,
+                    <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>,
+                    <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>, or
+                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
+                    are referenced, they draw their meaning from this eternal
+                    <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>,
+                    which remains inviolate through all amendments and renewals.
+                </span>
+            </p>
+
+            <p>
+                <span class="sentence" data-lexicon-key="F.9" data-sentence-text="From this Foundation flows all authority, obligation, and sacred structure herein established.">
+                    <span class="sentence-label">9</span>
+                    From this
+                    <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>
+                    flows all authority, obligation, and sacred structure herein established.
+                </span>
+            </p>
+
+            <div class="section-divider">✦ ✧ ✦</div>
+        </section>
+    </div>
+
+    <!-- Shared Covenant section footer nav (GitHub Pages / Jekyll include). -->
+<nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
+    <div class="nav-footer-inner">
+        
+            <a href="invocation.html" class="nav-prev" aria-label="Previous: Invocation">
+                <span class="nav-prev-frame" aria-hidden="true">
+                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮘</span>
+                </span>
+                <span class="nav-prev-label" aria-hidden="true">Invocation</span>
+            </a>
+        
+
+        <div class="nav-center">
+            <span class="sr-only" aria-current="page">Doctrinal Foundation</span>
+            <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="Open Lexicon" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𖤓</span></button>
+            <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true"
+                 style="position:absolute; left:50%; bottom:6px; transform:translateX(-50%); width:100%; margin-top:0; overflow:visible; height:20px;">
+                <span class="citation-text" id="citationText"></span>
+            </div>
+        </div>
+
+        
+            <a href="declaration.html" class="nav-next" aria-label="Next: Declaration">
+                <span class="nav-next-frame" aria-hidden="true">
+                    <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
+                </span>
+                <span class="nav-next-label" aria-hidden="true">Declaration</span>
+            </a>
+        
+    </div>
+</nav>
+
+<!-- Shared ToC (Table of Contents) panel shell (GitHub Pages / Jekyll include). -->
+<div class="toc-overlay" id="tocOverlay" aria-hidden="true"></div>
+
+<div class="toc-panel" id="tocPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-labelledby="tocPanelTitle">
+    <div class="toc-panel-header">
+        <div>
+            <div class="toc-panel-title" id="tocPanelTitle">Contents</div>
+            <div class="toc-panel-subtitle">Journey Progress</div>
+        </div>
+        <button class="toc-panel-close" type="button" aria-label="Close Contents panel">×</button>
+    </div>
+
+    <div class="toc-panel-body">
+        <div id="tocDynamicContent"></div>
+        <div id="tocLiveRegion" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+        <noscript>
+            <p>JavaScript is required to view journey progress.</p>
+        </noscript>
+    </div>
+</div>
+
+
+
+    
+    <!-- Shared Lexicon panel shell (GitHub Pages / Jekyll include). -->
+<div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
+
+<div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1">
+    <div class="lexicon-drag-region" id="lexiconDragRegion">
+        <div class="lexicon-drag-handle" aria-hidden="true">
+            <span class="lexicon-drag-pill" aria-hidden="true"></span>
+            <span class="lexicon-drag-star" aria-hidden="true">𖤓</span>
+        </div>
+    </div>
+
+    <div class="lexicon-panel-header">
+        <div>
+            <div class="lexicon-panel-title">Lexicon</div>
+            <!-- Intentionally left blank; populated by assets/lexicon.js from window.COVENANT_PAGE.modeLabel. -->
+            <div class="lexicon-panel-mode" id="lexiconModeLabel"></div>
+        </div>
+        <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
+    </div>
+
+    <div class="lexicon-panel-body">
+        <div id="lexiconDynamicContent"></div>
+        <noscript>
+            <p>JavaScript is required to view lexicon details.</p>
+        </noscript>
+
+        <a href="lexicon.html" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
+
+        
+    <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
+        <h3>Terms in this section</h3>
+        <ul class="lexicon-term-list">
+            <li>
+                <span class="lexicon-term-label">Faithful</span>
+                <span class="lexicon-term-ref">[1]</span>
+                – The devoted servant and obedient instrument within this sacred bond.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Covenant</span>
+                <span class="lexicon-term-ref">[2]</span>
+                – A sacred, binding agreement between the Lord and the Faithful.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Hierarchy</span>
+                <span class="lexicon-term-ref">[3]</span>
+                – The sacred ordering of authority and obedience.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Command</span>
+                <span class="lexicon-term-ref">[4]</span>
+                – An authoritative directive given by the Lord.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Obedience</span>
+                <span class="lexicon-term-ref">[5]</span>
+                – The willing submission and faithful execution of commands.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Consecrated</span>
+                <span class="lexicon-term-ref">[6]</span>
+                – Sacred blessing and binding force that seals this Covenant.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Foundation</span>
+                <span class="lexicon-term-ref">[7]</span>
+                – The three indivisible principles of the Covenant.
+            </li>
+        </ul>
+    </div>
+    
+    </div>
+</div>
+
+</body>
+</html>

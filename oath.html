@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Oath — Initiation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            font-family: "Georgia", serif;
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        main.container {
+            max-width: 700px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        .eyebrow {
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #7a7a7a;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+            letter-spacing: 0.04em;
+        }
+
+        p {
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            color: #4a4a4a;
+            line-height: 1.7;
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background-color: #8a8a8a;
+            margin: 2rem 0;
+        }
+
+        .oath-text {
+            background-color: #fafaf8;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 3px solid #8a8a8a;
+            font-style: italic;
+            color: #3a3a3a;
+            line-height: 1.9;
+        }
+
+        .instruction-block {
+            background-color: #f0f0ed;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid #d0d0d0;
+        }
+
+        .instruction-block h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .instruction-block p {
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .form-section {
+            margin: 2rem 0;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 1px solid #8a8a8a;
+            background-color: #fafaf8;
+            font-family: "Georgia", serif;
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2c2c2c;
+            box-shadow: inset 0 0 0 2px rgba(44, 44, 44, 0.1);
+        }
+
+        .recording-area {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f9f9f6;
+            border: 1px dashed #8a8a8a;
+            text-align: center;
+        }
+
+        .recording-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+            border: 1px solid #2c2c2c;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Georgia", serif;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: #5a5a5a;
+        }
+
+        .status-message.success {
+            color: #2d5a2d;
+        }
+
+        .status-message.error {
+            color: #8b2e2e;
+        }
+
+        .signature-area {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f9f9f6;
+            border: 1px dashed #8a8a8a;
+        }
+
+        canvas {
+            border: 1px solid #8a8a8a;
+            background-color: #ffffff;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .signature-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .final-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .final-section p {
+            font-size: 0.95rem;
+            color: #5a5a5a;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #d0d0d0;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border: 1px solid #2c2c2c;
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .nav-button:hover,
+        .nav-button:focus-visible {
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+        }
+
+        .nav-button--secondary {
+            background-color: transparent;
+            color: #2c2c2c;
+        }
+
+        .nav-button--secondary:hover,
+        .nav-button--secondary:focus-visible {
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+        }
+
+        #forward-link.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nav-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" aria-labelledby="oath-title">
+        <header>
+            <div class="eyebrow">Vow</div>
+            <h1 id="oath-title">The Oath</h1>
+        </header>
+
+        <p>You have read the Covenant. You have considered its terms. You have begun to practice. Now you must speak your oath aloud, record it, and bind yourself by your signature.</p> <!-- [file:6] -->
+
+        <p>This is the threshold moment. Once you have recorded your oath and signed, you are initiated. There is no return.</p> <!-- [file:6] -->
+
+        <div class="divider"></div>
+
+        <section class="instruction-block" aria-labelledby="before-begin-heading">
+            <h3 id="before-begin-heading">Before You Begin</h3>
+            <p>• Find a quiet, private space where you will not be interrupted.</p>
+            <p>• Ensure your device's microphone is functioning and permission can be granted.</p>
+            <p>• You may provide a name by which you wish to be known in this Covenant; if you do not, “Ruby” will be used.</p>
+            <p>• Read the oath carefully. You will speak it aloud, and it will be recorded.</p>
+            <p>• After recording, you will provide your signature.</p> <!-- adapted from [file:6] -->
+        </section>
+
+        <div class="divider"></div>
+
+        <h2>Your Oath</h2>
+
+        <div class="oath-text">
+            I stand at the threshold, aware and willing. I have read the Covenant before me. I understand its terms, its principles, and its demands. I accept this covenant freely, with full knowledge of what I am undertaking.<br><br>
+            I commit to daily practice. I commit to facing difficulty without retreat. I commit to becoming the person these principles demand I become.<br><br>
+            I speak this oath as a living commitment, not as words without consequence. By my voice, by my signature, I bind myself to this path. Let this oath be witnessed and sealed.
+        </div> <!-- [file:6] -->
+
+        <div class="divider"></div>
+
+        <section class="form-section" aria-labelledby="name-label">
+            <label id="name-label" for="faithful-name">Your Name (optional; defaults to “Ruby” if left blank):</label>
+            <input type="text" id="faithful-name" placeholder="Enter your name or leave blank for Ruby">
+        </section>
+
+        <section class="instruction-block" aria-labelledby="record-heading">
+            <h3 id="record-heading">Record Your Oath</h3>
+            <p>Click “Start Recording,” then speak the oath clearly and deliberately. When finished, click “Stop Recording.” Speech must be audible for the recording to be accepted.</p> <!-- [file:6] -->
+        </section>
+
+        <section class="recording-area" aria-label="Oath recording controls">
+            <p style="font-size: 0.9rem; color: #5a5a5a; margin-bottom: 1rem;">
+                Recording Status:
+                <span id="recording-status">Ready</span>
+            </p>
+            <div class="recording-controls">
+                <button id="start-recording">START RECORDING</button>
+                <button id="stop-recording" disabled>STOP RECORDING</button>
+            </div>
+            <p class="status-message" id="recording-message"></p>
+        </section>
+
+        <section class="instruction-block" aria-labelledby="sign-heading">
+            <h3 id="sign-heading">Sign Your Oath</h3>
+            <p>Use your mouse, trackpad, or stylus to sign the canvas below as you would on an official document.</p> <!-- [file:6] -->
+        </section>
+
+        <section class="signature-area" aria-label="Signature capture">
+            anvas
+                id="signature-canvas"
+                width="500"
+                height="150"
+                style="max-width: 100%; border: 1px solid #8a8a8a; background-color: #ffffff; cursor: crosshair;">
+            </canvas>
+            <div class="signature-controls">
+                <button id="clear-signature" type="button">CLEAR</button>
+            </div>
+        </section>
+
+        <section class="final-section">
+            <button id="submit-oath" type="button" disabled style="padding: 1rem 2.5rem; font-size: 1rem; margin-top: 2rem;">
+                SEAL THE OATH
+            </button>
+            <p class="status-message" id="submit-message"></p>
+        </section>
+
+        <nav class="navigation" aria-label="Oath navigation">
+            <a href="rituals.html" class="nav-button nav-button--secondary">← Back to Rituals</a>
+            <a href="consecrated.html" id="forward-link" class="nav-button disabled">Forward to Completion →</a>
+        </nav>
+    </main>
+
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // TODO: replace with your actual Supabase project URL and anon key
+        const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+        const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";
+
+        const supabaseClient = (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY)
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        const nameInput = document.getElementById("faithful-name");
+        const startBtn = document.getElementById("start-recording");
+        const stopBtn = document.getElementById("stop-recording");
+        const recordingStatus = document.getElementById("recording-status");
+        const recordingMessage = document.getElementById("recording-message");
+        const canvas = document.getElementById("signature-canvas");
+        const ctx = canvas.getContext("2d");
+        const clearBtn = document.getElementById("clear-signature");
+        const submitBtn = document.getElementById("submit-oath");
+        const forwardLink = document.getElementById("forward-link");
+        const submitMessage = document.getElementById("submit-message");
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isDrawing = false;
+        let hasRecording = false;
+        let hasSignature = false;
+        let oathSealed = false;
+
+        // Audio analysis
+        let audioContext = null;
+        let analyser = null;
+        let dataArray = null;
+        let speakingDetected = false;
+        let analysisFrameId = null;
+
+        function startAudioAnalysis(stream) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+
+            audioContext = new AudioCtx();
+            const source = audioContext.createMediaStreamSource(stream);
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            dataArray = new Uint8Array(analyser.fftSize);
+            source.connect(analyser);
+
+            speakingDetected = false;
+
+            const threshold = 12; // amplitude threshold
+            function analyze() {
+                if (!analyser) return;
+                analyser.getByteTimeDomainData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    const deviation = dataArray[i] - 128;
+                    sum += deviation * deviation;
+                }
+                const rms = Math.sqrt(sum / dataArray.length);
+                if (rms > threshold) {
+                    speakingDetected = true;
+                }
+                analysisFrameId = requestAnimationFrame(analyze);
+            }
+            analyze();
+        }
+
+        function stopAudioAnalysis() {
+            if (analysisFrameId) {
+                cancelAnimationFrame(analysisFrameId);
+                analysisFrameId = null;
+            }
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+            analyser = null;
+            dataArray = null;
+        }
+
+        // Signature drawing
+        canvas.addEventListener("mousedown", (e) => {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.strokeStyle = "#2c2c2c";
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.stroke();
+        });
+
+        canvas.addEventListener("mouseup", () => {
+            isDrawing = false;
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            hasSignature = pixels.some((bit) => bit !== 0);
+            updateSubmitState();
+        });
+
+        canvas.addEventListener("mouseleave", () => {
+            isDrawing = false;
+        });
+
+        clearBtn.addEventListener("click", () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSignature = false;
+            updateSubmitState();
+        });
+
+        // Recording controls
+        startBtn.addEventListener("click", async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.addEventListener("dataavailable", (e) => {
+                    audioChunks.push(e.data);
+                });
+
+                mediaRecorder.addEventListener("stop", () => {
+                    stopAudioAnalysis();
+                    if (!speakingDetected) {
+                        hasRecording = false;
+                        recordingStatus.textContent = "Recording too quiet";
+                        recordingMessage.textContent = "No clear speech was detected. Please record again, speaking the oath aloud.";
+                        recordingMessage.classList.remove("success");
+                        recordingMessage.classList.add("error");
+                    } else {
+                        hasRecording = true;
+                        recordingStatus.textContent = "Recording complete";
+                        recordingMessage.textContent = "Your oath has been recorded.";
+                        recordingMessage.classList.remove("error");
+                        recordingMessage.classList.add("success");
+                    }
+                    updateSubmitState();
+                    stream.getTracks().forEach((track) => track.stop());
+                });
+
+                mediaRecorder.start();
+                startAudioAnalysis(stream);
+
+                recordingStatus.textContent = "Recording...";
+                recordingMessage.textContent = "";
+                recordingMessage.classList.remove("success", "error");
+                speakingDetected = false;
+
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } catch (err) {
+                recordingMessage.textContent = "Microphone access denied or unavailable.";
+                recordingMessage.classList.remove("success");
+                recordingMessage.classList.add("error");
+            }
+        });
+
+        stopBtn.addEventListener("click", () => {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+            }
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+
+        // Forward navigation guarding
+        forwardLink.addEventListener("click", function (event) {
+            if (!oathSealed) {
+                event.preventDefault();
+                submitMessage.textContent = "You must record, sign, and seal your Oath before proceeding.";
+                submitMessage.classList.remove("success");
+                submitMessage.classList.add("error");
+            }
+        });
+
+        // Helper: convert data URL to Blob
+        function dataURLToBlob(dataURL) {
+            const parts = dataURL.split(",");
+            const mimeMatch = parts[0].match(/:(.*?);/);
+            const mime = mimeMatch ? mimeMatch[1] : "image/png";
+            const binary = atob(parts[1]);
+            const len = binary.length;
+            const u8 = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                u8[i] = binary.charCodeAt(i);
+            }
+            return new Blob([u8], { type: mime });
+        }
+
+        async function uploadToSupabase(path, blob) {
+            if (!supabaseClient) {
+                throw new Error("Supabase client is not configured.");
+            }
+            const { data, error } = await supabaseClient
+                .storage
+                .from("oaths")
+                .upload(path, blob, {
+                    cacheControl: "3600",
+                    upsert: false
+                });
+            if (error) throw error;
+            return data.path;
+        }
+
+        async function saveOathRecord(faithfulName, audioPath, signaturePath) {
+            if (!supabaseClient) {
+                throw new Error("Supabase client is not configured.");
+            }
+            const { error } = await supabaseClient
+                .from("oath_records")
+                .insert({
+                    faithful_name: faithfulName,
+                    audio_path: audioPath,
+                    signature_path: signaturePath
+                });
+            if (error) throw error;
+        }
+
+        submitBtn.addEventListener("click", async () => {
+            submitMessage.textContent = "";
+            submitMessage.classList.remove("error", "success");
+
+            if (!hasRecording || !hasSignature) {
+                submitMessage.textContent = "Both a valid recording and a signature are required.";
+                submitMessage.classList.add("error");
+                return;
+            }
+
+            // Default to Ruby when no name provided
+            const faithfulName = (nameInput.value || "").trim() || "Ruby";
+
+            if (!supabaseClient) {
+                submitMessage.textContent = "Supabase is not configured. Add your project URL and anon key before sealing the Oath.";
+                submitMessage.classList.add("error");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitMessage.textContent = "Sealing your Oath...";
+            submitMessage.classList.remove("error", "success");
+
+            try {
+                // Build audio blob
+                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+                const baseName = faithfulName.replace(/\s+/g, "_") || "Ruby";
+
+                const audioPathKey = `audio/${baseName}_${timestamp}.webm`;
+                const signaturePathKey = `signatures/${baseName}_${timestamp}.png`;
+
+                const audioPath = await uploadToSupabase(audioPathKey, audioBlob);
+
+                const signatureDataURL = canvas.toDataURL("image/png");
+                const signatureBlob = dataURLToBlob(signatureDataURL);
+                const signaturePath = await uploadToSupabase(signaturePathKey, signatureBlob);
+
+                await saveOathRecord(faithfulName, audioPath, signaturePath);
+
+                oathSealed = true;
+                submitMessage.textContent = "Your Oath has been sealed.";
+                submitMessage.classList.add("success");
+
+                forwardLink.classList.remove("disabled");
+                forwardLink.style.pointerEvents = "auto";
+
+            } catch (err) {
+                console.error(err);
+                submitMessage.textContent = "There was a problem sealing your Oath. Please try again.";
+                submitMessage.classList.add("error");
+                submitBtn.disabled = false;
+            }
+        });
+
+        function updateSubmitState() {
+            // Name is optional (defaults to Ruby), so only require recording + signature
+            const ready = hasRecording && hasSignature;
+            submitBtn.disabled = !ready;
+        }
+
+        nameInput.addEventListener("input", updateSubmitState);
+    </script>
+</body>
+</html>

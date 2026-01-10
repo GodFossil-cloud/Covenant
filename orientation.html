@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preface — For the Record</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+            background: linear-gradient(to bottom, #f5f5f0 0%, #ddd5c8 100%) no-repeat;
+            background-attachment: fixed;
+            transition: background-color 0.9s ease-out;
+        }
+
+        html.fade-to-black {
+            background-color: #000000;
+            background: #000000;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Georgia", serif;
+            position: relative;
+            color: #2c2c2c;
+            line-height: 1.72;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+        }
+
+        body.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        body.fade-out {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        main.container {
+            max-width: 700px;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(to bottom, #f5f5f0 0%, #ddd5c8 100%);
+            transition: opacity 0.9s ease-out;
+        }
+
+        main.container.fade-to-black {
+            opacity: 0;
+        }
+
+        main.container > * {
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            position: relative;
+            margin-bottom: 0;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            padding-top: 1.5rem;
+            padding-bottom: 1rem;
+            background: linear-gradient(to bottom, #f5f5f0 0%, #ddd5c8 100%);
+            border-bottom: 1.5px solid rgba(90, 90, 90, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at center, 
+                    rgba(245, 245, 240, 1) 0%,
+                    rgba(245, 245, 240, 0.8) 50%,
+                    rgba(245, 245, 240, 0) 100%);
+            z-index: -1;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .header-nav-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 999px;
+            border: 1px solid #2c2c2c;
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+            text-decoration: none;
+            font-size: 1.1rem;
+            line-height: 1;
+            letter-spacing: 0.05em;
+            transition: all 0.35s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .header-nav-button:hover,
+        .header-nav-button:focus-visible {
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+        }
+
+        .header-nav-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 700px) {
+            main.container > header {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        .content-wrapper {
+            padding: 2rem 2rem 0.5rem 2rem;
+            border-left: 1px solid rgba(90, 90, 90, 0.45);
+            border-right: 1px solid rgba(90, 90, 90, 0.45);
+        }
+
+        .eyebrow {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #4a4a4a;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 0.06em;
+            color: #2a3a4a;
+            line-height: 1.3;
+            text-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.2);
+            padding-bottom: 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            display: none;
+        }
+
+        p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            color: #2a2a2a;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: paragraphReveal 0.7s ease-out forwards;
+            letter-spacing: 0.01em;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
+        }
+
+        p:nth-of-type(1) { animation-delay: 0.1s; }
+        p:nth-of-type(2) { animation-delay: 0.25s; }
+        p:nth-of-type(3) { animation-delay: 0.4s; }
+        p:nth-of-type(4) { animation-delay: 0.55s; }
+
+        p:first-of-type::first-letter {
+            float: left;
+            font-size: 3.5rem;
+            line-height: 0.85;
+            padding-right: 0.12em;
+            margin-top: 0.1em;
+            margin-bottom: -0.05em;
+            font-weight: 400;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a3520 50%, #1a1a1a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.2)) drop-shadow(0 1px 2px rgba(74, 53, 32, 0.2));
+        }
+
+        .faithful-name {
+            font-style: normal;
+            font-weight: 600;
+            color: #7b2e2e;
+            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+            cursor: default;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
+        }
+
+        .faithful-name:hover {
+            color: #a83838;
+            text-shadow: 0 0 8px rgba(139, 46, 46, 0.3), 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
+        }
+
+        .emphasis {
+            font-weight: 600;
+            font-style: italic;
+            transition: all 0.3s ease;
+            cursor: default;
+            letter-spacing: 0.015em;
+            color: #1a1a1a;
+        }
+
+        .emphasis:hover {
+            color: #0a0a0a;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.15), 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
+        }
+
+        .possessive-be {
+            font-style: italic;
+            font-weight: 400;
+            color: #1a1a1a;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .possessive-be:hover {
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .possessive-my {
+            font-variant: small-caps;
+            letter-spacing: 0.12em;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #4a300c;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .possessive-my:hover {
+            color: #5a3510;
+            text-shadow: 0 0 8px rgba(90, 64, 12, 0.3);
+        }
+
+        .temporal {
+            font-style: italic;
+            font-weight: 500;
+            letter-spacing: 0.015em;
+            color: #2a2a2a;
+        }
+
+        .closing-declaration {
+            font-size: 1.15rem;
+            font-weight: 400;
+            text-align: center;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+            letter-spacing: 0.025em;
+            font-style: italic;
+            line-height: 1.65;
+            opacity: 0;
+            transform: scale(0.96);
+            animation: closingReveal 0.9s ease-out forwards;
+            animation-delay: 0.75s;
+            text-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .closing-declaration:first-of-type {
+            margin-top: 1rem;
+        }
+
+        .closing-declaration:last-of-type {
+            animation-delay: 0.95s;
+        }
+
+        .closing-declaration:hover {
+            color: #0a0a0a;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.16), 0 0.5px 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .signature-ornament {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #2a3a4a;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeInDelayed 0.8s ease-out 1.2s forwards;
+        }
+
+        .signature {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.95rem;
+            font-style: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #4a4a4a;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.25);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInDelayed 0.8s ease-out 1.35s forwards;
+        }
+
+        .action-section {
+            margin-top: 0;
+            padding: 1rem 2rem 1rem 2rem;
+            background: linear-gradient(to bottom, #f5f5f0 0%, #ddd5c8 100%);
+            border-top: 1.5px solid rgba(90, 90, 90, 0.5);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border: 1px solid #2c2c2c;
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            transition: all 0.35s ease;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        .nav-button:hover,
+        .nav-button:focus-visible {
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes successFlash {
+            0% { 
+                background-color: #2c2c2c;
+                border-color: #2c2c2c;
+                color: #f5f5f0;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            }
+            100% { 
+                background-color: #ffffff;
+                border-color: #ffffff;
+                color: #000000;
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        .nav-button.success-flash,
+        .header-nav-button.success-flash {
+            animation: successFlash 0.15s ease-out forwards;
+        }
+
+        .footer-divider {
+            width: 100%;
+            height: 1px;
+            background-color: #9a9a9a;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #3a3a3a;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            animation: fadeInDelayed 0.8s ease-out 1.4s forwards;
+            font-style: italic;
+            line-height: 1.6;
+            font-weight: 500;
+            text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeInDelayed {
+            to { opacity: 1; }
+        }
+
+        @keyframes closingReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes paragraphReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 900px) {
+            h1 {
+                font-size: 2rem;
+                letter-spacing: 0.05em;
+            }
+
+            p {
+                font-size: 0.98rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+                letter-spacing: 0.04em;
+            }
+
+            p {
+                font-size: 0.95rem;
+            }
+
+            p:first-of-type::first-letter {
+                font-size: 3rem;
+            }
+
+            .closing-declaration {
+                font-size: 1.05rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nav-button {
+                width: 100%;
+            }
+
+            .footer-note {
+                font-size: 0.72rem;
+                letter-spacing: 0.08em;
+            }
+        }
+
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            p {
+                font-size: 0.92rem;
+            }
+
+            .eyebrow {
+                font-size: 0.75rem;
+            }
+
+            .header-nav-button {
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media print {
+            html, body {
+                background: white !important;
+            }
+            .nav-button,
+            .header-nav-button {
+                background: white !important;
+                color: #2c2c2c !important;
+            }
+            .footer-note,
+            .signature-ornament,
+            .signature,
+            p {
+                opacity: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" aria-labelledby="orientation-title">
+        <header>
+            <div class="header-text">
+                <div class="eyebrow">Preface</div>
+                <h1 id="orientation-title">For the Record</h1>
+            </div>
+            <div class="header-nav">
+                <button class="header-nav-button" id="headerProceedBtn" aria-label="Proceed to the Covenant" title="Proceed to the Covenant">
+                    ⇢
+                </button>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <p>Well, it would seem this passion project has amounted to nothing short of an artifact. It has proven sacred, and it appears to have taken on a life of its own. So, as a product of all my precious time and effort, may you take it for what it's worth—and may it serve you well as an opportunity, though you must not mistake it for an obligation. This Covenant is strictly bound by way of sacramental sign and seal, in the light of explicit consent and free will of the would-be Faithful: <em class="faithful-name">Ruby</em>.</p>
+
+            <p>It is worth noting that this Covenant has been devised to meet all that is required to constitute a functioning, authoritative sacrament—one that binds beyond the jurisdiction of mortal powers: family, custom, or humankind at large.</p>
+
+            <p>The statutes outline a consignment of roles and duties from within the bond; once the oath is signed and sealed, those roles are effectively—and formally—consecrated. You must understand: this is no mere symbolic gesture. By all intents and purposes, this is a functional, comprehensive, spiritually-binding sacramental Covenant. <span class="emphasis">It binds.</span> That is the point. Be aware of what you are doing.</p>
+
+            <p>So proceed with discretion, and please—read all documentation, every section; and for the love of joy, make sure you know and understand what each part means before you even think about signing the oath. Because once the oath is signed and sealed, never again will you merely play the role of Faithful—</p>
+
+            <p class="closing-declaration">You will <span class="possessive-be">be</span> Faithful;<br><span class="possessive-my">my</span> Faithful.</p>
+            <p class="closing-declaration"><span class="temporal">Before you are yourself</span>,<br>you will be my Faithful.</p>
+
+            <div class="signature-ornament">⚘</div>
+            <div class="signature">Nobody</div>
+        </div>
+
+        <div class="action-section">
+            <nav class="navigation">
+                <a href="invocation.html" class="nav-button" id="proceedBtn">· PROCEED ·</a>
+            </nav>
+
+            <div class="footer-divider"></div>
+            <div class="footer-note">In order to become that which you are not, you have to go by the way of that which you are not.</div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    document.body.classList.add('fade-in');
+                });
+            });
+        });
+
+        const proceedBtn = document.getElementById('proceedBtn');
+        const headerProceedBtn = document.getElementById('headerProceedBtn');
+        const body = document.body;
+        const html = document.documentElement;
+        const container = document.querySelector('main.container');
+        let navigationTriggered = false;
+
+        function handleNavigation(e) {
+            if (e) {
+                e.preventDefault();
+            }
+
+            if (navigationTriggered) return;
+            navigationTriggered = true;
+
+            // Set session flag for invocation.html to detect
+            try {
+                sessionStorage.setItem('fromOrientation', 'true');
+            } catch (e) {
+                // sessionStorage not available
+            }
+
+            // Flash the appropriate button
+            if (e && e.currentTarget === headerProceedBtn) {
+                headerProceedBtn.classList.add('success-flash');
+            } else if (proceedBtn) {
+                proceedBtn.classList.add('success-flash');
+            }
+
+            // After flash, fade entire page to black
+            setTimeout(() => {
+                body.classList.add('fade-out');
+                html.classList.add('fade-to-black');
+                if (container) {
+                    container.classList.add('fade-to-black');
+                }
+            }, 150);
+
+            // Navigate after full fade
+            setTimeout(() => {
+                window.location.href = 'invocation.html';
+            }, 1050);
+        }
+
+        if (proceedBtn) {
+            proceedBtn.addEventListener('touchstart', handleNavigation, { passive: false });
+            proceedBtn.addEventListener('click', handleNavigation);
+        }
+
+        if (headerProceedBtn) {
+            headerProceedBtn.addEventListener('touchstart', handleNavigation, { passive: false });
+            headerProceedBtn.addEventListener('click', handleNavigation);
+        }
+    </script>
+</body>
+</html>

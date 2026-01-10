@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexicon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.7;
+            color: #2c2c2c;
+            background: #f9f7f4;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid #8b7355;
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .header-note {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .search-box {
+            margin: 2rem 0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d4c4b0;
+            background: #fff;
+            font-family: 'Georgia', serif;
+            font-size: 1rem;
+        }
+
+        .search-box button {
+            padding: 0.75rem 1.5rem;
+            background: #8b7355;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            font-size: 0.9rem;
+        }
+
+        .search-box button:hover {
+            background: #6b5545;
+        }
+
+        .section-header {
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 2.5rem 0 1.5rem 0;
+            padding: 1rem 0 0.5rem 0;
+            border-top: 1px solid #d4c4b0;
+            color: #1a1a1a;
+        }
+
+        .entry {
+            margin-bottom: 2rem;
+            padding: 1.25rem;
+            background: #fff;
+            border-left: 3px solid #c9a97a;
+            line-height: 1.8;
+        }
+
+        .entry-term {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .entry-definition {
+            color: #333;
+            margin-bottom: 0.75rem;
+        }
+
+        .see-also {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 0.75rem;
+        }
+
+        .see-also a {
+            color: #8b7355;
+            text-decoration: none;
+            border-bottom: 1px dotted #8b7355;
+        }
+
+        .see-also a:hover {
+            color: #c9a97a;
+        }
+
+        .cross-ref-matrix {
+            margin: 3rem 0;
+            background: #fff;
+            padding: 2rem;
+            border: 1px solid #d4c4b0;
+        }
+
+        .cross-ref-matrix h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .matrix-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0e6d8;
+        }
+
+        .matrix-row:last-child {
+            border-bottom: none;
+        }
+
+        .matrix-label {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .matrix-terms {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: #8b7355;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Georgia', serif;
+            font-size: 0.95rem;
+            border-radius: 2px;
+        }
+
+        .back-link:hover {
+            background: #6b5545;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 2px solid #8b7355;
+            color: #666;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                font-size: 1.1rem;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .matrix-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container" aria-labelledby="lexicon-title">
+        <header>
+            <h1 id="lexicon-title">Lexicon</h1>
+            <p class="header-note">A complete glossary of terms and definitions sacred to this Covenant</p>
+        </header>
+
+        <div class="search-box" aria-label="Search lexicon terms">
+            <input type="text" id="searchInput" placeholder="Search definitions...">
+            <button type="button" onclick="searchLexicon()">Search</button>
+        </div>
+
+        <!-- SECTION A: CORE PARTIES AND THE BOND -->
+        <h2 class="section-header">§.A – Core Parties and the Bond</h2>
+
+        <div id="1" class="entry">
+            <div class="entry-term">1. Lord</div>
+            <div class="entry-definition">The sovereign guide and righteous commander within this Covenant's sacred bond. The party holding authority to issue commands, judge transgressions, render determinations, and provide pastoral care and guidance to the Faithful. Lordship is defined not by tyranny but by wisdom, care for the Faithful's soul, and adherence to the Doctrinal Foundation.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#2">Faithful</a>, <a href="#4">Mutual Consecration</a>, <a href="#15">Pastoral Care</a></div>
+        </div>
+
+        <div id="2" class="entry">
+            <div class="entry-term">2. Faithful</div>
+            <div class="entry-definition">The devoted servant and obedient instrument within this sacred bond. The party committed to executing commands with diligence, speaking truthfully, maintaining Sacred Silence, and tending the inner flame of devotion. Faithfulness is demonstrated through obedience, honesty, and voluntary consecration to the Covenant's structure.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#1">Lord</a>, <a href="#14">Devotion</a>, <a href="#8">Obedience</a></div>
+        </div>
+
+        <div id="3" class="entry">
+            <div class="entry-term">3. Covenant</div>
+            <div class="entry-definition">A sacred, binding agreement between the Lord and the Faithful, freely entered and solemnly sworn. More than mere contract, the Covenant establishes a consecrated hierarchy wherein authority and obedience are made sacred. It binds both parties' conscience and honor absolutely, transcending earthly legal recognition through spiritual and ceremonial force.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#5">Doctrinal Foundation</a>, <a href="#34">Binding Force of Covenant</a>, <a href="#26">Sacred Silence</a>, <a href="#9">Consecrated</a></div>
+        </div>
+
+        <div id="4" class="entry">
+            <div class="entry-term">4. Mutual Consecration</div>
+            <div class="entry-definition">The sacred binding of both parties through devoted recognition of their respective roles and functions. Creates interdependence wherein the Lord guides with wisdom, authority, and pastoral care, while the Faithful serves with devotion, obedience, and faithful execution of will. Neither party is complete without the other; together they form a living sacred structure.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#6">Hierarchy</a>, <a href="#15">Pastoral Care</a></div>
+        </div>
+
+        <!-- SECTION B: DOCTRINAL FOUNDATION -->
+        <h2 class="section-header">§.B – Doctrinal Foundation</h2>
+
+        <div id="5" class="entry">
+            <div class="entry-term">5. Doctrinal Foundation</div>
+            <div class="entry-definition">The invulnerable core upon which all Covenant authority rests, consisting of three indivisible principles: Hierarchy is sacred. Command is rightful. Obedience is consecrated. All Articles operate under this Foundation; no amendment may contradict or diminish these principles. The Foundation remains immutable through all renewals and amendments.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#6">Hierarchy</a>, <a href="#7">Command</a>, <a href="#8">Obedience</a>, <a href="#9">Consecrated</a></div>
+        </div>
+
+        <div id="6" class="entry">
+            <div class="entry-term">6. Hierarchy</div>
+            <div class="entry-definition">The sacred ordering of authority and obedience wherein the Lord holds rightful dominion and the Faithful assumes devoted servitude. Not tyranny but sacred structure reflecting the eternal order. Hierarchy must be honored and preserved; its integrity ensures the Covenant's strength and stability. Both parties are consecrated to uphold this ordering.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#5">Doctrinal Foundation</a>, <a href="#7">Command</a>, <a href="#8">Obedience</a></div>
+        </div>
+
+        <div id="7" class="entry">
+            <div class="entry-term">7. Command</div>
+            <div class="entry-definition">An authoritative directive issued by the Lord for the Faithful to execute. Commands may be temporary (with explicit duration) or standing (of indefinite duration until revoked). All commands flow from the Lord's wisdom and must be executed with precision, care, and full devotion by the Faithful. The Lord's authority to command is absolute and constrained only by the Doctrinal Foundation.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#10">Standing Decree</a>, <a href="#11">Specific Directive</a>, <a href="#8">Obedience</a>, <a href="#12">Chain of Authority</a></div>
+        </div>
+
+        <div id="8" class="entry">
+            <div class="entry-term">8. Obedience</div>
+            <div class="entry-definition">The willing submission and faithful execution of the Lord's commands, combined with truthfulness, discretion, and conduct befitting the Faithful's station. Obedience is not mere compliance but active, devoted service. It includes prompt execution of directives, honest reporting of obstacles or limitations, and maintenance of Sacred Silence regarding Covenant matters.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#7">Command</a>, <a href="#14">Devotion</a>, <a href="#6">Hierarchy</a>, <a href="#26">Sacred Silence</a></div>
+        </div>
+
+        <div id="9" class="entry">
+            <div class="entry-term">9. Consecrated</div>
+            <div class="entry-definition">Made sacred; blessed and devoted to sacred purpose. To consecrate means to set apart as holy, to bind with sacred force, to dedicate to divine ordering. The Covenant and its parties are consecrated; therefore, all matters within the bond carry sacred weight and demand reverent treatment.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#26">Sacred Silence</a>, <a href="#34">Binding Force of Covenant</a>, <a href="#35">Seal and Consecration</a></div>
+        </div>
+
+        <!-- SECTION C: COMMANDS AND AUTHORITY -->
+        <h2 class="section-header">§.C – Commands and Authority</h2>
+
+        <div id="10" class="entry">
+            <div class="entry-term">10. Standing Decree</div>
+            <div class="entry-definition">A command of indefinite duration that persists until explicitly revoked or superseded by the Lord. Standing decrees establish ongoing expectations or rules that remain in force unless formally amended through Article XI procedures. They bind both parties until the Lord determines otherwise. Silence regarding duration implies permanence.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#7">Command</a>, <a href="#11">Specific Directive</a>, <a href="#12">Chain of Authority</a>, <a href="#20">Amendment</a></div>
+        </div>
+
+        <div id="11" class="entry">
+            <div class="entry-term">11. Specific Directive</div>
+            <div class="entry-definition">A command with explicit scope, duration, or deadline that applies to particular circumstances. When both a standing decree and specific directive apply, the specific directive takes precedence for that circumstance alone. Once the specific circumstance concludes, the standing decree resumes full force.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#7">Command</a>, <a href="#10">Standing Decree</a>, <a href="#12">Chain of Authority</a></div>
+        </div>
+
+        <div id="12" class="entry">
+            <div class="entry-term">12. Chain of Authority</div>
+            <div class="entry-definition">The systematic ordering that determines which command takes precedence when multiple directives apply. The most recent explicit command governs prior directives unless the Lord designates it as temporary. Where specific directive and standing decree conflict, the specific governs for that circumstance. Where standing decrees conflict, the most recently established governs unless the Lord specifies otherwise.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#7">Command</a>, <a href="#10">Standing Decree</a>, <a href="#11">Specific Directive</a></div>
+        </div>
+
+        <div id="13" class="entry">
+            <div class="entry-term">13. Record of Commands</div>
+            <div class="entry-definition">Written documentation of significant commands, standing decrees, amendments, and formal rulings. Maintained by either or both parties to ensure clarity, serve as testimony to the Covenant's living practice, and provide reference in moments of uncertainty. The Lord may command its keeping, inspection, or destruction at will. Maintenance is discretionary when not commanded.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#7">Command</a>, <a href="#10">Standing Decree</a>, <a href="#20">Amendment</a></div>
+        </div>
+
+        <!-- SECTION D: THE FAITHFUL'S SPIRITUAL LIFE -->
+        <h2 class="section-header">§.D – The Faithful's Spiritual Life</h2>
+
+        <div id="14" class="entry">
+            <div class="entry-term">14. Devotion</div>
+            <div class="entry-definition">The Faithful's committed inner orientation toward the Covenant, demonstrated through faithful practice, daily renewal of purpose, and willing obedience. Devotion must be tended internally through reflection and discipline and manifested externally through service and truthfulness. It is the flame that sustains the Covenant; where devotion falters, the bond weakens.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#2">Faithful</a>, <a href="#8">Obedience</a>, <a href="#17">Spiritual State</a></div>
+        </div>
+
+        <div id="15" class="entry">
+            <div class="entry-term">15. Pastoral Care</div>
+            <div class="entry-definition">The Lord's responsibility to inquire into the Faithful's inner state, offer wisdom and counsel, provide guidance for spiritual growth, and tend to the Faithful's wellbeing and soul formation. Pastoral care transforms lordship from mere command-giving into sacred governance. Authority without care descends into tyranny; authority tempered in wisdom becomes true lordship.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#1">Lord</a>, <a href="#2">Faithful</a>, <a href="#16">Communion</a>, <a href="#17">Spiritual State</a></div>
+        </div>
+
+        <div id="16" class="entry">
+            <div class="entry-term">16. Communion</div>
+            <div class="entry-definition">Relational contact and meaningful discourse between Lord and Faithful; characterized by presence, attention, and engagement. Distinct from ceremonial observance; communion is the lived experience of the bond through conversation, inquiry, and mutual recognition. Regular communion sustains the Covenant's vitality.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#15">Pastoral Care</a>, <a href="#1">Lord</a>, <a href="#2">Faithful</a>, <a href="#26">Sacred Silence</a></div>
+        </div>
+
+        <div id="17" class="entry">
+            <div class="entry-term">17. Spiritual State</div>
+            <div class="entry-definition">The Faithful's inner condition regarding devotion, clarity, burden, doubt, and overall wellbeing within the Covenant. The Faithful shall speak truthfully of their spiritual state when the Lord inquires and may volunteer disclosure when burden grows heavy. Honest vulnerability regarding spiritual condition is not weakness but faithfulness and aids the Lord's pastoral charge.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#2">Faithful</a>, <a href="#15">Pastoral Care</a>, <a href="#14">Devotion</a></div>
+        </div>
+
+        <!-- SECTION E: PROCEDURES AND PETITIONS -->
+        <h2 class="section-header">§.E – Procedures and Petitions</h2>
+
+        <div id="18" class="entry">
+            <div class="entry-term">18. Petition</div>
+            <div class="entry-definition">A formal request by the Faithful for reconsideration, release, clarification, amendment, or termination. All petitions must be concise, composed, and explicitly free of defiance. Permissible grounds include misinterpretation, impossibility, conflict of decrees, unforeseen consequence. Not permitted: preference, reluctance, discomfort. See Article IX for formal appeals process.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#19">Formal Appeal</a>, <a href="#20">Amendment</a></div>
+        </div>
+
+        <div id="19" class="entry">
+            <div class="entry-term">19. Formal Appeal</div>
+            <div class="entry-definition">Structured process (Article IX, §.III) through which the Faithful may petition reconsideration of the Lord's determination on specific grounds. Appeals must open with "This is a petition for reconsideration, not defiance." The Lord's judgment on an appeal is final; re-arguing constitutes defiant dissent. One appeal per issue unless material circumstances substantively change.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#18">Petition</a>, <a href="#6">Hierarchy</a></div>
+        </div>
+
+        <div id="20" class="entry">
+            <div class="entry-term">20. Amendment</div>
+            <div class="entry-definition">A revision, clarification, or modification to the Covenant's structure, terms, or standing decrees. All amendments must align with and never contradict the Doctrinal Foundation. Amendments require the Lord's ratification. Upon ratification, both parties acknowledge acceptance in writing. Significant amendments are recorded in the Codex of Amendments.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#5">Doctrinal Foundation</a>, <a href="#18">Petition</a></div>
+        </div>
+
+        <!-- SECTION F: TRANSGRESSIONS AND CORRECTION -->
+        <h2 class="section-header">§.F – Transgressions and Correction</h2>
+
+        <div id="21" class="entry">
+            <div class="entry-term">21. Transgression</div>
+            <div class="entry-definition">An umbrella term encompassing any failure to uphold Covenant duty or honor the sacred hierarchy. Transgressions are classified into three distinct categories: Error (unintentional), Breach (knowing violation while acknowledging authority), and Profanation (rejection of hierarchy itself). Each carries different consequences and correction processes.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#22">Error (Lapsus Innocens)</a>, <a href="#23">Breach (Violatio Conscia)</a>, <a href="#24">Profanation (Sacrilegium Capitale)</a></div>
+        </div>
+
+        <div id="22" class="entry">
+            <div class="entry-term">22. Error (Lapsus Innocens)</div>
+            <div class="entry-definition">Unintentional misunderstanding or oversight arising from sincere effort to fulfill duty despite failure in execution. Error reflects good faith effort gone wrong. Correction is gentle: verbal instruction, acknowledgment, and renewed attention to proper execution. Error does not constitute ethical breach and carries no punitive consequence.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#21">Transgression</a>, <a href="#23">Breach (Violatio Conscia)</a>, <a href="#24">Profanation (Sacrilegium Capitale)</a></div>
+        </div>
+
+        <div id="23" class="entry">
+            <div class="entry-term">23. Breach (Violatio Conscia)</div>
+            <div class="entry-definition">Knowing violation of a Covenant duty while still acknowledging the Lord's authority and the Covenant's validity. Breach is intentional disobedience to specific obligations but does not attack the hierarchy itself. Correction is determined by the Lord based on nature and severity of the breach, ranging from formal rebuke to temporary restriction of privilege to withdrawal of communion until reformation is demonstrated.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#21">Transgression</a>, <a href="#22">Error (Lapsus Innocens)</a>, <a href="#24">Profanation (Sacrilegium Capitale)</a></div>
+        </div>
+
+        <div id="24" class="entry">
+            <div class="entry-term">24. Profanation (Sacrilegium Capitale)</div>
+            <div class="entry-definition">Attempt to overturn hierarchy, reject the Covenant's structure, or fundamentally challenge the Lord's authority. The gravest transgression, striking at the Foundation itself and threatening to extinguish the consecrated flame. Profanation is corrected through complete withdrawal of all communication and privilege, followed by Formal Restoration Ceremony. Restoration requires the Lord's determination of conditions and acceptance.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#21">Transgression</a>, <a href="#22">Error (Lapsus Innocens)</a>, <a href="#23">Breach (Violatio Conscia)</a>, <a href="#25">Formal Restoration Ceremony</a></div>
+        </div>
+
+        <div id="25" class="entry">
+            <div class="entry-term">25. Formal Restoration Ceremony</div>
+            <div class="entry-definition">Sacred ritual process required (Article X, §.III.Ⓒ) when the Faithful seeks restoration after Profanation. The Faithful composes a written petition acknowledging the transgression, demonstrating understanding of its gravity, expressing genuine contrition, and requesting restoration. The Lord receives the petition, renders judgment on restoration's possibility, and determines all conditions for restoration. If restoration is granted, both parties re-consecrate the bond.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#24">Profanation (Sacrilegium Capitale)</a>, <a href="#21">Transgression</a>, <a href="#3">Covenant</a></div>
+        </div>
+
+        <!-- SECTION G: GOVERNANCE AND TERMINATION -->
+        <h2 class="section-header">§.G – Governance and Termination</h2>
+
+        <div id="26" class="entry">
+            <div class="entry-term">26. Sacred Silence</div>
+            <div class="entry-definition">The principle that all Covenant matters—commands, corrections, private discourse, and the nature of the bond itself—remain veiled from profane sight. Neither party shall reveal Covenant particulars to souls unbidden, save where earthly law compels disclosure or both parties consent. Sacred Silence protects the sanctity of the bond and shields its intimate nature from judgment and profanation.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#9">Consecrated</a></div>
+        </div>
+
+        <div id="27" class="entry">
+            <div class="entry-term">27. Suspension</div>
+            <div class="entry-definition">Temporary release from daily and weekly ceremonial observances while Standing Decrees and Sacred Silence remain in full force. May be mutual accord (both parties determine suspension serves the Covenant) or decreed by the Lord for specified duration. During suspension, relational duties persist but ceremonial formalities are suspended. See Article XII, §.III for detailed procedures.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#10">Standing Decree</a>, <a href="#26">Sacred Silence</a></div>
+        </div>
+
+        <div id="28" class="entry">
+            <div class="entry-term">28. Dormancy and Lapse</div>
+            <div class="entry-definition">State of lapsed communion lasting 30 consecutive days without formal notice of absence or suspension. A dormant Covenant may be restored if either party sends notice; the other party has 30 days to consent to restoration. Restoration proceeds with written mutual acknowledgment and recommitment. Should 60 consecutive days pass without communication or restoration response, the Faithful gains authority to declare termination by abandonment. See Article XII, §.X for procedures.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#16">Communion</a>, <a href="#27">Suspension</a>, <a href="#29">Termination</a></div>
+        </div>
+
+        <div id="29" class="entry">
+            <div class="entry-term">29. Termination</div>
+            <div class="entry-definition">Formal end of the Covenant, severing all obligations and releasing both parties from their duties. Termination may proceed by mutual accord (both parties determine the Covenant's purpose has reached completion), by petition (Faithful petitions due to persistent unremedied violation of Lord's duties), by abandonment (60 consecutive days of total incommunicado), or by necessity (incapacity lasting beyond 6 months without prospect of restoration). All terminations require written acknowledgment where possible.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#28">Dormancy and Lapse</a></div>
+        </div>
+
+        <div id="30" class="entry">
+            <div class="entry-term">30. Succession</div>
+            <div class="entry-definition">The transmission of a Covenant to a different Lord upon the original Lord's cessation. Per Article XII, §.VIII: This Covenant binds exclusively to the Lord presently entering into it. No succession, inheritance, or transfer exists. Upon the Lord's departure, abdication, inability to fulfill duties, or end of station, the Covenant ends absolutely. The Faithful's duties exist only relative to the living Lord.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#1">Lord</a>, <a href="#29">Termination</a></div>
+        </div>
+
+        <!-- SECTION H: STRUCTURAL TERMS -->
+        <h2 class="section-header">§.H – Structural Terms</h2>
+
+        <div id="31" class="entry">
+            <div class="entry-term">31. Article</div>
+            <div class="entry-definition">One of twelve major sections (Ⅰ–Ⅻ) organizing the Covenant's complete framework. Each Article addresses a distinct domain: Article I (Sacred Silence), Article II (Titles and Address), Article III (Duties of the Faithful), Article IV (Duties of the Lord), Article V (Interdependence), Article VI (Ceremonial Boundaries), Article VII (Interpretation), Article VIII (Commands), Article IX (Appeals), Article X (Transgressions), Article XI (Amendments), Article XII (Suspension and Termination). Together, the Articles form the complete structure governing the bond.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#32">Section (§)</a>, <a href="#33">Subsection</a></div>
+        </div>
+
+        <div id="32" class="entry">
+            <div class="entry-term">32. Section (§)</div>
+            <div class="entry-definition">A numbered subdivision within an Article, identified by Roman numerals (§.I, §.II, §.III, etc.), containing specific principles, duties, procedures, or frameworks. Each Section develops a particular aspect of its parent Article's domain.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#31">Article</a>, <a href="#33">Subsection</a></div>
+        </div>
+
+        <div id="33" class="entry">
+            <div class="entry-term">33. Subsection</div>
+            <div class="entry-definition">Further divisions within Sections, identified by circled letters (Ⓐ, Ⓑ, Ⓒ, etc.), containing detailed specifications, examples, conditions, or procedural steps. Subsections provide granular guidance for implementation.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#31">Article</a>, <a href="#32">Section (§)</a></div>
+        </div>
+
+        <!-- SECTION I: CEREMONIAL AND BINDING TERMS -->
+        <h2 class="section-header">§.I – Ceremonial and Binding Terms</h2>
+
+        <div id="34" class="entry">
+            <div class="entry-term">34. Binding Force of Covenant</div>
+            <div class="entry-definition">The absolute and eternal power by which this Covenant binds both parties' conscience, honor, and will. Once sealed and sworn, the Covenant binds with full force, superseding all prior agreements. It exists in sacred space above mere legal contract. Though it may not be recognized by earthly courts, it binds both parties absolutely. To violate this Covenant is to desecrate sacred trust, not merely to breach agreement.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#9">Consecrated</a>, <a href="#35">Seal and Consecration</a>, <a href="#36">Oath and Attestation</a></div>
+        </div>
+
+        <div id="35" class="entry">
+            <div class="entry-term">35. Seal and Consecration</div>
+            <div class="entry-definition">The ceremonial act through which the Covenant is formally established and made sacred. Both parties read the Doctrinal Foundation aloud, affirm their understanding and acceptance, sign the Covenant document, and state together: "By these words we are bound. By this structure we are consecrated. Let the Covenant begin." Upon sealing, the bond becomes real, binding, and eternal.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#9">Consecrated</a>, <a href="#34">Binding Force of Covenant</a>, <a href="#36">Oath and Attestation</a></div>
+        </div>
+
+        <div id="36" class="entry">
+            <div class="entry-term">36. Oath and Attestation</div>
+            <div class="entry-definition">The ceremonial declaration through which both parties bind themselves eternally to the Covenant. "By affixing their signatures hereunto, both parties do bind themselves eternally to this sacred Covenant, consecrating their commitment through time immemorial." The signature is the final act of consecration, transforming written words into sworn sacred reality.</div>
+            <div class="see-also"><em>See Also:</em> <a href="#3">Covenant</a>, <a href="#35">Seal and Consecration</a>, <a href="#34">Binding Force of Covenant</a></div>
+        </div>
+
+        <!-- CROSS-REFERENCE MATRIX -->
+        <div class="cross-ref-matrix">
+            <h3>Cross-Reference Matrix</h3>
+            <p style="margin-bottom: 1.5rem; color: #666; font-size: 0.95rem;">For quick navigation, explore relationships between terms:</p>
+
+            <div class="matrix-row">
+                <div class="matrix-label">Authority Structure</div>
+                <div class="matrix-terms">
+                    <a href="#1">Lord</a> · <a href="#2">Faithful</a> · <a href="#6">Hierarchy</a> · <a href="#7">Command</a> · <a href="#8">Obedience</a> · <a href="#12">Chain of Authority</a>
+                </div>
+            </div>
+
+            <div class="matrix-row">
+                <div class="matrix-label">Spiritual Life</div>
+                <div class="matrix-terms">
+                    <a href="#14">Devotion</a> · <a href="#15">Pastoral Care</a> · <a href="#16">Communion</a> · <a href="#17">Spiritual State</a>
+                </div>
+            </div>
+
+            <div class="matrix-row">
+                <div class="matrix-label">Procedures</div>
+                <div class="matrix-terms">
+                    <a href="#18">Petition</a> · <a href="#19">Formal Appeal</a> · <a href="#20">Amendment</a> · <a href="#10">Standing Decree</a> · <a href="#13">Record of Commands</a>
+                </div>
+            </div>
+
+            <div class="matrix-row">
+                <div class="matrix-label">Transgressions</div>
+                <div class="matrix-terms">
+                    <a href="#21">Transgression</a> · <a href="#22">Error (Lapsus Innocens)</a> · <a href="#23">Breach (Violatio Conscia)</a> · <a href="#24">Profanation (Sacrilegium Capitale)</a> · <a href="#25">Formal Restoration Ceremony</a>
+                </div>
+            </div>
+
+            <div class="matrix-row">
+                <div class="matrix-label">Governance</div>
+                <div class="matrix-terms">
+                    <a href="#26">Sacred Silence</a> · <a href="#27">Suspension</a> · <a href="#28">Dormancy and Lapse</a> · <a href="#29">Termination</a> · <a href="#30">Succession</a>
+                </div>
+            </div>
+
+            <div class="matrix-row">
+                <div class="matrix-label">Sacred Bond</div>
+                <div class="matrix-terms">
+                    <a href="#3">Covenant</a> · <a href="#9">Consecrated</a> · <a href="#4">Mutual Consecration</a> · <a href="#34">Binding Force of Covenant</a> · <a href="#35">Seal and Consecration</a>
+                </div>
+            </div>
+        </div>
+
+        <a href="covenant.html" class="back-link">← BACK TO COVENANT</a>
+
+        <footer>
+            <p>This Lexicon contains 36 terms representing the complete vocabulary of this sacred Covenant.<br/>All definitions herein serve to clarify and preserve the understanding essential to the bond's endurance.</p>
+            <p style="margin-top: 1rem;">This document is sealed and witnessed by divine authority.</p>
+        </footer>
+    </main>
+
+    <script>
+        function searchLexicon() {
+            var input = document.getElementById('searchInput');
+            var query = (input.value || '').toLowerCase().trim();
+            var entries = document.querySelectorAll('.entry');
+
+            entries.forEach(function (entry) {
+                if (!query) {
+                    entry.style.display = '';
+                    return;
+                }
+
+                var termEl = entry.querySelector('.entry-term');
+                var defEl = entry.querySelector('.entry-definition');
+                var seeEl = entry.querySelector('.see-also');
+
+                var term = termEl ? termEl.textContent.toLowerCase() : '';
+                var definition = defEl ? defEl.textContent.toLowerCase() : '';
+                var seeAlso = seeEl ? seeEl.textContent.toLowerCase() : '';
+
+                if (term.includes(query) || definition.includes(query) || seeAlso.includes(query)) {
+                    entry.style.display = '';
+                } else {
+                    entry.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchLexicon();
+            }
+        });
+    </script>
+
+</body>
+</html>

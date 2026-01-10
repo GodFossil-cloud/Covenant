@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consecrated — Initiation Complete</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: "Georgia", serif;
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+            line-height: 1.7;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        main.container {
+            max-width: 700px;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .eyebrow {
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #7a7a7a;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        p {
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+            color: #4a4a4a;
+            line-height: 1.8;
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background-color: #8a8a8a;
+            margin: 2rem auto;
+        }
+
+        .consecration-text {
+            background-color: #fafaf8;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 3px solid #8a8a8a;
+            font-style: italic;
+            color: #3a3a3a;
+            line-height: 1.9;
+            text-align: left;
+        }
+
+        .status-display {
+            background-color: #f0f0ed;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid #d0d0d0;
+            text-align: left;
+        }
+
+        .status-display p {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .next-steps {
+            text-align: left;
+            background-color: #fafaf8;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-left: 3px solid #8a8a8a;
+        }
+
+        .next-steps h2 {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin: 0 0 1rem 0;
+            color: #1a1a1a;
+            letter-spacing: 0.04em;
+        }
+
+        .next-steps ol {
+            margin-left: 1.5rem;
+        }
+
+        .next-steps li {
+            margin-bottom: 0.7rem;
+            color: #4a4a4a;
+        }
+
+        .closing-line {
+            font-style: italic;
+            margin-top: 2rem;
+        }
+
+        .cta-section {
+            margin-top: 2.5rem;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 0.9rem 2.5rem;
+            background-color: #2c2c2c;
+            color: #f5f5f0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border: 1px solid #2c2c2c;
+            cursor: pointer;
+        }
+
+        .nav-button:hover,
+        .nav-button:focus-visible {
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+        }
+
+        .footer-text {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #d0d0d0;
+            font-size: 0.9rem;
+            color: #5a5a5a;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .consecration-text,
+            .status-display,
+            .next-steps {
+                padding: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" aria-labelledby="consecrated-title">
+        <header>
+            <div class="eyebrow">Completion</div>
+            <h1 id="consecrated-title">Consecrated</h1>
+        </header>
+
+        <div class="divider"></div>
+
+        <p>Your oath has been spoken. Your signature has been placed. You are now initiated.</p> <!-- [file:7] -->
+
+        <section class="consecration-text" aria-label="Consecration reflection">
+            By word and hand, you have bound yourself to the Covenant. What was threshold is now path. What was potential is now commitment. You are no longer on the outside looking in. You are within, and you carry the obligation of your oath forward into every breath, every choice, every moment.<br><br>
+            This is not the end of initiation. This is the beginning of your initiated life.
+        </section> <!-- [file:7] -->
+
+        <div class="divider"></div>
+
+        <section class="status-display" aria-label="Initiation status">
+            <p><span class="status-label">Status:</span> Initiated</p>
+            <p><span class="status-label">Oath:</span> Sealed and Recorded</p>
+            <p><span class="status-label">Date:</span> <span id="completion-date"></span></p>
+        </section> <!-- [file:7] -->
+
+        <section class="next-steps" aria-label="Ongoing practice guidance">
+            <h2>Your Path Forward</h2>
+            <ol>
+                <li>Return daily to your practices; they remain non‑negotiable.</li>
+                <li>When difficulty arises, remember your oath and return to practice.</li>
+                <li>Track your progress: where you succeed, where you fail, where you grow.</li>
+                <li>At regular intervals, return to the Covenant and re‑read it with new eyes.</li>
+                <li>Share this tradition with no one unless you are explicitly asked to do so.</li>
+                <li>Your initiated status is permanent; the oath you have spoken cannot be unspoken.</li>
+            </ol> <!-- [file:7] -->
+        </section>
+
+        <p class="closing-line">
+            The threshold has closed behind you. The path extends forward into the life you are now building with intention and presence.
+        </p> <!-- [file:7] -->
+
+        <div class="cta-section">
+            <a href="index.html" class="nav-button">← Return to Threshold</a>
+        </div>
+
+        <footer class="footer-text">
+            <p>This site remains available to you as a reference and reminder. Your oath persists whether or not you visit these pages again.</p>
+            <p style="margin-top: 1rem;">Your practice is your witness. Your commitment is your seal.</p> <!-- [file:7] -->
+        </footer>
+    </main>
+
+    <script>
+        const completionSpan = document.getElementById("completion-date");
+        if (completionSpan) {
+            completionSpan.textContent = new Date().toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            });
+        }
+    </script>
+</body>
+</html>

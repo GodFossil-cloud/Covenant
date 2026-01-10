@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            background-color: #000;
+        }
+
+        body {
+            height: 100%;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #000;
+            color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: opacity 1.5s ease-out;
+        }
+
+        body.fade-out {
+            opacity: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes successFlash {
+            0% { 
+                background-color: #1a1a1a;
+                border-color: #444;
+                color: #f5f5f5;
+                box-shadow: none;
+            }
+            100% { 
+                background-color: #ffffff;
+                border-color: #ffffff;
+                color: #000000;
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        .password-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #d0d0d0;
+            background-color: #f5f5f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            color: #1a1a1a;
+            text-align: center;
+            letter-spacing: 0.3em;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="password"]:focus {
+            border-color: #999;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        input[type="password"]::placeholder {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #999;
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="password"].error-incorrect {
+            border-color: #ff3333;
+            background-color: #ffe6e6;
+            box-shadow: 0 0 0 4px rgba(255, 51, 51, 0.3);
+            animation: pulse 0.3s ease;
+        }
+
+        input[type="password"].error-empty {
+            border-color: #ffaa00;
+            background-color: #fff8e6;
+            box-shadow: 0 0 0 4px rgba(255, 170, 0, 0.3);
+            animation: pulse 0.3s ease;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border: 2px solid #444;
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            font-family: inherit;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover,
+        button:focus-visible {
+            background-color: #2a2a2a;
+            border-color: #666;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.08);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+        }
+
+        button.success-flash {
+            animation: successFlash 0.15s ease-out forwards;
+        }
+
+        @media (max-width: 600px) {
+            input[type="password"],
+            button {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <form class="password-form" id="passwordForm" novalidate>
+            <div class="input-wrapper" id="inputWrapper">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    placeholder="Enter Password"
+                    autocomplete="off"
+                >
+            </div>
+            <button type="submit" id="submitBtn">Enter</button>
+        </form>
+    </main>
+
+    <script>
+        // Set your password here
+        const correctPassword = 'nobodylovesme';
+
+        const form = document.getElementById('passwordForm');
+        const input = document.getElementById('passwordInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const body = document.body;
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const enteredPassword = input.value.trim();
+
+            // Check for empty password
+            if (enteredPassword === '') {
+                input.classList.remove('error-incorrect');
+                input.classList.add('error-empty');
+                
+                setTimeout(() => {
+                    input.classList.remove('error-empty');
+                }, 600);
+                return;
+            }
+
+            if (enteredPassword === correctPassword) {
+                // Flash the button bright white
+                submitBtn.classList.add('success-flash');
+                
+                // After flash, fade out entire page
+                setTimeout(() => {
+                    body.classList.add('fade-out');
+                }, 150);
+                
+                // Navigate after full fade
+                setTimeout(() => {
+                    window.location.href = 'threshold.html';
+                }, 1650); // 150ms flash + 1500ms fade
+            } else {
+                // Show error with red pulse
+                input.classList.remove('error-empty');
+                input.classList.add('error-incorrect');
+                input.value = '';
+                
+                setTimeout(() => {
+                    input.classList.remove('error-incorrect');
+                }, 600);
+            }
+        });
+
+        // Clear error states when user starts typing
+        input.addEventListener('input', () => {
+            input.classList.remove('error-incorrect', 'error-empty');
+        });
+    </script>
+</body>
+</html>

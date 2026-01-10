@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threshold — Initiation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: "Georgia", serif;
+            background: linear-gradient(135deg, #f0ebe0 0%, #fffef7 40%, #f8f3e8 100%);
+            color: #1a1a1a;
+        }
+
+        /* Fade in from black on page load */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000;
+            pointer-events: none;
+            z-index: 10000;
+            animation: fadeFromBlack 1.5s ease-out forwards;
+        }
+
+        @keyframes fadeFromBlack {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            transition: opacity 1.2s ease-out;
+        }
+
+        body.fade-out {
+            opacity: 0;
+        }
+
+        /* Enhanced parchment texture overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.025) 1px,
+                    rgba(196, 165, 105, 0.025) 2px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(196, 165, 105, 0.02) 1px,
+                    rgba(196, 165, 105, 0.02) 2px
+                ),
+                radial-gradient(
+                    ellipse at 20% 30%,
+                    rgba(196, 165, 105, 0.03),
+                    transparent 50%
+                ),
+                radial-gradient(
+                    ellipse at 80% 70%,
+                    rgba(196, 165, 105, 0.02),
+                    transparent 50%
+                );
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 2s ease-in 1.5s forwards;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes writeText {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes drawLine {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        @keyframes arrowAppear {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .content-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 5rem;
+            font-weight: 400;
+            color: #2a2520;
+            margin-bottom: 2rem;
+            text-shadow: 0 1px 2px rgba(196, 165, 105, 0.15);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        h1::before {
+            content: 'For Ruby';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: writeText 1.7s ease-out 2.1s forwards;
+        }
+
+        h1 {
+            color: transparent;
+        }
+
+        h1::before {
+            color: #2a2520;
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(
+                to right,
+                transparent,
+                #c4a569 20%,
+                #c4a569 80%,
+                transparent
+            );
+            box-shadow: 0 0 2px rgba(196, 165, 105, 0.3);
+            transform: scaleX(0);
+            transform-origin: center;
+            animation: drawLine 1.2s ease-out 3.8s forwards;
+        }
+
+        /* Minimalist arrow button */
+        .arrow-button {
+            position: fixed;
+            bottom: 3rem;
+            right: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 1.5px solid #c4a569;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            opacity: 0;
+            animation: arrowAppear 1s ease-out 5s forwards;
+            z-index: 100;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .arrow-button::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #c4a569;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .arrow-mark {
+            font-size: 1.5rem;
+            color: #c4a569;
+            z-index: 1;
+            transition: color 0.4s ease;
+        }
+
+        .arrow-button:hover,
+        .arrow-button:focus-visible {
+            border-color: #a8865a;
+            transform: translateX(4px);
+        }
+
+        .arrow-button:hover::before,
+        .arrow-button:focus-visible::before {
+            opacity: 1;
+        }
+
+        .arrow-button:hover .arrow-mark,
+        .arrow-button:focus-visible .arrow-mark {
+            color: #fffef7;
+        }
+
+        /* Clicked state - instant solid gold */
+        .arrow-button.clicked {
+            background-color: #c4a569 !important;
+            border-color: #c4a569 !important;
+            box-shadow: 0 0 30px rgba(196, 165, 105, 0.7) !important;
+            transform: scale(1.05) !important;
+            transition: none !important;
+        }
+
+        .arrow-button.clicked .arrow-mark {
+            color: #fffef7 !important;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 3.5rem;
+            }
+
+            .signature-line {
+                width: 160px;
+            }
+
+            .arrow-button {
+                bottom: 2rem;
+                right: 2rem;
+                width: 55px;
+                height: 55px;
+            }
+
+            .arrow-mark {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" aria-labelledby="greeting">
+        <div class="content-center">
+            <h1 id="greeting">For Ruby</h1>
+            <div class="signature-line"></div>
+        </div>
+    </main>
+    
+    <a href="orientation.html" class="arrow-button" id="arrowBtn" aria-label="Continue to Orientation">
+        <span class="arrow-mark">⋙</span>
+    </a>
+
+    <script>
+        const arrowBtn = document.getElementById('arrowBtn');
+        const body = document.body;
+        let navigationTriggered = false;
+
+        function handleNavigation(e) {
+            e.preventDefault();
+            
+            // Prevent multiple triggers
+            if (navigationTriggered) return;
+            navigationTriggered = true;
+            
+            // Instant gold fill on click/touch
+            arrowBtn.classList.add('clicked');
+            
+            // Fade out page after brief moment
+            setTimeout(() => {
+                body.classList.add('fade-out');
+            }, 300);
+            
+            // Navigate after fade completes
+            setTimeout(() => {
+                window.location.href = 'orientation.html';
+            }, 1500);
+        }
+
+        // Handle both touch and click events
+        arrowBtn.addEventListener('touchstart', handleNavigation, { passive: false });
+        arrowBtn.addEventListener('click', handleNavigation);
+    </script>
+</body>
+</html>
