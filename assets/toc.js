@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.1.5 */
+/*! Covenant ToC Progress Journal v1.2.0 */
 (function () {
     'use strict';
 
@@ -25,7 +25,8 @@
 
     // Two-step selection: select (pending) → close to commit.
     // Option 1 behavior:
-    // - First click on an unlocked item sets pending + previews in the page header title.
+    // - Touch/click on an unlocked item sets pending + previews in the page header title.
+    // - It then auto-scrolls the list so that item locks into the selection slot.
     // - Second click on the SAME pending item travels immediately.
     // - Closing the ToC commits (travels) if pending != current.
     var pendingPageId = '';
@@ -41,8 +42,12 @@
     // (Target: 200–260ms.)
     var NAV_DELAY_MS = 240;
 
-    // When opening, auto-scroll the panel body so the current/pending entry is visible.
-    var TOC_AUTOSCROLL_PAD_PX = 18;
+    // Selection slot geometry inside the scroll container (px from top of the ToC body).
+    // This pairs with CSS scroll-padding-top so scroll-snap lands cleanly.
+    var TOC_SELECTION_TOP_PX = 18;
+
+    // Debounce window so we only commit a scroll-based selection once the snap settles.
+    var TOC_SCROLL_DEBOUNCE_MS = 90;
 
     function closestSafe(target, selector) {
         if (!target) return null;
@@ -52,11 +57,13 @@
     }
 
     // ----------------------------------------
-    // Header title preview slot
+    // Header title = selection well (preview slot)
     // ----------------------------------------
     var headerEl = document.querySelector('.section-header');
     var headerTitleEl = headerEl ? headerEl.querySelector('h1') : null;
     var originalHeaderTitleText = headerTitleEl ? String(headerTitleEl.textContent || '') : '';
+
+    var headerSwapTimer = 0;
 
     function ensureOriginalHeaderTitleCaptured() {
         if (!headerTitleEl) return;
@@ -82,12 +89,18 @@
             return;
         }
 
+        if (headerSwapTimer) {
+            clearTimeout(headerSwapTimer);
+            headerSwapTimer = 0;
+        }
+
         setHeaderPreviewState(true);
         headerTitleEl.classList.add('toc-title-swapping');
 
-        setTimeout(function () {
+        headerSwapTimer = setTimeout(function () {
             headerTitleEl.textContent = title;
             headerTitleEl.classList.remove('toc-title-swapping');
+            headerSwapTimer = 0;
         }, 140);
     }
 
@@ -106,11 +119,17 @@
             return;
         }
 
+        if (headerSwapTimer) {
+            clearTimeout(headerSwapTimer);
+            headerSwapTimer = 0;
+        }
+
         headerTitleEl.classList.add('toc-title-swapping');
-        setTimeout(function () {
+        headerSwapTimer = setTimeout(function () {
             headerTitleEl.textContent = target;
             headerTitleEl.classList.remove('toc-title-swapping');
             setHeaderPreviewState(false);
+            headerSwapTimer = 0;
         }, 140);
     }
 
@@ -142,7 +161,6 @@
             if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
 
             // Allow scrolling INSIDE the ToC panel body.
-            // (Without this exception, iOS cannot scroll the panel content.)
             if (closestSafe(e.target, '#tocPanel .toc-panel-body')) return;
 
             if (e && e.cancelable) e.preventDefault();
@@ -328,9 +346,6 @@
         pendingHref = page.href;
         pendingTitle = page.title;
 
-        var titleEl = document.getElementById('tocSelectionTitle');
-        if (titleEl) titleEl.textContent = pendingTitle;
-
         animateHeaderTitleTo(pendingTitle);
 
         // Update list highlight.
@@ -351,53 +366,140 @@
         }
     }
 
-    function scrollToActiveItem() {
-        if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
-        if (!tocDynamicContent) return;
+    function getBodyScrollEl() {
+        if (!tocPanel) return null;
+        return tocPanel.querySelector('.toc-panel-body');
+    }
 
-        var body = tocPanel.querySelector('.toc-panel-body');
-        if (!body) return;
+    function scrollItemToSelection(pageId, behavior) {
+        var body = getBodyScrollEl();
+        if (!body || !tocDynamicContent) return;
 
-        var active = tocDynamicContent.querySelector('.toc-item--pending') || tocDynamicContent.querySelector('.toc-item--current');
-        if (!active) return;
+        var li = tocDynamicContent.querySelector('.toc-item[data-page-id="' + pageId + '"]');
+        if (!li) return;
 
-        // If already visible in the viewport of the scroll container, do nothing.
         var bodyRect = body.getBoundingClientRect();
-        var activeRect = active.getBoundingClientRect();
-        var isFullyVisible = activeRect.top >= bodyRect.top && activeRect.bottom <= bodyRect.bottom;
-        if (isFullyVisible) return;
+        var liRect = li.getBoundingClientRect();
 
-        var well = tocDynamicContent.querySelector('.toc-selection');
-        var wellH = well ? well.offsetHeight : 0;
-
-        // Move the active item just beneath the sticky title well.
-        // Use geometry deltas so we don't depend on offsetParent quirks.
-        var deltaTop = activeRect.top - bodyRect.top;
-        var desiredTop = wellH + TOC_AUTOSCROLL_PAD_PX;
-        var nextTop = body.scrollTop + (deltaTop - desiredTop);
+        var selectionY = bodyRect.top + TOC_SELECTION_TOP_PX;
+        var deltaTop = liRect.top - selectionY;
+        var nextTop = body.scrollTop + deltaTop;
 
         // Clamp.
         var maxTop = Math.max(0, body.scrollHeight - body.clientHeight);
         if (nextTop < 0) nextTop = 0;
         if (nextTop > maxTop) nextTop = maxTop;
 
-        body.scrollTo({ top: nextTop, left: 0, behavior: 'auto' });
+        body.scrollTo({ top: nextTop, left: 0, behavior: behavior || 'auto' });
+    }
+
+    function scrollToActiveItem() {
+        if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
+        if (!tocDynamicContent) return;
+
+        var active = tocDynamicContent.querySelector('.toc-item--pending') || tocDynamicContent.querySelector('.toc-item--current');
+        if (!active) return;
+
+        var pid = active.getAttribute('data-page-id') || '';
+        if (!pid) return;
+
+        // Bring the active item into the selection slot.
+        scrollItemToSelection(pid, 'auto');
+    }
+
+    // ----------------------------------------
+    // Scroll-driven selection (scroll-snap)
+    // ----------------------------------------
+    var tocBodyScrollEl = null;
+    var scrollDebounceTimer = 0;
+    var lastScrollSelectedId = '';
+
+    function computeScrollSelectedId() {
+        var body = tocBodyScrollEl;
+        if (!body || !tocDynamicContent) return '';
+
+        var items = tocDynamicContent.querySelectorAll('.toc-item');
+        if (!items || !items.length) return '';
+
+        var bodyRect = body.getBoundingClientRect();
+        var selectionY = bodyRect.top + TOC_SELECTION_TOP_PX;
+
+        var bestId = '';
+        var bestDist = Infinity;
+
+        Array.prototype.forEach.call(items, function (li) {
+            if (!li) return;
+
+            var pid = li.getAttribute('data-page-id') || '';
+            if (!pid) return;
+            if (!isUnlockedPageId(pid)) return;
+
+            var r = li.getBoundingClientRect();
+            var d = Math.abs(r.top - selectionY);
+            if (d < bestDist) {
+                bestDist = d;
+                bestId = pid;
+            }
+        });
+
+        return bestId;
+    }
+
+    function syncPendingFromScroll() {
+        var pid = computeScrollSelectedId();
+        if (!pid) return;
+        if (pid === lastScrollSelectedId) return;
+
+        lastScrollSelectedId = pid;
+        // Silent: do not spam aria-live while scrolling.
+        setPending(pid, true);
+    }
+
+    function onToCBodyScroll() {
+        if (scrollDebounceTimer) {
+            clearTimeout(scrollDebounceTimer);
+            scrollDebounceTimer = 0;
+        }
+
+        scrollDebounceTimer = setTimeout(function () {
+            scrollDebounceTimer = 0;
+            syncPendingFromScroll();
+        }, TOC_SCROLL_DEBOUNCE_MS);
+    }
+
+    function attachScrollSync() {
+        var body = getBodyScrollEl();
+        if (!body) return;
+
+        tocBodyScrollEl = body;
+        lastScrollSelectedId = '';
+
+        body.addEventListener('scroll', onToCBodyScroll, { passive: true });
+
+        // Initial sync once layout is stable.
+        setTimeout(function () {
+            syncPendingFromScroll();
+        }, 0);
+    }
+
+    function detachScrollSync() {
+        if (scrollDebounceTimer) {
+            clearTimeout(scrollDebounceTimer);
+            scrollDebounceTimer = 0;
+        }
+
+        if (tocBodyScrollEl) {
+            tocBodyScrollEl.removeEventListener('scroll', onToCBodyScroll);
+        }
+
+        tocBodyScrollEl = null;
+        lastScrollSelectedId = '';
     }
 
     function renderToC() {
         if (!tocDynamicContent) return;
 
-        var currentPage = getJourneyPageById(currentPageId);
-        var selectionTitle = pendingTitle || (currentPage ? currentPage.title : (pageConfig.modeLabel || ''));
-
         var html = '';
-
-        html += '<div class="toc-selection" role="region" aria-label="Pending destination">';
-        // Visually remove the "Selected" label/hint to strengthen the "title lives in the scroll" illusion.
-        // Keep a silent label for screen readers.
-        html += '<div class="sr-only">Selected destination</div>';
-        html += '<div class="toc-selection-title" id="tocSelectionTitle">' + escapeHtml(selectionTitle) + '</div>';
-        html += '</div>';
 
         html += '<nav aria-label="Journey contents"><ol class="toc-list">';
 
@@ -454,6 +556,7 @@
                 }
 
                 setPending(pid, false);
+                scrollItemToSelection(pid, 'smooth');
             });
         });
     }
@@ -494,7 +597,8 @@
 
         if (header && header.getBoundingClientRect) {
             var rect = header.getBoundingClientRect();
-            topPx = Math.round(rect.bottom + 10);
+            // Sit flush to the header divider line.
+            topPx = Math.round(rect.bottom);
         }
 
         // For fixed-position elements, top is relative to the viewport.
@@ -512,7 +616,6 @@
         if (!tocPanel || !tocOverlay) return;
 
         tocJustOpenedAt = Date.now();
-
         focusReturnEl = tocToggle;
 
         ensureOriginalHeaderTitleCaptured();
@@ -541,14 +644,23 @@
         if (tocToggle) tocToggle.setAttribute('aria-expanded', 'true');
 
         renderToC();
+        attachScrollSync();
 
-        // After layout, ensure the current/pending item is revealed immediately.
+        // After layout, lock the current selection into the slot.
         setTimeout(function () {
             scrollToActiveItem();
+            syncPendingFromScroll();
 
+            // Prefer focusing the close control if present; otherwise focus the pending item.
             var closeBtn = tocPanel.querySelector('.toc-panel-close');
             if (closeBtn && closeBtn.focus) {
                 closeBtn.focus();
+                return;
+            }
+
+            var pendingBtn = tocDynamicContent ? tocDynamicContent.querySelector('.toc-item--pending .toc-item-btn') : null;
+            if (pendingBtn && pendingBtn.focus) {
+                pendingBtn.focus();
             } else if (tocPanel.focus) {
                 tocPanel.focus();
             }
@@ -557,6 +669,8 @@
 
     function closeToC(commit) {
         if (!tocPanel || !tocOverlay) return;
+
+        detachScrollSync();
 
         var shouldNavigate = !!commit && pendingHref && pendingPageId && pendingPageId !== currentPageId;
         var hrefToNavigate = pendingHref;
@@ -586,7 +700,7 @@
             return;
         }
 
-        // No navigation: restore original title (we were just previewing the current page title).
+        // No navigation: restore original title.
         restoreHeaderTitle();
 
         setTimeout(function () {
