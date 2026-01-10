@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.2.3 */
+/*! Covenant ToC Panel Styles v1.2.4 */
 
 /* ===== ToC Toggle (header title itself) ===== */
 .section-header.has-toc-toggle {
@@ -34,7 +34,9 @@
     pointer-events: auto;
 
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+
+    /* Allow vertical scroll gestures to begin on the title without accidentally "clicking" it. */
+    touch-action: pan-y;
 
     user-select: none;
     -webkit-user-select: none;
@@ -130,8 +132,12 @@ html.toc-open .section-header h1 {
     max-height: 70vh;
 
     width: min(720px, calc(100vw - 24px));
-    background-color: #f5f5f0;
-    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+
+    /* Semi-transparent so the ritual parchment can breathe through. */
+    background-color: rgba(245, 245, 240, 0.14);
+
+    /* Keep a soft separation from the world without feeling like a modal box. */
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.18);
 
     /* Scroll unfurl illusion: flat lip at the top (it "emerges" from the divider). */
     border-radius: 0 0 16px 16px;
@@ -149,6 +155,13 @@ html.toc-open .section-header h1 {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+@supports ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
+    .toc-panel {
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+    }
 }
 
 .toc-panel.is-open {
@@ -186,7 +199,7 @@ html.toc-open .section-header h1 {
     top: 10px;
     right: 10px;
 
-    background: rgba(250, 250, 248, 0.92);
+    background: rgba(250, 250, 248, 0.86);
     border: none;
     border-radius: 10px;
 
@@ -213,7 +226,7 @@ html.toc-open .section-header h1 {
 .toc-panel-close:focus-visible {
     color: #1a1a1a;
     transform: scale(1.04);
-    background: rgba(250, 250, 248, 0.98);
+    background: rgba(250, 250, 248, 0.94);
 }
 
 .toc-panel-close:focus-visible {
@@ -228,9 +241,12 @@ html.toc-open .section-header h1 {
     padding: 0;
     -webkit-overflow-scrolling: touch;
 
+    /* Selection slot geometry. */
+    --toc-selection-top: 64px;
+
     /* Make the list land crisply into the selection slot. */
     scroll-snap-type: y mandatory;
-    scroll-padding-top: 18px;
+    scroll-padding-top: var(--toc-selection-top);
     overscroll-behavior: contain;
 
     /* Slot indicator anchor. */
@@ -241,7 +257,7 @@ html.toc-open .section-header h1 {
 .toc-panel-body::before {
     content: '';
     position: absolute;
-    top: 18px;
+    top: var(--toc-selection-top);
     left: 0;
     right: 0;
     height: 1px;
@@ -251,19 +267,19 @@ html.toc-open .section-header h1 {
         linear-gradient(
             to right,
             transparent,
-            rgba(201, 169, 97, 0.18),
-            rgba(201, 169, 97, 0.30),
-            rgba(201, 169, 97, 0.18),
+            rgba(201, 169, 97, 0.14),
+            rgba(201, 169, 97, 0.26),
+            rgba(201, 169, 97, 0.14),
             transparent
         );
 
-    opacity: 0.85;
+    opacity: 0.82;
 }
 
 /* ===== ToC List ===== */
 .toc-list {
     list-style: none;
-    padding: 1.05rem 1.5rem 1.35rem;
+    padding: 1.15rem 1.5rem 1.35rem;
     margin: 0;
 }
 
@@ -279,6 +295,13 @@ html.toc-open .section-header h1 {
 
     scroll-snap-align: start;
     scroll-snap-stop: always;
+
+    /* Dynamic scroll-wheel styling (values set by JS). */
+    transform: scale(var(--toc-scale, 1));
+    opacity: var(--toc-alpha, 1);
+    filter: blur(var(--toc-blur, 0px));
+
+    will-change: transform, opacity;
 }
 
 /* Unlocked items are buttons (tap-to-select + auto-snap into the slot). */
@@ -374,6 +397,10 @@ html.toc-open .section-header h1 {
     }
 
     .toc-list {
-        padding: 0.95rem 1.25rem 1.2rem;
+        padding: 1.05rem 1.25rem 1.2rem;
+    }
+
+    .toc-panel-body {
+        --toc-selection-top: 56px;
     }
 }

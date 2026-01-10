@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.2.2 */
+/*! Covenant ToC Progress Journal v1.2.3 */
 (function () {
     'use strict';
 
@@ -44,7 +44,8 @@
 
     // Selection slot geometry inside the scroll container (px from top of the ToC body).
     // This pairs with CSS scroll-padding-top so scroll-snap lands cleanly.
-    var TOC_SELECTION_TOP_PX = 18;
+    // (Must match CSS --toc-selection-top.)
+    var TOC_SELECTION_TOP_PX = 64;
 
     // Debounce window so we only commit a scroll-based selection once the snap settles.
     var TOC_SCROLL_DEBOUNCE_MS = 90;
@@ -246,6 +247,16 @@
         return idx >= 0 && idx <= maxIndexUnlocked;
     }
 
+    function getNextUnlockedPageIdAfter(pageId) {
+        var idx = window.getJourneyIndex(pageId);
+        if (idx < 0) return '';
+        var nextIdx = idx + 1;
+        if (nextIdx < 0) return '';
+        if (nextIdx > maxIndexUnlocked) return '';
+        var next = window.COVENANT_JOURNEY[nextIdx];
+        return next && next.id ? next.id : '';
+    }
+
     function announce(message) {
         if (!tocLiveRegion) return;
         tocLiveRegion.textContent = message;
@@ -398,26 +409,62 @@
         body.scrollTo({ top: nextTop, left: 0, behavior: behavior || 'auto' });
     }
 
-    function scrollToActiveItem() {
-        if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
-        if (!tocDynamicContent) return;
-
-        var active = tocDynamicContent.querySelector('.toc-item--pending') || tocDynamicContent.querySelector('.toc-item--current');
-        if (!active) return;
-
-        var pid = active.getAttribute('data-page-id') || '';
-        if (!pid) return;
-
-        // Bring the active item into the selection slot.
-        scrollItemToSelection(pid, 'auto');
-    }
-
     // ----------------------------------------
     // Scroll-driven selection (scroll-snap)
     // ----------------------------------------
     var tocBodyScrollEl = null;
     var scrollDebounceTimer = 0;
     var lastScrollSelectedId = '';
+    var suppressScrollSync = false;
+    var suppressScrollTimer = 0;
+
+    function setScrollSyncSuppressed(ms) {
+        suppressScrollSync = true;
+        if (suppressScrollTimer) {
+            clearTimeout(suppressScrollTimer);
+            suppressScrollTimer = 0;
+        }
+        suppressScrollTimer = setTimeout(function () {
+            suppressScrollSync = false;
+            suppressScrollTimer = 0;
+        }, Math.max(0, ms || 0));
+    }
+
+    function applyWheelStyling() {
+        var body = tocBodyScrollEl;
+        if (!body || !tocDynamicContent) return;
+
+        var items = tocDynamicContent.querySelectorAll('.toc-item');
+        if (!items || !items.length) return;
+
+        var bodyRect = body.getBoundingClientRect();
+        var selectionY = bodyRect.top + TOC_SELECTION_TOP_PX;
+
+        // Tuned to keep it sacred/subtle.
+        var SCALE_MAX = 1.16;
+        var SCALE_MIN = 0.94;
+        var ALPHA_MIN = 0.36;
+        var ALPHA_MAX = 1.0;
+        var BLUR_MAX = 0.6;
+
+        Array.prototype.forEach.call(items, function (li) {
+            if (!li) return;
+
+            var r = li.getBoundingClientRect();
+            var d = Math.abs(r.top - selectionY);
+
+            // 0..1 proximity (1 = in the slot).
+            var p = 1 - Math.min(1, d / 160);
+
+            var scale = SCALE_MIN + (SCALE_MAX - SCALE_MIN) * p;
+            var alpha = ALPHA_MIN + (ALPHA_MAX - ALPHA_MIN) * p;
+            var blur = (1 - p) * BLUR_MAX;
+
+            li.style.setProperty('--toc-scale', String(scale));
+            li.style.setProperty('--toc-alpha', String(alpha));
+            li.style.setProperty('--toc-blur', blur.toFixed(2) + 'px');
+        });
+    }
 
     function computeScrollSelectedId() {
         var body = tocBodyScrollEl;
@@ -451,6 +498,8 @@
     }
 
     function syncPendingFromScroll() {
+        if (suppressScrollSync) return;
+
         var pid = computeScrollSelectedId();
         if (!pid) return;
         if (pid === lastScrollSelectedId) return;
@@ -461,6 +510,11 @@
     }
 
     function onToCBodyScroll() {
+        // Always update wheel styling (purely visual).
+        applyWheelStyling();
+
+        if (suppressScrollSync) return;
+
         if (scrollDebounceTimer) {
             clearTimeout(scrollDebounceTimer);
             scrollDebounceTimer = 0;
@@ -472,7 +526,7 @@
         }, TOC_SCROLL_DEBOUNCE_MS);
     }
 
-    function attachScrollSync() {
+    function attachScrollSync(skipInitialSync) {
         var body = getBodyScrollEl();
         if (!body) return;
 
@@ -481,13 +535,19 @@
 
         body.addEventListener('scroll', onToCBodyScroll, { passive: true });
 
-        // Initial sync once layout is stable.
+        // Initial visual pass.
         setTimeout(function () {
-            syncPendingFromScroll();
+            applyWheelStyling();
+            if (!skipInitialSync) syncPendingFromScroll();
         }, 0);
     }
 
     function detachScrollSync() {
+        if (suppressScrollTimer) {
+            clearTimeout(suppressScrollTimer);
+            suppressScrollTimer = 0;
+        }
+
         if (scrollDebounceTimer) {
             clearTimeout(scrollDebounceTimer);
             scrollDebounceTimer = 0;
@@ -499,6 +559,7 @@
 
         tocBodyScrollEl = null;
         lastScrollSelectedId = '';
+        suppressScrollSync = false;
     }
 
     function renderToC() {
@@ -673,6 +734,7 @@
             pendingTitle = '';
         }
 
+        // The header selection well should remain the current page title on open.
         if (pendingTitle) animateHeaderTitleTo(pendingTitle);
 
         tocPanel.classList.add('is-open');
@@ -685,23 +747,36 @@
         }
 
         renderToC();
-        attachScrollSync();
 
-        // After layout, lock the current selection into the slot.
+        // Attach scroll sync, but do not auto-select on first open.
+        attachScrollSync(true);
+
+        // Visual alignment on open:
+        // - Header shows current page.
+        // - The first item immediately below the selection slot becomes the *next* page.
+        setScrollSyncSuppressed(220);
+        var nextId = getNextUnlockedPageIdAfter(currentPageId);
+        if (nextId) {
+            scrollItemToSelection(nextId, 'auto');
+        } else {
+            // Fall back to showing current as the top-aligned item.
+            if (pendingPageId) scrollItemToSelection(pendingPageId, 'auto');
+        }
+
+        // After layout, focus and paint.
         setTimeout(function () {
-            scrollToActiveItem();
-            syncPendingFromScroll();
+            applyWheelStyling();
 
-            // Prefer focusing the close control if present; otherwise focus the pending item.
+            // Prefer focusing the close control if present; otherwise focus the first unlocked item.
             var closeBtn = tocPanel.querySelector('.toc-panel-close');
             if (closeBtn && closeBtn.focus) {
                 closeBtn.focus();
                 return;
             }
 
-            var pendingBtn = tocDynamicContent ? tocDynamicContent.querySelector('.toc-item--pending .toc-item-btn') : null;
-            if (pendingBtn && pendingBtn.focus) {
-                pendingBtn.focus();
+            var firstBtn = tocDynamicContent ? tocDynamicContent.querySelector('.toc-item-btn') : null;
+            if (firstBtn && firstBtn.focus) {
+                firstBtn.focus();
             } else if (tocPanel.focus) {
                 tocPanel.focus();
             }
@@ -801,7 +876,41 @@
             tocToggle.addEventListener('focus', function () { setTitleSheen(true); });
             tocToggle.addEventListener('blur', function () { setTitleSheen(false); });
 
-            bindActivate(tocToggle, function (e) {
+            // Deliberate activation on touch: do NOT trigger on pointerdown.
+            // Only toggle on click if the pointer did not move (i.e. not a scroll gesture).
+            var touchStartX = 0;
+            var touchStartY = 0;
+            var touchMoved = false;
+
+            if (window.PointerEvent) {
+                tocToggle.addEventListener('pointerdown', function (e) {
+                    if (!e || e.pointerType !== 'touch') return;
+                    touchMoved = false;
+                    touchStartX = e.clientX || 0;
+                    touchStartY = e.clientY || 0;
+                }, { passive: true });
+
+                tocToggle.addEventListener('pointermove', function (e) {
+                    if (!e || e.pointerType !== 'touch') return;
+                    var dx = Math.abs((e.clientX || 0) - touchStartX);
+                    var dy = Math.abs((e.clientY || 0) - touchStartY);
+                    if (dx > 10 || dy > 10) touchMoved = true;
+                }, { passive: true });
+
+                tocToggle.addEventListener('pointerup', function (e) {
+                    if (!e || e.pointerType !== 'touch') return;
+                    // no-op; click handler will decide.
+                }, { passive: true });
+
+                tocToggle.addEventListener('pointercancel', function (e) {
+                    if (!e || e.pointerType !== 'touch') return;
+                    touchMoved = true;
+                }, { passive: true });
+            }
+
+            tocToggle.addEventListener('click', function (e) {
+                // If this was a scroll gesture that began on the title, ignore.
+                if (touchMoved) return;
                 stopEvent(e);
                 toggleToC();
             });
