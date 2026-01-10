@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v1.2.4 */
+/*! Covenant ToC Panel Styles v1.2.5 */
 
 /* ===== ToC Toggle (header title itself) ===== */
 .section-header.has-toc-toggle {
@@ -244,6 +244,9 @@ html.toc-open .section-header h1 {
     /* Selection slot geometry. */
     --toc-selection-top: 64px;
 
+    /* Edge fade (mask) so items dissolve gently at top/bottom of the sheet. */
+    --toc-edge-fade: 16px;
+
     /* Make the list land crisply into the selection slot. */
     scroll-snap-type: y mandatory;
     scroll-padding-top: var(--toc-selection-top);
@@ -251,6 +254,35 @@ html.toc-open .section-header h1 {
 
     /* Slot indicator anchor. */
     position: relative;
+}
+
+/* Soft top/bottom fade mask (Safari + modern browsers). */
+@supports ((-webkit-mask-image: linear-gradient(#000, transparent)) or (mask-image: linear-gradient(#000, transparent))) {
+    .toc-panel-body {
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0,
+            #000 var(--toc-edge-fade),
+            #000 calc(100% - var(--toc-edge-fade)),
+            transparent 100%
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0,
+            #000 var(--toc-edge-fade),
+            #000 calc(100% - var(--toc-edge-fade)),
+            transparent 100%
+        );
+
+        -webkit-mask-size: 100% 100%;
+        mask-size: 100% 100%;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+
+        /* Keep the fade steady while scrolling. */
+        -webkit-mask-attachment: local;
+        mask-attachment: local;
+    }
 }
 
 /* Faint sacred slot indicator (aligned to scroll-padding-top). */
@@ -402,5 +434,6 @@ html.toc-open .section-header h1 {
 
     .toc-panel-body {
         --toc-selection-top: 56px;
+        --toc-edge-fade: 14px;
     }
 }
