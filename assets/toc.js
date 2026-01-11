@@ -253,10 +253,11 @@
         scrollLockY = window.scrollY || window.pageYOffset || 0;
         root.classList.add('toc-scroll-lock', 'toc-open');
 
+        // iOS Safari can reflow/shift viewport metrics when toggling body overflow
+        // (especially after scrolling with the address bar collapsed).
+        // Use the fixed-body technique consistently across platforms.
         if (isIOS) {
-            document.body.style.overflow = 'hidden';
             enableIOSTouchScrollLock();
-            return;
         }
 
         document.body.classList.add('toc-scroll-lock');
@@ -273,9 +274,6 @@
 
         if (isIOS) {
             disableIOSTouchScrollLock();
-            document.body.style.overflow = '';
-            window.scrollTo(0, scrollLockY);
-            return;
         }
 
         document.body.classList.remove('toc-scroll-lock');
@@ -657,6 +655,22 @@
         body.scrollTo({ top: nextTop, left: 0, behavior: 'auto' });
     }
 
+    function withSnapDisabled(fn) {
+        var body = getBodyScrollEl();
+        if (!body || !fn) return;
+
+        var prev = body.style.scrollSnapType;
+        body.style.scrollSnapType = 'none';
+
+        try {
+            fn();
+        } finally {
+            requestAnimationFrame(function () {
+                body.style.scrollSnapType = prev || '';
+            });
+        }
+    }
+
     function renderToC() {
         if (!tocDynamicContent) return;
 
@@ -845,27 +859,32 @@
         // Attach scroll sync. This starts UNARMED (so scroll-snap settling cannot change the header).
         attachScrollSync(true);
 
-        // Align list so that the NEXT page is the first item beneath the selection well.
-        // (If no next page exists, align to the previous page so the list still opens gracefully.)
+        // Determine which entry to align to.
         // NOTE: Alignment is independent of unlock status; locked pages can be seen but not selected.
         var alignId = getNextPageIdAfterAny(currentPageId)
             || getPrevPageIdBeforeAny(currentPageId)
             || getNextUnlockedPageIdAfter(currentPageId)
             || getPrevUnlockedPageIdBefore(currentPageId);
 
-        // iOS Safari: opening transition + scroll-snap can produce stale measurements in the same frame.
+        // iOS Safari: opening transition + scroll-snap + viewport reflow can produce stale measurements
+        // and can also cause mandatory snap to "correct" our scroll onto the wrong neighbor.
+        // Strategy:
+        // - Align to TOP so the first visible item under the divider is the next page.
+        // - Temporarily disable scroll-snap while positioning.
+        // - Retry once after a brief delay (iOS occasionally ignores the first programmatic scroll).
         if (alignId) {
-            setScrollSyncSuppressed(360);
+            setScrollSyncSuppressed(420);
             requestAnimationFrame(function () {
                 requestAnimationFrame(function () {
-                    // OPEN STATE RULE:
-                    // Make the *first visible* row under the divider be the next page in sequence.
-                    scrollItemToTop(alignId);
+                    withSnapDisabled(function () {
+                        scrollItemToTop(alignId);
+                    });
 
-                    // iOS Safari: sometimes ignores the first programmatic scroll in a freshly opened sheet.
-                        setTimeout(function () {
+                    setTimeout(function () {
+                        withSnapDisabled(function () {
                             scrollItemToTop(alignId);
-                        }, 80);
+                        });
+                    }, 90);
 
                     requestAnimationFrame(function () {
                         applyWheelStyling();
