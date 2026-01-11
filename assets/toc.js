@@ -636,6 +636,27 @@
         body.scrollTo({ top: nextTop, left: 0, behavior: behavior || 'auto' });
     }
 
+    function scrollItemToTop(pageId) {
+        var body = getBodyScrollEl();
+        if (!body || !tocDynamicContent) return;
+
+        var li = tocDynamicContent.querySelector('.toc-item[data-page-id="' + pageId + '"]');
+        if (!li) return;
+
+        var bodyRect = body.getBoundingClientRect();
+        var liRect = li.getBoundingClientRect();
+
+        // Align the item's top to the scroll container's top edge.
+        var deltaTop = liRect.top - bodyRect.top;
+        var nextTop = body.scrollTop + deltaTop;
+
+        var maxTop = Math.max(0, body.scrollHeight - body.clientHeight);
+        if (nextTop < 0) nextTop = 0;
+        if (nextTop > maxTop) nextTop = maxTop;
+
+        body.scrollTo({ top: nextTop, left: 0, behavior: 'auto' });
+    }
+
     function renderToC() {
         if (!tocDynamicContent) return;
 
@@ -833,12 +854,19 @@
             || getPrevUnlockedPageIdBefore(currentPageId);
 
         // iOS Safari: opening transition + scroll-snap can produce stale measurements in the same frame.
-        // Delay the first alignment by 1–2 frames so geometry reflects the post-transition layout.
         if (alignId) {
             setScrollSyncSuppressed(360);
             requestAnimationFrame(function () {
                 requestAnimationFrame(function () {
-                    scrollItemToSelection(alignId, 'auto');
+                    // OPEN STATE RULE:
+                    // Make the *first visible* row under the divider be the next page in sequence.
+                    scrollItemToTop(alignId);
+
+                    // iOS Safari: sometimes ignores the first programmatic scroll in a freshly opened sheet.
+                        setTimeout(function () {
+                            scrollItemToTop(alignId);
+                        }, 80);
+
                     requestAnimationFrame(function () {
                         applyWheelStyling();
                     });
