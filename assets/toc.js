@@ -13,7 +13,7 @@
   var STORAGE_KEY = 'covenant_progress';
   var STORAGE_VERSION = 1;
 
-  var LOCKED_TOOLTIP = 'Locked until reached through the journey.';
+  var LOCKED_TOOLTIP = 'In due time.';
 
   var pageConfig = window.COVENANT_PAGE || {};
   var currentPageId = pageConfig.pageId || '';
