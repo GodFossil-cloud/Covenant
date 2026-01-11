@@ -26,12 +26,12 @@
     // Two-step selection: select (pending) → close to commit.
     // Behavior:
     // - The header title is the selection well for the CURRENT page when opening.
-    // - The ToC list omits the current page (so the title does not appear twice).
+    // - The ToC list omits whichever page is currently held in the selection well.
+    //   (On open: current page. After selection changes: the newly selected page.)
     // - On open, the list auto-scrolls so the NEXT page is the first item below the well.
     // - Scroll-driven preview is armed ONLY after the user interacts with the list.
     //   (Prevents scroll-snap settling from auto-overwriting the header on open.)
-    // - Touch/click on an unlocked item sets pending + previews in the header title,
-    //   and auto-scrolls the list so that item locks into the selection slot.
+    // - Touch/click on an unlocked item sets pending + previews in the header title.
     // - Second click on the SAME pending item travels immediately.
     // - Closing the ToC commits (travels) if pending != current.
     var pendingPageId = '';
@@ -75,7 +75,7 @@
         var body = getBodyScrollEl();
         if (!body || !window.getComputedStyle) return;
 
-        // CSS defines --toc-selection-top (e.g. 64px desktop / 56px mobile).
+        // CSS defines --toc-selection-top.
         var cssVal = getComputedStyle(body).getPropertyValue('--toc-selection-top');
         TOC_SELECTION_TOP_PX = parsePx(cssVal, TOC_SELECTION_TOP_PX);
     }
@@ -253,8 +253,7 @@
         scrollLockY = window.scrollY || window.pageYOffset || 0;
         root.classList.add('toc-scroll-lock', 'toc-open');
 
-        // iOS Safari can reflow/shift viewport metrics when toggling body overflow
-        // (especially after scrolling with the address bar collapsed).
+        // iOS Safari can reflow/shift viewport metrics when toggling body overflow.
         // Use the fixed-body technique consistently across platforms.
         if (isIOS) {
             enableIOSTouchScrollLock();
@@ -392,6 +391,32 @@
     }
 
     // ----------------------------------------
+    // Omission: whichever page is in the header selection well
+    // ----------------------------------------
+    function applyOmission(omitPageId) {
+        if (!tocDynamicContent) return;
+
+        var items = tocDynamicContent.querySelectorAll('.toc-item');
+        Array.prototype.forEach.call(items, function (li) {
+            if (!li) return;
+            var pid = li.getAttribute('data-page-id') || '';
+            if (!pid) return;
+            if (pid === omitPageId) {
+                li.classList.add('toc-item--omitted');
+            } else {
+                li.classList.remove('toc-item--omitted');
+            }
+        });
+
+        // Layout changes here can trigger scroll events; prevent cascade.
+        setScrollSyncSuppressed(240);
+
+        requestAnimationFrame(function () {
+            applyWheelStyling();
+        });
+    }
+
+    // ----------------------------------------
     // Scroll-driven selection (scroll-snap)
     // ----------------------------------------
     var tocBodyScrollEl = null;
@@ -443,8 +468,11 @@
 
         Array.prototype.forEach.call(items, function (li) {
             if (!li) return;
+            if (li.classList.contains('toc-item--omitted')) return;
 
             var r = li.getBoundingClientRect();
+            if (!r || (!r.width && !r.height)) return;
+
             var d = Math.abs(r.top - selectionY);
             var p = 1 - Math.min(1, d / 160);
 
@@ -475,12 +503,15 @@
 
         Array.prototype.forEach.call(items, function (li) {
             if (!li) return;
+            if (li.classList.contains('toc-item--omitted')) return;
 
             var pid = li.getAttribute('data-page-id') || '';
             if (!pid) return;
             if (!isUnlockedPageId(pid)) return;
 
             var r = li.getBoundingClientRect();
+            if (!r || (!r.width && !r.height)) return;
+
             var d = Math.abs(r.top - selectionY);
             if (d < bestDist) {
                 bestDist = d;
@@ -491,7 +522,9 @@
         return bestId;
     }
 
-    function setPending(pageId, silent) {
+    function setPending(pageId, silent, opts) {
+        opts = opts || {};
+
         var page = getJourneyPageById(pageId);
         if (!page) return;
         if (!isUnlockedPageId(pageId)) return;
@@ -516,6 +549,10 @@
                     li.classList.remove('toc-item--pending');
                 }
             });
+        }
+
+        if (!opts.deferOmit) {
+            applyOmission(pendingPageId);
         }
 
         if (!silent) {
@@ -686,17 +723,10 @@
         for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
             var page = window.COVENANT_JOURNEY[i];
             var isUnlocked = i <= maxIndexUnlocked;
-            var isCurrent = page.id === currentPageId;
             var isPending = page.id === pendingPageId;
 
-            // The header already displays the current page title as the selection well.
-            // Do not duplicate it inside the list.
-            if (isCurrent) {
-                continue;
-            }
-
             html += '<li class="toc-item';
-            if (isPending) html += ' toc-item--pending';
+            if (isPending) html += ' toc-item--pending toc-item--omitted';
             if (!isUnlocked) html += ' toc-item--locked';
             html += '" data-page-id="' + escapeHtml(page.id) + '">';
 
@@ -739,10 +769,16 @@
                     return;
                 }
 
-                setPending(pid, false);
+                setPending(pid, false, { deferOmit: true });
                 scrollItemToSelection(pid, 'smooth');
+
+                setTimeout(function () {
+                    applyOmission(pid);
+                }, 220);
             });
         });
+
+        applyOmission(pendingPageId);
     }
 
     // ----------------------------------------
