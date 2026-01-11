@@ -268,6 +268,11 @@ html.toc-open .section-header h1 {
     position: relative;
 }
 
+/* While open, the selection slot should sit at the very top (so the slot line matches the top row rule). */
+html.toc-open .toc-panel-body {
+    --toc-selection-top: 0px;
+}
+
 /* Temporarily disable mandatory snapping during initial open alignment (Safari/iOS stability). */
 .toc-panel-body.is-aligning {
     scroll-snap-type: none;
