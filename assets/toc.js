@@ -1,4 +1,4 @@
-/*! Covenant ToC Progress Journal v1.2.7 */
+/*! Covenant ToC Progress Journal v1.2.8 */
 (function () {
     'use strict';
 
@@ -832,16 +832,23 @@
             || getNextUnlockedPageIdAfter(currentPageId)
             || getPrevUnlockedPageIdBefore(currentPageId);
 
+        // iOS Safari: opening transition + scroll-snap can produce stale measurements in the same frame.
+        // Delay the first alignment by 1–2 frames so geometry reflects the post-transition layout.
         if (alignId) {
-            // Suppress any incidental debounce run (even though we're unarmed, this keeps things quiet).
-            setScrollSyncSuppressed(240);
-            scrollItemToSelection(alignId, 'auto');
+            setScrollSyncSuppressed(360);
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    scrollItemToSelection(alignId, 'auto');
+                    requestAnimationFrame(function () {
+                        applyWheelStyling();
+                    });
+                });
+            });
+        } else {
+            requestAnimationFrame(function () {
+                applyWheelStyling();
+            });
         }
-
-        // Paint wheel styling after layout; do NOT sync pending from scroll on open.
-        setTimeout(function () {
-            applyWheelStyling();
-        }, 0);
 
         // Focus.
         setTimeout(function () {
