@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.0.0 (Basic Dropdown) */
+/*! Covenant ToC Panel Styles v2.0.1 (Basic Dropdown) */
 
 /* ===== ToC Toggle (header title itself) ===== */
 .section-header.has-toc-toggle {
@@ -280,6 +280,16 @@ html.toc-open #lexiconToggle {
 .toc-item-btn:focus-visible {
   outline: 2px solid #8a8a8a;
   outline-offset: 2px;
+}
+
+.toc-item-btn:disabled {
+  cursor: default;
+  border-bottom-color: transparent;
+}
+
+.toc-item--current .toc-item-btn {
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
 .toc-locked-btn {

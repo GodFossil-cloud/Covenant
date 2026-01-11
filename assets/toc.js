@@ -1,4 +1,4 @@
-/*! Covenant ToC Basic Dropdown v2.0.0 */
+/*! Covenant ToC Basic Dropdown v2.0.1 */
 (function () {
   'use strict';
 
@@ -292,17 +292,26 @@
       var page = window.COVENANT_JOURNEY[i];
       if (!page || !page.id) continue;
 
-      // Keep the “header is the well” feel by omitting the current page from the menu.
-      if (page.id === currentPageId) continue;
-
+      var isCurrent = (page.id === currentPageId);
       var unlocked = isUnlockedJourneyIndex(i);
 
-      html += '<li class="toc-item' + (unlocked ? '' : ' toc-item--locked') + '" data-page-id="' + escapeHtml(page.id) + '">';
+      html += '<li class="toc-item'
+        + (isCurrent ? ' toc-item--current' : '')
+        + (unlocked ? '' : ' toc-item--locked')
+        + '" data-page-id="' + escapeHtml(page.id) + '"'
+        + (isCurrent ? ' aria-current="page"' : '')
+        + '>';
 
       if (unlocked) {
-        html += '<button type="button" class="toc-item-btn" data-href="' + escapeHtml(page.href) + '">';
-        html += escapeHtml(page.title);
-        html += '</button>';
+        if (isCurrent) {
+          html += '<button type="button" class="toc-item-btn" aria-current="page" disabled>';
+          html += escapeHtml(page.title);
+          html += '</button>';
+        } else {
+          html += '<button type="button" class="toc-item-btn" data-href="' + escapeHtml(page.href) + '">';
+          html += escapeHtml(page.title);
+          html += '</button>';
+        }
       } else {
         html += '<button type="button" class="toc-locked-btn" aria-disabled="true">';
         html += escapeHtml(page.title);
@@ -325,7 +334,7 @@
       });
     });
 
-    var itemBtns = tocDynamicContent.querySelectorAll('.toc-item-btn');
+    var itemBtns = tocDynamicContent.querySelectorAll('.toc-item-btn[data-href]');
     Array.prototype.forEach.call(itemBtns, function (btn) {
       btn.addEventListener('click', function (e) {
         stopEvent(e);
