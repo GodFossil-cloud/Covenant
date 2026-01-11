@@ -2,6 +2,9 @@
 (function () {
   'use strict';
 
+  // Tiny global version marker for compatibility checks.
+  window.COVENANT_TOC_VERSION = '2.0.2';
+
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
     return;
