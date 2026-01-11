@@ -358,7 +358,7 @@ html.toc-open .toc-panel-body {
 
     /* Dynamic scroll-wheel styling (values set by JS). */
     transform: scale(var(--toc-scale, 1));
-    opacity: var(--toc-alpha, 1));
+    opacity: var(--toc-alpha, 1);
     filter: blur(var(--toc-blur, 0px));
 
     will-change: transform, opacity;
