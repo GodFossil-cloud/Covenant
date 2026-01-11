@@ -13,6 +13,7 @@
   var STORAGE_KEY = 'covenant_progress';
   var STORAGE_VERSION = 1;
 
+  // Used for native tooltips (desktop) and for the touch-friendly toast (mobile).
   var LOCKED_TOOLTIP = 'In due time.';
 
   var pageConfig = window.COVENANT_PAGE || {};
@@ -23,6 +24,7 @@
   var tocToggle = document.getElementById('tocToggle');
   var tocDynamicContent = document.getElementById('tocDynamicContent');
   var tocLiveRegion = document.getElementById('tocLiveRegion');
+  var tocToast = document.getElementById('tocToast');
 
   var root = document.documentElement;
   var scrollLockY = 0;
@@ -40,6 +42,8 @@
 
   var focusReturnEl = null;
   var contentClickBound = false;
+
+  var toastTimer = null;
 
   // ----------------------------------------
   // Helpers
@@ -67,12 +71,39 @@
       .replace(/'/g, '&#39;');
   }
 
+  function showToast(message) {
+    if (!tocToast) return;
+
+    var msg = (message == null) ? '' : String(message);
+    if (!msg) return;
+
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+      toastTimer = null;
+    }
+
+    tocToast.textContent = msg;
+    tocToast.classList.add('is-visible');
+    tocToast.setAttribute('aria-hidden', 'false');
+
+    toastTimer = setTimeout(function () {
+      tocToast.classList.remove('is-visible');
+      tocToast.setAttribute('aria-hidden', 'true');
+      tocToast.textContent = '';
+      toastTimer = null;
+    }, 1800);
+  }
+
   function announce(message) {
-    if (!tocLiveRegion) return;
-    tocLiveRegion.textContent = message;
-    setTimeout(function () {
-      if (tocLiveRegion.textContent === message) tocLiveRegion.textContent = '';
-    }, 2500);
+    if (tocLiveRegion) {
+      tocLiveRegion.textContent = message;
+      setTimeout(function () {
+        if (tocLiveRegion.textContent === message) tocLiveRegion.textContent = '';
+      }, 2500);
+    }
+
+    // Mobile/touch-friendly visual feedback.
+    showToast(message);
   }
 
   function withinGhostGuardWindow() {
@@ -80,7 +111,7 @@
   }
 
   function announceLockedAttempt() {
-    announce('This page is locked until you reach it through the journey.');
+    announce(LOCKED_TOOLTIP);
   }
 
   // ----------------------------------------
