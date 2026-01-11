@@ -1,4 +1,4 @@
-/*! Covenant ToC Basic Dropdown v2.0.1 */
+/*! Covenant ToC Basic Dropdown v2.0.2 */
 (function () {
   'use strict';
 
@@ -32,6 +32,9 @@
 
   // Delay navigation slightly so the close animation reads.
   var NAV_DELAY_MS = 240;
+
+  var focusReturnEl = null;
+  var contentClickBound = false;
 
   // ----------------------------------------
   // Helpers
@@ -71,6 +74,10 @@
     return tocJustOpenedAt && (Date.now() - tocJustOpenedAt < TOC_GHOST_GUARD_MS);
   }
 
+  function announceLockedAttempt() {
+    announce('This page is locked until you reach it through the journey.');
+  }
+
   // ----------------------------------------
   // Storage / progression
   // ----------------------------------------
@@ -100,6 +107,7 @@
         maxIndexUnlocked = -1;
         return;
       }
+
       var data = JSON.parse(raw);
       if (data && typeof data.max === 'number' && data.version === STORAGE_VERSION) {
         maxIndexUnlocked = data.max;
@@ -119,8 +127,7 @@
     }
 
     try {
-      var data = { version: STORAGE_VERSION, max: maxIndexUnlocked };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, max: maxIndexUnlocked }));
     } catch (err) {
       console.warn('[Covenant ToC] Failed to save progress:', err);
     }
@@ -155,10 +162,6 @@
 
   function isUnlockedJourneyIndex(i) {
     return typeof i === 'number' && i >= 0 && i <= maxIndexUnlocked;
-  }
-
-  function announceLockedAttempt() {
-    announce('This page is locked until you reach it through the journey.');
   }
 
   // ----------------------------------------
@@ -285,8 +288,7 @@
   function renderToC() {
     if (!tocDynamicContent) return;
 
-    var html = '';
-    html += '<nav aria-label="Journey contents"><ol class="toc-list">';
+    var html = '<nav aria-label="Journey contents"><ol class="toc-list">';
 
     for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
       var page = window.COVENANT_JOURNEY[i];
@@ -325,33 +327,45 @@
 
     html += '</ol></nav>';
     tocDynamicContent.innerHTML = html;
+  }
 
-    var lockedBtns = tocDynamicContent.querySelectorAll('.toc-locked-btn');
-    Array.prototype.forEach.call(lockedBtns, function (btn) {
-      btn.addEventListener('click', function (e) {
+  // ----------------------------------------
+  // Content click delegation
+  // ----------------------------------------
+  function bindContentClicks() {
+    if (contentClickBound) return;
+    if (!tocDynamicContent) return;
+
+    tocDynamicContent.addEventListener('click', function (e) {
+      var lockedBtn = closestSafe(e.target, '.toc-locked-btn');
+      if (lockedBtn) {
         stopEvent(e);
         announceLockedAttempt();
-      });
-    });
+        return;
+      }
 
-    var itemBtns = tocDynamicContent.querySelectorAll('.toc-item-btn[data-href]');
-    Array.prototype.forEach.call(itemBtns, function (btn) {
-      btn.addEventListener('click', function (e) {
-        stopEvent(e);
-        var href = btn.getAttribute('data-href') || '';
-        if (!href) return;
+      var itemBtn = closestSafe(e.target, '.toc-item-btn');
+      if (!itemBtn) return;
 
-        closeToC(false);
+      var href = itemBtn.getAttribute('data-href');
+      if (!href) {
+        // Current page button is disabled and has no data-href; ignore.
+        return;
+      }
 
+      stopEvent(e);
+      closeToC(false);
+
+      requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            setTimeout(function () {
-              window.location.href = href;
-            }, NAV_DELAY_MS);
-          });
+          setTimeout(function () {
+            window.location.href = href;
+          }, NAV_DELAY_MS);
         });
       });
     });
+
+    contentClickBound = true;
   }
 
   // ----------------------------------------
@@ -362,19 +376,14 @@
 
     var topPx = 16;
     if (headerEl && headerEl.getBoundingClientRect) {
-      var rect = headerEl.getBoundingClientRect();
-      topPx = Math.round(rect.bottom);
+      topPx = Math.round(headerEl.getBoundingClientRect().bottom);
     }
 
     tocPanel.style.top = topPx + 'px';
-
-    var maxH = Math.max(220, window.innerHeight - topPx - 18);
-    tocPanel.style.maxHeight = maxH + 'px';
+    tocPanel.style.maxHeight = Math.max(220, window.innerHeight - topPx - 18) + 'px';
 
     positionTitleToggle();
   }
-
-  var focusReturnEl = null;
 
   function openToC() {
     if (!tocPanel || !tocOverlay) return;
@@ -425,6 +434,8 @@
         if (target && target.focus) target.focus();
         focusReturnEl = null;
       }, 0);
+    } else {
+      focusReturnEl = null;
     }
   }
 
@@ -530,6 +541,7 @@
       positionTitleToggle();
       if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
     });
+
     window.addEventListener('orientationchange', function () {
       positionTitleToggle();
       if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
@@ -538,6 +550,7 @@
     window.addEventListener('blur', function () {
       if (tocPanel && tocPanel.classList.contains('is-open')) closeToC(false);
     });
+
     document.addEventListener('visibilitychange', function () {
       if (document.hidden && tocPanel && tocPanel.classList.contains('is-open')) closeToC(false);
     });
@@ -549,5 +562,6 @@
   unlockCurrentPage();
 
   ensureToggleExists();
+  bindContentClicks();
   wireControls();
 })();
