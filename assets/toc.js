@@ -13,6 +13,8 @@
   var STORAGE_KEY = 'covenant_progress';
   var STORAGE_VERSION = 1;
 
+  var LOCKED_TOOLTIP = 'Locked until reached through the journey.';
+
   var pageConfig = window.COVENANT_PAGE || {};
   var currentPageId = pageConfig.pageId || '';
 
@@ -318,10 +320,10 @@
           html += '</button>';
         }
       } else {
-        html += '<button type="button" class="toc-locked-btn" aria-disabled="true">';
+        html += '<button type="button" class="toc-locked-btn" aria-disabled="true" title="' + escapeHtml(LOCKED_TOOLTIP) + '">';
         html += escapeHtml(page.title);
         html += '<span class="toc-locked-label" aria-hidden="true"> (Locked)</span>';
-        html += '<span class="sr-only"> – Locked until reached through the journey</span>';
+        html += '<span class="sr-only"> – ' + escapeHtml(LOCKED_TOOLTIP) + '</span>';
         html += '</button>';
       }
 
