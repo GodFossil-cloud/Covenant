@@ -1,481 +1,326 @@
-/*! Covenant ToC Panel Styles v1.2.6 */
+/*! Covenant ToC Panel Styles v2.0.0 (Basic Dropdown) */
 
 /* ===== ToC Toggle (header title itself) ===== */
 .section-header.has-toc-toggle {
-    /* Provide a positioning context for the invisible title-overlay control. */
-    position: relative;
+  position: relative;
 }
 
-/* Subtle sheen on the *title text* when the (invisible) toggle is hovered/focused. */
 .section-header.has-toc-toggle h1 {
-    transition: text-shadow 220ms ease, filter 220ms ease;
+  transition: text-shadow 220ms ease, filter 220ms ease;
 }
 
 .section-header.toc-title-sheen h1 {
-    /* Quiet brass glow; reads as ritual attention, not UI emphasis. */
-    text-shadow:
-        0 0 14px rgba(201, 169, 97, 0.18),
-        0 0 1px rgba(255, 255, 255, 0.16);
-    filter: brightness(1.02);
+  text-shadow:
+    0 0 14px rgba(201, 169, 97, 0.18),
+    0 0 1px rgba(255, 255, 255, 0.16);
+  filter: brightness(1.02);
 }
 
-/* An invisible button positioned by JS to sit directly over the H1 text. */
+/* Invisible button positioned by JS to sit over the H1 text. */
 .toc-toggle {
-    position: absolute;
-    z-index: 1500;
+  position: absolute;
+  z-index: 1500;
 
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 
-    border: none;
-    background: transparent;
+  border: none;
+  background: transparent;
 
-    cursor: pointer;
-    pointer-events: auto;
+  cursor: pointer;
+  pointer-events: auto;
 
-    -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 
-    /* Allow vertical scroll gestures to begin on the title without accidentally "clicking" it. */
-    touch-action: pan-y;
+  /* Allow scroll gestures starting on the title without accidental activation. */
+  touch-action: pan-y;
 
-    user-select: none;
-    -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .toc-toggle:focus-visible {
-    outline: 2px solid rgba(201, 169, 97, 0.45);
-    outline-offset: 4px;
+  outline: 2px solid rgba(201, 169, 97, 0.45);
+  outline-offset: 4px;
 }
 
-/* Rare fallback: if a page lacks .section-header, float gently. */
+/* Fallback: if a page lacks .section-header, float gently. */
 .toc-toggle--floating {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    width: 44px;
-    height: 44px;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  width: 44px;
+  height: 44px;
 
-    display: inline-grid;
-    place-items: center;
+  display: inline-grid;
+  place-items: center;
 
-    color: rgba(44, 62, 80, 0.72);
+  color: rgba(44, 62, 80, 0.72);
 }
 
 .toc-toggle-glyph {
-    font-size: 1.15rem;
-    line-height: 1;
-    transform: translateY(-0.5px);
+  font-size: 1.15rem;
+  line-height: 1;
+  transform: translateY(-0.5px);
 }
 
 /* Hide the ToC toggle when Lexicon is open (Lexicon sets html.lexicon-scroll-lock). */
 html.lexicon-scroll-lock .toc-toggle {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* ===== Scroll lock + Lexicon conflict protection ===== */
 html.toc-scroll-lock {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 body.toc-scroll-lock {
-    position: fixed;
-    width: 100%;
+  position: fixed;
+  width: 100%;
 }
 
 /* While ToC is open, suppress Lexicon activation so the header slot stays the focus. */
 html.toc-open #lexiconToggle {
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* ===== Header title swap (selection well behavior) ===== */
-html.toc-open .section-header h1 {
-    transition: opacity 140ms ease, transform 140ms ease, text-shadow 220ms ease, filter 220ms ease;
-}
-
-.section-header.toc-previewing h1.toc-title-swapping {
-    opacity: 0;
-    transform: translateY(-4px);
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ===== ToC Overlay (matches Lexicon overlay pattern) ===== */
 .toc-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
 
-    /* Ensure it sits above the footer dock. */
-    z-index: 1400;
+  z-index: 1400;
 
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .toc-overlay.is-open {
-    opacity: 1;
-    pointer-events: auto;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* ===== ToC Panel (dropdown sheet under header) ===== */
 .toc-panel {
-    position: fixed;
-    left: 50%;
+  position: fixed;
+  left: 50%;
 
-    /* top/max-height are set dynamically in JS so the sheet can unfurl from the header divider line. */
-    top: 110px;
-    max-height: 70vh;
+  top: 110px; /* JS sets top/max-height dynamically */
+  max-height: 70vh;
 
-    width: min(720px, calc(100vw - 24px));
+  width: min(720px, calc(100vw - 24px));
 
-    /* Semi-transparent so the ritual parchment can breathe through. */
-    background-color: rgba(245, 245, 240, 0.14);
+  background-color: rgba(245, 245, 240, 0.14);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.18);
+  border-radius: 0 0 16px 16px;
 
-    /* Keep a soft separation from the world without feeling like a modal box. */
-    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.18);
+  z-index: 1401;
 
-    /* Scroll unfurl illusion: flat lip at the top (it "emerges" from the divider). */
-    border-radius: 0 0 16px 16px;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-12px);
+  transform-origin: 50% 0;
+  transition:
+    transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 240ms ease;
 
-    /* Above the footer dock. */
-    z-index: 1401;
+  display: flex;
+  flex-direction: column;
 
-    opacity: 0;
-    transform: translateX(-50%) translateY(-12px);
-    transform-origin: 50% 0;
-    transition:
-        transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1),
-        opacity 240ms ease;
-
-    display: flex;
-    flex-direction: column;
-
-    /* Hard stop: panel itself must never scroll sideways. */
-    overflow: hidden;
+  overflow: hidden;
 }
 
 @supports ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
-    .toc-panel {
-        -webkit-backdrop-filter: blur(6px);
-        backdrop-filter: blur(6px);
-    }
+  .toc-panel {
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
 }
 
 .toc-panel.is-open {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .toc-panel[aria-hidden="true"] {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .toc-panel[aria-hidden="false"] {
-    pointer-events: auto;
+  pointer-events: auto;
 }
 
 /* ===== Panel Header =====
-   The page header (outside the panel) becomes the selection well.
-   This internal header is collapsed, but we keep the close button for a11y.
+   Keep the “header is the well” look:
+   panel header stays collapsed; close button remains for a11y.
 */
 .toc-panel-header {
-    position: relative;
-    padding: 0;
-    border-bottom: none;
-    background: transparent;
-    height: 0;
+  position: relative;
+  padding: 0;
+  border-bottom: none;
+  background: transparent;
+  height: 0;
 }
 
 .toc-panel-title,
 .toc-panel-subtitle {
-    display: none;
+  display: none;
 }
 
 .toc-panel-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 
-    background: rgba(250, 250, 248, 0.86);
-    border: none;
-    border-radius: 10px;
+  background: rgba(250, 250, 248, 0.86);
+  border: none;
+  border-radius: 10px;
 
-    font-size: 2rem;
-    line-height: 1;
-    color: #4a4a4a;
+  font-size: 2rem;
+  line-height: 1;
+  color: #4a4a4a;
 
-    cursor: pointer;
-    padding: 0;
-    width: 44px;
-    height: 44px;
+  cursor: pointer;
+  padding: 0;
+  width: 44px;
+  height: 44px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
-    -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+  -webkit-tap-highlight-color: transparent;
 
-    transition: color 200ms ease, transform 200ms ease, background-color 200ms ease;
+  transition: color 200ms ease, transform 200ms ease, background-color 200ms ease;
 }
 
 .toc-panel-close:hover,
 .toc-panel-close:focus-visible {
-    color: #1a1a1a;
-    transform: scale(1.04);
-    background: rgba(250, 250, 248, 0.94);
+  color: #1a1a1a;
+  transform: scale(1.04);
+  background: rgba(250, 250, 248, 0.94);
 }
 
 .toc-panel-close:focus-visible {
-    outline: 2px solid #8a8a8a;
-    outline-offset: 2px;
+  outline: 2px solid #8a8a8a;
+  outline-offset: 2px;
 }
 
-/* ===== Panel Body ===== */
+/* ===== Panel Body (basic scroll) ===== */
 .toc-panel-body {
-    flex: 1;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 
-    /* Vertical only. */
-    overflow-y: auto;
-    overflow-x: hidden;
+  padding: 1.15rem 1.5rem 1.35rem;
 
-    padding: 0;
-    -webkit-overflow-scrolling: touch;
-
-    /* Guard against sideways rubber-banding on some browsers. */
-    overscroll-behavior-x: none;
-
-    /* Ensure touch gestures here resolve as vertical scroll only. */
-    touch-action: pan-y;
-
-    /* Selection slot geometry. */
-    --toc-selection-top: 64px;
-
-    /* Edge fade (mask) so items dissolve gently at top/bottom of the sheet. */
-    --toc-edge-fade: 16px;
-
-    /* Make the list land crisply into the selection slot. */
-    scroll-snap-type: y mandatory;
-    scroll-padding-top: var(--toc-selection-top);
-    overscroll-behavior: contain;
-
-    /* Slot indicator anchor. */
-    position: relative;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
-/* While open, the selection slot should sit at the very top (so the slot line matches the top row rule). */
-html.toc-open .toc-panel-body {
-    --toc-selection-top: 0px;
-}
-
-/* Temporarily disable mandatory snapping during initial open alignment (Safari/iOS stability). */
-.toc-panel-body.is-aligning {
-    scroll-snap-type: none;
-}
-
-/* Soft top/bottom fade mask (Safari + modern browsers). */
-@supports ((-webkit-mask-image: linear-gradient(#000, transparent)) or (mask-image: linear-gradient(#000, transparent))) {
-    .toc-panel-body {
-        -webkit-mask-image: linear-gradient(
-            to bottom,
-            transparent 0,
-            #000 var(--toc-edge-fade),
-            #000 calc(100% - var(--toc-edge-fade)),
-            transparent 100%
-        );
-        mask-image: linear-gradient(
-            to bottom,
-            transparent 0,
-            #000 var(--toc-edge-fade),
-            #000 calc(100% - var(--toc-edge-fade)),
-            transparent 100%
-        );
-
-        -webkit-mask-size: 100% 100%;
-        mask-size: 100% 100%;
-        -webkit-mask-repeat: no-repeat;
-        mask-repeat: no-repeat;
-
-        /* Keep the fade steady while scrolling. */
-        -webkit-mask-attachment: local;
-        mask-attachment: local;
-    }
-}
-
-/* Faint sacred slot indicator (aligned to scroll-padding-top). */
-.toc-panel-body::before {
-    content: '';
-    position: absolute;
-    top: var(--toc-selection-top);
-    left: 0;
-    right: 0;
-    height: 1px;
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(201, 169, 97, 0.14),
-            rgba(201, 169, 97, 0.26),
-            rgba(201, 169, 97, 0.14),
-            transparent
-        );
-
-    opacity: 0.82;
-}
-
-/* ===== ToC List ===== */
+/* ===== ToC List (basic dropdown menu) ===== */
 .toc-list {
-    list-style: none;
-
-    /* Ensure padding never pushes the scroll width beyond the container. */
-    box-sizing: border-box;
-    max-width: 100%;
-
-    padding: 1.15rem 1.5rem 1.35rem;
-    margin: 0;
+  list-style: none;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-/* Center each row as a single unit (no numeric prefix). */
 .toc-item {
-    margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
 
-    width: 100%;
-    max-width: 100%;
-
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-
-    /* Dynamic scroll-wheel styling (values set by JS). */
-    transform: scale(var(--toc-scale, 1));
-    opacity: var(--toc-alpha, 1);
-    filter: blur(var(--toc-blur, 0px));
-
-    will-change: transform, opacity;
+  width: 100%;
+  max-width: 100%;
 }
 
-/* The page shown in the header selection-well is omitted from the list. */
-.toc-item--omitted {
-    display: none;
-}
-
-/* Unlocked items are buttons (tap-to-select + auto-snap into the slot). */
 .toc-item-btn {
-    display: inline-block;
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
 
-    font-family: inherit;
-    font-size: 1rem;
-    line-height: 1.6;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
 
-    color: #2c2c2c;
-    text-align: center;
+  color: #2c2c2c;
+  text-align: center;
 
-    /* Prevent long titles from forcing horizontal scroll. */
-    max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 
-    border-bottom: 1px solid transparent;
-    cursor: pointer;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
 
-    transition: border-color 200ms ease, color 200ms ease;
+  transition: border-color 200ms ease, color 200ms ease;
 }
 
 .toc-item-btn:hover,
 .toc-item-btn:focus-visible {
-    color: #1a1a1a;
-    border-bottom-color: #8a8a8a;
+  color: #1a1a1a;
+  border-bottom-color: #8a8a8a;
 }
 
 .toc-item-btn:focus-visible {
-    outline: 2px solid #8a8a8a;
-    outline-offset: 2px;
+  outline: 2px solid #8a8a8a;
+  outline-offset: 2px;
 }
 
-.toc-item--current .toc-item-btn {
-    font-weight: 600;
-    color: #1a1a1a;
-}
-
-.toc-item--pending .toc-item-btn {
-    font-weight: 700;
-    color: #1a1a1a;
-    border-bottom-color: rgba(139, 115, 85, 0.65);
-}
-
-/* Visual-only pending marker glyph (no extra SR verbosity; pseudo-element stays silent). */
-.toc-item--pending .toc-item-btn::after {
-    content: '+';
-    display: inline-block;
-    margin-left: 0.35rem;
-
-    font-size: 0.95rem;
-    font-weight: 600;
-    line-height: 1;
-
-    color: rgba(139, 115, 85, 0.92);
-    opacity: 0.78;
-
-    transform: translateY(-0.5px);
-}
-
-/* Locked items (unchanged) */
 .toc-locked-btn {
-    display: inline-block;
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    font-family: inherit;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #a0a0a0;
-    cursor: not-allowed;
-    text-align: center;
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
 
-    max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+
+  color: #a0a0a0;
+  cursor: not-allowed;
+  text-align: center;
+
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .toc-locked-btn:focus-visible {
-    outline: 2px solid #c0c0c0;
-    outline-offset: 2px;
+  outline: 2px solid #c0c0c0;
+  outline-offset: 2px;
 }
 
 .toc-locked-label {
-    font-size: 0.85rem;
-    font-style: italic;
-    color: #b0b0b0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #b0b0b0;
 }
 
 /* ===== Mobile adjustments ===== */
 @media (max-width: 600px) {
-    .toc-panel {
-        width: calc(100vw - 18px);
-        border-radius: 0 0 14px 14px;
-    }
+  .toc-panel {
+    width: calc(100vw - 18px);
+    border-radius: 0 0 14px 14px;
+  }
 
-    .toc-list {
-        padding: 1.05rem 1.25rem 1.2rem;
-    }
-
-    .toc-panel-body {
-        --toc-selection-top: 56px;
-        --toc-edge-fade: 14px;
-    }
+  .toc-panel-body {
+    padding: 1.05rem 1.25rem 1.2rem;
+  }
 }
