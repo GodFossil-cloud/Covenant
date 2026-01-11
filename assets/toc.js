@@ -602,6 +602,8 @@
                 tocBodyScrollEl.removeEventListener('touchstart', scrollIntentHandler);
                 tocBodyScrollEl.removeEventListener('pointerdown', scrollIntentHandler);
             }
+
+            tocBodyScrollEl.classList.remove('is-aligning');
         }
 
         scrollIntentHandler = null;
@@ -656,17 +658,21 @@
     }
 
     function withSnapDisabled(fn) {
-        var body = getBodyScrollEl();
-        if (!body || !fn) return;
+        if (!fn) return;
 
-        var prev = body.style.scrollSnapType;
-        body.style.scrollSnapType = 'none';
+        var body = getBodyScrollEl();
+        if (!body) {
+            fn();
+            return;
+        }
+
+        body.classList.add('is-aligning');
 
         try {
             fn();
         } finally {
             requestAnimationFrame(function () {
-                body.style.scrollSnapType = prev || '';
+                if (body) body.classList.remove('is-aligning');
             });
         }
     }
