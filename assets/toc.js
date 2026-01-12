@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.1.1 (Faster Roll-Up) */
+/*! Covenant ToC Basic Dropdown v2.1.2 (Seal Return Behind Cradle) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.1.1';
+  window.COVENANT_TOC_VERSION = '2.1.2';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -113,11 +113,13 @@
 
     root.classList.add('toc-closing');
 
+    // Keep the cradle layer above the seal just long enough for the snap-back motion,
+    // then release it quickly (avoid lingering).
     var snapMs = readCssNumberVar('--lexicon-snap-duration') || 420;
     sealClosingTimer = setTimeout(function () {
       root.classList.remove('toc-closing');
       sealClosingTimer = null;
-    }, Math.max(180, snapMs + 40));
+    }, Math.max(160, snapMs + 20));
   }
 
   function clearSealClosingLayer() {
@@ -549,6 +551,10 @@
 
     armSealClosingLayer();
     clearPanelClosingTimer();
+
+    // Important: release toc-open immediately so the seal can start returning at once,
+    // but keep scroll-lock until the panel is fully rolled up.
+    if (root) root.classList.remove('toc-open');
 
     // Begin roll-up (keep aria-hidden=false until animation completes).
     tocPanel.classList.remove('is-open');
