@@ -105,7 +105,7 @@
     sealClosingTimer = setTimeout(function () {
       root.classList.remove('toc-closing');
       sealClosingTimer = null;
-    }, Math.max(240, snapMs + 80));
+    }, Math.max(180, snapMs + 40));
   }
 
   function clearSealClosingLayer() {
