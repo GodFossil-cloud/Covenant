@@ -48,6 +48,9 @@
   // Toast timings.
   var TOC_TOAST_VISIBLE_MS = 2600;
 
+  // How much breathing room to keep above the sticky footer.
+  var TOC_BOTTOM_GAP_PX = 18;
+
   // ----------------------------------------
   // Helpers
   // ----------------------------------------
@@ -72,6 +75,39 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  function readCssPxVar(varName) {
+    try {
+      var raw = getComputedStyle(document.documentElement).getPropertyValue(varName);
+      if (!raw) return 0;
+      var v = parseFloat(String(raw).trim());
+      return isNaN(v) ? 0 : v;
+    } catch (err) {
+      return 0;
+    }
+  }
+
+  function getFooterReservedPx() {
+    // Prefer the canonical token used throughout the Covenant.
+    var total = readCssPxVar('--footer-total-height');
+
+    // Fallbacks (should be unnecessary, but safe).
+    if (!total) {
+      var h = readCssPxVar('--footer-height');
+      var safe = readCssPxVar('--footer-safe');
+      total = h + safe;
+    }
+
+    // If variables aren't resolvable for some reason, measure the element.
+    if (!total) {
+      var footer = document.querySelector('.nav-footer');
+      if (footer && footer.getBoundingClientRect) {
+        total = footer.getBoundingClientRect().height || 0;
+      }
+    }
+
+    return Math.max(0, Math.round(total));
   }
 
   function showToast(message) {
@@ -418,8 +454,12 @@
       topPx = Math.round(headerEl.getBoundingClientRect().bottom);
     }
 
+    var footerReserved = getFooterReservedPx();
+    var safeBottomLimit = Math.max(0, window.innerHeight - footerReserved - TOC_BOTTOM_GAP_PX);
+    var available = safeBottomLimit - topPx;
+
     tocPanel.style.top = topPx + 'px';
-    tocPanel.style.maxHeight = Math.max(220, window.innerHeight - topPx - 18) + 'px';
+    tocPanel.style.maxHeight = Math.max(220, Math.floor(available)) + 'px';
 
     positionTitleToggle();
   }
