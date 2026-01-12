@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.0.4 */
+/*! Covenant ToC Basic Dropdown v2.1.0 (Scroll Unfurl) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.0.4';
+  window.COVENANT_TOC_VERSION = '2.1.0';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -37,9 +37,6 @@
   var tocJustOpenedAt = 0;
   var TOC_GHOST_GUARD_MS = 520;
 
-  // Delay navigation slightly so the close animation reads.
-  var NAV_DELAY_MS = 240;
-
   var focusReturnEl = null;
   var contentClickBound = false;
 
@@ -53,6 +50,9 @@
 
   // Keep the Lexicon seal behind the cradle during the close transition.
   var sealClosingTimer = null;
+
+  // Allow the panel to complete its roll-up animation before we fully hide it.
+  var panelClosingTimer = null;
 
   // ----------------------------------------
   // Helpers
@@ -80,7 +80,7 @@
       .replace(/'/g, '&#39;');
   }
 
-  function readCssPxVar(varName) {
+  function readCssNumberVar(varName) {
     try {
       var raw = getComputedStyle(document.documentElement).getPropertyValue(varName);
       if (!raw) return 0;
@@ -89,6 +89,13 @@
     } catch (err) {
       return 0;
     }
+  }
+
+  function getPanelAnimMs() {
+    // CSS sets: --toc-scroll-duration: 520ms
+    var ms = readCssNumberVar('--toc-scroll-duration');
+    if (ms && ms > 0) return ms;
+    return 520;
   }
 
   function armSealClosingLayer() {
@@ -101,7 +108,7 @@
 
     root.classList.add('toc-closing');
 
-    var snapMs = readCssPxVar('--lexicon-snap-duration') || 420;
+    var snapMs = readCssNumberVar('--lexicon-snap-duration') || 420;
     sealClosingTimer = setTimeout(function () {
       root.classList.remove('toc-closing');
       sealClosingTimer = null;
@@ -117,13 +124,19 @@
     root.classList.remove('toc-closing');
   }
 
+  function clearPanelClosingTimer() {
+    if (!panelClosingTimer) return;
+    clearTimeout(panelClosingTimer);
+    panelClosingTimer = null;
+  }
+
   function getFooterReservedPx() {
     // Prefer the canonical token used throughout the Covenant.
-    var total = readCssPxVar('--footer-total-height');
+    var total = readCssNumberVar('--footer-total-height');
 
     // Fallbacks.
     if (!total) {
-      total = readCssPxVar('--footer-height') + readCssPxVar('--footer-safe');
+      total = readCssNumberVar('--footer-height') + readCssNumberVar('--footer-safe');
     }
 
     // If variables aren't resolvable for some reason, measure the element.
@@ -458,11 +471,12 @@
       stopEvent(e);
       closeToC(false);
 
+      var navDelay = Math.max(240, getPanelAnimMs());
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           setTimeout(function () {
             window.location.href = href;
-          }, NAV_DELAY_MS);
+          }, navDelay);
         });
       });
     });
@@ -495,6 +509,7 @@
     if (!tocPanel || !tocOverlay) return;
 
     clearSealClosingLayer();
+    clearPanelClosingTimer();
 
     tocJustOpenedAt = Date.now();
     focusReturnEl = tocToggle;
@@ -502,8 +517,10 @@
     lockBodyScroll();
     positionDropdownPanel();
 
+    tocPanel.classList.remove('is-closing');
     tocPanel.classList.add('is-open');
     tocOverlay.classList.add('is-open');
+
     tocPanel.setAttribute('aria-hidden', 'false');
     tocOverlay.setAttribute('aria-hidden', 'false');
 
@@ -526,10 +543,13 @@
     if (!tocPanel || !tocOverlay) return;
 
     armSealClosingLayer();
+    clearPanelClosingTimer();
 
+    // Begin roll-up (keep aria-hidden=false until animation completes).
     tocPanel.classList.remove('is-open');
+    tocPanel.classList.add('is-closing');
     tocOverlay.classList.remove('is-open');
-    tocPanel.setAttribute('aria-hidden', 'true');
+
     tocOverlay.setAttribute('aria-hidden', 'true');
 
     if (tocToggle) {
@@ -537,22 +557,30 @@
       tocToggle.setAttribute('aria-label', 'Open Contents');
     }
 
-    unlockBodyScroll();
+    var closeMs = Math.max(240, getPanelAnimMs());
 
-    if (restoreFocus) {
-      setTimeout(function () {
+    panelClosingTimer = setTimeout(function () {
+      // Fully hide panel once the scroll has rolled up.
+      tocPanel.classList.remove('is-closing');
+      tocPanel.setAttribute('aria-hidden', 'true');
+      unlockBodyScroll();
+
+      if (restoreFocus) {
         var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
         if (target && target.focus) target.focus();
-        focusReturnEl = null;
-      }, 0);
-    } else {
+      }
+
       focusReturnEl = null;
-    }
+      panelClosingTimer = null;
+    }, closeMs + 30);
   }
 
   function toggleToC() {
-    if (tocPanel && tocPanel.classList.contains('is-open')) closeToC(true);
-    else openToC();
+    if (tocPanel && (tocPanel.classList.contains('is-open') || tocPanel.classList.contains('is-closing'))) {
+      closeToC(true);
+    } else {
+      openToC();
+    }
   }
 
   // ----------------------------------------
