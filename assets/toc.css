@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.2.7 (Seal Not Under Footer Dimmer) */
+/*! Covenant ToC Panel Styles v2.2.8 (Seal Not Under Footer Dimmer + Cradle Hairline Suppression) */
 
 :root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85)}
 
@@ -32,6 +32,12 @@ html .nav-footer{isolation:isolate}
 html.toc-open #lexiconToggle,html.toc-closing #lexiconToggle{z-index:3}
 html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{z-index:6}
 html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{z-index:6}
+
+/* Option B: During ToC open/close motion, suppress the footer's hairline accents.
+   This prevents the momentary horizontal "slice" crossing the seal while still preserving
+   the sense that the seal tucks behind the cradle. */
+html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{opacity:0}
+html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{background:radial-gradient(circle at 50% 0%,rgba(0,0,0,.62) 0 calc(var(--seal-notch-radius) - 12px),rgba(0,0,0,0) calc(var(--seal-notch-radius) - 2px))}
 
 /* Dim the footer slab while ToC is open/closing, but keep the nav buttons fully bright.
    This avoids "dimming-but-still-clickable" confusion for Prev/Next.
