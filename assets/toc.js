@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.0.2 */
+/*! Covenant ToC Basic Dropdown v2.0.3 */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.0.2';
+  window.COVENANT_TOC_VERSION = '2.0.3';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -92,11 +92,9 @@
     // Prefer the canonical token used throughout the Covenant.
     var total = readCssPxVar('--footer-total-height');
 
-    // Fallbacks (should be unnecessary, but safe).
+    // Fallbacks.
     if (!total) {
-      var h = readCssPxVar('--footer-height');
-      var safe = readCssPxVar('--footer-safe');
-      total = h + safe;
+      total = readCssPxVar('--footer-height') + readCssPxVar('--footer-safe');
     }
 
     // If variables aren't resolvable for some reason, measure the element.
@@ -486,7 +484,7 @@
     renderToC();
 
     setTimeout(function () {
-      // With the close button removed, focus the first interactive item (or panel).
+      // With no explicit close button, focus the first entry (or panel).
       var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
       if (firstBtn && firstBtn.focus) firstBtn.focus();
       else if (tocPanel.focus) tocPanel.focus();
@@ -602,8 +600,6 @@
         closeToC(true);
       });
     }
-
-    // Close button removed; no binding required.
 
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) closeToC(true);

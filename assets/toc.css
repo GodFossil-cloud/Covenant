@@ -16,46 +16,34 @@ html.toc-scroll-lock{overflow:hidden}
 body.toc-scroll-lock{position:fixed;width:100%}
 html.toc-open #lexiconToggle{opacity:0;pointer-events:none}
 
-.toc-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.6);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms cubic-bezier(.22,.61,.36,1)}
+.toc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms cubic-bezier(.22,.61,.36,1)}
 .toc-overlay.is-open{opacity:1;pointer-events:auto}
 
-/*
-  ToC Panel surface (opaque): parchment face with an obsidian crown.
-  This intentionally avoids blur/glass so the menu reads as a deliberate object,
-  consistent with the Covenant page container.
-*/
+/* Opaque panel: parchment face with an obsidian crown (no glass/blur). */
 .toc-panel{position:fixed;left:50%;top:110px;max-height:70vh;width:min(720px,calc(100vw - 24px));background:#f7f4ee;border:1px solid rgba(44,62,80,.18);box-shadow:0 22px 60px rgba(0,0,0,.26),0 8px 24px rgba(0,0,0,.16);border-radius:0 0 16px 16px;z-index:1401;opacity:0;transform:translateX(-50%) translateY(-12px);transform-origin:50% 0;transition:transform 340ms cubic-bezier(.22,.61,.36,1),opacity 240ms ease;display:flex;flex-direction:column;overflow:hidden}
 .toc-panel.is-open{opacity:1;transform:translateX(-50%) translateY(0)}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
-/* Remove previous glass behavior explicitly (keep as no-op fallback). */
 @supports((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){.toc-panel{-webkit-backdrop-filter:none;backdrop-filter:none}}
 
-/* Obsidian crown + hairline brass, echoing the footer's palette (subtle). */
+/* Obsidian crown + hairline brass (echoes footer palette, quietly). */
 .toc-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:14px;background:linear-gradient(to bottom,#0b0c0e 0%,#121318 60%,rgba(18,19,24,0) 100%);pointer-events:none}
 .toc-panel::after{content:'';position:absolute;top:13px;left:0;right:0;height:1px;background:rgba(201,169,97,.32);pointer-events:none}
 
-.toc-panel-header{position:relative;padding:0;border-bottom:none;background:transparent;height:0}
+.toc-panel-header{position:relative;padding:0;border:0;background:transparent;height:0}
 .toc-panel-title,.toc-panel-subtitle{display:none}
 
-/* Close button removed. */
-.toc-panel-close{display:none}
+.toc-panel-body{flex:1;overflow:auto hidden;padding:1.25rem 1.5rem 1.45rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
 
-.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.25rem 1.5rem 1.45rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
-
-/* Inner paper grain + vignette, keeps content readable and "bookish". */
-.toc-panel-body::before{content:'';position:absolute;inset:0;background:
-  radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),
-  radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),
-  linear-gradient(to bottom,rgba(255,255,255,.72),rgba(255,255,255,0));
-  pointer-events:none}
+/* Inner grain + vignette for dimensional parchment. */
+.toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),linear-gradient(to bottom,rgba(255,255,255,.72),rgba(255,255,255,0));pointer-events:none}
 .toc-panel-body>*{position:relative}
 
-.toc-list{list-style:none;box-sizing:border-box;max-width:100%;padding:0;margin:0}
-.toc-item{margin-bottom:.55rem;display:flex;justify-content:center;align-items:baseline;width:100%;max-width:100%}
+.toc-list{list-style:none;max-width:100%;padding:0;margin:0}
+.toc-item{margin:0 0 .55rem;display:flex;justify-content:center;align-items:baseline;max-width:100%}
 
-.toc-item-btn,.toc-locked-btn{display:inline-block;background:none;border:none;padding:0;margin:0;font-family:inherit;font-size:1rem;line-height:1.6;text-align:center;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.toc-item-btn,.toc-locked-btn{display:inline-block;background:none;border:0;padding:0;margin:0;font:inherit;font-size:1rem;line-height:1.6;text-align:center;max-width:100%;white-space:normal;overflow-wrap:anywhere}
 
 .toc-item-btn{color:#2c3e50;border-bottom:1px solid transparent;cursor:pointer;transition:border-color 200ms ease,color 200ms ease}
 .toc-item-btn:hover,.toc-item-btn:focus-visible{color:#111;border-bottom-color:rgba(139,115,85,.55)}
