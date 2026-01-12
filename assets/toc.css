@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.1.0 (Parchment Fade) */
+/*! Covenant ToC Panel Styles v2.1.1 (Parchment Fade) */
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -14,7 +14,12 @@ html.lexicon-scroll-lock .toc-toggle{opacity:0;visibility:hidden;pointer-events:
 
 html.toc-scroll-lock{overflow:hidden}
 body.toc-scroll-lock{position:fixed;width:100%}
-html.toc-open #lexiconToggle{opacity:0;pointer-events:none}
+
+/* Animate the Lexicon seal into a "receded" (locked) posture while the ToC is open. */
+#lexiconToggle{transition:color 0.2s ease,text-shadow 0.2s ease,filter 0.2s ease,transform var(--lexicon-snap-duration) var(--lexicon-snap-ease),opacity 240ms ease}
+html.toc-open #lexiconToggle{opacity:0;pointer-events:none;filter:brightness(.92);--seal-seat-nudge:-8px}
+
+@media (prefers-reduced-motion: reduce){#lexiconToggle{transition:none}}
 
 .toc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms cubic-bezier(.22,.61,.36,1)}
 .toc-overlay.is-open{opacity:1;pointer-events:auto}
