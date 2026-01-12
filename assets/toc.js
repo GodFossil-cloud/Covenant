@@ -486,8 +486,9 @@
     renderToC();
 
     setTimeout(function () {
-      var closeBtn = tocPanel.querySelector('.toc-panel-close');
-      if (closeBtn && closeBtn.focus) closeBtn.focus();
+      // With the close button removed, focus the first interactive item (or panel).
+      var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
+      if (firstBtn && firstBtn.focus) firstBtn.focus();
       else if (tocPanel.focus) tocPanel.focus();
     }, 0);
   }
@@ -602,15 +603,7 @@
       });
     }
 
-    if (tocPanel) {
-      var closeBtns = tocPanel.querySelectorAll('.toc-panel-close');
-      Array.prototype.forEach.call(closeBtns, function (btn) {
-        bindActivate(btn, function (e) {
-          stopEvent(e);
-          closeToC(true);
-        });
-      });
-    }
+    // Close button removed; no binding required.
 
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) closeToC(true);
