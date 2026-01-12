@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.0.3 */
+/*! Covenant ToC Basic Dropdown v2.0.4 */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.0.3';
+  window.COVENANT_TOC_VERSION = '2.0.4';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -51,6 +51,9 @@
   // How much breathing room to keep above the sticky footer.
   var TOC_BOTTOM_GAP_PX = 18;
 
+  // Keep the Lexicon seal behind the cradle during the close transition.
+  var sealClosingTimer = null;
+
   // ----------------------------------------
   // Helpers
   // ----------------------------------------
@@ -86,6 +89,32 @@
     } catch (err) {
       return 0;
     }
+  }
+
+  function armSealClosingLayer() {
+    if (!root) return;
+
+    if (sealClosingTimer) {
+      clearTimeout(sealClosingTimer);
+      sealClosingTimer = null;
+    }
+
+    root.classList.add('toc-closing');
+
+    var snapMs = readCssPxVar('--lexicon-snap-duration') || 420;
+    sealClosingTimer = setTimeout(function () {
+      root.classList.remove('toc-closing');
+      sealClosingTimer = null;
+    }, Math.max(240, snapMs + 80));
+  }
+
+  function clearSealClosingLayer() {
+    if (!root) return;
+    if (sealClosingTimer) {
+      clearTimeout(sealClosingTimer);
+      sealClosingTimer = null;
+    }
+    root.classList.remove('toc-closing');
   }
 
   function getFooterReservedPx() {
@@ -465,6 +494,8 @@
   function openToC() {
     if (!tocPanel || !tocOverlay) return;
 
+    clearSealClosingLayer();
+
     tocJustOpenedAt = Date.now();
     focusReturnEl = tocToggle;
 
@@ -493,6 +524,8 @@
 
   function closeToC(restoreFocus) {
     if (!tocPanel || !tocOverlay) return;
+
+    armSealClosingLayer();
 
     tocPanel.classList.remove('is-open');
     tocOverlay.classList.remove('is-open');

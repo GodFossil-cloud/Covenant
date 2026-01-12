@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.1.4 (Parchment Fade) */
+/*! Covenant ToC Panel Styles v2.1.5 (Parchment Fade) */
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -20,10 +20,14 @@ body.toc-scroll-lock{position:fixed;width:100%}
    Use a slightly higher-specificity selector so our transition (incl. opacity) is not overridden on mobile. */
 html #lexiconToggle{transition:color 0.2s ease,text-shadow 0.2s ease,filter 0.2s ease,transform var(--lexicon-snap-duration) var(--lexicon-snap-ease),opacity 240ms ease}
 
-/* While the ToC is open, push the seal behind the footer cradle so it "locks" into the dock instead of floating above it. */
-html.toc-open #lexiconToggle{z-index:0}
-html.toc-open .nav-footer::after{z-index:6}
-html.toc-open .nav-footer::before{z-index:6}
+/* Ensure footer pseudo-elements can reliably layer above its children when needed. */
+html .nav-footer{isolation:isolate}
+
+/* While the ToC is open (and while it is closing), push the seal behind the footer cradle
+   so it "locks" into the dock instead of floating above it. */
+html.toc-open #lexiconToggle,html.toc-closing #lexiconToggle{z-index:0}
+html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{z-index:6}
+html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{z-index:6}
 
 /* Micro-glint: a quick "latch click" before the seal recedes (subtle, sacred). */
 @keyframes lexiconSealLatchGlint{0%{box-shadow:inset 0 0 18px rgba(0,0,0,.84),inset 0 1px 0 rgba(255,255,255,.05),0 10px 18px -14px rgba(0,0,0,.90),0 14px 10px -12px rgba(0,0,0,.92)}45%{box-shadow:inset 0 0 20px rgba(0,0,0,.90),inset 0 1px 0 rgba(255,255,255,.10),0 0 0 1px rgba(242,220,154,.20),0 0 14px rgba(242,220,154,.12),0 14px 10px -12px rgba(0,0,0,.92)}100%{box-shadow:inset 0 0 18px rgba(0,0,0,.84),inset 0 1px 0 rgba(255,255,255,.05),0 10px 18px -14px rgba(0,0,0,.90),0 14px 10px -12px rgba(0,0,0,.92)}}
