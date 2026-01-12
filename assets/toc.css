@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.0.4 (Opaque Parchment) */
+/*! Covenant ToC Panel Styles v2.0.5 (Opaque Parchment) */
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -39,6 +39,10 @@ html.toc-open #lexiconToggle{opacity:0;pointer-events:none}
 
 /* Inner grain + vignette for dimensional parchment. */
 .toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),linear-gradient(to bottom,rgba(255,255,255,.72),rgba(255,255,255,0));pointer-events:none}
+
+/* Fade out at the bottom edge so the list "falls" into parchment. */
+.toc-panel-body::after{content:'';position:sticky;left:0;right:0;bottom:0;display:block;height:52px;margin-top:-52px;background:linear-gradient(to bottom,rgba(247,244,238,0),rgba(247,244,238,1));pointer-events:none}
+
 .toc-panel-body>*{position:relative}
 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
@@ -61,4 +65,4 @@ html.toc-open #lexiconToggle{opacity:0;pointer-events:none}
 .toc-toast.is-visible{opacity:1;transform:translateY(0)}
 @media (prefers-reduced-motion: reduce){.toc-toast{transition:none;transform:none}.toc-toast.is-visible{transform:none}}
 
-@media (max-width:600px){.toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}.toc-panel-body{padding:1.15rem 1.25rem 1.25rem}}
+@media (max-width:600px){.toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}.toc-panel-body{padding:1.15rem 1.25rem 1.25rem}.toc-panel-body::after{height:44px;margin-top:-44px}}
