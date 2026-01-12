@@ -1,6 +1,6 @@
-/*! Covenant ToC Panel Styles v2.2.2 (Scroll Unfurl + Roll Band) */
+/*! Covenant ToC Panel Styles v2.2.3 (Scroll Unfurl + Faster Roll-Up) */
 
-:root{--toc-scroll-cap:24px;--toc-scroll-duration:520ms;--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85)}
+:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85)}
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -51,7 +51,7 @@ html.toc-open #lexiconToggle{transition-delay:160ms;opacity:0;pointer-events:non
    - Preferred: clip-path reveal (no text scaling). */
 .toc-panel{position:fixed;left:50%;top:110px;max-height:70vh;width:min(720px,calc(100vw - 24px));background:linear-gradient(to bottom,rgba(247,244,238,1) 0%,rgba(247,244,238,1) 72%,rgba(247,244,238,0) 100%);border:1px solid rgba(44,62,80,.18);border-bottom-color:transparent;box-shadow:0 22px 60px rgba(0,0,0,.24),0 8px 24px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.42);border-radius:0 0 16px 16px;z-index:1401;opacity:0;transform:translateX(-50%) translateY(-10px);transform-origin:50% 0;transition:transform 300ms var(--toc-scroll-ease),opacity var(--toc-scroll-opacity-in) ease;display:flex;flex-direction:column;overflow:hidden;background-clip:padding-box;will-change:clip-path,opacity,transform}
 .toc-panel.is-open{opacity:1;transform:translateX(-50%) translateY(0)}
-.toc-panel.is-closing{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:none}
+.toc-panel.is-closing{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
@@ -115,6 +115,6 @@ filter:blur(.2px)}
 .toc-toast.is-visible{opacity:1;transform:translateY(0)}
 @media (prefers-reduced-motion: reduce){.toc-toast{transition:none;transform:none}.toc-toast.is-visible{transform:none}}
 
-@media (prefers-reduced-motion: reduce){:root{--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms}.toc-overlay{transition:none}.toc-panel{transition:opacity 160ms ease !important;transform:translateX(-50%) !important;clip-path:none !important;-webkit-clip-path:none !important}}
+@media (prefers-reduced-motion: reduce){:root{--toc-scroll-open-duration:1ms;--toc-scroll-close-duration:1ms;--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms}.toc-overlay{transition:none}.toc-panel{transition:opacity 160ms ease !important;transform:translateX(-50%) !important;clip-path:none !important;-webkit-clip-path:none !important}}
 
 @media (max-width:600px){.toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}.toc-panel-body{padding:1.15rem 1.25rem 1.25rem}}

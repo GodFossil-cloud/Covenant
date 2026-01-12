@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.1.0 (Scroll Unfurl) */
+/*! Covenant ToC Basic Dropdown v2.1.1 (Faster Roll-Up) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.1.0';
+  window.COVENANT_TOC_VERSION = '2.1.1';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -91,11 +91,16 @@
     }
   }
 
-  function getPanelAnimMs() {
-    // CSS sets: --toc-scroll-duration: 520ms
-    var ms = readCssNumberVar('--toc-scroll-duration');
+  function getPanelCloseMs() {
+    // Prefer close-only duration so roll-up can be quicker than the reveal.
+    var ms = readCssNumberVar('--toc-scroll-close-duration');
     if (ms && ms > 0) return ms;
-    return 520;
+
+    // Fallback to the shared duration.
+    ms = readCssNumberVar('--toc-scroll-duration');
+    if (ms && ms > 0) return ms;
+
+    return 320;
   }
 
   function armSealClosingLayer() {
@@ -471,7 +476,7 @@
       stopEvent(e);
       closeToC(false);
 
-      var navDelay = Math.max(240, getPanelAnimMs());
+      var navDelay = Math.max(180, getPanelCloseMs());
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           setTimeout(function () {
@@ -557,7 +562,7 @@
       tocToggle.setAttribute('aria-label', 'Open Contents');
     }
 
-    var closeMs = Math.max(240, getPanelAnimMs());
+    var closeMs = Math.max(180, getPanelCloseMs());
 
     panelClosingTimer = setTimeout(function () {
       // Fully hide panel once the scroll has rolled up.
