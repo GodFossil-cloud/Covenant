@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.0.2 (Basic Dropdown) */
+/*! Covenant ToC Panel Styles v2.0.3 (Opaque Parchment) */
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -19,39 +19,59 @@ html.toc-open #lexiconToggle{opacity:0;pointer-events:none}
 .toc-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.6);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms cubic-bezier(.22,.61,.36,1)}
 .toc-overlay.is-open{opacity:1;pointer-events:auto}
 
-.toc-panel{position:fixed;left:50%;top:110px;max-height:70vh;width:min(720px,calc(100vw - 24px));background-color:rgba(245,245,240,.14);box-shadow:0 18px 46px rgba(0,0,0,.18);border-radius:0 0 16px 16px;z-index:1401;opacity:0;transform:translateX(-50%) translateY(-12px);transform-origin:50% 0;transition:transform 340ms cubic-bezier(.22,.61,.36,1),opacity 240ms ease;display:flex;flex-direction:column;overflow:hidden}
-@supports((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){.toc-panel{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}}
+/*
+  ToC Panel surface (opaque): parchment face with an obsidian crown.
+  This intentionally avoids blur/glass so the menu reads as a deliberate object,
+  consistent with the Covenant page container.
+*/
+.toc-panel{position:fixed;left:50%;top:110px;max-height:70vh;width:min(720px,calc(100vw - 24px));background:#f7f4ee;border:1px solid rgba(44,62,80,.18);box-shadow:0 22px 60px rgba(0,0,0,.26),0 8px 24px rgba(0,0,0,.16);border-radius:0 0 16px 16px;z-index:1401;opacity:0;transform:translateX(-50%) translateY(-12px);transform-origin:50% 0;transition:transform 340ms cubic-bezier(.22,.61,.36,1),opacity 240ms ease;display:flex;flex-direction:column;overflow:hidden}
 .toc-panel.is-open{opacity:1;transform:translateX(-50%) translateY(0)}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
+/* Remove previous glass behavior explicitly (keep as no-op fallback). */
+@supports((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){.toc-panel{-webkit-backdrop-filter:none;backdrop-filter:none}}
+
+/* Obsidian crown + hairline brass, echoing the footer's palette (subtle). */
+.toc-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:14px;background:linear-gradient(to bottom,#0b0c0e 0%,#121318 60%,rgba(18,19,24,0) 100%);pointer-events:none}
+.toc-panel::after{content:'';position:absolute;top:13px;left:0;right:0;height:1px;background:rgba(201,169,97,.32);pointer-events:none}
+
 .toc-panel-header{position:relative;padding:0;border-bottom:none;background:transparent;height:0}
 .toc-panel-title,.toc-panel-subtitle{display:none}
 
-.toc-panel-close{position:absolute;top:10px;right:10px;background:rgba(250,250,248,.86);border:none;border-radius:10px;font-size:2rem;line-height:1;color:#4a4a4a;cursor:pointer;padding:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(0,0,0,.14);-webkit-tap-highlight-color:transparent;transition:color 200ms ease,transform 200ms ease,background-color 200ms ease}
-.toc-panel-close:hover,.toc-panel-close:focus-visible{color:#1a1a1a;transform:scale(1.04);background:rgba(250,250,248,.94)}
-.toc-panel-close:focus-visible{outline:2px solid #8a8a8a;outline-offset:2px}
+/* Close button: parchment tile with quiet shadow; matches Covenant restraint. */
+.toc-panel-close{position:absolute;top:10px;right:10px;background:#fafaf8;border:1px solid rgba(44,62,80,.14);border-radius:12px;font-size:2rem;line-height:1;color:#3b3b3b;cursor:pointer;padding:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 26px rgba(0,0,0,.14);-webkit-tap-highlight-color:transparent;transition:color 200ms ease,transform 200ms ease,background-color 200ms ease,box-shadow 200ms ease}
+.toc-panel-close:hover,.toc-panel-close:focus-visible{color:#111;transform:scale(1.04);background:#ffffff;box-shadow:0 16px 32px rgba(0,0,0,.16)}
+.toc-panel-close:focus-visible{outline:2px solid rgba(201,169,97,.42);outline-offset:3px}
 
-.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.15rem 1.5rem 1.35rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
+.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.25rem 1.5rem 1.45rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
+
+/* Inner paper grain + vignette, keeps content readable and "bookish". */
+.toc-panel-body::before{content:'';position:absolute;inset:0;background:
+  radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),
+  radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),
+  linear-gradient(to bottom,rgba(255,255,255,.72),rgba(255,255,255,0));
+  pointer-events:none}
+.toc-panel-body>*{position:relative}
 
 .toc-list{list-style:none;box-sizing:border-box;max-width:100%;padding:0;margin:0}
-.toc-item{margin-bottom:.5rem;display:flex;justify-content:center;align-items:baseline;width:100%;max-width:100%}
+.toc-item{margin-bottom:.55rem;display:flex;justify-content:center;align-items:baseline;width:100%;max-width:100%}
 
 .toc-item-btn,.toc-locked-btn{display:inline-block;background:none;border:none;padding:0;margin:0;font-family:inherit;font-size:1rem;line-height:1.6;text-align:center;max-width:100%;white-space:normal;overflow-wrap:anywhere}
 
-.toc-item-btn{color:#2c2c2c;border-bottom:1px solid transparent;cursor:pointer;transition:border-color 200ms ease,color 200ms ease}
-.toc-item-btn:hover,.toc-item-btn:focus-visible{color:#1a1a1a;border-bottom-color:#8a8a8a}
-.toc-item-btn:focus-visible{outline:2px solid #8a8a8a;outline-offset:2px}
+.toc-item-btn{color:#2c3e50;border-bottom:1px solid transparent;cursor:pointer;transition:border-color 200ms ease,color 200ms ease}
+.toc-item-btn:hover,.toc-item-btn:focus-visible{color:#111;border-bottom-color:rgba(139,115,85,.55)}
+.toc-item-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:3px}
 .toc-item-btn:disabled{cursor:default;border-bottom-color:transparent}
-.toc-item--current .toc-item-btn{font-weight:600;color:#1a1a1a}
+.toc-item--current .toc-item-btn{font-weight:600;color:#111}
 
-.toc-locked-btn{color:#a0a0a0;cursor:not-allowed}
-.toc-locked-btn:focus-visible{outline:2px solid #c0c0c0;outline-offset:2px}
-.toc-locked-label{font-size:.85rem;font-style:italic;color:#b0b0b0}
+.toc-locked-btn{color:#8a8a8a;cursor:not-allowed}
+.toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
+.toc-locked-label{font-size:.85rem;font-style:italic;color:#9b9b9b}
 
 /* Mobile-friendly locked feedback (native title tooltips are unreliable on touch devices). */
-.toc-toast{position:sticky;bottom:.65rem;margin:.85rem auto 0;width:fit-content;max-width:min(520px,92%);padding:.55rem .9rem;border-radius:999px;background:rgba(0,0,0,.74);color:rgba(245,245,240,.94);font-size:.95rem;letter-spacing:.04em;line-height:1.25;text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.22),0 2px 10px rgba(0,0,0,.12);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity 420ms ease,transform 180ms ease}
+.toc-toast{position:sticky;bottom:.65rem;margin:.95rem auto 0;width:fit-content;max-width:min(520px,92%);padding:.6rem 1rem;border-radius:999px;background:rgba(11,12,14,.92);color:rgba(245,245,240,.96);font-size:.95rem;letter-spacing:.04em;line-height:1.25;text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.22),0 2px 10px rgba(0,0,0,.12);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity 420ms ease,transform 180ms ease}
 .toc-toast.is-visible{opacity:1;transform:translateY(0)}
 @media (prefers-reduced-motion: reduce){.toc-toast{transition:none;transform:none}.toc-toast.is-visible{transform:none}}
 
-@media (max-width:600px){.toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}.toc-panel-body{padding:1.05rem 1.25rem 1.2rem}}
+@media (max-width:600px){.toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}.toc-panel-body{padding:1.15rem 1.25rem 1.25rem}}
