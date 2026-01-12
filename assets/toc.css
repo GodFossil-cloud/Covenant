@@ -1,6 +1,6 @@
-/*! Covenant ToC Panel Styles v2.2.1 (Scroll Unfurl + Clean Crown) */
+/*! Covenant ToC Panel Styles v2.2.2 (Scroll Unfurl + Roll Band) */
 
-:root{--toc-scroll-cap:24px;--toc-scroll-duration:520ms;--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms}
+:root{--toc-scroll-cap:24px;--toc-scroll-duration:520ms;--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85)}
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -63,8 +63,23 @@ html.toc-open #lexiconToggle{transition-delay:160ms;opacity:0;pointer-events:non
 
 @supports((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){.toc-panel{-webkit-backdrop-filter:none;backdrop-filter:none}}
 
-/* Top edge: keep it parchment-clean for the scroll unfurl (no crown/hairline bar). */
-.toc-panel::before,.toc-panel::after{content:none}
+/* Rolled cylinder (micro): a moving highlight/shadow band keyed to --toc-scroll-cap.
+   It appears during the unfurl/roll-up only, then vanishes (no persistent top bar). */
+@keyframes tocRollBandIn{0%{opacity:0;transform:translateY(calc(-.55 * var(--toc-scroll-cap)))}22%{opacity:.92;transform:translateY(0)}62%{opacity:.38;transform:translateY(0)}100%{opacity:0;transform:translateY(0)}}
+@keyframes tocRollBandOut{0%{opacity:0;transform:translateY(0)}30%{opacity:.52;transform:translateY(0)}68%{opacity:.92;transform:translateY(calc(-.10 * var(--toc-scroll-cap)))}100%{opacity:0;transform:translateY(calc(-.55 * var(--toc-scroll-cap)))}}
+
+.toc-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:var(--toc-rollband-height);pointer-events:none;opacity:0;transform:translateY(calc(-.55 * var(--toc-scroll-cap)));background:
+  radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 56%),
+  linear-gradient(to bottom,rgba(0,0,0,.26) 0%,rgba(0,0,0,0) 78%);
+filter:blur(.2px)}
+
+.toc-panel.is-open::before{animation:tocRollBandIn var(--toc-scroll-duration) var(--toc-scroll-ease) 1 both}
+.toc-panel.is-closing::before{animation:tocRollBandOut var(--toc-scroll-duration) var(--toc-scroll-ease) 1 both}
+
+@media (prefers-reduced-motion: reduce){.toc-panel.is-open::before,.toc-panel.is-closing::before{animation:none}.toc-panel::before{display:none}}
+
+/* Keep ::after unused to avoid reintroducing a hard hairline. */
+.toc-panel::after{content:none}
 
 .toc-panel-header{position:relative;padding:0;border:0;background:transparent;height:0}
 .toc-panel-title,.toc-panel-subtitle{display:none}
