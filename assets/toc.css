@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.2.4 (Seal Opaque) */
+/*! Covenant ToC Panel Styles v2.2.5 (Seal No Brightness Fade) */
 
 :root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85)}
 
@@ -19,8 +19,10 @@ body.toc-scroll-lock{position:fixed;width:100%}
 
 /* Animate the Lexicon seal into a "receded" (locked) posture while the ToC is open.
    NOTE: toc.css is loaded BEFORE covenant.css via _includes/covenant-config.html.
-   Use a slightly higher-specificity selector so our transition is not overridden on mobile. */
-html #lexiconToggle{transition:color .2s ease,text-shadow .2s ease,filter .2s ease,transform var(--lexicon-snap-duration) var(--lexicon-snap-ease)}
+   Use a slightly higher-specificity selector so our transition is not overridden on mobile.
+
+   IMPORTANT: do not animate filter/opacity here; it reads as a fade during return. */
+html #lexiconToggle{transition:color .2s ease,text-shadow .2s ease,transform var(--lexicon-snap-duration) var(--lexicon-snap-ease)}
 
 /* Ensure footer pseudo-elements can reliably layer above its children when needed. */
 html .nav-footer{isolation:isolate}
@@ -39,8 +41,8 @@ html.toc-open #lexiconToggle::before{animation:lexiconSealLatchGlint 140ms ease-
 html.toc-open #lexiconToggle::after{animation:lexiconSealLatchSurface 140ms ease-out 1}
 
 /* Delay the recede just long enough for the latch glint to read.
-   NOTE: keep the seal fully opaque (no fade). */
-html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;filter:brightness(.92);--seal-seat-nudge:-8px}
+   NOTE: keep the seal fully opaque, and do not dim it (no filter fade). */
+html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-seat-nudge:-8px}
 
 @media (prefers-reduced-motion: reduce){html #lexiconToggle{transition:none}html.toc-open #lexiconToggle{transition-delay:0ms}html.toc-open #lexiconToggle::before,html.toc-open #lexiconToggle::after{animation:none}}
 
