@@ -45,6 +45,9 @@
 
   var toastTimer = null;
 
+  // Toast timings.
+  var TOC_TOAST_VISIBLE_MS = 2600;
+
   // ----------------------------------------
   // Helpers
   // ----------------------------------------
@@ -91,7 +94,7 @@
       tocToast.setAttribute('aria-hidden', 'true');
       tocToast.textContent = '';
       toastTimer = null;
-    }, 1800);
+    }, TOC_TOAST_VISIBLE_MS);
   }
 
   function announce(message) {
