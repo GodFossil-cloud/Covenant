@@ -37,7 +37,7 @@ html.toc-open #lexiconToggle::before{animation:lexiconSealLatchGlint 140ms ease-
 html.toc-open #lexiconToggle::after{animation:lexiconSealLatchSurface 140ms ease-out 1}
 
 /* Delay the recede just long enough for the latch glint to read. */
-html.toc-open #lexiconToggle{transition-delay:190ms;opacity:0;pointer-events:none;filter:brightness(.92);--seal-seat-nudge:-8px}
+html.toc-open #lexiconToggle{transition-delay:160ms;opacity:0;pointer-events:none;filter:brightness(.92);--seal-seat-nudge:-8px}
 
 @media (prefers-reduced-motion: reduce){html #lexiconToggle{transition:none}html.toc-open #lexiconToggle{transition-delay:0ms}html.toc-open #lexiconToggle::before,html.toc-open #lexiconToggle::after{animation:none}}
 
