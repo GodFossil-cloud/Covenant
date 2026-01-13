@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.1.2 (Seal Return Behind Cradle) */
+/*! Covenant ToC Basic Dropdown v2.2.0 (Cathedral Index Groups) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.1.2';
+  window.COVENANT_TOC_VERSION = '2.2.0';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -198,6 +198,31 @@
 
   function announceLockedAttempt() {
     announce(LOCKED_TOOLTIP);
+  }
+
+  function parseCatalogTitle(rawTitle) {
+    var s = String(rawTitle || '').trim();
+    if (!s) return { key: '', title: '' };
+
+    // Prefer "Key: Title" pattern (e.g., "Article Ⅳ: Of ...").
+    var idx = s.indexOf(':');
+    if (idx !== -1) {
+      var left = s.slice(0, idx).trim();
+      var right = s.slice(idx + 1).trim();
+      return { key: left, title: right };
+    }
+
+    return { key: '', title: s };
+  }
+
+  function resolveLexiconReference() {
+    var refs = window.COVENANT_REFERENCES || [];
+    for (var i = 0; i < refs.length; i++) {
+      if (refs[i] && refs[i].id === 'lexicon') return refs[i];
+    }
+
+    // Fallback for deployments that omit COVENANT_REFERENCES.
+    return { id: 'lexicon', title: 'Full Lexicon', href: 'lexicon.html' };
   }
 
   // ----------------------------------------
@@ -405,12 +430,59 @@
   }
 
   // ----------------------------------------
-  // Render: basic dropdown list
+  // Render: Cathedral Index groups
   // ----------------------------------------
+  function renderEntryButton(page, unlocked, isCurrent) {
+    var parsed = parseCatalogTitle(page.title);
+
+    var entryHtml = '';
+    if (parsed.key) {
+      entryHtml += '<span class="toc-entry">';
+      entryHtml += '<span class="toc-entry-key">' + escapeHtml(parsed.key) + '</span>';
+      entryHtml += '<span class="toc-entry-title">' + escapeHtml(parsed.title) + '</span>';
+      entryHtml += '</span>';
+    } else {
+      entryHtml += '<span class="toc-entry toc-entry--single">';
+      entryHtml += '<span class="toc-entry-title">' + escapeHtml(parsed.title) + '</span>';
+      entryHtml += '</span>';
+    }
+
+    if (unlocked) {
+      if (isCurrent) {
+        return '<button type="button" class="toc-item-btn" aria-current="page" disabled>' + entryHtml + '</button>';
+      }
+
+      return '<button type="button" class="toc-item-btn" data-href="' + escapeHtml(page.href) + '">' + entryHtml + '</button>';
+    }
+
+    // Locked
+    var lockSigil = '<span class="toc-lock-sigil" aria-hidden="true">⟠</span>';
+    var sr = '<span class="sr-only"> – ' + escapeHtml(LOCKED_TOOLTIP) + '</span>';
+
+    return '<button type="button" class="toc-locked-btn" aria-disabled="true" title="' + escapeHtml(LOCKED_TOOLTIP) + '">' + entryHtml + lockSigil + sr + '</button>';
+  }
+
+  function renderGroup(groupId, label, itemsHtml) {
+    if (!itemsHtml) return '';
+
+    return ''
+      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">'
+      +   '<div class="toc-group-title"><span class="toc-tab">' + escapeHtml(label) + '</span></div>'
+      +   '<ol class="toc-list">'
+      +     itemsHtml
+      +   '</ol>'
+      + '</section>';
+  }
+
   function renderToC() {
     if (!tocDynamicContent) return;
 
-    var html = '<nav aria-label="Journey contents"><ol class="toc-list">';
+    var preludeIds = { invocation: true, foundation: true, declaration: true };
+    var ritesIds = { rituals: true, oath: true, consecrated: true };
+
+    var preludeHtml = '';
+    var articlesHtml = '';
+    var ritesHtml = '';
 
     for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
       var page = window.COVENANT_JOURNEY[i];
@@ -419,35 +491,39 @@
       var isCurrent = (page.id === currentPageId);
       var unlocked = isUnlockedJourneyIndex(i);
 
-      html += '<li class="toc-item'
+      var itemClass = 'toc-item'
         + (isCurrent ? ' toc-item--current' : '')
-        + (unlocked ? '' : ' toc-item--locked')
-        + '" data-page-id="' + escapeHtml(page.id) + '"'
+        + (unlocked ? '' : ' toc-item--locked');
+
+      var item = ''
+        + '<li class="' + itemClass + '" data-page-id="' + escapeHtml(page.id) + '"'
         + (isCurrent ? ' aria-current="page"' : '')
-        + '>';
+        + '>'
+        + renderEntryButton(page, unlocked, isCurrent)
+        + '</li>';
 
-      if (unlocked) {
-        if (isCurrent) {
-          html += '<button type="button" class="toc-item-btn" aria-current="page" disabled>';
-          html += escapeHtml(page.title);
-          html += '</button>';
-        } else {
-          html += '<button type="button" class="toc-item-btn" data-href="' + escapeHtml(page.href) + '">';
-          html += escapeHtml(page.title);
-          html += '</button>';
-        }
-      } else {
-        html += '<button type="button" class="toc-locked-btn" aria-disabled="true" title="' + escapeHtml(LOCKED_TOOLTIP) + '">';
-        html += escapeHtml(page.title);
-        html += '<span class="toc-locked-label" aria-hidden="true"> (Locked)</span>';
-        html += '<span class="sr-only"> – ' + escapeHtml(LOCKED_TOOLTIP) + '</span>';
-        html += '</button>';
-      }
-
-      html += '</li>';
+      if (preludeIds[page.id]) preludeHtml += item;
+      else if (ritesIds[page.id]) ritesHtml += item;
+      else articlesHtml += item;
     }
 
-    html += '</ol></nav>';
+    var lexicon = resolveLexiconReference();
+    var annex = ''
+      + '<div class="toc-annex">'
+      +   '<a class="toc-annex-link" href="' + escapeHtml(lexicon.href || 'lexicon.html') + '" target="_blank" rel="noopener">'
+      +     '<span class="toc-annex-sigil" aria-hidden="true">𖤓</span>'
+      +     '<span class="toc-annex-text">' + escapeHtml(lexicon.title || 'Full Lexicon') + '</span>'
+      +   '</a>'
+      + '</div>';
+
+    var html = ''
+      + '<nav aria-label="Covenant contents" class="toc-index">'
+      +   renderGroup('prelude', 'Prelude', preludeHtml)
+      +   renderGroup('articles', 'Articles', articlesHtml)
+      +   renderGroup('rites', 'Rites', ritesHtml)
+      +   annex
+      + '</nav>';
+
     tocDynamicContent.innerHTML = html;
   }
 
