@@ -1,6 +1,6 @@
-/*! Covenant ToC Panel Styles v2.3.1 (Cathedral Index + Lock Progression) */
+/*! Covenant ToC Panel Styles v2.3.2 (Cathedral Index + Brass-Heavy Gates) */
 
-:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms;--toc-ink:rgba(44,62,80,.92);--toc-ink-soft:rgba(44,62,80,.74);--toc-rule:rgba(139,115,85,.26);--toc-rule-strong:rgba(139,115,85,.36);--toc-parchment:rgba(247,244,238,1);--toc-parchment-hi:rgba(255,255,255,.72);--toc-rule-x:.95rem;--toc-node:10px}
+:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms;--toc-ink:rgba(44,62,80,.92);--toc-ink-soft:rgba(44,62,80,.74);--toc-rule:rgba(139,115,85,.26);--toc-rule-strong:rgba(139,115,85,.36);--toc-parchment:rgba(247,244,238,1);--toc-parchment-hi:rgba(255,255,255,.72);--toc-rule-x:.95rem;--toc-node:10px;--toc-brass:rgba(201,169,97,1);--toc-brass-soft:rgba(201,169,97,.32);--toc-brass-mid:rgba(201,169,97,.55);--toc-brass-deep:rgba(139,115,85,.68)}
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -137,19 +137,19 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative}
 
 /* Progression nodes (visual linear sequence) */
-.toc-item::before{content:'';position:absolute;left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));top:50%;transform:translateY(-50%);width:var(--toc-node);height:var(--toc-node);border-radius:999px;background:rgba(201,169,97,.22);border:1px solid rgba(139,115,85,.42);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
+.toc-item::before{content:'';position:absolute;left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));top:50%;transform:translateY(-50%);width:var(--toc-node);height:var(--toc-node);border-radius:999px;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.40),rgba(255,255,255,0) 55%),linear-gradient(to bottom,rgba(242,220,154,.30),rgba(201,169,97,.18));border:1px solid rgba(201,169,97,.62);box-shadow:0 0 0 1px rgba(255,255,255,.18),0 10px 18px rgba(0,0,0,.06);pointer-events:none}
 
-.toc-item--current::before{background:rgba(201,169,97,.30);border-color:rgba(139,115,85,.56);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 0 18px rgba(201,169,97,.14)}
+.toc-item--current::before{background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.52),rgba(255,255,255,0) 56%),linear-gradient(to bottom,rgba(242,220,154,.40),rgba(201,169,97,.22));border-color:rgba(201,169,97,.78);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 0 20px rgba(201,169,97,.16),0 12px 18px rgba(0,0,0,.06)}
 
-.toc-item--locked::before{background:rgba(247,244,238,.88);border:1px dashed rgba(139,115,85,.30);box-shadow:none}
+.toc-item--locked::before{background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(201,169,97,.06));border:1px solid rgba(201,169,97,.42);box-shadow:0 0 0 1px rgba(255,255,255,.20)}
 
 /* Dotted continuation of the margin rule through locked territory */
-.toc-item--locked::after{content:'';position:absolute;left:var(--toc-rule-x);top:-.35rem;bottom:-.35rem;width:1px;background:repeating-linear-gradient(to bottom,rgba(139,115,85,.24) 0 4px,rgba(139,115,85,0) 4px 10px);pointer-events:none}
+.toc-item--locked::after{content:'';position:absolute;left:var(--toc-rule-x);top:-.35rem;bottom:-.35rem;width:1px;background:repeating-linear-gradient(to bottom,rgba(201,169,97,.48) 0 4px,rgba(201,169,97,0) 4px 10px);pointer-events:none}
 
 /* Gate marker: appears once per group, before the first locked page */
-.toc-gate{list-style:none;position:relative;height:16px;margin:.22rem 0 .62rem}
-.toc-gate::before{content:'';position:absolute;left:calc(var(--toc-rule-x) + .55rem);right:.2rem;top:50%;height:1px;background:linear-gradient(to right,rgba(139,115,85,.48),rgba(139,115,85,0));opacity:.9}
-.toc-gate-sigil{position:absolute;left:calc(var(--toc-rule-x) - 9px);top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:999px;display:grid;place-items:center;font-size:.72rem;color:rgba(44,62,80,.84);background:linear-gradient(to bottom,rgba(255,255,255,.55),rgba(201,169,97,.14));border:1px solid rgba(139,115,85,.50);box-shadow:0 1px 0 rgba(255,255,255,.40),0 12px 18px rgba(0,0,0,.06)}
+.toc-gate{list-style:none;position:relative;height:18px;margin:.22rem 0 .65rem}
+.toc-gate::before{content:'';position:absolute;left:calc(var(--toc-rule-x) + .55rem);right:.2rem;top:50%;height:2px;background:linear-gradient(to right,rgba(201,169,97,.92),rgba(201,169,97,.22),rgba(201,169,97,0));filter:drop-shadow(0 10px 14px rgba(0,0,0,.06));opacity:1}
+.toc-gate-sigil{position:absolute;left:calc(var(--toc-rule-x) - 10px);top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:999px;display:grid;place-items:center;font-size:.78rem;color:rgba(44,62,80,.88);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.60),rgba(255,255,255,0) 55%),linear-gradient(to bottom,rgba(242,220,154,.44),rgba(201,169,97,.18));border:1px solid rgba(201,169,97,.84);box-shadow:0 1px 0 rgba(255,255,255,.42),0 0 0 1px rgba(201,169,97,.22),0 14px 18px rgba(0,0,0,.08)}
 
 .toc-item-btn,.toc-locked-btn{display:block;width:100%;background:none;border:0;padding:.26rem 0 .26rem 1.65rem;margin:0;font:inherit;font-size:1rem;line-height:1.55;text-align:left;white-space:normal;overflow-wrap:anywhere}
 
@@ -176,7 +176,7 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-item--locked .toc-entry-title{color:rgba(120,120,120,.95)}
 
 /* Move the lock sigil to the margin node for a stronger "sealed in sequence" read. */
-.toc-lock-sigil{position:absolute;left:calc(var(--toc-rule-x) - 8px);top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:999px;display:grid;place-items:center;margin:0;color:rgba(139,115,85,.68);background:rgba(11,12,14,.04);border:1px solid rgba(139,115,85,.24)}
+.toc-lock-sigil{position:absolute;left:calc(var(--toc-rule-x) - 9px);top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:999px;display:grid;place-items:center;margin:0;color:rgba(44,62,80,.92);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.50),rgba(255,255,255,0) 56%),linear-gradient(to bottom,rgba(242,220,154,.46),rgba(201,169,97,.12));border:1px solid rgba(201,169,97,.78);box-shadow:0 1px 0 rgba(255,255,255,.40),0 0 0 1px rgba(201,169,97,.18)}
 
 /* Annex: Lexicon link (not a full group) */
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
