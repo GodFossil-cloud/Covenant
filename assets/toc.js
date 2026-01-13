@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.2.2 (Cathedral Index: Simplified Locks) */
+/*! Covenant ToC Basic Dropdown v2.2.3 (Cathedral Index: Single Progress Gate) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.2.2';
+  window.COVENANT_TOC_VERSION = '2.2.3';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -465,7 +465,7 @@
     if (!itemsHtml) return '';
 
     return ''
-      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">'
+      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">' 
       +   '<div class="toc-group-title"><span class="toc-tab">' + escapeHtml(label) + '</span></div>'
       +   '<ol class="toc-list">'
       +     itemsHtml
@@ -483,11 +483,8 @@
     var articlesHtml = '';
     var ritesHtml = '';
 
-    var preludeGate = false;
-    var articlesGate = false;
-    var ritesGate = false;
-
-    // A single clean divider before the first locked entry of each group.
+    // One clean divider, once, before the first locked entry overall.
+    var gateInserted = false;
     var gateMarkup = '<li class="toc-gate" aria-hidden="true"></li>';
 
     for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
@@ -509,13 +506,13 @@
         + '</li>';
 
       if (preludeIds[page.id]) {
-        if (!unlocked && !preludeGate) { preludeHtml += gateMarkup; preludeGate = true; }
+        if (!unlocked && !gateInserted) { preludeHtml += gateMarkup; gateInserted = true; }
         preludeHtml += item;
       } else if (ritesIds[page.id]) {
-        if (!unlocked && !ritesGate) { ritesHtml += gateMarkup; ritesGate = true; }
+        if (!unlocked && !gateInserted) { ritesHtml += gateMarkup; gateInserted = true; }
         ritesHtml += item;
       } else {
-        if (!unlocked && !articlesGate) { articlesHtml += gateMarkup; articlesGate = true; }
+        if (!unlocked && !gateInserted) { articlesHtml += gateMarkup; gateInserted = true; }
         articlesHtml += item;
       }
     }
