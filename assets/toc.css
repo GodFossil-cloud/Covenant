@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.3.5 (Darker Unlocked Rim + Chapel Rope Gate) */
+/*! Covenant ToC Panel Styles v2.3.6 (Gate Sigil + Clearer Locked + Current Inner Dot) */
 
 :root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms;--toc-ink:rgba(44,62,80,.92);--toc-ink-soft:rgba(44,62,80,.74);--toc-rule:rgba(139,115,85,.26);--toc-rule-strong:rgba(139,115,85,.36);--toc-parchment:rgba(247,244,238,1);--toc-parchment-hi:rgba(255,255,255,.72);--toc-rule-x:.95rem;--toc-node:10px;--toc-brass:rgba(201,169,97,1);--toc-node-locked:8px}
 
@@ -141,16 +141,21 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
    Darken the rim slightly so the markers read faster at a glance. */
 .toc-item::before{content:'';position:absolute;left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));top:50%;transform:translateY(-50%);width:var(--toc-node);height:var(--toc-node);border-radius:999px;background:rgba(247,244,238,.98);border:1px solid rgba(139,115,85,.66);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
+/* Current page: add an inner dot (small, solid) inside the node. */
 .toc-item--current::before{background:rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04)}
+.toc-item--current::after{content:'';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);width:4px;height:4px;border-radius:999px;background:rgba(139,115,85,.86);box-shadow:0 0 10px rgba(201,169,97,.14);pointer-events:none}
 
-/* Locked nodes: slightly smaller than unlocked (subtle hierarchy), no ornament. */
-.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px solid rgba(201,169,97,.52);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+/* Locked nodes: slightly smaller than unlocked (subtle hierarchy), no ornament.
+   Use a dashed ring so "locked" reads immediately. */
+.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
 
 /* Gate marker: one clean brass bar before the first locked page in a group,
    with a faint "chapel rope" stroke across it (no icons, no extra symbols). */
 .toc-gate{list-style:none;position:relative;height:16px;margin:.25rem 0 .62rem}
 .toc-gate::before{content:'';position:absolute;left:calc(var(--toc-rule-x) + .55rem);right:.2rem;top:50%;height:3px;border-radius:999px;background-image:linear-gradient(to right,rgba(201,169,97,.92),rgba(201,169,97,.18),rgba(201,169,97,0)),linear-gradient(to bottom,rgba(0,0,0,0),rgba(44,62,80,.10),rgba(0,0,0,0));background-repeat:no-repeat;opacity:1}
-.toc-gate::after{content:'';position:absolute;left:calc(var(--toc-rule-x) - 5px);top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:999px;background:rgba(201,169,97,.30);border:1px solid rgba(201,169,97,.62);box-shadow:0 0 0 1px rgba(255,255,255,.16)}
+
+/* Gate location marker: replace the old translucent circle with the sigil 𖠧. */
+.toc-gate::after{content:'𖠧';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:rgba(139,115,85,.72);text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
 
 .toc-item-btn,.toc-locked-btn{display:block;width:100%;background:none;border:0;padding:.26rem 0 .26rem 1.65rem;margin:0;font:inherit;font-size:1rem;line-height:1.55;text-align:left;white-space:normal;overflow-wrap:anywhere}
 
@@ -170,11 +175,11 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-item--current .toc-entry-title{font-weight:600;color:#111}
 .toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
 
-/* Locked */
-.toc-locked-btn{color:rgba(120,120,120,.95);cursor:not-allowed;position:relative}
+/* Locked: fade text + button a bit more so locked reads immediately. */
+.toc-locked-btn{color:rgba(120,120,120,.92);opacity:.68;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
-.toc-item--locked .toc-entry-key{color:rgba(120,120,120,.72)}
-.toc-item--locked .toc-entry-title{color:rgba(120,120,120,.95)}
+.toc-item--locked .toc-entry-key{color:rgba(120,120,120,.56)}
+.toc-item--locked .toc-entry-title{color:rgba(120,120,120,.82)}
 
 /* Annex: Lexicon link (not a full group) */
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
