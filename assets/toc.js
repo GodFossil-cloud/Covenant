@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.2.1 (Cathedral Index Lock Progression) */
+/*! Covenant ToC Basic Dropdown v2.2.2 (Cathedral Index: Simplified Locks) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.2.1';
+  window.COVENANT_TOC_VERSION = '2.2.2';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -455,11 +455,10 @@
       return '<button type="button" class="toc-item-btn" data-href="' + escapeHtml(page.href) + '">' + entryHtml + '</button>';
     }
 
-    // Locked
-    var lockSigil = '<span class="toc-lock-sigil" aria-hidden="true">⟠</span>';
+    // Locked (keep it quiet: no extra sigils; rely on gate + tone + disabled behavior).
     var sr = '<span class="sr-only"> – ' + escapeHtml(LOCKED_TOOLTIP) + '</span>';
 
-    return '<button type="button" class="toc-locked-btn" aria-disabled="true" title="' + escapeHtml(LOCKED_TOOLTIP) + '">' + entryHtml + lockSigil + sr + '</button>';
+    return '<button type="button" class="toc-locked-btn" aria-disabled="true" title="' + escapeHtml(LOCKED_TOOLTIP) + '">' + entryHtml + sr + '</button>';
   }
 
   function renderGroup(groupId, label, itemsHtml) {
@@ -488,7 +487,8 @@
     var articlesGate = false;
     var ritesGate = false;
 
-    var gateMarkup = '<li class="toc-gate" aria-hidden="true"><span class="toc-gate-sigil" aria-hidden="true">⟠</span></li>';
+    // A single clean divider before the first locked entry of each group.
+    var gateMarkup = '<li class="toc-gate" aria-hidden="true"></li>';
 
     for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
       var page = window.COVENANT_JOURNEY[i];
