@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.2.0 (Cathedral Index Groups) */
+/*! Covenant ToC Basic Dropdown v2.2.1 (Cathedral Index Lock Progression) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.2.0';
+  window.COVENANT_TOC_VERSION = '2.2.1';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -484,6 +484,12 @@
     var articlesHtml = '';
     var ritesHtml = '';
 
+    var preludeGate = false;
+    var articlesGate = false;
+    var ritesGate = false;
+
+    var gateMarkup = '<li class="toc-gate" aria-hidden="true"><span class="toc-gate-sigil" aria-hidden="true">⟠</span></li>';
+
     for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
       var page = window.COVENANT_JOURNEY[i];
       if (!page || !page.id) continue;
@@ -502,9 +508,16 @@
         + renderEntryButton(page, unlocked, isCurrent)
         + '</li>';
 
-      if (preludeIds[page.id]) preludeHtml += item;
-      else if (ritesIds[page.id]) ritesHtml += item;
-      else articlesHtml += item;
+      if (preludeIds[page.id]) {
+        if (!unlocked && !preludeGate) { preludeHtml += gateMarkup; preludeGate = true; }
+        preludeHtml += item;
+      } else if (ritesIds[page.id]) {
+        if (!unlocked && !ritesGate) { ritesHtml += gateMarkup; ritesGate = true; }
+        ritesHtml += item;
+      } else {
+        if (!unlocked && !articlesGate) { articlesHtml += gateMarkup; articlesGate = true; }
+        articlesHtml += item;
+      }
     }
 
     var lexicon = resolveLexiconReference();
