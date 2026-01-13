@@ -1,6 +1,6 @@
-/*! Covenant ToC Panel Styles v2.2.10 (Seal Not Under Footer Dimmer + Hide Cradle/Hairlines + Hide Citation Label) */
+/*! Covenant ToC Panel Styles v2.2.11 (Footer Fade Transitions) */
 
-:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85)}
+:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms}
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
@@ -24,8 +24,10 @@ body.toc-scroll-lock{position:fixed;width:100%}
    IMPORTANT: do not animate opacity/filter here; it reads as a fade. */
 html #lexiconToggle{transition:color .2s ease,text-shadow .2s ease,transform var(--lexicon-snap-duration) var(--lexicon-snap-ease)}
 
-/* Ensure footer pseudo-elements can reliably layer above its children when needed. */
-html .nav-footer{isolation:isolate}
+/* Footer fade choreography (edge lines + cradle + citation label). */
+html .nav-footer{isolation:isolate;transition:border-top-color var(--toc-footer-fade) var(--toc-scroll-ease),border-bottom-color var(--toc-footer-fade) var(--toc-scroll-ease)}
+html .nav-footer::before,html .nav-footer::after{transition:opacity var(--toc-footer-fade) var(--toc-scroll-ease);will-change:opacity}
+html #citationLabel{transition:opacity var(--toc-footer-fade) var(--toc-scroll-ease),visibility 0s linear 0s}
 
 /* While the ToC is open (and while it is closing), keep the seal BELOW the cradle layers,
    but ABOVE any footer-dimming layer so it never appears "washed" or sliced by overlays. */
@@ -33,13 +35,16 @@ html.toc-open #lexiconToggle,html.toc-closing #lexiconToggle{z-index:3}
 html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{z-index:6}
 html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{z-index:6}
 
-/* While the ToC is open/closing, hide the citation label under the seal.
-   Keep layout stable; just make it visually silent. */
-html.toc-open #citationLabel,html.toc-closing #citationLabel{opacity:0;visibility:hidden}
+/* Fade edge lines (footer top/bottom borders) while ToC is open/closing. */
+html.toc-open .nav-footer,html.toc-closing .nav-footer{border-top-color:transparent;border-bottom-color:transparent}
 
-/* During ToC open/close, suppress the footer's cradle/hairline accents.
+/* While the ToC is open/closing, fade the citation label under the seal.
+   Keep layout stable; make it visually silent, and only flip visibility after the fade. */
+html.toc-open #citationLabel,html.toc-closing #citationLabel{opacity:0;visibility:hidden;transition:opacity var(--toc-footer-fade) var(--toc-scroll-ease),visibility 0s linear var(--toc-footer-fade)}
+
+/* During ToC open/close, fade the footer's cradle/hairline accents.
    - ::before is the thin top hairline.
-   - ::after is the cradle semicircle; hiding it prevents a dark "socket" from appearing when the seal recedes. */
+   - ::after is the cradle semicircle; fading it prevents a dark "socket" from appearing when the seal recedes. */
 html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{opacity:0}
 html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{opacity:0}
 
