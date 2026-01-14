@@ -6,7 +6,6 @@ baseurl: ""
 
 # Include files that would normally be ignored by Jekyll.
 include:
-  - _visual-check.html
   - .nojekyll
 
 # Exclude dev / CI files from the built site output.
@@ -20,7 +19,7 @@ exclude:
   - .github/workflows/gh-pages.yml
 
 # Jekyll will now include:
-# - All root .html files (including _visual-check.html)
+# - All root .html files
 # - assets/ directory (CSS, JS, fonts)
 # - docs/ directory (STYLE-GUARDS.md)
 # - We'll manually copy .github/workflows/css-guard.yml in the workflow
