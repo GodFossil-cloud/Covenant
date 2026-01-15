@@ -14,7 +14,7 @@
   var STORAGE_VERSION = 1;
 
   // Used for native tooltips (desktop) and for the touch-friendly toast (mobile).
-  var LOCKED_TOOLTIP = 'In due time. 🚸';
+  var LOCKED_TOOLTIP = 'In due time…';
 
   var pageConfig = window.COVENANT_PAGE || {};
   var currentPageId = pageConfig.pageId || '';
