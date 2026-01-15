@@ -10,6 +10,60 @@ If any change affects architecture, shared behaviors, navigation, build/deploy, 
 
 ---
 
+## Boot Sequence (required thread opener)
+
+Use this as the first message in a new thread (or at the beginning of a new work session) before implementation.
+
+**Important:** This boot sequence is not meant to suppress creative exploration.
+It is meant to ensure that exploration and implementation stay aligned with sacred constraints, linear flow, and repo coupling.
+
+### Covenant Assistant Boot Sequence (v1)
+
+INPUTS:
+- Repo: GodFossil-cloud/Covenant
+- Intent: <one sentence>
+- Mode: <Exploration | Execution>
+- Allowed Covenant text edits? (yes/no): <...>
+- Files/pages in scope: <...>
+- Files/pages out of scope: <...>
+
+PHASE 0 — LOAD CANON
+1) Read this AGENT.md and treat it as canonical.
+
+PHASE 1 — ACKNOWLEDGE LAWS
+2) Echo the Prime Directives you will obey (as bullets).
+
+PHASE 2 — MAP SCOPE → SUBSYSTEMS
+3) Classify the request as touching one or more subsystems:
+- Journey pages (linear flow)
+- Reference pages (covenant.html / lexicon.html)
+- _includes (shared shell)
+- assets (CSS/JS/TOC/Lexicon/Journey runtime)
+- Build/deploy (_config.yml, Pages workflow)
+- CI guards
+- docs/
+
+PHASE 3 — COUPLING RULES (X → Y)
+4) List the top 3–6 coupling rules that apply, in this format:
+- If I change X, I must verify/update Y, because <one short reason>.
+
+PHASE 4 — VERIFICATION PLAN
+5) State which verification is required:
+- Manual spot-check checklist required? (yes/no) + why.
+- AGENT.md update required? (yes/no) + why.
+
+PHASE 5 — RESPONSE BEHAVIOR (MODE-DEPENDENT)
+6) If Mode = Exploration:
+- Provide 3–10 ideas/opportunities.
+- Clearly mark any ideas that would require sacred-text edits or that risk linear-flow changes.
+- No code changes unless explicitly asked.
+
+7) If Mode = Execution:
+- Provide a minimal change plan (files to edit, what will change/not change, risks).
+- Ask for permission before making repo writes.
+
+---
+
 ## Prime directives (non‑negotiables)
 
 - Maintain the linear journey flow and do not introduce alternate paths, loops, or hub navigation.
