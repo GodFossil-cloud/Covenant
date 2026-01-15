@@ -484,8 +484,19 @@
     iosTouchMoveBlocker = null;
   }
 
+  function getScrollLockTopPx() {
+    try {
+      var raw = document.body ? document.body.style.top : '';
+      if (!raw) return 0;
+      var n = parseInt(raw, 10);
+      return isNaN(n) ? 0 : n;
+    } catch (err) {
+      return 0;
+    }
+  }
+
   function lockBodyScroll() {
-    if (root.classList.contains('toc-scroll-lock')) return;
+    if (root.classList.contains('toc-scroll-lock') || document.body.classList.contains('toc-scroll-lock')) return;
 
     scrollLockY = window.scrollY || window.pageYOffset || 0;
     root.classList.add('toc-scroll-lock', 'toc-open');
@@ -497,9 +508,12 @@
   }
 
   function unlockBodyScroll() {
-    if (!root.classList.contains('toc-scroll-lock')) {
-      root.classList.remove('toc-open');
-      return;
+    var wasLocked = root.classList.contains('toc-scroll-lock') || document.body.classList.contains('toc-scroll-lock');
+    var topPx = getScrollLockTopPx();
+    var y = scrollLockY;
+
+    if (!y && topPx) {
+      y = Math.abs(topPx);
     }
 
     root.classList.remove('toc-scroll-lock', 'toc-open');
@@ -508,7 +522,22 @@
 
     document.body.classList.remove('toc-scroll-lock');
     document.body.style.top = '';
-    window.scrollTo(0, scrollLockY);
+
+    if (wasLocked && y) {
+      window.scrollTo(0, y);
+    }
+  }
+
+  function clearStaleScrollLock() {
+    // If something interrupts the close cycle (navigation, visibility change, etc.),
+    // the scroll lock can persist and distort fixed-position UI.
+    var locked = root.classList.contains('toc-scroll-lock') || document.body.classList.contains('toc-scroll-lock');
+    if (!locked) return;
+
+    var panelBusy = tocPanel && (tocPanel.classList.contains('is-open') || tocPanel.classList.contains('is-closing'));
+    if (panelBusy) return;
+
+    unlockBodyScroll();
   }
 
   // ----------------------------------------
@@ -907,5 +936,8 @@
 
   ensureToggleExists();
   bindContentClicks();
+
+  clearStaleScrollLock();
+
   wireControls();
 })();
