@@ -14,6 +14,9 @@ If any change affects architecture, shared behaviors, navigation, build/deploy, 
 
 Use this as the first message in a new thread (or at the beginning of a new work session) before implementation.
 
+Default behavior (for casual conversation): silently read AGENT.md at the start of a thread, then respond with a brief readiness confirmation only.
+Do not recite this boot sequence unless the user requests it.
+
 **Important:** This boot sequence is not meant to suppress creative exploration.
 It is meant to ensure that exploration and implementation stay aligned with sacred constraints, linear flow, and repo coupling.
 
@@ -153,22 +156,22 @@ If include structure changes, check every journey page that uses the shell.
 ## Coupling rules (if you touch X, check Y)
 
 - If you change any journey page:
-- Verify prev/next navigation in that page and adjacent pages.
-- Verify the TOC panel still opens/closes and does not cover nav controls.
+  - Verify prev/next navigation in that page and adjacent pages.
+  - Verify the TOC panel still opens/closes and does not cover nav controls.
 
 - If you change `_includes/nav-footer.html`:
-- Verify nav dock layout on desktop + mobile.
-- Verify Lexicon toggle and citation label positioning.
+  - Verify nav dock layout on desktop + mobile.
+  - Verify Lexicon toggle and citation label positioning.
 
 - If you change `assets/lexicon.js`:
-- Verify Lexicon opens/closes, overlay behavior, selection highlights (sentence/subpart), and any “compact header standardization” scope exclusions (rituals.html).
+  - Verify Lexicon opens/closes, overlay behavior, selection highlights (sentence/subpart), and any “compact header standardization” scope exclusions (rituals.html).
 
 - If you change `assets/covenant.css`:
-- Ensure CSS guard markers remain intact and file is not truncated.
-- Confirm footer “Obsidian & Gold Leaf” region remains present and append-only per STYLE-GUARDS.
+  - Ensure CSS guard markers remain intact and file is not truncated.
+  - Confirm footer “Obsidian & Gold Leaf” region remains present and append-only per STYLE-GUARDS.
 
 - If you change build/deploy (`pages.yml`, `_config.yml`):
-- Ensure the site still builds to `_site` and deploys via Pages workflow.
+  - Ensure the site still builds to `_site` and deploys via Pages workflow.
 
 ---
 
@@ -187,9 +190,9 @@ Use this when making CSS/JS/include changes—fast, human-verifiable checks:
 
 3) Selection highlights (subsection/subpart/sentence)
 - On a representative Article page (I.html or III.html):
-- Click a subsection: verify selected styling.
-- Click subpart markers (Ⓐ/Ⓑ/Ⓒ): verify independent selection styling.
-- If sentence highlighting exists: click a sentence; verify highlight.
+  - Click a subsection: verify selected styling.
+  - Click subpart markers (Ⓐ/Ⓑ/Ⓒ): verify independent selection styling.
+  - If sentence highlighting exists: click a sentence; verify highlight.
 
 4) Footer system
 - Confirm footer colors/frames/seal render correctly.
