@@ -531,7 +531,8 @@
 
     if (unlocked) {
       if (isCurrent) {
-        return '<button type="button" class="toc-item-btn" aria-current="page" disabled>' + entryHtml + '</button>';
+        // Current page should remain selectable so it can "reset" a pending selection.
+        return '<button type="button" class="toc-item-btn" aria-current="page">' + entryHtml + '</button>';
       }
 
       return '<button type="button" class="toc-item-btn" data-href="' + escapeHtml(page.href) + '">' + entryHtml + '</button>';
@@ -637,15 +638,20 @@
       var itemBtn = closestSafe(e.target, '.toc-item-btn');
       if (!itemBtn) return;
 
-      var href = itemBtn.getAttribute('data-href');
-      if (!href) {
-        // Current page button is disabled and has no data-href; ignore.
+      var itemEl = closestSafe(itemBtn, '.toc-item');
+      var pageId = itemEl ? itemEl.getAttribute('data-page-id') : '';
+
+      // Reselecting the current page resets ToC state (tactile coherence).
+      if (pageId && pageId === currentPageId) {
+        stopEvent(e);
+        clearPendingSelection(true);
         return;
       }
 
-      var itemEl = closestSafe(itemBtn, '.toc-item');
-      var pageId = itemEl ? itemEl.getAttribute('data-page-id') : '';
-      if (!pageId || pageId === currentPageId) return;
+      var href = itemBtn.getAttribute('data-href');
+      if (!href) return;
+
+      if (!pageId) return;
 
       stopEvent(e);
 
