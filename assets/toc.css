@@ -152,7 +152,7 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 /* Gate marker: one clean brass hairline before the first locked page in a group.
    The bar now begins exactly beneath the ✦ so the divider reads as a single unified mark. */
 .toc-gate{list-style:none;position:relative;height:16px;margin:.25rem 0 .62rem}
-.toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 1px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(201,169,97,.92),rgba(201,169,97,.18),rgba(201,169,97,0));opacity:1}
+.toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 1.1px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(201,169,97,.92),rgba(201,169,97,.18),rgba(201,169,97,0));opacity:1}
 
 /* Gate location marker: ✦. */
 .toc-gate::after{content:'✦';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:rgba(139,115,85,.72);text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
