@@ -152,6 +152,10 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04)}
 .toc-item--current::after{content:none}
 
+/* When a destination is staged, let the node indicate ONLY the staged selection.
+   The current page is still marked by bold type; it does not need the inner dot while staging. */
+.toc-panel.has-pending .toc-item--current::before{background:rgba(247,244,238,.98);border:1px solid rgba(139,115,85,.66);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04)}
+
 /* Pending selection: a quiet red nucleus, distinct from the current page. */
 .toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04)}
 
