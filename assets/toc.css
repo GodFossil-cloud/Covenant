@@ -135,8 +135,10 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 
 .toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
 
-/* Subtle tab label (borrowed from Index Tabs), but kept archival. */
-.toc-tab{display:inline-block;padding:.26rem .7rem;border:1px solid rgba(44,62,80,.16);border-bottom-color:rgba(44,62,80,.24);background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));border-radius:999px;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:600;letter-spacing:.14em;text-transform:none;font-variant-caps:all-small-caps;color:var(--toc-ink-soft);box-shadow:0 1px 0 rgba(255,255,255,.35),0 10px 20px rgba(0,0,0,.06)}
+/* Group label: NOT a button.
+   Keep it archival: ink + small-caps + a quiet rubric rule. */
+.toc-tab{display:inline-block;position:relative;padding:0;border:0;background:transparent;border-radius:0;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.84);text-shadow:0 1px 0 rgba(255,255,255,.22)}
+.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(139,115,85,.62),rgba(139,115,85,.28),rgba(139,115,85,0));border-radius:999px}
 
 /* Lists */
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
@@ -191,11 +193,12 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 
 .toc-item--pending .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,0,0,.46);text-decoration-thickness:1px;text-underline-offset:3px}
 
-/* Locked: fade text + button a bit more so locked reads immediately. */
-.toc-locked-btn{color:rgba(120,120,120,.92);opacity:.68;cursor:not-allowed;position:relative}
+/* Locked: keep legible, but quiet.
+   Prefer desaturation over heavy transparency so text remains readable on mobile. */
+.toc-locked-btn{color:rgba(120,120,120,.94);opacity:.80;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
-.toc-item--locked .toc-entry-key{color:rgba(120,120,120,.56)}
-.toc-item--locked .toc-entry-title{color:rgba(120,120,120,.82)}
+.toc-item--locked .toc-entry-key{color:rgba(120,120,120,.62)}
+.toc-item--locked .toc-entry-title{color:rgba(120,120,120,.86)}
 
 /* Annex: Lexicon link (not a full group) */
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
@@ -219,4 +222,5 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
   .toc-panel.has-pending .toc-panel-body{padding-top:2.45rem}
   .toc-group-title,.toc-item-btn,.toc-locked-btn,.toc-annex-link{padding-left:1.45rem}
   .toc-entry-key{min-width:6.9rem}
+  .toc-tab::after{width:min(210px,74vw)}
 }
