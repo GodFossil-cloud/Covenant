@@ -1,0 +1,65 @@
+name: AGENT.md Guard
+
+on:
+  pull_request:
+
+jobs:
+  agent-doc-guard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require AGENT.md update for core changes
+        run: |
+          set -euo pipefail
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          echo "Base: $BASE_SHA"
+          echo "Head: $HEAD_SHA"
+
+          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" || true)"
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          # Core (hard-fail) triggers:
+          # - shared runtime/styling
+          # - shared includes
+          # - build/deploy/guards
+          # - journey pages (linear flow)
+          HARD_REGEX='^(assets/|_includes/|_config\.yml|\.github/workflows/|index\.html|threshold\.html|orientation\.html|invocation\.html|foundation\.html|declaration\.html|I\.html|II\.html|III\.html|IV\.html|V\.html|VI\.html|VII\.html|VIII\.html|IX\.html|X\.html|XI\.html|XII\.html|rituals\.html|oath\.html|consecrated\.html)$'
+
+          # Reference (warn-only) triggers:
+          SOFT_REGEX='^(covenant\.html|lexicon\.html)$'
+
+          HARD_CHANGED=0
+          SOFT_CHANGED=0
+          AGENT_CHANGED=0
+
+          if echo "$CHANGED" | grep -Eq "$HARD_REGEX"; then
+            HARD_CHANGED=1
+          fi
+
+          if echo "$CHANGED" | grep -Eq "$SOFT_REGEX"; then
+            SOFT_CHANGED=1
+          fi
+
+          if echo "$CHANGED" | grep -Eq '(^|/)(AGENT\.md)$'; then
+            AGENT_CHANGED=1
+          fi
+
+          if [ "$HARD_CHANGED" -eq 1 ] && [ "$AGENT_CHANGED" -ne 1 ]; then
+            echo "::error::Core files changed without updating AGENT.md. Update AGENT.md in the same PR."
+            exit 1
+          fi
+
+          if [ "$HARD_CHANGED" -eq 0 ] && [ "$SOFT_CHANGED" -eq 1 ] && [ "$AGENT_CHANGED" -ne 1 ]; then
+            echo "::warning::Reference files changed (covenant.html/lexicon.html) without updating AGENT.md. This is allowed, but consider updating AGENT.md if responsibilities/rules changed."
+          fi
+
+          echo "AGENT.md Guard passed."
