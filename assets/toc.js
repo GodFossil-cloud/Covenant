@@ -25,6 +25,7 @@
   var tocDynamicContent = document.getElementById('tocDynamicContent');
   var tocLiveRegion = document.getElementById('tocLiveRegion');
   var tocToast = document.getElementById('tocToast');
+  var tocConfirmBtn = document.getElementById('tocConfirm');
 
   var root = document.documentElement;
   var scrollLockY = 0;
@@ -53,6 +54,14 @@
 
   // Allow the panel to complete its roll-up animation before we fully hide it.
   var panelClosingTimer = null;
+
+  // Pending selection (two-step navigation).
+  var pendingHref = '';
+  var pendingPageId = '';
+  var pendingTitle = '';
+  var pendingItemEl = null;
+  var baseHeaderTitle = '';
+  var confirmNavigating = false;
 
   // ----------------------------------------
   // Helpers
@@ -223,6 +232,79 @@
 
     // Fallback for deployments that omit COVENANT_REFERENCES.
     return { id: 'lexicon', title: 'Full Lexicon', href: 'lexicon.html' };
+  }
+
+  function getJourneyPageTitleById(pageId) {
+    if (!pageId) return '';
+    for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
+      var p = window.COVENANT_JOURNEY[i];
+      if (p && p.id === pageId) return String(p.title || '').trim();
+    }
+    return '';
+  }
+
+  function setConfirmVisible(isVisible) {
+    if (!tocConfirmBtn) return;
+
+    if (isVisible) {
+      tocConfirmBtn.hidden = false;
+      tocConfirmBtn.disabled = false;
+      tocConfirmBtn.setAttribute('aria-hidden', 'false');
+    } else {
+      tocConfirmBtn.disabled = true;
+      tocConfirmBtn.hidden = true;
+      tocConfirmBtn.setAttribute('aria-hidden', 'true');
+    }
+
+    if (tocPanel) tocPanel.classList.toggle('has-pending', !!isVisible);
+  }
+
+  function setHeaderTitle(title) {
+    if (!headerTitleEl) return;
+    headerTitleEl.textContent = String(title || '');
+  }
+
+  function clearPendingSelection(restoreTitle) {
+    pendingHref = '';
+    pendingPageId = '';
+    pendingTitle = '';
+
+    if (pendingItemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.remove('toc-item--pending');
+    }
+
+    pendingItemEl = null;
+
+    setConfirmVisible(false);
+
+    if (restoreTitle && baseHeaderTitle) {
+      setHeaderTitle(baseHeaderTitle);
+    }
+  }
+
+  function stageSelection(pageId, href, title, itemEl) {
+    if (!pageId || !href) return;
+    if (pageId === currentPageId) return;
+
+    if (!baseHeaderTitle && headerTitleEl) {
+      baseHeaderTitle = String(headerTitleEl.textContent || '');
+    }
+
+    if (pendingItemEl && pendingItemEl !== itemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.remove('toc-item--pending');
+    }
+
+    pendingHref = href;
+    pendingPageId = pageId;
+    pendingTitle = title || '';
+    pendingItemEl = itemEl;
+
+    if (pendingItemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.add('toc-item--pending');
+    }
+
+    if (pendingTitle) setHeaderTitle(pendingTitle);
+    setConfirmVisible(true);
   }
 
   // ----------------------------------------
@@ -561,17 +643,14 @@
         return;
       }
 
-      stopEvent(e);
-      closeToC(false);
+      var itemEl = closestSafe(itemBtn, '.toc-item');
+      var pageId = itemEl ? itemEl.getAttribute('data-page-id') : '';
+      if (!pageId || pageId === currentPageId) return;
 
-      var navDelay = Math.max(180, getPanelCloseMs());
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          setTimeout(function () {
-            window.location.href = href;
-          }, navDelay);
-        });
-      });
+      stopEvent(e);
+
+      var title = getJourneyPageTitleById(pageId) || String(itemBtn.textContent || '').trim();
+      stageSelection(pageId, href, title, itemEl);
     });
 
     contentClickBound = true;
@@ -600,6 +679,12 @@
 
   function openToC() {
     if (!tocPanel || !tocOverlay) return;
+
+    confirmNavigating = false;
+
+    // Anchor the "true" current title each time the panel is opened.
+    if (headerTitleEl) baseHeaderTitle = String(headerTitleEl.textContent || '');
+    clearPendingSelection(false);
 
     clearSealClosingLayer();
     clearPanelClosingTimer();
@@ -634,6 +719,10 @@
 
   function closeToC(restoreFocus) {
     if (!tocPanel || !tocOverlay) return;
+
+    if (!confirmNavigating) {
+      clearPendingSelection(true);
+    }
 
     armSealClosingLayer();
     clearPanelClosingTimer();
@@ -745,6 +834,29 @@
         if (touchMoved) return;
         stopEvent(e);
         toggleToC();
+      });
+    }
+
+    if (tocConfirmBtn) {
+      tocConfirmBtn.addEventListener('click', function (e) {
+        if (!pendingHref) return;
+        stopEvent(e);
+
+        confirmNavigating = true;
+        if (tocConfirmBtn) tocConfirmBtn.disabled = true;
+
+        closeToC(false);
+
+        var href = pendingHref;
+        var navDelay = Math.max(180, getPanelCloseMs());
+
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            setTimeout(function () {
+              window.location.href = href;
+            }, navDelay);
+          });
+        });
       });
     }
 

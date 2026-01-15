@@ -128,7 +128,7 @@ Files present:
 Responsibilities:
 - covenant.css: core site styling and sacred visual system.
 - lexicon.js: Lexicon interactions + sentence/subpart highlights + page standardization rules.
-- toc.js + toc.css: Table-of-Contents panel behaviors + presentation.
+- toc.js + toc.css: Table-of-Contents panel behaviors + presentation (including staged selection + confirm navigation).
 - journey.js: journey-wide runtime behaviors (loading glyphs, transitions, etc.).
 
 ### /_includes (shared HTML shell)  ⚠️ Core

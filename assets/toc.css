@@ -103,11 +103,18 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 /* Keep ::after unused to avoid reintroducing a hard hairline. */
 .toc-panel::after{content:none}
 
+.toc-confirm-btn{position:absolute;top:12px;right:12px;z-index:4;display:inline-flex;align-items:center;justify-content:center;padding:.42rem .82rem;border-radius:999px;border:1px solid rgba(44,62,80,.16);border-bottom-color:rgba(44,62,80,.24);background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:600;letter-spacing:.14em;font-variant-caps:all-small-caps;color:var(--toc-ink-soft);box-shadow:0 1px 0 rgba(255,255,255,.35),0 10px 20px rgba(0,0,0,.06);cursor:pointer}
+.toc-confirm-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:4px}
+.toc-confirm-btn:disabled{opacity:.52;cursor:default}
+
 .toc-panel-header{position:relative;padding:0;border:0;background:transparent;height:0}
 .toc-panel-title,.toc-panel-subtitle{display:none}
 
 /* IMPORTANT: allow vertical scrolling inside the panel body. */
 .toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.25rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
+
+/* When a destination is staged, reserve a small "upper-right" plane for the confirm control. */
+.toc-panel.has-pending .toc-panel-body{padding-top:2.65rem}
 
 /* Inner grain + vignette for dimensional parchment. */
 .toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),linear-gradient(to bottom,var(--toc-parchment-hi),rgba(255,255,255,0));pointer-events:none}
@@ -145,6 +152,9 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04)}
 .toc-item--current::after{content:none}
 
+/* Pending selection: a quiet red nucleus, distinct from the current page. */
+.toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04)}
+
 /* Locked nodes: slightly smaller than unlocked (subtle hierarchy), no ornament.
    Use a dashed ring so "locked" reads immediately. */
 .toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
@@ -175,6 +185,8 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-item--current .toc-entry-title{font-weight:600;color:#111}
 .toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
 
+.toc-item--pending .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,0,0,.46);text-decoration-thickness:1px;text-underline-offset:3px}
+
 /* Locked: fade text + button a bit more so locked reads immediately. */
 .toc-locked-btn{color:rgba(120,120,120,.92);opacity:.68;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
@@ -200,6 +212,7 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
   :root{--toc-rule-x:.75rem;--toc-node:10px;--toc-node-locked:8px}
   .toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}
   .toc-panel-body{padding:1.1rem 1.1rem 1.05rem}
+  .toc-panel.has-pending .toc-panel-body{padding-top:2.45rem}
   .toc-group-title,.toc-item-btn,.toc-locked-btn,.toc-annex-link{padding-left:1.45rem}
   .toc-entry-key{min-width:6.9rem}
 }
