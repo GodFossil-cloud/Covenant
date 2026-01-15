@@ -155,7 +155,7 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 2px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(201,169,97,.92),rgba(201,169,97,.18),rgba(201,169,97,0));opacity:1}
 
 /* Gate location marker: ✦. */
-.toc-gate::after{content:'✦';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:rgba(139,115,85,.72);text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
+.toc-gate::after{content:'✦';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:rgba(201,169,97,.92);text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
 
 .toc-item-btn,.toc-locked-btn{display:block;width:100%;background:none;border:0;padding:var(--toc-item-pad-y) 0 var(--toc-item-pad-y) 1.65rem;margin:0;font:inherit;font-size:1rem;line-height:var(--toc-item-line);text-align:left;white-space:normal;overflow-wrap:anywhere}
 
