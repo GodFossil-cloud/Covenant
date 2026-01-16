@@ -1,4 +1,4 @@
-/*! Covenant ToC Tab Module v1.0.1 (Icon-only tab) */
+/*! Covenant ToC Tab Module v1.0.2 (Summoned title mirrors staged selection) */
 (function () {
   'use strict';
 
@@ -55,6 +55,8 @@
 
   var SUMMON_MS = 240;
 
+  var titleObserver = null;
+
   function isHeaderOffscreen() {
     if (!headerEl || !headerEl.getBoundingClientRect) return true;
     var r = headerEl.getBoundingClientRect();
@@ -66,6 +68,30 @@
     if (!base || !base.getBoundingClientRect) return 14;
     var rect = base.getBoundingClientRect();
     return Math.max(10, Math.round(rect.left));
+  }
+
+  function getCurrentTitleText() {
+    var titleText = '';
+    if (headerTitleEl) titleText = String(headerTitleEl.textContent || '').trim();
+    if (!titleText) titleText = document.title || '';
+    return titleText;
+  }
+
+  function syncSummonedTitle() {
+    if (!summoned) return;
+    var t = getCurrentTitleText();
+    if (!t) return;
+    if (summoned.textContent !== t) summoned.textContent = t;
+  }
+
+  function ensureTitleObserver() {
+    if (titleObserver || !headerTitleEl || !window.MutationObserver) return;
+
+    titleObserver = new MutationObserver(function () {
+      syncSummonedTitle();
+    });
+
+    titleObserver.observe(headerTitleEl, { childList: true, characterData: true, subtree: true });
   }
 
   function ensureTab() {
@@ -140,11 +166,7 @@
     el.id = 'tocSummonedTitle';
     el.setAttribute('aria-hidden', 'true');
 
-    var titleText = '';
-    if (headerTitleEl) titleText = String(headerTitleEl.textContent || '').trim();
-    if (!titleText) titleText = document.title || '';
-
-    el.textContent = titleText;
+    el.textContent = getCurrentTitleText();
 
     el.style.top = Math.max(8, Math.round(tabRect.top)) + 'px';
     el.style.left = Math.max(0, leftPx) + 'px';
@@ -153,6 +175,9 @@
 
     document.body.appendChild(el);
     summoned = el;
+
+    // If the header title changes while the ToC is open (staging), mirror it.
+    syncSummonedTitle();
 
     if (prefersReducedMotion()) {
       el.classList.add('is-revealed');
@@ -221,6 +246,8 @@
 
   function bind() {
     ensureTab();
+    ensureTitleObserver();
+
     updateTabStickyState();
 
     // Keep sticky state in sync with scroll.
@@ -238,6 +265,9 @@
       var html = document.documentElement;
       if (!html.classList.contains('toc-open')) {
         removeSummoned(false);
+      } else {
+        // If ToC opened without summoning (header visible path), keep title sync ready.
+        syncSummonedTitle();
       }
     });
 
