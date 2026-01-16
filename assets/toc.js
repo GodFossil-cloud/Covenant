@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.2.3 (Cathedral Index: Single Progress Gate) */
+/*! Covenant ToC Basic Dropdown v2.3.0 (Cathedral Index: Edge Tab Clasp) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.2.3';
+  window.COVENANT_TOC_VERSION = '2.3.0';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -90,6 +90,10 @@
       .replace(/'/g, '&#39;');
   }
 
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
   function readCssNumberVar(varName) {
     try {
       var raw = getComputedStyle(document.documentElement).getPropertyValue(varName);
@@ -99,6 +103,45 @@
     } catch (err) {
       return 0;
     }
+  }
+
+  function setTabX(px) {
+    if (!root) return;
+    root.style.setProperty('--toc-tab-x', Math.round(px) + 'px');
+  }
+
+  function resetTabX() {
+    setTabX(0);
+  }
+
+  function computeDockX() {
+    if (!tocPanel || !tocToggle || !tocPanel.getBoundingClientRect || !tocToggle.getBoundingClientRect) return 0;
+
+    var panelRect = tocPanel.getBoundingClientRect();
+    var tabRect = tocToggle.getBoundingClientRect();
+    var tabW = tabRect.width || 44;
+
+    // Dock the tab to the panel's right edge like a clasp.
+    // Half-overlap keeps it visible even when the panel is near the viewport edge.
+    var targetLeft = panelRect.right - (tabW / 2);
+
+    var viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
+    var maxLeft = Math.max(0, viewportW - tabW);
+
+    targetLeft = clamp(targetLeft, 0, maxLeft);
+
+    return targetLeft;
+  }
+
+  function scheduleTabDock() {
+    if (!tocPanel || !tocToggle) return;
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
+        setTabX(computeDockX());
+      });
+    });
   }
 
   function getPanelCloseMs() {
@@ -395,7 +438,7 @@
   }
 
   // ----------------------------------------
-  // Title-as-toggle (header/title is the button)
+  // Title-as-toggle (legacy support; no longer the default)
   // ----------------------------------------
   var headerEl = document.querySelector('.section-header');
   var headerTitleEl = headerEl ? headerEl.querySelector('h1') : null;
@@ -426,23 +469,17 @@
     var btn = document.createElement('button');
     btn.id = 'tocToggle';
     btn.type = 'button';
-    btn.className = 'toc-toggle toc-toggle--title';
+    btn.className = 'toc-toggle toc-toggle--tab';
     btn.setAttribute('aria-label', 'Open Contents');
     btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-controls', 'tocPanel');
-    btn.innerHTML = '<span class="sr-only">Toggle Contents</span>';
+    btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span><span class="sr-only">Toggle Contents</span>';
 
-    if (headerEl && headerTitleEl) {
-      headerEl.classList.add('has-toc-toggle');
-      headerEl.appendChild(btn);
-    } else {
-      btn.classList.remove('toc-toggle--title');
-      btn.classList.add('toc-toggle--floating');
-      btn.innerHTML = '<span class="toc-toggle-glyph" aria-hidden="true">☰</span>';
-      document.body.appendChild(btn);
-    }
+    document.body.appendChild(btn);
 
     tocToggle = btn;
+    resetTabX();
+
     positionTitleToggle();
 
     setTimeout(positionTitleToggle, 0);
@@ -728,6 +765,9 @@
     tocJustOpenedAt = Date.now();
     focusReturnEl = tocToggle;
 
+    // Ensure the tab begins from the left edge before docking to the panel.
+    resetTabX();
+
     lockBodyScroll();
     positionDropdownPanel();
 
@@ -744,6 +784,9 @@
     }
 
     renderToC();
+
+    // Dock the clasp after layout stabilizes.
+    scheduleTabDock();
 
     setTimeout(function () {
       // With no explicit close button, focus the first entry (or panel).
@@ -762,6 +805,9 @@
 
     armSealClosingLayer();
     clearPanelClosingTimer();
+
+    // Return the clasp to the left edge immediately.
+    resetTabX();
 
     // Important: release toc-open immediately so the seal can start returning at once,
     // but keep scroll-lock until the panel is fully rolled up.
@@ -913,12 +959,18 @@
 
     window.addEventListener('resize', function () {
       positionTitleToggle();
-      if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
+      if (tocPanel && tocPanel.classList.contains('is-open')) {
+        positionDropdownPanel();
+        scheduleTabDock();
+      }
     });
 
     window.addEventListener('orientationchange', function () {
       positionTitleToggle();
-      if (tocPanel && tocPanel.classList.contains('is-open')) positionDropdownPanel();
+      if (tocPanel && tocPanel.classList.contains('is-open')) {
+        positionDropdownPanel();
+        scheduleTabDock();
+      }
     });
 
     window.addEventListener('blur', function () {
