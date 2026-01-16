@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v2.4.4 (Veil: softened falloff) */
+/*! Covenant ToC Panel Styles v2.4.5 (Veil: alpha-only; no blend seam) */
 
 :root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms;--toc-ink:rgba(44,62,80,.92);--toc-ink-soft:rgba(44,62,80,.74);--toc-rule:rgba(139,115,85,.26);--toc-rule-strong:rgba(139,115,85,.36);--toc-parchment:rgba(247,244,238,1);--toc-parchment-hi:rgba(255,255,255,.72);--toc-rule-x:.95rem;--toc-node:10px;--toc-brass:rgba(201,169,97,1);--toc-node-locked:8px;--toc-item-pad-y:.26rem;--toc-item-line:1.55}
 
@@ -103,8 +103,8 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 @media (prefers-reduced-motion: reduce){.toc-panel.is-open::before,.toc-panel.is-closing::before{animation:none}.toc-panel::before{display:none}}
 
 /* Bottom veil anchored to the panel (NOT the scroll container).
-   Soften the onset so it never reads as a horizontal "cut" when items pass beneath it. */
-.toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 55%,rgba(0,0,0,.018) 72%,rgba(0,0,0,.06) 100%);mix-blend-mode:multiply;opacity:.72;pointer-events:none;z-index:3}
+   Keep it alpha-only (no blend-mode) to avoid iOS scroll compositing seams. */
+.toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 55%,rgba(0,0,0,.012) 72%,rgba(0,0,0,.045) 100%);opacity:1;pointer-events:none;z-index:3}
 
 .toc-confirm-btn{position:absolute;top:12px;right:12px;z-index:4;display:inline-flex;align-items:center;justify-content:center;padding:.42rem .82rem;border-radius:999px;border:1px solid rgba(44,62,80,.16);border-bottom-color:rgba(44,62,80,.24);background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:600;letter-spacing:.14em;font-variant-caps:all-small-caps;color:var(--toc-ink-soft);box-shadow:0 1px 0 rgba(255,255,255,.35),0 10px 20px rgba(0,0,0,.06);cursor:pointer}
 .toc-confirm-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:4px}
