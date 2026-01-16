@@ -136,7 +136,8 @@ Responsibilities:
 Key includes (canonical intent; verify exact filenames in repo before editing):
 - _includes/head-fonts.html (fonts + theme meta + config include)
 - _includes/covenant-config.html (runtime defaults; loads TOC/journey assets)
-- _includes/nav-footer.html (prev/next + Lexicon toggle; includes TOC panel)
+- _includes/nav-footer.html (prev/next + Lexicon toggle; includes ToC panel)
+- _includes/toc-panel.html (ToC overlay + panel shell, including the produced header/title bar)
 - _includes/lexicon-panel.html (panel shell; JS populates content)
 
 If include structure changes, check every journey page that uses the shell.

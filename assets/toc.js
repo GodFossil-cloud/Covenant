@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.3.1 (Cathedral Index: Edge Tab Clasp + Title Ride) */
+/*! Covenant ToC Basic Dropdown v2.3.2 (Cathedral Index: Produced Header Shell) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.3.1';
+  window.COVENANT_TOC_VERSION = '2.3.2';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -26,6 +26,7 @@
   var tocLiveRegion = document.getElementById('tocLiveRegion');
   var tocToast = document.getElementById('tocToast');
   var tocConfirmBtn = document.getElementById('tocConfirm');
+  var tocProducedTitleEl = document.getElementById('tocProducedTitle');
 
   var root = document.documentElement;
   var scrollLockY = 0;
@@ -121,6 +122,11 @@
   function setTabTop(px) {
     if (!root) return;
     root.style.setProperty('--toc-tab-top', Math.round(px) + 'px');
+  }
+
+  function setProducedTitle(title) {
+    if (!tocProducedTitleEl) return;
+    tocProducedTitleEl.textContent = String(title || '');
   }
 
   function computeTabSeatTop() {
@@ -375,6 +381,7 @@
 
     if (restoreTitle && baseHeaderTitle) {
       setHeaderTitle(baseHeaderTitle);
+      setProducedTitle(baseHeaderTitle);
     }
   }
 
@@ -399,7 +406,11 @@
       pendingItemEl.classList.add('toc-item--pending');
     }
 
-    if (pendingTitle) setHeaderTitle(pendingTitle);
+    if (pendingTitle) {
+      setHeaderTitle(pendingTitle);
+      setProducedTitle(pendingTitle);
+    }
+
     setConfirmVisible(true);
   }
 
@@ -827,6 +838,8 @@
 
     // Anchor the "true" current title each time the panel is opened.
     if (headerTitleEl) baseHeaderTitle = String(headerTitleEl.textContent || '');
+    if (baseHeaderTitle) setProducedTitle(baseHeaderTitle);
+
     clearPendingSelection(false);
 
     clearSealClosingLayer();
@@ -1063,6 +1076,11 @@
 
   ensureToggleExists();
   bindContentClicks();
+
+  if (!baseHeaderTitle && headerTitleEl) {
+    baseHeaderTitle = String(headerTitleEl.textContent || '');
+  }
+  if (baseHeaderTitle) setProducedTitle(baseHeaderTitle);
 
   clearStaleScrollLock();
 

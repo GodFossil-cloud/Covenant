@@ -3,9 +3,13 @@
 
 <div class="toc-panel" id="tocPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-labelledby="tocPanelTitle">
   <div class="toc-panel-header">
-    <!-- Visually hidden by CSS; retained for accessibility label. -->
-    <div class="toc-panel-title" id="tocPanelTitle">Contents</div>
-    <div class="toc-panel-subtitle">Journey Progress</div>
+    <!-- Accessibility label (kept in DOM). -->
+    <div class="toc-panel-title sr-only" id="tocPanelTitle">Contents</div>
+
+    <!-- Produced header/title (visible). Mirrors the current/staged journey title. -->
+    <div class="toc-produced" id="tocProduced" aria-live="polite" aria-atomic="true">
+      <div class="toc-produced-title" id="tocProducedTitle" role="heading" aria-level="2"></div>
+    </div>
   </div>
 
   <button class="toc-confirm-btn" id="tocConfirm" type="button" hidden disabled aria-label="Enter selected page">Enter</button>
