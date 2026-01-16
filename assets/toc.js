@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.3.3 (Cathedral Index: Produced Header Reveal) */
+/*! Covenant ToC Basic Dropdown v2.3.4 (Cathedral Index: Focus Trap) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.3.3';
+  window.COVENANT_TOC_VERSION = '2.3.4';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -72,6 +72,10 @@
   // Produced header reveal choreography.
   var producedRevealRaf1 = 0;
   var producedRevealRaf2 = 0;
+
+  // Focus trap while dialog is open.
+  var focusTrapEnabled = false;
+  var focusTrapHandler = null;
 
   // ----------------------------------------
   // Helpers
@@ -162,6 +166,72 @@
         tocPanel.classList.remove('toc-produced-latent');
       });
     });
+  }
+
+  function getFocusableInPanel() {
+    if (!tocPanel || !tocPanel.querySelectorAll) return [];
+
+    var nodes = tocPanel.querySelectorAll('button:not([disabled]), a[href]');
+    var out = [];
+
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (!el) continue;
+      if (el.getAttribute && el.getAttribute('aria-hidden') === 'true') continue;
+
+      // Skip hidden elements (including hidden confirm button).
+      if (el.hidden) continue;
+      if (el.getClientRects && el.getClientRects().length === 0) continue;
+
+      out.push(el);
+    }
+
+    return out;
+  }
+
+  function enableFocusTrap() {
+    if (focusTrapEnabled) return;
+    if (!tocPanel || !tocPanel.addEventListener) return;
+
+    focusTrapHandler = function (e) {
+      if (!e || e.key !== 'Tab') return;
+      if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
+
+      var focusables = getFocusableInPanel();
+      if (!focusables.length) return;
+
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      var active = document.activeElement;
+
+      if (e.shiftKey) {
+        if (active === first || active === tocPanel) {
+          stopEvent(e);
+          last.focus();
+        }
+      } else {
+        if (active === last) {
+          stopEvent(e);
+          first.focus();
+        }
+      }
+    };
+
+    tocPanel.addEventListener('keydown', focusTrapHandler);
+    focusTrapEnabled = true;
+  }
+
+  function disableFocusTrap() {
+    if (!focusTrapEnabled) return;
+    if (!tocPanel || !tocPanel.removeEventListener || !focusTrapHandler) {
+      focusTrapEnabled = false;
+      focusTrapHandler = null;
+      return;
+    }
+
+    tocPanel.removeEventListener('keydown', focusTrapHandler);
+    focusTrapEnabled = false;
+    focusTrapHandler = null;
   }
 
   function computeTabSeatTop() {
@@ -913,6 +983,8 @@
 
     renderToC();
 
+    enableFocusTrap();
+
     // Dock the clasp after layout stabilizes.
     scheduleTabDock();
 
@@ -932,6 +1004,8 @@
 
   function closeToC(restoreFocus) {
     if (!tocPanel || !tocOverlay) return;
+
+    disableFocusTrap();
 
     cancelProducedReveal();
     setProducedLatent(false);
