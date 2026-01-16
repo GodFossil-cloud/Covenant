@@ -128,7 +128,7 @@ Files present:
 Responsibilities:
 - covenant.css: core site styling and sacred visual system.
 - lexicon.js: Lexicon interactions + sentence/subpart highlights + page standardization rules.
-- toc.js + toc.css: Table-of-Contents panel behaviors + presentation (including staged selection + confirm navigation).
+- toc.js + toc.css: Table-of-Contents panel behaviors + presentation (including staged selection + confirm navigation + edge-tab/clasp toggle docking).
 - journey.js: journey-wide runtime behaviors (loading glyphs, transitions, etc.).
 
 ### /_includes (shared HTML shell)  ⚠️ Core
@@ -187,6 +187,7 @@ Use this when making CSS/JS/include changes—fast, human-verifiable checks:
 - Toggle Lexicon open/close.
 - Confirm overlay click closes.
 - Confirm ESC closes (if implemented).
+- Confirm ToC toggle/tab is not visible while Lexicon is open.
 
 3) Selection highlights (subsection/subpart/sentence)
 - On a representative Article page (I.html or III.html):
