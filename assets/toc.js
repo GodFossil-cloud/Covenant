@@ -47,7 +47,8 @@
   var TOC_TOAST_VISIBLE_MS = 2600;
 
   // How much breathing room to keep above the sticky footer.
-  var TOC_BOTTOM_GAP_PX = 18;
+  // Set to 0 so the ToC meets the footer edge cleanly.
+  var TOC_BOTTOM_GAP_PX = 0;
 
   // Keep the Lexicon seal behind the cradle during the close transition.
   var sealClosingTimer = null;
