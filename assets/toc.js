@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.3.2 (Cathedral Index: Produced Header Shell) */
+/*! Covenant ToC Basic Dropdown v2.3.3 (Cathedral Index: Produced Header Reveal) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.3.2';
+  window.COVENANT_TOC_VERSION = '2.3.3';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -69,6 +69,10 @@
   var tabStickyTopPx = 0;
   var tabTopRaf = 0;
 
+  // Produced header reveal choreography.
+  var producedRevealRaf1 = 0;
+  var producedRevealRaf2 = 0;
+
   // ----------------------------------------
   // Helpers
   // ----------------------------------------
@@ -127,6 +131,37 @@
   function setProducedTitle(title) {
     if (!tocProducedTitleEl) return;
     tocProducedTitleEl.textContent = String(title || '');
+  }
+
+  function cancelProducedReveal() {
+    if (producedRevealRaf1) {
+      cancelAnimationFrame(producedRevealRaf1);
+      producedRevealRaf1 = 0;
+    }
+    if (producedRevealRaf2) {
+      cancelAnimationFrame(producedRevealRaf2);
+      producedRevealRaf2 = 0;
+    }
+  }
+
+  function setProducedLatent(isLatent) {
+    if (!tocPanel || !tocPanel.classList) return;
+    tocPanel.classList.toggle('toc-produced-latent', !!isLatent);
+  }
+
+  function scheduleProducedReveal() {
+    if (!tocPanel || !tocPanel.classList) return;
+
+    cancelProducedReveal();
+
+    producedRevealRaf1 = requestAnimationFrame(function () {
+      producedRevealRaf1 = 0;
+      producedRevealRaf2 = requestAnimationFrame(function () {
+        producedRevealRaf2 = 0;
+        if (!tocPanel || !tocPanel.classList) return;
+        tocPanel.classList.remove('toc-produced-latent');
+      });
+    });
   }
 
   function computeTabSeatTop() {
@@ -836,6 +871,16 @@
 
     confirmNavigating = false;
 
+    cancelProducedReveal();
+
+    // Title-crossing moment:
+    // If the tab is currently riding the page title (not seated), keep the produced header latent
+    // and reveal it only after scroll-lock seats the tab.
+    var seatTop = computeTabSeatTop();
+    var tabTopBeforeLock = computeTabTop();
+    var doCrossReveal = (tabTopBeforeLock > seatTop + 6);
+    setProducedLatent(doCrossReveal);
+
     // Anchor the "true" current title each time the panel is opened.
     if (headerTitleEl) baseHeaderTitle = String(headerTitleEl.textContent || '');
     if (baseHeaderTitle) setProducedTitle(baseHeaderTitle);
@@ -871,6 +916,12 @@
     // Dock the clasp after layout stabilizes.
     scheduleTabDock();
 
+    if (doCrossReveal) {
+      scheduleProducedReveal();
+    } else {
+      setProducedLatent(false);
+    }
+
     setTimeout(function () {
       // With no explicit close button, focus the first entry (or panel).
       var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
@@ -881,6 +932,9 @@
 
   function closeToC(restoreFocus) {
     if (!tocPanel || !tocOverlay) return;
+
+    cancelProducedReveal();
+    setProducedLatent(false);
 
     if (!confirmNavigating) {
       clearPendingSelection(true);
