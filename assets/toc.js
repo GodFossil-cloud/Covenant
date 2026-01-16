@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.3.4 (Cathedral Index: Focus Trap) */
+/*! Covenant ToC Basic Dropdown v2.4.0 (Cathedral Index: Focus Trap + Mobile Staging) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.3.4';
+  window.COVENANT_TOC_VERSION = '2.4.0';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -76,6 +76,14 @@
   // Focus trap while dialog is open.
   var focusTrapEnabled = false;
   var focusTrapHandler = null;
+
+  // Open choreography timers (two-stage).
+  var stage1Timer = null;
+  var stage2Timer = null;
+  var focusTimer = null;
+
+  // Drag guard.
+  window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
 
   // ----------------------------------------
   // Helpers
@@ -153,6 +161,17 @@
     tocPanel.classList.toggle('toc-produced-latent', !!isLatent);
   }
 
+  function setBodyLatent(isLatent) {
+    if (!tocPanel || !tocPanel.classList) return;
+    tocPanel.classList.toggle('toc-body-latent', !!isLatent);
+  }
+
+  function clearStageTimers() {
+    if (stage1Timer) { clearTimeout(stage1Timer); stage1Timer = null; }
+    if (stage2Timer) { clearTimeout(stage2Timer); stage2Timer = null; }
+    if (focusTimer) { clearTimeout(focusTimer); focusTimer = null; }
+  }
+
   function scheduleProducedReveal() {
     if (!tocPanel || !tocPanel.classList) return;
 
@@ -166,6 +185,18 @@
         tocPanel.classList.remove('toc-produced-latent');
       });
     });
+  }
+
+  function scheduleProducedRevealAfter(ms) {
+    if (!ms || ms <= 0) {
+      scheduleProducedReveal();
+      return;
+    }
+
+    stage1Timer = setTimeout(function () {
+      stage1Timer = null;
+      scheduleProducedReveal();
+    }, ms);
   }
 
   function getFocusableInPanel() {
@@ -243,6 +274,28 @@
 
     // Absolute last resort.
     return 14;
+  }
+
+  // ----------------------------------------
+  // Title anchor detection
+  // ----------------------------------------
+  var headerEl = document.querySelector('.section-header');
+  var headerTitleEl = headerEl ? headerEl.querySelector('h1') : null;
+
+  function isTitleInViewport() {
+    if (!headerTitleEl || !headerTitleEl.getBoundingClientRect) return false;
+    var r = headerTitleEl.getBoundingClientRect();
+    var vh = window.innerHeight || 0;
+    if (!vh) return false;
+    return (r.bottom > 0 && r.top < vh);
+  }
+
+  function isTopOfPageTitleUsable() {
+    if (!headerTitleEl || !headerTitleEl.getBoundingClientRect) return false;
+    var seat = computeTabSeatTop();
+    var r = headerTitleEl.getBoundingClientRect();
+    // "Top-of-page" in the Covenant sense: the H1 is visibly below the tab seat line.
+    return (r.bottom > seat + 14);
   }
 
   function computeTabTop() {
@@ -608,9 +661,6 @@
   // ----------------------------------------
   // Title-as-toggle (legacy support; no longer the default)
   // ----------------------------------------
-  var headerEl = document.querySelector('.section-header');
-  var headerTitleEl = headerEl ? headerEl.querySelector('h1') : null;
-
   function positionTitleToggle() {
     if (!tocToggle) return;
     if (!headerEl || !headerTitleEl) return;
@@ -920,9 +970,15 @@
   function positionDropdownPanel() {
     if (!tocPanel) return;
 
-    var topPx = 16;
+    var seatTop = computeTabSeatTop();
+
+    // Default to the seated line (safe-area aware) so the panel header never flies above viewport
+    // when .section-header has scrolled out of view (iOS Safari symptom: produced title appears "missing").
+    var topPx = seatTop;
+
     if (headerEl && headerEl.getBoundingClientRect) {
       topPx = Math.round(headerEl.getBoundingClientRect().bottom);
+      topPx = Math.max(seatTop, topPx);
     }
 
     var footerReserved = getFooterReservedPx();
@@ -941,15 +997,10 @@
 
     confirmNavigating = false;
 
+    clearStageTimers();
     cancelProducedReveal();
 
-    // Title-crossing moment:
-    // If the tab is currently riding the page title (not seated), keep the produced header latent
-    // and reveal it only after scroll-lock seats the tab.
-    var seatTop = computeTabSeatTop();
-    var tabTopBeforeLock = computeTabTop();
-    var doCrossReveal = (tabTopBeforeLock > seatTop + 6);
-    setProducedLatent(doCrossReveal);
+    var topOfPage = isTopOfPageTitleUsable();
 
     // Anchor the "true" current title each time the panel is opened.
     if (headerTitleEl) baseHeaderTitle = String(headerTitleEl.textContent || '');
@@ -965,6 +1016,10 @@
 
     // Ensure the tab begins from the left edge before docking to the panel.
     resetTabX();
+
+    // Stage defaults.
+    setProducedLatent(!topOfPage);
+    setBodyLatent(!topOfPage);
 
     lockBodyScroll();
     positionDropdownPanel();
@@ -983,19 +1038,45 @@
 
     renderToC();
 
-    enableFocusTrap();
-
     // Dock the clasp after layout stabilizes.
     scheduleTabDock();
 
-    if (doCrossReveal) {
-      scheduleProducedReveal();
-    } else {
-      setProducedLatent(false);
+    if (!topOfPage) {
+      var tabSlideMs = readCssNumberVar('--toc-tab-slide-duration') || 420;
+      var producedMs = 260;
+
+      // Let the title begin to appear while the tab is crossing.
+      var revealDelay = Math.max(40, Math.round(tabSlideMs * 0.16));
+
+      // Stage 1: tab crossing + produced title.
+      scheduleProducedRevealAfter(revealDelay);
+
+      // Stage 2: menu body unfurl only after stage 1 settles.
+      var stage1End = Math.max(tabSlideMs, revealDelay + producedMs) + 30;
+      stage2Timer = setTimeout(function () {
+        stage2Timer = null;
+        setBodyLatent(false);
+      }, stage1End);
+
+      // Delay focus until the body is present; prevents iOS Safari from focusing elements in a latent scroller.
+      focusTimer = setTimeout(function () {
+        focusTimer = null;
+        enableFocusTrap();
+        var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
+        if (firstBtn && firstBtn.focus) firstBtn.focus();
+        else if (tocPanel.focus) tocPanel.focus();
+      }, stage1End + 20);
+
+      return;
     }
 
+    // Top-of-page exception: open immediately (no produced-title "moment").
+    setProducedLatent(false);
+    setBodyLatent(false);
+
+    enableFocusTrap();
+
     setTimeout(function () {
-      // With no explicit close button, focus the first entry (or panel).
       var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
       if (firstBtn && firstBtn.focus) firstBtn.focus();
       else if (tocPanel.focus) tocPanel.focus();
@@ -1007,8 +1088,12 @@
 
     disableFocusTrap();
 
+    clearStageTimers();
     cancelProducedReveal();
     setProducedLatent(false);
+
+    // Roll the body up quickly on close so "stage" cancels cleanly.
+    setBodyLatent(true);
 
     if (!confirmNavigating) {
       clearPendingSelection(true);
@@ -1043,6 +1128,9 @@
       tocPanel.classList.remove('is-closing');
       tocPanel.setAttribute('aria-hidden', 'true');
       unlockBodyScroll();
+
+      // Reset staging so next open is clean.
+      setBodyLatent(false);
 
       if (restoreFocus) {
         var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
@@ -1091,6 +1179,118 @@
     });
   }
 
+  function wireTabDrag() {
+    if (!tocToggle) return;
+    if (!window.PointerEvent) return;
+
+    var dragging = false;
+    var moved = false;
+    var pointerId = null;
+
+    var startX = 0;
+    var startY = 0;
+
+    var lastX = 0;
+    var lastT = 0;
+    var velocity = 0;
+
+    var startWasOpen = false;
+
+    var MOVE_SLOP = 8;
+    var H_LOCK = 14;
+
+    function begin(e) {
+      if (!e) return;
+      if (e.pointerType === 'mouse') return;
+
+      dragging = true;
+      moved = false;
+      pointerId = e.pointerId;
+      startWasOpen = !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
+
+      startX = e.clientX || 0;
+      startY = e.clientY || 0;
+      lastX = startX;
+      lastT = Date.now();
+      velocity = 0;
+
+      root.classList.add('toc-tab-dragging');
+
+      try { tocToggle.setPointerCapture(pointerId); } catch (err) {}
+    }
+
+    function move(e) {
+      if (!dragging || !e || e.pointerId !== pointerId) return;
+
+      var x = e.clientX || 0;
+      var y = e.clientY || 0;
+
+      var dx = x - startX;
+      var dy = y - startY;
+
+      // Require mostly-horizontal intent.
+      if (!moved) {
+        if (Math.abs(dx) < MOVE_SLOP) return;
+        if (Math.abs(dy) > H_LOCK) return;
+        moved = true;
+        window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
+      }
+
+      var now = Date.now();
+      var dt = now - lastT;
+      if (dt > 0) velocity = (x - lastX) / dt;
+      lastX = x;
+      lastT = now;
+
+      // Visual: give the tab a short, firm tug. (We do not attempt full docking during drag.)
+      var tug = clamp(dx, -72, 72);
+      if (!startWasOpen) tug = clamp(dx, 0, 72);
+      if (startWasOpen) tug = clamp(dx, -72, 0);
+
+      setTabX(tug);
+
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function end(e) {
+      if (!dragging || (e && e.pointerId !== pointerId)) return;
+
+      dragging = false;
+      root.classList.remove('toc-tab-dragging');
+
+      var dx = (lastX - startX);
+
+      // Reset visual offset; snap decision controls actual open/close.
+      resetTabX();
+
+      if (moved) {
+        // Keep the guard just long enough to swallow the synthetic click.
+        setTimeout(function () { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 320);
+
+        var OPEN_V = 0.85;
+        var CLOSE_V = -0.85;
+
+        if (!startWasOpen) {
+          if (dx > 38 || velocity > OPEN_V) openToC();
+        } else {
+          if (dx < -38 || velocity < CLOSE_V) closeToC(true);
+        }
+      }
+
+      if (e && tocToggle.hasPointerCapture && tocToggle.hasPointerCapture(pointerId)) {
+        try { tocToggle.releasePointerCapture(pointerId); } catch (err) {}
+      }
+
+      pointerId = null;
+    }
+
+    tocToggle.addEventListener('pointerdown', begin, { passive: true });
+    tocToggle.addEventListener('pointermove', move, { passive: false });
+    tocToggle.addEventListener('pointerup', end, { passive: true });
+    tocToggle.addEventListener('pointercancel', end, { passive: true });
+    tocToggle.addEventListener('lostpointercapture', end, { passive: true });
+  }
+
   function wireControls() {
     if (tocToggle) {
       tocToggle.addEventListener('mouseenter', function () { setTitleSheen(true); });
@@ -1098,36 +1298,13 @@
       tocToggle.addEventListener('focus', function () { setTitleSheen(true); });
       tocToggle.addEventListener('blur', function () { setTitleSheen(false); });
 
-      var touchStartX = 0;
-      var touchStartY = 0;
-      var touchMoved = false;
-
-      if (window.PointerEvent) {
-        tocToggle.addEventListener('pointerdown', function (e) {
-          if (!e || e.pointerType !== 'touch') return;
-          touchMoved = false;
-          touchStartX = e.clientX || 0;
-          touchStartY = e.clientY || 0;
-        }, { passive: true });
-
-        tocToggle.addEventListener('pointermove', function (e) {
-          if (!e || e.pointerType !== 'touch') return;
-          var dx = Math.abs((e.clientX || 0) - touchStartX);
-          var dy = Math.abs((e.clientY || 0) - touchStartY);
-          if (dx > 10 || dy > 10) touchMoved = true;
-        }, { passive: true });
-
-        tocToggle.addEventListener('pointercancel', function (e) {
-          if (!e || e.pointerType !== 'touch') return;
-          touchMoved = true;
-        }, { passive: true });
-      }
-
       tocToggle.addEventListener('click', function (e) {
-        if (touchMoved) return;
+        if (window.__COVENANT_TOC_DRAG_JUST_HAPPENED) return;
         stopEvent(e);
         toggleToC();
       });
+
+      wireTabDrag();
     }
 
     if (tocConfirmBtn) {
