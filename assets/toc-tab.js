@@ -1,4 +1,4 @@
-/*! Covenant ToC Tab Module v1.0.2 (Summoned title mirrors staged selection) */
+/*! Covenant ToC Tab Module v1.0.3 (Keep tab visible while ToC open) */
 (function () {
   'use strict';
 
@@ -102,6 +102,7 @@
     btn.type = 'button';
     btn.className = 'toc-tab-toggle';
     btn.setAttribute('aria-label', 'Open Contents');
+    btn.setAttribute('aria-expanded', 'false');
     btn.innerHTML = '<span class="sr-only">Contents</span><span class="toc-tab-glyph" aria-hidden="true">☰</span>';
 
     // Bind to the header so it reads as part of the title plane.
@@ -176,7 +177,6 @@
     document.body.appendChild(el);
     summoned = el;
 
-    // If the header title changes while the ToC is open (staging), mirror it.
     syncSummonedTitle();
 
     if (prefersReducedMotion()) {
@@ -212,6 +212,12 @@
     return tocPanel.classList.contains('is-open') || tocPanel.classList.contains('is-closing');
   }
 
+  function setTabState(isOpen) {
+    if (!tocTab) return;
+    tocTab.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    tocTab.setAttribute('aria-label', isOpen ? 'Close Contents' : 'Open Contents');
+  }
+
   function tabActivate(e) {
     if (e && e.preventDefault) e.preventDefault();
 
@@ -240,7 +246,6 @@
       return;
     }
 
-    // Header is visible: open normally.
     tocToggle.click();
   }
 
@@ -257,21 +262,25 @@
       positionPanelUnderSummoned();
     });
 
-    // Clicking the tab triggers ToC.
     if (tocTab) tocTab.addEventListener('click', tabActivate);
 
-    // When the ToC closes, the summoned strip must vanish.
+    // Track ToC open state: update aria + clear the summoned strip on close.
     var mo = new MutationObserver(function () {
       var html = document.documentElement;
-      if (!html.classList.contains('toc-open')) {
+      var isOpen = html.classList.contains('toc-open');
+      setTabState(isOpen);
+
+      if (!isOpen) {
         removeSummoned(false);
       } else {
-        // If ToC opened without summoning (header visible path), keep title sync ready.
         syncSummonedTitle();
       }
     });
 
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    // Initial state.
+    setTabState(document.documentElement.classList.contains('toc-open'));
   }
 
   bind();
