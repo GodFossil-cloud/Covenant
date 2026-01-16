@@ -188,6 +188,7 @@ Use this when making CSS/JS/include changes—fast, human-verifiable checks:
 - Confirm overlay click closes.
 - Confirm ESC closes (if implemented).
 - Confirm ToC toggle/tab is not visible while Lexicon is open.
+- Scroll from top: confirm the ToC tab rides the page H1 until it meets the top edge, then stays pinned as the title leaves the viewport.
 
 3) Selection highlights (subsection/subpart/sentence)
 - On a representative Article page (I.html or III.html):

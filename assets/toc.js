@@ -1,9 +1,9 @@
-/*! Covenant ToC Basic Dropdown v2.3.0 (Cathedral Index: Edge Tab Clasp) */
+/*! Covenant ToC Basic Dropdown v2.3.1 (Cathedral Index: Edge Tab Clasp + Title Ride) */
 (function () {
   'use strict';
 
   // Tiny global version marker for compatibility checks.
-  window.COVENANT_TOC_VERSION = '2.3.0';
+  window.COVENANT_TOC_VERSION = '2.3.1';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -64,6 +64,10 @@
   var baseHeaderTitle = '';
   var confirmNavigating = false;
 
+  // The tab's "seat" when it pins to the top edge.
+  var tabStickyTopPx = 0;
+  var tabTopRaf = 0;
+
   // ----------------------------------------
   // Helpers
   // ----------------------------------------
@@ -112,6 +116,54 @@
 
   function resetTabX() {
     setTabX(0);
+  }
+
+  function setTabTop(px) {
+    if (!root) return;
+    root.style.setProperty('--toc-tab-top', Math.round(px) + 'px');
+  }
+
+  function computeTabSeatTop() {
+    if (tabStickyTopPx && tabStickyTopPx > 0) return tabStickyTopPx;
+
+    // Fallback: CSS var might already be px-resolved (desktop).
+    var v = readCssNumberVar('--toc-tab-top');
+    if (v && v > 0) return Math.round(v);
+
+    // Absolute last resort.
+    return 14;
+  }
+
+  function computeTabTop() {
+    var seat = computeTabSeatTop();
+
+    // While scroll is locked (ToC open/closing), keep the tab seated.
+    if (root && root.classList.contains('toc-scroll-lock')) return seat;
+
+    if (!tocToggle || !headerTitleEl || !headerTitleEl.getBoundingClientRect) return seat;
+
+    var titleRect = headerTitleEl.getBoundingClientRect();
+    var desired = Math.round(titleRect.top);
+
+    // Do not let the tab go above its seat.
+    desired = Math.max(seat, desired);
+
+    // Also keep it within the viewport.
+    var tabH = (tocToggle.getBoundingClientRect && tocToggle.getBoundingClientRect().height) || readCssNumberVar('--toc-tab-height') || 44;
+    var maxTop = Math.max(seat, (window.innerHeight || 0) - tabH - 6);
+    desired = clamp(desired, seat, maxTop);
+
+    return desired;
+  }
+
+  function scheduleTabTop() {
+    if (!root) return;
+    if (tabTopRaf) return;
+
+    tabTopRaf = requestAnimationFrame(function () {
+      tabTopRaf = 0;
+      setTabTop(computeTabTop());
+    });
   }
 
   function computeDockX() {
@@ -480,10 +532,23 @@
     tocToggle = btn;
     resetTabX();
 
+    // Capture the tab's seated top position (respects safe-area) before we begin riding the title.
+    requestAnimationFrame(function () {
+      try {
+        tabStickyTopPx = Math.round(tocToggle.getBoundingClientRect().top);
+        setTabTop(tabStickyTopPx);
+      } catch (err) {
+        tabStickyTopPx = 0;
+      }
+      scheduleTabTop();
+    });
+
     positionTitleToggle();
 
     setTimeout(positionTitleToggle, 0);
     setTimeout(positionTitleToggle, 250);
+    setTimeout(scheduleTabTop, 0);
+    setTimeout(scheduleTabTop, 250);
   }
 
   // ----------------------------------------
@@ -543,6 +608,8 @@
 
     document.body.classList.add('toc-scroll-lock');
     document.body.style.top = (-scrollLockY) + 'px';
+
+    scheduleTabTop();
   }
 
   function unlockBodyScroll() {
@@ -564,6 +631,8 @@
     if (wasLocked && y) {
       window.scrollTo(0, y);
     }
+
+    scheduleTabTop();
   }
 
   function clearStaleScrollLock() {
@@ -748,6 +817,7 @@
     tocPanel.style.maxHeight = Math.max(220, Math.floor(available)) + 'px';
 
     positionTitleToggle();
+    scheduleTabTop();
   }
 
   function openToC() {
@@ -957,8 +1027,11 @@
       if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) closeToC(true);
     });
 
+    window.addEventListener('scroll', scheduleTabTop, { passive: true });
+
     window.addEventListener('resize', function () {
       positionTitleToggle();
+      scheduleTabTop();
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionDropdownPanel();
         scheduleTabDock();
@@ -967,6 +1040,7 @@
 
     window.addEventListener('orientationchange', function () {
       positionTitleToggle();
+      scheduleTabTop();
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionDropdownPanel();
         scheduleTabDock();
@@ -992,5 +1066,6 @@
 
   clearStaleScrollLock();
 
+  scheduleTabTop();
   wireControls();
 })();
