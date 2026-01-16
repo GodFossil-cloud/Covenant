@@ -6,7 +6,7 @@ layout: none
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Declaration of Bond - Covenant</title>
+    <title>Declaration of Intent - Covenant</title>
 
     {% include head-fonts.html %}
     {% include covenant-config.html %}
@@ -16,8 +16,9 @@ layout: none
     <script>
     window.COVENANT_PAGE = {
         pageId: 'declaration',
-        modeLabel: 'Declaration of Bond',
+        modeLabel: 'Declaration of Intent',
 
+        // Faster transitions (same as foundation).
         intro: {
             startDelay: 520,
             iconToOverlayDelay: 160,
@@ -31,89 +32,100 @@ layout: none
             panelDuration: '1.15s'
         },
 
-        keyPattern: '^D\\.[0-9]+$',
+        // Declaration uses D.1, D.2... keys.
+        keyPattern: '^[A-Z]+\\.[0-9]+$',
 
         defaultOverviewHTML: [
             '<p>\n'
-                + '    The Declaration names the bond outright: it is consecrated, hierarchical, and willingly embraced. It establishes Lord and Faithful not as roles performed, but as stations entered, and it frames the Covenant as ritual structure that must be honored in silence and obedience.\n'
+                + '    The Declaration of Intent marks the ceremonial threshold. Here, both Lord and Faithful formally acknowledge their consent, understanding, and acceptance of the sacred bond they are entering.\n'
                 + '</p>',
             '<p>\n'
-                + '    Where the Foundation states first principles, the Declaration seals intention. It is the public vow made within private sanctum: a binding acknowledgement that command and devotion will be enacted in full fidelity.\n'
+                + '    This section operates as a solemn affirmation, establishing that the Covenant is not coerced but chosen, not casual but consecrated. It closes with a ritual pronouncement: by this Declaration, the Covenant begins.\n'
                 + '</p>'
         ].join(''),
 
         sentenceExplanations: {
-            'D.1': '§.I declares the bond consecrated and binding. It frames the relationship as sacred and voluntary, not coerced.',
-            'D.2': '§.II establishes the station of Lord and Faithful explicitly. Roles are not negotiable but ordained within the Covenant.',
-            'D.3': '§.III names obedience and devotion as the Faithful\'s offering. The bond is upheld through fidelity enacted in practice.',
-            'D.4': '§.IV reiterates Sacred Silence as protection. The bond must remain veiled to preserve sanctity and avoid profanation.',
-            'D.5': '§.V seals the declaration as vow: the Covenant is entered with clear intent, to be maintained faithfully until its ordained end.'
+            'D.1': 'This opening line frames the Declaration as witnessed, formal, and intentional. It emphasizes consent ("freely"), gravity ("solemnly"), and awareness ("full recognition"), establishing that neither party enters blindly.',
+            'D.2': 'Defines the relational structure—Lord and Faithful bound in "unwavering accord." The use of "sacred duty" elevates the bond beyond contract into religious or ethical territory.',
+            'D.3': 'Introduces the threshold metaphor: both parties stand at the edge of something transformative ("consecrated bondage"). The phrase "no ordinary compact" reinforces the exceptional, sacred nature of the bond.',
+            'D.4': 'Each party accepts both "weight and blessing"—acknowledging that power and submission carry responsibility and gift. It names the roles explicitly: Lord as sovereign/commander, Faithful as servant/instrument.',
+            'D.5': 'Establishes accountability. Every act and word must answer to the Foundation (the three pillars) and the structure of the Covenant. Nothing exists outside this framework once entered.',
+            'D.6': 'Final affirmation of consent and clarity. Both parties declare sound mind, full understanding, and willing submission. It binds them "for so long as this Covenant shall endure," implying longevity without specifying permanence.',
+            'D.7': 'Ritual language. The threshold, introduced earlier, is now crossed. This is the hinge—before this line, the Covenant was potential; after, it becomes real.',
+            'D.8': 'The closing pronouncement. "The Covenant begins." This is the moment of ignition—the sacred bond is now active, and all that follows flows from this declaration.'
         }
     };
     </script>
-
     <script src="assets/lexicon.js" defer></script>
 </head>
-<body class="compact-header">
+<body>
     <div id="loadingIcon">֎</div>
     <div id="blackFadeOverlay"></div>
 
     <div class="container">
         <div class="section-header">
-            <h1>Declaration of Bond</h1>
+            <div class="ornament">✦ ✧ ✦</div>
+            <h1>Declaration of Intent</h1>
+            <div class="ornament">✦ ✧ ✦</div>
         </div>
 
         <section id="declaration">
-            <p class="preamble">
-                <span class="sentence" data-lexicon-key="D.1" data-sentence-text="Let it be known that this Covenant is entered willingly and consecrated by vow, binding Lord and Faithful in sacred order.">
-                    <span class="sentence-label">1</span>
-                    Let it be known that this
-                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
-                    is entered willingly and
-                    <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
-                    by vow, binding Lord and
-                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
-                    in sacred order.
-                </span>
-            </p>
-
             <p>
-                <span class="sentence" data-lexicon-key="D.2" data-sentence-text="The Lord is ordained as authority; the Faithful is ordained as obedient instrument, by choice and devotion.">
+                <span class="sentence" data-lexicon-key="D.1" data-sentence-text="Let it be known and sealed beneath witness: this Covenant is entered into freely, solemnly, and with full recognition of its gravity.">
+                    Let it be known and sealed beneath witness: this
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    is entered into freely, solemnly, and with full recognition of its gravity.
+                </span>
+                <span class="sentence" data-lexicon-key="D.2" data-sentence-text="It binds the Lord and the Faithful in unwavering accord and sacred duty.">
                     <span class="sentence-label">2</span>
-                    The Lord is ordained as authority; the
+                    It binds the Lord and the
                     <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
-                    is ordained as obedient instrument, by choice and devotion.
+                    in unwavering accord and sacred duty.
                 </span>
             </p>
 
             <p>
-                <span class="sentence" data-lexicon-key="D.3" data-sentence-text="The Faithful offers obedience as consecrated devotion, and the Lord offers command as guidance within sacred order.">
+                <span class="sentence" data-lexicon-key="D.3" data-sentence-text="Both parties, standing at the threshold of consecrated bondage, affirm their understanding that this is no ordinary compact but a sacred ordering of will and purpose.">
                     <span class="sentence-label">3</span>
-                    The
-                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
-                    offers
-                    <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>
-                    as consecrated devotion, and the Lord offers
-                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
-                    as guidance within sacred order.
+                    Both parties, standing at the threshold of
+                    <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
+                    bondage, affirm their understanding that this is no ordinary compact but a sacred ordering of will and purpose.
                 </span>
-            </p>
-
-            <p>
-                <span class="sentence" data-lexicon-key="D.4" data-sentence-text="All that is spoken and done within this Covenant shall be held in Sacred Silence, veiled from profane sight.">
+                <span class="sentence" data-lexicon-key="D.4" data-sentence-text="By entering herein, each accepts the weight and blessing of the station they shall occupy—the Lord as sovereign guide and righteous commander, the Faithful as devoted servant and obedient instrument.">
                     <span class="sentence-label">4</span>
-                    All that is spoken and done within this
-                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
-                    shall be held in
-                    <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span>,
-                    veiled from profane sight.
+                    By entering herein, each accepts the weight and blessing of the station they shall occupy—the Lord as sovereign guide and righteous commander, the
+                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                    as devoted servant and obedient instrument.
                 </span>
             </p>
 
             <p>
-                <span class="sentence" data-lexicon-key="D.5" data-sentence-text="Thus is the bond declared, and thus shall it be maintained in fidelity until its ordained end.">
+                <span class="sentence" data-lexicon-key="D.5" data-sentence-text="Every act and word under this Covenant shall be answerable to the Foundation above and the structure herein established.">
                     <span class="sentence-label">5</span>
-                    Thus is the bond declared, and thus shall it be maintained in fidelity until its ordained end.
+                    Every act and word under this
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    shall be answerable to the
+                    <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>
+                    above and the structure herein established.
+                </span>
+                <span class="sentence" data-lexicon-key="D.6" data-sentence-text="Both parties, being of sound mind and clear purpose, declare their full understanding of these terms and their willing submission to this bond for so long as this Covenant shall endure.">
+                    <span class="sentence-label">6</span>
+                    Both parties, being of sound mind and clear purpose, declare their full understanding of these terms and their willing submission to this bond for so long as this
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    shall endure.
+                </span>
+            </p>
+
+            <p>
+                <span class="sentence" data-lexicon-key="D.7" data-sentence-text="By this Declaration, the threshold is crossed.">
+                    <span class="sentence-label">7</span>
+                    By this Declaration, the threshold is crossed.
+                </span>
+                <span class="sentence" data-lexicon-key="D.8" data-sentence-text="By this Declaration, the Covenant begins.">
+                    <span class="sentence-label">8</span>
+                    By this Declaration, the
+                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
+                    begins.
                 </span>
             </p>
 
@@ -122,8 +134,7 @@ layout: none
     </div>
 
     {% include nav-footer.html
-        current_label="Declaration of Bond"
-        center_aria_label="Open Lexicon for Declaration"
+        current_label="Declaration of Intent"
         prev_href="foundation.html"
         prev_label="Foundation"
         prev_aria="Previous: Foundation"
@@ -136,13 +147,26 @@ layout: none
     <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
         <h3>Terms in this section</h3>
         <ul class="lexicon-term-list">
-            <li><span class="lexicon-term-label">Faithful</span><span class="lexicon-term-ref">[1]</span> – The devoted servant and obedient instrument within this sacred bond.</li>
-            <li><span class="lexicon-term-label">Covenant</span><span class="lexicon-term-ref">[2]</span> – A sacred, binding agreement between the Lord and the Faithful.</li>
-            <li><span class="lexicon-term-label">Hierarchy</span><span class="lexicon-term-ref">[3]</span> – The sacred ordering of authority and obedience.</li>
-            <li><span class="lexicon-term-label">Command</span><span class="lexicon-term-ref">[4]</span> – An authoritative directive given by the Lord.</li>
-            <li><span class="lexicon-term-label">Obedience</span><span class="lexicon-term-ref">[5]</span> – The willing submission and faithful execution of commands.</li>
-            <li><span class="lexicon-term-label">Consecrated</span><span class="lexicon-term-ref">[6]</span> – Sacred blessing and binding force that seals this Covenant.</li>
-            <li><span class="lexicon-term-label">Sacred Silence</span><span class="lexicon-term-ref">[8]</span> – The principle that all Covenant matters remain veiled from profane sight.</li>
+            <li>
+                <span class="lexicon-term-label">Faithful</span>
+                <span class="lexicon-term-ref">[1]</span>
+                – The devoted servant and obedient instrument within this sacred bond.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Covenant</span>
+                <span class="lexicon-term-ref">[2]</span>
+                – A sacred, binding agreement between the Lord and the Faithful.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Consecrated</span>
+                <span class="lexicon-term-ref">[6]</span>
+                – Sacred blessing and binding force that seals this Covenant.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Foundation</span>
+                <span class="lexicon-term-ref">[7]</span>
+                – The three indivisible principles of the Covenant.
+            </li>
         </ul>
     </div>
     {% endcapture %}

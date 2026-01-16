@@ -18,6 +18,7 @@ layout: none
         pageId: 'foundation',
         modeLabel: 'Doctrinal Foundation',
 
+        // Faster transitions from here onward (Invocation keeps the more dramatic intro).
         intro: {
             startDelay: 520,
             iconToOverlayDelay: 160,
@@ -31,89 +32,114 @@ layout: none
             panelDuration: '1.15s'
         },
 
-        keyPattern: '^D\\.[0-9]+$',
+        // Foundation currently uses F.1, F.2... keys.
+        // This override prevents "non-standard key" warnings until we later standardize keys site-wide.
+        keyPattern: '^[A-Z]+\\.[0-9]+$',
 
+        // Moved from DOM into config so the panel body is fully config-driven.
         defaultOverviewHTML: [
             '<p>\n'
-                + '    The Doctrinal Foundation establishes first principles: hierarchy is sacred, obedience is consecrated, and the Faithful is bound by vow. It frames the Covenant not as contract but as ritual architecture—an ordered reality sustained by devotion and command.\n'
+                + '    The Doctrinal Foundation establishes the three core principles upon which the entire Covenant stands: Hierarchy is sacred, Command is rightful, and Obedience is consecrated.\n'
                 + '</p>',
             '<p>\n'
-                + '    These clauses define the heart of the relationship: authority as ordained, submission as chosen, correction as mercy, and the bond as a living sacrament. All later Articles unfold from these foundational truths.\n'
+                + '    This section frames all later Articles as expressions of an eternal structure, not arbitrary inventions. Authority, when derived from this Foundation, is portrayed as both divinely patterned and mutually chosen.\n'
                 + '</p>'
         ].join(''),
 
+        // Lexicon content preserved exactly; moved into per-page config.
         sentenceExplanations: {
-            'D.1': '§.I asserts that hierarchy is sacred and pre-existent. It is not a human invention but a cosmic order that must be recognized and honored.',
-            'D.2': '§.II defines obedience as consecrated offering. Submission is not humiliation but devotion freely given, sanctified through the bond.',
-            'D.3': '§.III frames command as guidance rather than tyranny. The Lord\'s directives preserve alignment and keep the Faithful within sacred order.',
-            'D.4': '§.IV establishes correction as mercy. Discipline is not cruelty but a purifying act that restores fidelity and strengthens the bond.',
-            'D.5': '§.V seals the Foundation by declaring the Covenant a living sacrament, upheld by devotion, silence, and obedience.'
+            'F.1': 'This opening line positions the Foundation not as an arbitrary preference, but as the structural core from which all authority within the Covenant flows. It frames what follows as non-negotiable bedrock.',
+            'F.2': 'The first of the three pillars. Declaring hierarchy sacred removes it from the realm of convenience or social construct and elevates it to a metaphysical principle—alignment with divine or cosmic order.',
+            'F.3': 'The second pillar. Command is not framed as power seized, but as rightful authority—implying moral legitimacy, not mere force. It ties the exercise of will to justification.',
+            'F.4': 'The third pillar. Obedience is not framed as submission under duress, but as an act of devotion. The use of "consecrated" invokes religious ritual—obedience is not servitude but sacrament.',
+            'F.5': 'This line acknowledges mutual consent ("freely chosen") while framing the bond as deriving authority from the preceding immutable order, not from negotiation. Choice enters the picture, but only as acceptance of what already exists.',
+            'F.6': 'A brief statement that binds power to responsibility. It implies that lordship, when properly enacted, is not tyranny but care—a protective stewardship. This sentence tempers absolute authority with an ethical ideal.',
+            'F.7': 'This establishes the Foundation as the interpretive key for all that follows. No Article can be read in isolation—everything refers back to these three principles.',
+            'F.8': 'Cements the Foundation as eternal and immutable. Even amendments to the Covenant must bow to this Foundation. It locks the three pillars into place, immune to revision.',
+            'F.9': 'A concluding statement that reiterates the Foundation as the generative source of all authority, duty, and structure in the Covenant. It is both origin and anchor.'
         }
     };
     </script>
-
     <script src="assets/lexicon.js" defer></script>
 </head>
-<body class="compact-header">
+<body>
     <div id="loadingIcon">֎</div>
     <div id="blackFadeOverlay"></div>
 
     <div class="container">
         <div class="section-header">
+            <div class="ornament">✦ ✧ ✦</div>
             <h1>Doctrinal Foundation</h1>
+            <div class="ornament">✦ ✧ ✦</div>
         </div>
 
         <section id="foundation">
-            <p class="preamble">
-                <span class="sentence" data-lexicon-key="D.1" data-sentence-text="Hierarchy is sacred and not of mans making; it is the ordained order through which command descends and obedience ascends.">
-                    <span class="sentence-label">1</span>
-                    <span class="glossary-term">Hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>
-                    is sacred and not of mans making; it is the ordained order through which
-                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
-                    descends and
-                    <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>
-                    ascends.
-                </span>
-            </p>
-
             <p>
-                <span class="sentence" data-lexicon-key="D.2" data-sentence-text="Obedience, freely offered, is consecrated within the Covenant and becomes devotion rendered into form.">
-                    <span class="sentence-label">2</span>
-                    <span class="glossary-term">Obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>,
-                    freely offered, is
-                    <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>
-                    within the
+                <span class="sentence" data-lexicon-key="F.1" data-sentence-text="This Covenant rests upon three indivisible principles from which all authority derives:">
+                    This
                     <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
-                    and becomes devotion rendered into form.
+                    rests upon three indivisible principles from which all authority derives:
                 </span>
             </p>
 
-            <p>
-                <span class="sentence" data-lexicon-key="D.3" data-sentence-text="Command is the Lords guidance and decree, given not to break the Faithful but to preserve alignment with sacred order.">
-                    <span class="sentence-label">3</span>
-                    <span class="glossary-term">Command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
-                    is the Lords guidance and decree, given not to break the
-                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
-                    but to preserve alignment with sacred order.
-                </span>
-            </p>
+            <div class="foundation-principles">
+                <p>
+                    <span class="sentence" data-lexicon-key="F.2" data-sentence-text="Hierarchy is sacred.">
+                        <span class="glossary-term">Hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span> is sacred.
+                    </span>
+                </p>
+                <p>
+                    <span class="sentence" data-lexicon-key="F.3" data-sentence-text="Command is rightful.">
+                        <span class="glossary-term">Command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span> is rightful.
+                    </span>
+                </p>
+                <p>
+                    <span class="sentence" data-lexicon-key="F.4" data-sentence-text="Obedience is consecrated.">
+                        <span class="glossary-term">Obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span> is
+                        <span class="glossary-term">consecrated<span class="glossary-ref">[6]</span><span class="tooltip">Sacred blessing and binding force that seals this Covenant.</span></span>.
+                    </span>
+                </p>
+            </div>
 
             <p>
-                <span class="sentence" data-lexicon-key="D.4" data-sentence-text="Correction, when administered, is mercy: a purifying act that restores fidelity and strengthens the bond.">
-                    <span class="sentence-label">4</span>
-                    Correction, when administered, is mercy: a purifying act that restores fidelity and strengthens the bond.
-                </span>
-            </p>
-
-            <p>
-                <span class="sentence" data-lexicon-key="D.5" data-sentence-text="Thus is this Covenant established as a living sacrament, to be upheld in devotion, silence, and obedience.">
+                <span class="sentence" data-lexicon-key="F.5" data-sentence-text="The bond between Lord and Faithful draws its authority from this immutable order, freely chosen and solemnly entered.">
                     <span class="sentence-label">5</span>
-                    Thus is this
-                    <span class="glossary-term">Covenant<span class="glossary-ref">[2]</span><span class="tooltip">A sacred, binding agreement between the Lord and the Faithful.</span></span>
-                    established as a living sacrament, to be upheld in devotion,
-                    <span class="glossary-term">Sacred Silence<span class="glossary-ref">[8]</span><span class="tooltip">The principle that all Covenant matters remain veiled from profane sight.</span></span>,
-                    and
-                    <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>.
+                    The bond between Lord and
+                    <span class="glossary-term">Faithful<span class="glossary-ref">[1]</span><span class="tooltip">The devoted servant and obedient instrument within this sacred bond.</span></span>
+                    draws its authority from this immutable order, freely chosen and solemnly entered.
+                </span>
+                <span class="sentence" data-lexicon-key="F.6" data-sentence-text="True lordship unites authority with care, command with nurture, power with wisdom.">
+                    <span class="sentence-label">6</span>
+                    True lordship unites authority with care,
+                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
+                    with nurture, power with wisdom.
+                </span>
+            </p>
+
+            <p>
+                <span class="sentence" data-lexicon-key="F.7" data-sentence-text="All Articles that follow operate under this Foundation.">
+                    <span class="sentence-label">7</span>
+                    All Articles that follow operate under this
+                    <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>.
+                </span>
+                <span class="sentence" data-lexicon-key="F.8" data-sentence-text="Where matters of sanctity, hierarchy, obedience, or command are referenced, they draw their meaning from this eternal Foundation, which remains inviolate through all amendments and renewals.">
+                    <span class="sentence-label">8</span>
+                    Where matters of sanctity,
+                    <span class="glossary-term">hierarchy<span class="glossary-ref">[3]</span><span class="tooltip">The sacred ordering of authority and obedience.</span></span>,
+                    <span class="glossary-term">obedience<span class="glossary-ref">[5]</span><span class="tooltip">The willing submission and faithful execution of commands.</span></span>, or
+                    <span class="glossary-term">command<span class="glossary-ref">[4]</span><span class="tooltip">An authoritative directive given by the Lord.</span></span>
+                    are referenced, they draw their meaning from this eternal
+                    <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>,
+                    which remains inviolate through all amendments and renewals.
+                </span>
+            </p>
+
+            <p>
+                <span class="sentence" data-lexicon-key="F.9" data-sentence-text="From this Foundation flows all authority, obligation, and sacred structure herein established.">
+                    <span class="sentence-label">9</span>
+                    From this
+                    <span class="glossary-term">Foundation<span class="glossary-ref">[7]</span><span class="tooltip">The three indivisible principles of the Covenant.</span></span>
+                    flows all authority, obligation, and sacred structure herein established.
                 </span>
             </p>
 
@@ -123,7 +149,6 @@ layout: none
 
     {% include nav-footer.html
         current_label="Doctrinal Foundation"
-        center_aria_label="Open Lexicon for Foundation"
         prev_href="invocation.html"
         prev_label="Invocation"
         prev_aria="Previous: Invocation"
@@ -136,13 +161,41 @@ layout: none
     <div class="lexicon-glossary-footer" aria-label="Glossary terms on this page">
         <h3>Terms in this section</h3>
         <ul class="lexicon-term-list">
-            <li><span class="lexicon-term-label">Faithful</span><span class="lexicon-term-ref">[1]</span> – The devoted servant and obedient instrument within this sacred bond.</li>
-            <li><span class="lexicon-term-label">Covenant</span><span class="lexicon-term-ref">[2]</span> – A sacred, binding agreement between the Lord and the Faithful.</li>
-            <li><span class="lexicon-term-label">Hierarchy</span><span class="lexicon-term-ref">[3]</span> – The sacred ordering of authority and obedience.</li>
-            <li><span class="lexicon-term-label">Command</span><span class="lexicon-term-ref">[4]</span> – An authoritative directive given by the Lord.</li>
-            <li><span class="lexicon-term-label">Obedience</span><span class="lexicon-term-ref">[5]</span> – The willing submission and faithful execution of commands.</li>
-            <li><span class="lexicon-term-label">Consecrated</span><span class="lexicon-term-ref">[6]</span> – Sacred blessing and binding force that seals this Covenant.</li>
-            <li><span class="lexicon-term-label">Sacred Silence</span><span class="lexicon-term-ref">[8]</span> – The principle that all Covenant matters remain veiled from profane sight.</li>
+            <li>
+                <span class="lexicon-term-label">Faithful</span>
+                <span class="lexicon-term-ref">[1]</span>
+                – The devoted servant and obedient instrument within this sacred bond.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Covenant</span>
+                <span class="lexicon-term-ref">[2]</span>
+                – A sacred, binding agreement between the Lord and the Faithful.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Hierarchy</span>
+                <span class="lexicon-term-ref">[3]</span>
+                – The sacred ordering of authority and obedience.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Command</span>
+                <span class="lexicon-term-ref">[4]</span>
+                – An authoritative directive given by the Lord.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Obedience</span>
+                <span class="lexicon-term-ref">[5]</span>
+                – The willing submission and faithful execution of commands.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Consecrated</span>
+                <span class="lexicon-term-ref">[6]</span>
+                – Sacred blessing and binding force that seals this Covenant.
+            </li>
+            <li>
+                <span class="lexicon-term-label">Foundation</span>
+                <span class="lexicon-term-ref">[7]</span>
+                – The three indivisible principles of the Covenant.
+            </li>
         </ul>
     </div>
     {% endcapture %}
