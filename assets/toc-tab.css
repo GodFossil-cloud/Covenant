@@ -1,13 +1,13 @@
-/*! Covenant ToC Tab Module v1.0.0 */
+/*! Covenant ToC Tab Module v1.0.1 (Icon-only tab) */
 
-/* Visible ToC tab (aligned to container margin; becomes fixed when header leaves viewport). */
-.toc-tab-toggle{position:absolute;top:12px;left:0;height:40px;display:inline-flex;align-items:center;gap:.56rem;padding:0 .78rem 0 .74rem;border-radius:10px;border:1px solid rgba(44,62,80,.18);border-bottom-color:rgba(44,62,80,.26);background:linear-gradient(to bottom,rgba(255,255,255,.72),rgba(255,255,255,.22));box-shadow:0 10px 24px rgba(0,0,0,.10),0 1px 0 rgba(255,255,255,.40),inset 0 10px 16px -18px rgba(0,0,0,.55);font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.12em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.78);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;z-index:1500}
+/* Visible ToC tab (aligned to container margin; becomes fixed when header leaves viewport).
+   Icon-only: the glyph is the whole handle; accessible name is via aria-label + sr-only. */
+.toc-tab-toggle{position:absolute;top:12px;left:0;width:44px;height:40px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:12px;border:1px solid rgba(44,62,80,.18);border-bottom-color:rgba(44,62,80,.26);background:linear-gradient(to bottom,rgba(255,255,255,.72),rgba(255,255,255,.22));box-shadow:0 10px 24px rgba(0,0,0,.10),0 1px 0 rgba(255,255,255,.40),inset 0 10px 16px -18px rgba(0,0,0,.55);font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.12em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.78);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;z-index:1500}
 .toc-tab-toggle:focus-visible{outline:2px solid rgba(201,169,97,.45);outline-offset:4px}
 .toc-tab-toggle:hover{color:rgba(44,62,80,.88);border-color:rgba(44,62,80,.22)}
 .toc-tab-toggle:active{filter:brightness(.98)}
 
-.toc-tab-glyph{display:inline-block;font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:1.06rem;line-height:1;transform:translateY(-.5px);opacity:.92}
-.toc-tab-label{white-space:nowrap}
+.toc-tab-glyph{display:inline-block;font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:1.14rem;line-height:1;transform:translateY(-.5px);opacity:.92}
 
 /* Sticky posture: pinned to viewport; JS sets left + --toc-tab-left. */
 .toc-tab-toggle.is-sticky{position:fixed;top:14px}
@@ -28,4 +28,4 @@ html.lexicon-scroll-lock .toc-tab-toggle{opacity:0;visibility:hidden;pointer-eve
 
 @media (prefers-reduced-motion: reduce){.toc-summoned-title{transition:none;transform:scaleX(1);opacity:1}}
 
-@media (max-width:600px){.toc-tab-toggle{top:10px;height:38px;padding:0 .68rem 0 .64rem}.toc-summoned-title{height:38px}}
+@media (max-width:600px){.toc-tab-toggle{top:10px;width:42px;height:38px;border-radius:12px}.toc-summoned-title{height:38px}}

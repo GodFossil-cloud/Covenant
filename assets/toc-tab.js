@@ -1,4 +1,4 @@
-/*! Covenant ToC Tab Module v1.0.0 */
+/*! Covenant ToC Tab Module v1.0.1 (Icon-only tab) */
 (function () {
   'use strict';
 
@@ -76,7 +76,7 @@
     btn.type = 'button';
     btn.className = 'toc-tab-toggle';
     btn.setAttribute('aria-label', 'Open Contents');
-    btn.innerHTML = '<span class="toc-tab-glyph" aria-hidden="true">☰</span><span class="toc-tab-label" aria-hidden="true">Contents</span>';
+    btn.innerHTML = '<span class="sr-only">Contents</span><span class="toc-tab-glyph" aria-hidden="true">☰</span>';
 
     // Bind to the header so it reads as part of the title plane.
     if (headerEl) headerEl.appendChild(btn);
