@@ -129,6 +129,39 @@ Responsibilities:
 - covenant.css: core site styling and sacred visual system.
 - lexicon.js: Lexicon interactions + sentence/subpart highlights + page standardization rules.
 - toc.js + toc.css: Table-of-Contents panel behaviors + presentation (including staged selection + confirm navigation + edge-tab/clasp toggle docking).
+
+### ToC subsystem status (Jan 2026)
+
+Primary files:
+- assets/toc.js (Table-of-Contents runtime: clasp/tab docking, panel open/close, selection staging + confirm navigation, progress gating, focus trap).
+- assets/toc.css (ToC visuals, clasp/panel positioning surfaces).
+- _includes/toc-panel.html (ToC overlay + panel shell; produced header/title bar).
+- _includes/nav-footer.html (dock integration; where ToC is exposed on journey pages).
+
+Core behaviors / invariants:
+- The header divider line is the anchoring seam: `.section-header` uses `border-bottom`, and the ToC clasp/panel seats to that seam (not the H1 baseline).
+- Clasp positioning:
+  - Tracks `max(--toc-clasp-seat-top, .section-header.getBoundingClientRect().bottom)`.
+  - When scroll is locked (ToC open/closing), the clasp is pinned to `--toc-clasp-seat-top`.
+- Panel positioning:
+  - Panel `top` is the clasp’s exact `top` (no extra pixel offset), so the panel tucks under the divider seam.
+  - Panel `max-height` fills the available viewport down to the footer reserve:
+    `maxHeight = (viewportHeight - footerReservedPx) - panelTopPx`.
+  - Footer reserve is derived from `--footer-total-height` (with fallbacks).
+- Open/close mechanics:
+  - Uses root/body scroll lock classes; iOS uses a touchmove blocker outside the panel body.
+  - Overlay click and ESC close the panel; blur/visibilitychange also close to avoid stuck states.
+- Navigation safety:
+  - Selecting an entry stages it (pending highlight) and requires a confirm action before navigating.
+  - Locked entries are non-navigable and show the “In due time…” tooltip.
+- Progress gating:
+  - Stores `covenant_progress` in localStorage (max unlocked index).
+  - `enforceSoftGate()` redirects locked direct-access attempts back to `invocation.html`.
+
+Do not change lightly:
+- Do not reintroduce a fixed vh clamp for the panel height unless explicitly desired; current design intentionally fills down to the footer reserve.
+- Any change to header divider styling (e.g., `.section-header` border) can affect ToC docking alignment.
+
 - journey.js: journey-wide runtime behaviors (loading glyphs, transitions, etc.).
 
 ### /_includes (shared HTML shell)  ⚠️ Core
