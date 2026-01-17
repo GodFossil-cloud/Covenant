@@ -1,8 +1,8 @@
-/*! Covenant ToC v2.5.1 (Divider Clasp + Focus Trap + Mobile Staging) */
+/*! Covenant ToC v2.5.2 (Divider Clasp + Focus Trap + Mobile Staging) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '2.5.1';
+  window.COVENANT_TOC_VERSION = '2.5.2';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -293,7 +293,7 @@
       tocClasp.style.width = '100%';
     }
 
-    // Track the divider line under the journey header.
+    // Track the header divider line (border-bottom on .section-header).
     var lineY = seatTop;
     if (headerEl && headerEl.getBoundingClientRect) {
       lineY = Math.round(headerEl.getBoundingClientRect().bottom);
@@ -860,9 +860,11 @@
     var seatTop = computeClaspSeatTop();
     var topPx = seatTop;
 
+    // IMPORTANT: the panel should begin at the divider seam.
+    // The clasp is seated exactly on that divider, so use its top (no extra offset).
     if (tocClasp && tocClasp.getBoundingClientRect) {
       var r = tocClasp.getBoundingClientRect();
-      topPx = Math.round(r.top) + 2;
+      topPx = Math.round(r.top);
       topPx = Math.max(seatTop, topPx);
     } else if (headerEl && headerEl.getBoundingClientRect) {
       topPx = Math.round(headerEl.getBoundingClientRect().bottom);
@@ -873,13 +875,8 @@
     var safeBottomLimit = Math.max(0, window.innerHeight - footerReserved - TOC_BOTTOM_GAP_PX);
     var available = safeBottomLimit - topPx;
 
-    // Keep the panel as a scroll (not full-screen): clamp to the CSS intent (70vh).
-    var vh = window.innerHeight || 0;
-    var maxByVh = vh ? Math.floor(vh * 0.70) : 0;
-
-    var maxH = Math.max(0, Math.floor(available));
-    if (maxByVh > 0) maxH = Math.min(maxH, maxByVh);
-    maxH = Math.max(220, maxH);
+    // Fill down to the footer reserve (scroll inside the panel body handles overflow).
+    var maxH = Math.max(220, Math.floor(available));
 
     tocPanel.style.top = topPx + 'px';
     tocPanel.style.maxHeight = maxH + 'px';
