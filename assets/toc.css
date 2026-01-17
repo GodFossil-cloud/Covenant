@@ -1,28 +1,47 @@
-/*! Covenant ToC Panel Styles v2.6.0 (Edge Tab Clasp + Produced Header Reveal + Mobile Staging) */
+/*! Covenant ToC Panel Styles v2.7.0 (Divider Clasp + Produced Header Reveal + Mobile Staging) */
 
-:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms;--toc-ink:rgba(44,62,80,.92);--toc-ink-soft:rgba(44,62,80,.74);--toc-rule:rgba(139,115,85,.26);--toc-rule-strong:rgba(139,115,85,.36);--toc-parchment:rgba(247,244,238,1);--toc-parchment-hi:rgba(255,255,255,.72);--toc-rule-x:.95rem;--toc-node:10px;--toc-brass:rgba(201,169,97,1);--toc-node-locked:8px;--toc-item-pad-y:.26rem;--toc-item-line:1.55;--toc-tab-width:48px;--toc-tab-height:44px;--toc-tab-slide-duration:420ms;--toc-tab-x:0px;--toc-tab-top:calc(14px + env(safe-area-inset-top, 0px))}
+:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms;--toc-ink:rgba(44,62,80,.92);--toc-ink-soft:rgba(44,62,80,.74);--toc-rule:rgba(139,115,85,.26);--toc-rule-strong:rgba(139,115,85,.36);--toc-parchment:rgba(247,244,238,1);--toc-parchment-hi:rgba(255,255,255,.72);--toc-rule-x:.95rem;--toc-node:10px;--toc-brass:rgba(201,169,97,1);--toc-node-locked:8px;--toc-item-pad-y:.26rem;--toc-item-line:1.55;--toc-tab-width:48px;--toc-tab-height:44px;--toc-tab-slide-duration:420ms;--toc-tab-x:0px;--toc-tab-top:calc(14px + env(safe-area-inset-top, 0px));--toc-clasp-seat-top:env(safe-area-inset-top, 0px);--toc-clasp-pull:0px;--toc-clasp-max-pull:46px;--toc-clasp-arm-at:28px;--toc-clasp-under-y:14px;--toc-clasp-over-y:-52px;--toc-clasp-under-y-sticky:10px}
 
 .section-header.has-toc-toggle{position:relative}
 .section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
 .section-header.toc-title-sheen h1{text-shadow:0 0 14px rgba(201,169,97,.18),0 0 1px rgba(255,255,255,.16);filter:brightness(1.02)}
 
-.toc-toggle{position:absolute;z-index:1500;padding:0;margin:0;border:none;background:transparent;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+/* =========================================================
+   Divider Clasp (centered)
+
+   The clasp is a fixed, container-width rule (2px) that tracks the journey header divider.
+   JS drives its top/left/width and sets html classes:
+   - toc-clasp-under / toc-clasp-over (flip around the rule)
+   - toc-clasp-sticky (rule seated at the top edge)
+   - toc-clasp-pulling / toc-clasp-armed (vertical pull gesture)
+   ========================================================= */
+
+.toc-clasp{position:fixed;z-index:1500;height:0;border-top:2px solid var(--accent-color);pointer-events:none;left:0;top:0;width:100%;overflow:visible;transform:translateZ(0)}
+
+.toc-toggle{position:absolute;z-index:1501;padding:0;margin:0;border:none;background:transparent;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:none;user-select:none;-webkit-user-select:none}
 .toc-toggle:focus-visible{outline:2px solid rgba(201,169,97,.45);outline-offset:4px}
 
-.toc-toggle--floating{position:fixed;top:14px;left:14px;width:44px;height:44px;display:inline-grid;place-items:center;color:rgba(44,62,80,.72)}
+/* Legacy edge tab is disabled in divider-clasp mode (JS no longer creates it). */
+.toc-toggle--tab{display:none !important}
 
-/* The ToC tab: a fixed edge handle that becomes the clasp when the panel is open.
-   JS drives --toc-tab-x (in px) to dock the tab to the panel edge.
-   JS also drives --toc-tab-top so the tab rides the page title until it seats at the top edge. */
-.toc-toggle--tab{position:fixed;top:var(--toc-tab-top);left:0;width:var(--toc-tab-width);height:var(--toc-tab-height);display:inline-flex;align-items:center;justify-content:center;color:rgba(44,62,80,.74);background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));border:1px solid rgba(44,62,80,.18);border-left:none;border-radius:0 12px 12px 0;box-shadow:0 1px 0 rgba(255,255,255,.35),0 14px 26px rgba(0,0,0,.10),inset 0 18px 22px -22px rgba(0,0,0,.30);transform:translateX(var(--toc-tab-x));transition:transform var(--toc-tab-slide-duration) var(--toc-scroll-ease),color 220ms ease,box-shadow 220ms ease;background-clip:padding-box}
+.toc-toggle--clasp{left:50%;top:0;width:56px;height:44px;display:inline-flex;align-items:center;justify-content:center;color:rgba(44,62,80,.80);background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));border:1px solid rgba(44,62,80,.18);border-radius:12px;box-shadow:0 1px 0 rgba(255,255,255,.35),0 14px 26px rgba(0,0,0,.10),inset 0 18px 22px -22px rgba(0,0,0,.30);background-clip:padding-box;transform:translateX(-50%) translateY(calc(var(--toc-clasp-y, var(--toc-clasp-under-y)) + var(--toc-clasp-pull)));transition:transform 320ms var(--toc-scroll-ease),color 220ms ease,box-shadow 220ms ease}
 
-html.toc-tab-dragging .toc-toggle--tab{transition:none}
+html.toc-clasp-sticky .toc-toggle--clasp{transform:translateX(-50%) translateY(calc(var(--toc-clasp-y, var(--toc-clasp-under-y-sticky)) + var(--toc-clasp-pull)))}
 
-.toc-toggle--tab:hover,.toc-toggle--tab:focus-visible{color:rgba(44,62,80,.90);box-shadow:0 1px 0 rgba(255,255,255,.42),0 18px 34px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.32)}
+html.toc-clasp-under{--toc-clasp-y:var(--toc-clasp-under-y)}
+html.toc-clasp-over{--toc-clasp-y:var(--toc-clasp-over-y)}
+html.toc-clasp-sticky.toc-clasp-under{--toc-clasp-y:var(--toc-clasp-under-y-sticky)}
+
+html.toc-clasp-pulling .toc-toggle--clasp{transition:none}
+
+.toc-toggle--clasp:hover,.toc-toggle--clasp:focus-visible{color:rgba(44,62,80,.92);box-shadow:0 1px 0 rgba(255,255,255,.42),0 18px 34px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.32)}
 
 .toc-toggle-glyph{font-size:1.15rem;line-height:1;transform:translateY(-.5px)}
 
-html.lexicon-scroll-lock .toc-toggle{opacity:0;visibility:hidden;pointer-events:none}
+/* Unlatch hint (only during the armed segment of the pull). */
+html.toc-clasp-armed .toc-toggle--clasp::after{content:'UNLATCH';position:absolute;left:50%;top:100%;transform:translateX(-50%) translateY(8px);font-family:'Cormorant Garamond',serif;font-size:.72rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.80);text-shadow:0 1px 0 rgba(255,255,255,.25);white-space:nowrap;pointer-events:none}
+
+html.lexicon-scroll-lock .toc-clasp,html.lexicon-scroll-lock .toc-toggle{opacity:0;visibility:hidden;pointer-events:none}
 
 html.toc-scroll-lock{overflow:hidden}
 body.toc-scroll-lock{position:fixed;width:100%}
@@ -251,6 +270,7 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 
 @media (max-width:600px){
   :root{--toc-rule-x:.75rem;--toc-node:10px;--toc-node-locked:8px;--toc-tab-width:46px;--toc-tab-height:44px}
+  .toc-toggle--clasp{width:54px;height:44px}
   .toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
   .toc-produced-title{font-size:1.0rem;padding-right:5.1rem}
