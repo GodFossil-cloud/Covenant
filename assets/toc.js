@@ -1,8 +1,8 @@
-/*! Covenant ToC v2.5.0 (Divider Clasp + Focus Trap + Mobile Staging) */
+/*! Covenant ToC v2.5.1 (Divider Clasp + Focus Trap + Mobile Staging) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '2.5.0';
+  window.COVENANT_TOC_VERSION = '2.5.1';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -246,14 +246,6 @@
   function computeClaspSeatTop() {
     var v = readCssNumberVar('--toc-clasp-seat-top');
     return Math.max(0, Math.round(v || 0));
-  }
-
-  function isTitleInViewport() {
-    if (!headerTitleEl || !headerTitleEl.getBoundingClientRect) return false;
-    var r = headerTitleEl.getBoundingClientRect();
-    var vh = window.innerHeight || 0;
-    if (!vh) return false;
-    return (r.bottom > 0 && r.top < vh);
   }
 
   function isTopOfPageTitleUsable() {
@@ -601,7 +593,7 @@
     if (tocToggle && tocClasp) return;
     if (!tocPanel) return;
 
-    // Clasp rule (tracks the header divider)
+    // Clasp container (tracks the header divider)
     if (!tocClasp) {
       tocClasp = document.createElement('div');
       tocClasp.id = 'tocClasp';
@@ -881,8 +873,16 @@
     var safeBottomLimit = Math.max(0, window.innerHeight - footerReserved - TOC_BOTTOM_GAP_PX);
     var available = safeBottomLimit - topPx;
 
+    // Keep the panel as a scroll (not full-screen): clamp to the CSS intent (70vh).
+    var vh = window.innerHeight || 0;
+    var maxByVh = vh ? Math.floor(vh * 0.70) : 0;
+
+    var maxH = Math.max(0, Math.floor(available));
+    if (maxByVh > 0) maxH = Math.min(maxH, maxByVh);
+    maxH = Math.max(220, maxH);
+
     tocPanel.style.top = topPx + 'px';
-    tocPanel.style.maxHeight = Math.max(220, Math.floor(available)) + 'px';
+    tocPanel.style.maxHeight = maxH + 'px';
 
     scheduleClaspPosition();
   }
