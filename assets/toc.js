@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.11 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.12 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.11';
+  window.COVENANT_TOC_VERSION = '3.1.12';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -892,6 +892,10 @@
         renderToC();
         enableFocusTrap();
       }
+
+      // Drag-open state is complete once the panel is open.
+      root.classList.remove('toc-opening');
+      root.classList.remove('toc-closing');
     }
 
     function applyClosedStateFromDrag() {
@@ -902,6 +906,9 @@
         cancelHold();
 
         if (!confirmNavigating) clearPendingSelection();
+
+        // Keep the footer sovereign until the close animation is finished.
+        root.classList.add('toc-closing');
 
         tocPanel.classList.remove('is-open');
         tocPanel.classList.add('is-closing');
@@ -920,6 +927,8 @@
           tocPanel.classList.remove('is-closing');
           tocPanel.setAttribute('aria-hidden', 'true');
           unlockBodyScroll();
+
+          root.classList.remove('toc-closing');
 
           var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
           if (target && target.focus) target.focus();
@@ -956,6 +965,9 @@
           else if (tocPanel.focus) tocPanel.focus();
         }, 0);
       } else {
+        // Ensure the dock stays above the sheet for the full snap-down (even if not "open").
+        if (!startWasOpen) root.classList.add('toc-opening');
+
         setTocToggleOffset(0, 0, false);
         applyDragFrame(closedY, false);
         applyClosedStateFromDrag();
@@ -970,6 +982,9 @@
           tocOverlay.style.opacity = '';
           tocOverlay.style.transition = '';
         }
+
+        // If we snapped shut from a closed-start drag, we are done "opening" now.
+        if (!shouldOpen && !startWasOpen) root.classList.remove('toc-opening');
       }, SNAP_MS + 20);
     }
 
@@ -995,6 +1010,7 @@
 
       // If we are starting from closed, we are "opening" (even before fully open).
       if (!startWasOpen) {
+        root.classList.remove('toc-closing');
         root.classList.add('toc-opening');
         renderToC();
       }
@@ -1056,13 +1072,13 @@
       tocPanel.classList.remove('is-dragging');
       if (tocToggle) tocToggle.classList.remove('is-toc-dragging');
 
-      // Opening-class should only live during a drag-open gesture.
-      root.classList.remove('toc-opening');
-
       if (moved) {
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
         setTimeout(function () { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
+      } else {
+        // No drag gesture actually happened (likely a click); clear transient state.
+        root.classList.remove('toc-opening');
       }
 
       if (e) {
@@ -1167,6 +1183,8 @@
 
     focusReturnEl = tocToggle;
 
+    root.classList.remove('toc-closing');
+
     lockBodyScroll();
     positionPanel();
 
@@ -1229,6 +1247,10 @@
       clearPendingSelection();
     }
 
+    // Keep footer above sheet until close fully completes.
+    root.classList.add('toc-closing');
+    root.classList.remove('toc-opening');
+
     tocPanel.classList.remove('is-open');
     tocPanel.classList.add('is-closing');
     tocOverlay.classList.remove('is-open');
@@ -1247,6 +1269,8 @@
       tocPanel.classList.remove('is-closing');
       tocPanel.setAttribute('aria-hidden', 'true');
       unlockBodyScroll();
+
+      root.classList.remove('toc-closing');
 
       // Return the tab to the dock once the sheet is gone.
       clearTocToggleOffset();
