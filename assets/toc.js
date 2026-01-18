@@ -783,6 +783,11 @@
     var pointerId = null;
     var dragSource = null; // 'seal' or 'handle'
 
+    // Allow tap-to-open on iOS Safari by only initiating drag after MOVE_SLOP.
+    var sealPrimed = false;
+    var sealPointerId = null;
+    var sealStartY = 0;
+
     var startY = 0;
     var lastY = 0;
     var lastT = 0;
@@ -929,7 +934,8 @@
           tocToggle.setAttribute('aria-label', 'Open Contents');
         }
 
-        var closeMs = Math.max(180, getPanelCloseMs());
+        // iOS Safari: keep close cleanup aligned with the snap transform duration to avoid one-frame flicker.
+        var closeMs = Math.max(180, getPanelCloseMs(), SNAP_MS);
         setTimeout(function () {
           if (!tocPanel) return;
           tocPanel.classList.remove('is-closing');
@@ -1005,7 +1011,7 @@
       }, SNAP_MS + 20);
     }
 
-    function beginDrag(e, source) {
+    function beginDrag(e, source, forcedStartY) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
       dragging = true;
@@ -1013,8 +1019,8 @@
       pointerId = e.pointerId;
       dragSource = source;
 
-      startY = e.clientY;
-      lastY = startY;
+      startY = (typeof forcedStartY === 'number') ? forcedStartY : e.clientY;
+      lastY = e.clientY;
       lastT = Date.now();
       velocity = 0;
 
@@ -1054,7 +1060,8 @@
         captureTarget.setPointerCapture(e.pointerId);
       }
 
-      e.preventDefault();
+      // Only prevent default once drag has actually begun.
+      if (e && e.preventDefault) e.preventDefault();
     }
 
     function moveDrag(e) {
@@ -1108,22 +1115,47 @@
     }
 
     tocToggle.addEventListener('pointerdown', function (e) {
-      beginDrag(e, 'seal');
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      // Prime a possible drag, but do not preventDefault so a tap can still produce a click.
+      sealPrimed = true;
+      sealPointerId = e.pointerId;
+      sealStartY = e.clientY;
     });
 
     tocToggle.addEventListener('pointermove', function (e) {
+      // If drag is already active, keep moving.
+      if (dragging) {
+        moveDrag(e);
+        return;
+      }
+
+      if (!sealPrimed || e.pointerId !== sealPointerId) return;
+
+      var dy = e.clientY - sealStartY;
+      if (Math.abs(dy) <= MOVE_SLOP) return;
+
+      // Promote to an actual drag.
+      sealPrimed = false;
+      beginDrag(e, 'seal', sealStartY);
       moveDrag(e);
     });
 
     tocToggle.addEventListener('pointerup', function (e) {
+      sealPrimed = false;
+      sealPointerId = null;
       endDrag(e);
     });
 
     tocToggle.addEventListener('pointercancel', function (e) {
+      sealPrimed = false;
+      sealPointerId = null;
       endDrag(e);
     });
 
     tocToggle.addEventListener('lostpointercapture', function (e) {
+      sealPrimed = false;
+      sealPointerId = null;
       endDrag(e);
     });
 
