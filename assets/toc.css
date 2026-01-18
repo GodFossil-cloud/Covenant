@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.11 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.12 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -48,8 +48,8 @@
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
 
-  /* Drag start: push the fully-closed sheet slightly lower before the first upward drag reveals it. */
-  --toc-closed-offset:14px;
+  /* Drag start: keep the fully-closed sheet seated at the dock baseline. */
+  --toc-closed-offset:0px;
 
   /* Fully-open lift: nudge the sheet 1px higher (JS drag math matches this baseline). */
   --toc-open-lift:-1px;
