@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.18 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.19 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.18';
+  window.COVENANT_TOC_VERSION = '3.1.19';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -818,6 +818,9 @@
     // Extra sink to guarantee the sheet fully clears the viewport (prevents 1px sliver flashes on iOS).
     var CLOSE_SINK_PX = 4;
 
+    // Cancel-open needs a deeper sink because iOS may briefly re-composite through the footer on the final frame.
+    var CANCEL_OPEN_SINK_PX = 12;
+
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
 
     function computeOpenLift() {
@@ -1035,7 +1038,7 @@
         } else {
           // Cancel-open: snap fully offscreen, then keep the offscreen transform in place.
           // Clearing transform here can briefly re-enable the CSS baseline translateY(10px) which iOS may flash.
-          applyDragFrame(closedY + CLOSE_SINK_PX, false);
+          applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
         }
       }
 
@@ -1052,14 +1055,25 @@
           }
         } else if (!startWasOpen) {
           // Cancel-open cleanup: force invisible, but keep the offscreen transform.
+          // Also keep the footer elevated for a couple frames while iOS finishes compositor cleanup.
           tocPanel.style.opacity = '0';
           if (tocOverlay) tocOverlay.style.opacity = '0';
           tocPanel.style.transition = '';
           if (tocOverlay) tocOverlay.style.transition = '';
-        }
 
-        // If we snapped shut from a closed-start drag, we are done "opening" now.
-        if (!shouldOpen && !startWasOpen) root.classList.remove('toc-opening');
+          root.classList.add('toc-dock-settling');
+
+          var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+          raf(function () {
+            raf(function () {
+              root.classList.remove('toc-opening');
+            });
+          });
+
+          setTimeout(function () {
+            root.classList.remove('toc-dock-settling');
+          }, SNAP_MS + 80);
+        }
       }, SNAP_MS + 20);
     }
 
