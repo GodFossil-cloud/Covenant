@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.5 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.6 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -221,7 +221,8 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
   border-radius:16px 16px 0 0;
   z-index:1401;
   opacity:0;
-  transform:translateX(-50%) translateY(10px);
+  --toc-panel-x:-50%;
+  transform:translateX(var(--toc-panel-x)) translateY(10px);
   transform-origin:50% 100%;
   transition:transform 300ms var(--toc-scroll-ease),opacity var(--toc-scroll-opacity-in) ease;
   display:flex;
@@ -230,8 +231,8 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
   background-clip:padding-box;
 }
 
-.toc-panel.is-open{opacity:1;transform:translateX(-50%) translateY(0)}
-.toc-panel.is-closing{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
+.toc-panel.is-open{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(0)}
+.toc-panel.is-closing{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(0);pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
@@ -389,7 +390,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
 @media (prefers-reduced-motion: reduce){
   :root{--toc-scroll-open-duration:1ms;--toc-scroll-close-duration:1ms;--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms;--toc-snap-duration:1ms}
   .toc-overlay{transition:none}
-  .toc-panel{transition:opacity 160ms ease !important;transform:translateX(-50%) !important}
+  .toc-panel{transition:opacity 160ms ease !important;transform:translateX(var(--toc-panel-x)) !important}
   .toc-toast{transition:none;transform:none}
   .toc-toast.is-visible{transform:none}
 }
@@ -401,7 +402,16 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
     --toc-node-locked:8px;
     --dock-tab-raise:-20px;
   }
-  .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
+
+  /* Mobile: sheet begins at the ToC tab's left edge and runs flush to the viewport right edge. */
+  .toc-panel{
+    --toc-panel-x:0px;
+    left:var(--toc-panel-left, 12px);
+    right:0;
+    width:auto;
+    border-radius:0 14px 0 0;
+  }
+
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
   .toc-produced-title{font-size:1.0rem}
   .toc-panel-body{padding:1.0rem 1.1rem 1.05rem}

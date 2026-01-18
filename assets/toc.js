@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.5 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.6 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.5';
+  window.COVENANT_TOC_VERSION = '3.1.6';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -57,6 +57,14 @@
   // ToC toggle "carry" offsets (so the dock tab can ride with the sheet).
   var tocToggleDx = 0;
   var tocToggleDy = 0;
+
+  function isMobileSheet() {
+    try {
+      return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    } catch (err) {
+      return false;
+    }
+  }
 
   function closestSafe(target, selector) {
     if (!target) return null;
@@ -169,6 +177,17 @@
 
     tocPanel.style.bottom = bottom + 'px';
     tocPanel.style.maxHeight = maxH + 'px';
+
+    // Mobile-only: anchor the sheet from the ToC tab's left edge to the viewport right edge.
+    if (tocToggle && isMobileSheet()) {
+      var rect = tocToggle.getBoundingClientRect();
+      var left = Math.max(0, Math.round(rect.left));
+      tocPanel.style.setProperty('--toc-panel-left', left + 'px');
+      tocPanel.style.setProperty('--toc-panel-x', '0px');
+    } else {
+      tocPanel.style.removeProperty('--toc-panel-left');
+      tocPanel.style.removeProperty('--toc-panel-x');
+    }
   }
 
   // ---------------------------
@@ -794,7 +813,7 @@
       if (!tocPanel) return;
       currentY = y;
 
-      tocPanel.style.transform = 'translateX(-50%) translateY(' + y + 'px)';
+      tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
 
       var progress = 1 - (y / (closedY || 1));
       if (progress < 0) progress = 0;
@@ -966,7 +985,7 @@
       if (tocOverlay) tocOverlay.style.transition = 'none';
 
       // Make sure the panel is at the expected start transform before measuring open-top.
-      tocPanel.style.transform = 'translateX(-50%) translateY(' + currentY + 'px)';
+      tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
 
       // Precompute the tab's open offset once, so move frames stay cheap and "vertical only".
       openDyWanted = computeOpenDyForCurrentDragState(currentY);
