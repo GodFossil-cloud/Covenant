@@ -43,6 +43,11 @@
         </div>
 
         <div class="nav-right" aria-label="Next">
+            <!-- Placeholder seal (symmetry) — left of Next (between center and Next). -->
+            <button class="nav-btn center toc-seal" id="mirrorToggle" type="button" aria-label="Reserved" disabled aria-disabled="true">
+                <span class="toc-glyph" aria-hidden="true">⟡</span>
+            </button>
+
             {% if include.next_href and include.next_href != "" %}
                 <a href="{{ include.next_href }}" class="nav-next" aria-label="{{ include.next_aria | default: "Next" }}">
                     <span class="nav-next-frame" aria-hidden="true">

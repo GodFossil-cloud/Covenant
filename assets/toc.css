@@ -42,9 +42,15 @@
 /* Keep ToC seal silent while Lexicon is open (avoid two competing doors). */
 html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:none}
 
+/* Keep mirror seal silent while Lexicon is open (preserve single-door focus). */
+html.lexicon-scroll-lock #mirrorToggle{opacity:0;visibility:hidden;pointer-events:none}
+
 /* Bring the ToC seal close to the center by letting it occupy the right edge of the left bay.
    (Layout-first, then a small transform nudge for seating.) */
 html .nav-left #tocToggle.toc-seal{margin-left:auto}
+
+/* Symmetry: mirror seal occupies the left edge of the right bay. */
+html .nav-right #mirrorToggle.toc-seal{margin-right:auto}
 
 /* Keep Lexicon seal centered in its cradle:
    Use a symmetric 3-column row: [ToC] [Lexicon] [spacer]. */
@@ -54,7 +60,8 @@ html .nav-left #tocToggle.toc-seal{margin-left:auto}
 
 /* The footer already provides the cradle; this gives the ToC seal its own shape + scale.
    Shape: more rounded top corners, quieter bottom corners (still a seal, not a pill). */
-html #tocToggle.toc-seal{
+html #tocToggle.toc-seal,
+html #mirrorToggle.toc-seal{
   position:relative;
   width:var(--toc-seal-width);
   height:var(--toc-seal-size);
@@ -62,19 +69,23 @@ html #tocToggle.toc-seal{
   justify-self:center;
   align-self:center;
 
-  /* Seat inside the dock + nudge a touch farther inward toward the center. */
-  transform:translate(var(--toc-seal-shift-x),var(--toc-seal-shift-y));
-
   /* Micro-cradle: a quiet interior shadow so the seal feels seated in the dock. */
   box-shadow:inset 0 -12px 16px -16px rgba(0,0,0,.86);
 }
 
+/* Inward nudges: left bay nudges right, right bay nudges left. */
+html #tocToggle.toc-seal{transform:translate(var(--toc-seal-shift-x),var(--toc-seal-shift-y))}
+html #mirrorToggle.toc-seal{transform:translate(calc(-1 * var(--toc-seal-shift-x)),var(--toc-seal-shift-y))}
+
 html #tocToggle.toc-seal::before,
-html #tocToggle.toc-seal::after{
+html #tocToggle.toc-seal::after,
+html #mirrorToggle.toc-seal::before,
+html #mirrorToggle.toc-seal::after{
   border-radius:var(--toc-seal-top-radius) var(--toc-seal-top-radius) var(--toc-seal-bottom-radius) var(--toc-seal-bottom-radius);
 }
 
-html #tocToggle.toc-seal .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.88rem;line-height:1;transform:translateY(-.5px);display:inline-block}
+html #tocToggle.toc-seal .toc-glyph,
+html #mirrorToggle.toc-seal .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.88rem;line-height:1;transform:translateY(-.5px);display:inline-block}
 
 /* When ToC is open, keep the seal above the footer dim layer (same policy as Lexicon). */
 html.toc-open #tocToggle,html.toc-closing #tocToggle{position:relative;z-index:3}
