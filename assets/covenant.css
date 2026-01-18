@@ -497,8 +497,24 @@ body.is-exiting #blackFadeOverlay {
     height: var(--footer-height);
     padding: 0 10px;
     display: grid;
-    grid-template-columns: 100px 1fr 100px;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
+}
+
+.nav-left,
+.nav-right {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-left {
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.nav-right {
+    justify-content: flex-end;
 }
 
 .nav-center {
@@ -618,7 +634,7 @@ body.is-exiting #blackFadeOverlay {
 .nav-next,
 .nav-prev {
     height: 100%;
-    width: 100%;
+    width: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -626,6 +642,18 @@ body.is-exiting #blackFadeOverlay {
     gap: 3px;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
+
+    /* If rendered as <button>, kill default button chrome. */
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.nav-next:disabled,
+.nav-prev:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
 }
 
 .nav-next-frame,
@@ -697,6 +725,7 @@ body.is-exiting #blackFadeOverlay {
 
 .nav-next:active .nav-next-frame,
 .nav-prev:active .nav-prev-frame {
+    transform: translateY(1px);
     filter: brightness(0.96);
 }
 
@@ -1417,10 +1446,6 @@ body.is-exiting #blackFadeOverlay {
     :root {
         --nav-pill-width: 60px;
         --nav-pill-height: 32px;
-    }
-
-    .nav-footer-inner {
-        grid-template-columns: 86px 1fr 86px;
     }
 }
 
