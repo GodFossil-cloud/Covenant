@@ -24,6 +24,9 @@
                 </button>
 
                 <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="{{ include.center_aria_label | default: "Open Lexicon" }}" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𖤓</span></button>
+
+                <!-- Spacer keeps Lexicon seal centered in the cradle while ToC sits to the left. -->
+                <span class="nav-seal-spacer" aria-hidden="true"></span>
             </div>
 
             <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true"
