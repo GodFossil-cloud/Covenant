@@ -1,263 +1,218 @@
-/*! Covenant ToC Panel Styles v2.7.1 (Divider Clasp + Produced Header Reveal + Mobile Staging) */
+/*! Covenant ToC Panel Styles v3.0.0 (Modal Veil + Footer Seal + Hold-to-Enter) */
 
-:root{--toc-scroll-cap:24px;--toc-scroll-open-duration:520ms;--toc-scroll-close-duration:320ms;--toc-scroll-duration:var(--toc-scroll-open-duration);--toc-scroll-ease:cubic-bezier(.22,.61,.36,1);--toc-scroll-opacity-in:140ms;--toc-rollband-height:calc(var(--toc-scroll-cap) * 0.85);--toc-footer-fade:220ms;--toc-ink:rgba(44,62,80,.92);--toc-ink-soft:rgba(44,62,80,.74);--toc-rule:rgba(139,115,85,.26);--toc-rule-strong:rgba(139,115,85,.36);--toc-parchment:rgba(247,244,238,1);--toc-parchment-hi:rgba(255,255,255,.72);--toc-rule-x:.95rem;--toc-node:10px;--toc-brass:rgba(201,169,97,1);--toc-node-locked:8px;--toc-item-pad-y:.26rem;--toc-item-line:1.55;--toc-tab-width:48px;--toc-tab-height:44px;--toc-tab-slide-duration:420ms;--toc-tab-x:0px;--toc-tab-top:calc(14px + env(safe-area-inset-top, 0px));--toc-clasp-seat-top:env(safe-area-inset-top, 0px);--toc-clasp-pull:0px;--toc-clasp-max-pull:46px;--toc-clasp-arm-at:28px;--toc-clasp-under-y:14px;--toc-clasp-over-y:-52px;--toc-clasp-under-y-sticky:10px}
+:root{
+  --toc-scroll-open-duration:520ms;
+  --toc-scroll-close-duration:320ms;
+  --toc-scroll-duration:var(--toc-scroll-open-duration);
+  --toc-scroll-ease:cubic-bezier(.22,.61,.36,1);
+  --toc-scroll-opacity-in:140ms;
 
-.section-header.has-toc-toggle{position:relative}
-.section-header.has-toc-toggle h1{transition:text-shadow 220ms ease,filter 220ms ease}
-.section-header.toc-title-sheen h1{text-shadow:0 0 14px rgba(201,169,97,.18),0 0 1px rgba(255,255,255,.16);filter:brightness(1.02)}
+  --toc-ink:rgba(44,62,80,.92);
+  --toc-ink-soft:rgba(44,62,80,.74);
+  --toc-rule:rgba(139,115,85,.26);
+  --toc-rule-strong:rgba(139,115,85,.36);
 
-/* =========================================================
-   Divider Clasp (centered)
+  --toc-parchment:rgba(247,244,238,1);
+  --toc-parchment-hi:rgba(255,255,255,.72);
 
-   The clasp tracks the existing header divider.
-   IMPORTANT: Do not draw an extra rule while the header divider is visible.
-   We only render a rule when the divider becomes sticky at the top edge.
+  --toc-brass:rgba(201,169,97,1);
 
-   JS sets html classes:
-   - toc-clasp-under / toc-clasp-over (flip around the rule)
-   - toc-clasp-sticky (divider seated at the top edge)
-   - toc-clasp-pulling / toc-clasp-armed (vertical pull gesture)
-   ========================================================= */
+  --toc-rule-x:.95rem;
+  --toc-node:10px;
+  --toc-node-locked:8px;
+  --toc-item-pad-y:.26rem;
+  --toc-item-line:1.55;
 
-.toc-clasp{position:fixed;z-index:1500;height:0;border-top:0;pointer-events:none;left:0;top:0;width:100%;overflow:visible;transform:translateZ(0)}
-html.toc-clasp-sticky .toc-clasp{border-top:2px solid var(--accent-color)}
+  /* Optional: reserve a little top breathing-room when computing max height in JS. */
+  --toc-top-safe:14px;
+}
 
-.toc-toggle{position:absolute;z-index:1501;padding:0;margin:0;border:none;background:transparent;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:none;user-select:none;-webkit-user-select:none}
-.toc-toggle:focus-visible{outline:2px solid rgba(201,169,97,.45);outline-offset:4px}
+/* -------------------------------------------------
+   Footer seal (ToC toggle)
+   ------------------------------------------------- */
 
-/* Legacy edge tab is disabled in divider-clasp mode (JS no longer creates it). */
-.toc-toggle--tab{display:none !important}
+/* Keep ToC seal silent while Lexicon is open (avoid two competing doors). */
+html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:none}
 
-.toc-toggle--clasp{left:50%;top:0;width:56px;height:44px;display:inline-flex;align-items:center;justify-content:center;color:rgba(44,62,80,.80);background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));border:1px solid rgba(44,62,80,.18);border-radius:12px;box-shadow:0 1px 0 rgba(255,255,255,.35),0 14px 26px rgba(0,0,0,.10),inset 0 18px 22px -22px rgba(0,0,0,.30);background-clip:padding-box;transform:translateX(-50%) translateY(calc(var(--toc-clasp-y, var(--toc-clasp-under-y)) + var(--toc-clasp-pull)));transition:transform 320ms var(--toc-scroll-ease),color 220ms ease,box-shadow 220ms ease}
+/* The footer already provides the cradle; this only gives the ToC seal its own glyph posture. */
+html #tocToggle.toc-seal{position:relative}
+html #tocToggle.toc-seal .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:1.05rem;line-height:1;transform:translateY(-.5px);display:inline-block}
 
-html.toc-clasp-sticky .toc-toggle--clasp{transform:translateX(-50%) translateY(calc(var(--toc-clasp-y, var(--toc-clasp-under-y-sticky)) + var(--toc-clasp-pull)))}
+/* When ToC is open, keep the seal above the footer dim layer (same policy as Lexicon). */
+html.toc-open #tocToggle,html.toc-closing #tocToggle{position:relative;z-index:3}
 
-html.toc-clasp-under{--toc-clasp-y:var(--toc-clasp-under-y)}
-html.toc-clasp-over{--toc-clasp-y:var(--toc-clasp-over-y)}
-html.toc-clasp-sticky.toc-clasp-under{--toc-clasp-y:var(--toc-clasp-under-y-sticky)}
-
-html.toc-clasp-pulling .toc-toggle--clasp{transition:none}
-
-.toc-toggle--clasp:hover,.toc-toggle--clasp:focus-visible{color:rgba(44,62,80,.92);box-shadow:0 1px 0 rgba(255,255,255,.42),0 18px 34px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.32)}
-
-.toc-toggle-glyph{font-size:1.15rem;line-height:1;transform:translateY(-.5px)}
-
-/* Unlatch hint (only during the armed segment of the pull). */
-html.toc-clasp-armed .toc-toggle--clasp::after{content:'UNLATCH';position:absolute;left:50%;top:100%;transform:translateX(-50%) translateY(8px);font-family:'Cormorant Garamond',serif;font-size:.72rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.80);text-shadow:0 1px 0 rgba(255,255,255,.25);white-space:nowrap;pointer-events:none}
-
-html.lexicon-scroll-lock .toc-clasp,html.lexicon-scroll-lock .toc-toggle{opacity:0;visibility:hidden;pointer-events:none}
+/* -------------------------------------------------
+   Scroll lock
+   ------------------------------------------------- */
 
 html.toc-scroll-lock{overflow:hidden}
 body.toc-scroll-lock{position:fixed;width:100%}
 
-/* Animate the Lexicon seal into a "receded" (locked) posture while the ToC is open.
-   NOTE: toc.css is loaded BEFORE covenant.css via _includes/covenant-config.html.
-   Use a slightly higher-specificity selector so our transition is not overridden on mobile.
+/* -------------------------------------------------
+   Footer fade choreography
+   ------------------------------------------------- */
 
-   IMPORTANT: do not animate opacity/filter here; it reads as a fade. */
-html #lexiconToggle{transition:color .2s ease,text-shadow .2s ease,transform var(--lexicon-snap-duration) var(--lexicon-snap-ease)}
+html .nav-footer{isolation:isolate;transition:border-top-color 220ms var(--toc-scroll-ease),border-bottom-color 220ms var(--toc-scroll-ease)}
+html .nav-footer::before,html .nav-footer::after{transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
+html #citationLabel{transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 0s}
 
-/* Footer fade choreography (edge lines + cradle + citation label). */
-html .nav-footer{isolation:isolate;transition:border-top-color var(--toc-footer-fade) var(--toc-scroll-ease),border-bottom-color var(--toc-footer-fade) var(--toc-scroll-ease)}
-html .nav-footer::before,html .nav-footer::after{transition:opacity var(--toc-footer-fade) var(--toc-scroll-ease);will-change:opacity}
-html #citationLabel{transition:opacity var(--toc-footer-fade) var(--toc-scroll-ease),visibility 0s linear 0s}
-
-/* While the ToC is open (and while it is closing), keep the seal BELOW the cradle layers,
-   but ABOVE any footer-dimming layer so it never appears "washed" or sliced by overlays. */
-html.toc-open #lexiconToggle,html.toc-closing #lexiconToggle{z-index:3}
-html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{z-index:6}
-html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{z-index:6}
-
-/* Fade edge lines (footer top/bottom borders) while ToC is open/closing. */
 html.toc-open .nav-footer,html.toc-closing .nav-footer{border-top-color:transparent;border-bottom-color:transparent}
-
-/* While the ToC is open/closing, fade the citation label under the seal.
-   Keep layout stable; make it visually silent, and only flip visibility after the fade. */
-html.toc-open #citationLabel,html.toc-closing #citationLabel{opacity:0;visibility:hidden;transition:opacity var(--toc-footer-fade) var(--toc-scroll-ease),visibility 0s linear var(--toc-footer-fade)}
-
-/* During ToC open/close, fade the footer's cradle/hairline accents.
-   - ::before is the thin top hairline.
-   - ::after is the cradle semicircle; fading it prevents a dark "socket" from appearing when the seal recedes. */
+html.toc-open #citationLabel,html.toc-closing #citationLabel{opacity:0;visibility:hidden;transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 220ms}
 html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{opacity:0}
 html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{opacity:0}
 
-/* Dim the footer slab while ToC is open/closing, but keep the nav buttons fully bright.
-   This avoids "dimming-but-still-clickable" confusion for Prev/Next.
-
-   NOTE: The dim layer must sit BELOW #lexiconToggle, otherwise the seal can look briefly
-   semi-transparent (and a horizontal edge can read as a "line" through the wax). */
 html.toc-open .nav-footer-inner,html.toc-closing .nav-footer-inner{position:relative}
 html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.32);pointer-events:none;z-index:1}
-html.toc-open .nav-prev,html.toc-open .nav-next,html.toc-open .nav-btn:not(#lexiconToggle),html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:not(#lexiconToggle){position:relative;z-index:2}
+html.toc-open .nav-prev,html.toc-open .nav-next,html.toc-open .nav-btn:not(#lexiconToggle):not(#tocToggle),
+html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:not(#lexiconToggle):not(#tocToggle){position:relative;z-index:2}
 
-/* Micro-glint: a quick "latch click" before the seal recedes (subtle, sacred). */
-@keyframes lexiconSealLatchGlint{0%{box-shadow:inset 0 0 18px rgba(0,0,0,.84),inset 0 1px 0 rgba(255,255,255,.05),0 10px 18px -14px rgba(0,0,0,.90),0 14px 10px -12px rgba(0,0,0,.92)}45%{box-shadow:inset 0 0 20px rgba(0,0,0,.90),inset 0 1px 0 rgba(255,255,255,.10),0 0 0 1px rgba(242,220,154,.20),0 0 14px rgba(242,220,154,.12),0 14px 10px -12px rgba(0,0,0,.92)}100%{box-shadow:inset 0 0 18px rgba(0,0,0,.84),inset 0 1px 0 rgba(255,255,255,.05),0 10px 18px -14px rgba(0,0,0,.90),0 14px 10px -12px rgba(0,0,0,.92)}}
-@keyframes lexiconSealLatchSurface{0%{background-color:var(--obsidian-1)}45%{background-color:#141418}100%{background-color:var(--obsidian-1)}}
+/* -------------------------------------------------
+   Modal veil
+   ------------------------------------------------- */
 
-html.toc-open #lexiconToggle::before{animation:lexiconSealLatchGlint 140ms ease-out 1}
-html.toc-open #lexiconToggle::after{animation:lexiconSealLatchSurface 140ms ease-out 1}
-
-/* Delay the recede just long enough for the latch glint to read.
-   NOTE: keep the seal fully opaque, and do not dim it (no filter fade). */
-html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-seat-nudge:-8px}
-
-@media (prefers-reduced-motion: reduce){html #lexiconToggle{transition:none}html.toc-open #lexiconToggle{transition-delay:0ms}html.toc-open #lexiconToggle::before,html.toc-open #lexiconToggle::after{animation:none}}
-
-/* Do not dim the footer itself via the overlay; we dim the slab with a dedicated layer above.
-   This also prevents accidental pointer blocking on the footer region. */
-.toc-overlay{position:fixed;inset:0 0 var(--footer-total-height) 0;background:rgba(0,0,0,.6);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms cubic-bezier(.22,.61,.36,1)}
+/* Do not cover the footer; the dock stays sovereign. */
+.toc-overlay{position:fixed;inset:0 0 var(--footer-total-height) 0;background:rgba(0,0,0,.64);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms var(--toc-scroll-ease)}
 .toc-overlay.is-open{opacity:1;pointer-events:auto}
 
-/* Panel: parchment that unfurls like a scroll.
-   Cathedral Index: keep the unfurl, but make the interior read like an archive index.
+/* -------------------------------------------------
+   Panel (anchored above footer)
+   ------------------------------------------------- */
 
-   IMPORTANT: keep the parchment fully opaque (no fade to transparent). */
-.toc-panel{position:fixed;left:50%;top:110px;max-height:70vh;width:min(760px,calc(100vw - 24px));background:linear-gradient(to bottom,var(--toc-parchment) 0%,rgba(243,240,234,1) 100%);border:1px solid rgba(44,62,80,.16);border-bottom-color:transparent;box-shadow:0 22px 60px rgba(0,0,0,.24),0 8px 24px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.42);border-radius:0 0 16px 16px;z-index:1401;opacity:0;transform:translateX(-50%) translateY(-10px);transform-origin:50% 0;transition:transform 300ms var(--toc-scroll-ease),opacity var(--toc-scroll-opacity-in) ease;display:flex;flex-direction:column;overflow:hidden;background-clip:padding-box;will-change:clip-path,opacity,transform}
+.toc-panel{
+  position:fixed;
+  left:50%;
+  bottom:calc(var(--footer-total-height) + 14px);
+  top:auto;
+  width:min(760px,calc(100vw - 24px));
+  max-height:70vh;
+  background:linear-gradient(to bottom,var(--toc-parchment) 0%,rgba(243,240,234,1) 100%);
+  border:1px solid rgba(44,62,80,.16);
+  border-top-color:rgba(44,62,80,.18);
+  box-shadow:0 22px 60px rgba(0,0,0,.26),0 8px 24px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.42);
+  border-radius:16px 16px 0 0;
+  z-index:1401;
+  opacity:0;
+  transform:translateX(-50%) translateY(10px);
+  transform-origin:50% 100%;
+  transition:transform 300ms var(--toc-scroll-ease),opacity var(--toc-scroll-opacity-in) ease;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background-clip:padding-box;
+}
+
 .toc-panel.is-open{opacity:1;transform:translateX(-50%) translateY(0)}
 .toc-panel.is-closing{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
-@supports ((clip-path: inset(10px)) or (-webkit-clip-path: inset(10px))){
-  .toc-panel{transform:translateX(-50%);transition:clip-path var(--toc-scroll-duration) var(--toc-scroll-ease),-webkit-clip-path var(--toc-scroll-duration) var(--toc-scroll-ease),opacity var(--toc-scroll-opacity-in) ease;clip-path:inset(0 0 calc(100% - var(--toc-scroll-cap)) 0 round 0 0 16px 16px);-webkit-clip-path:inset(0 0 calc(100% - var(--toc-scroll-cap)) 0 round 0 0 16px 16px)}
-  .toc-panel.is-open{clip-path:inset(0 0 0 0 round 0 0 16px 16px);-webkit-clip-path:inset(0 0 0 0 round 0 0 16px 16px)}
-  .toc-panel.is-closing{clip-path:inset(0 0 calc(100% - var(--toc-scroll-cap)) 0 round 0 0 16px 16px);-webkit-clip-path:inset(0 0 calc(100% - var(--toc-scroll-cap)) 0 round 0 0 16px 16px)}
+/* Inner veil (subtle), to fuse “black glass” with parchment. */
+.toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 58%,rgba(0,0,0,.012) 74%,rgba(0,0,0,.060) 100%);pointer-events:none;z-index:3}
+
+/* -------------------------------------------------
+   Header + produced title
+   ------------------------------------------------- */
+
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.35rem .82rem;border-bottom:1px solid rgba(44,62,80,.12);background:linear-gradient(to bottom,rgba(255,255,255,.52),rgba(255,255,255,.16))}
+.toc-produced{min-height:1.15rem}
+.toc-produced-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;line-height:1.25;color:rgba(44,62,80,.88);text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:7.2rem}
+
+/* -------------------------------------------------
+   Hold-to-enter button
+   ------------------------------------------------- */
+
+.toc-confirm-btn{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:5;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:.42rem .82rem;
+  border-radius:999px;
+  border:1px solid rgba(44,62,80,.16);
+  border-bottom-color:rgba(44,62,80,.24);
+  background:
+    conic-gradient(from 270deg, rgba(201,169,97,.92) calc(var(--toc-hold-p, 0) * 360deg), rgba(201,169,97,0) 0),
+    linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));
+  font-family:'Cormorant Garamond',serif;
+  font-size:.90rem;
+  font-weight:650;
+  letter-spacing:.14em;
+  font-variant-caps:all-small-caps;
+  color:var(--toc-ink-soft);
+  box-shadow:0 1px 0 rgba(255,255,255,.35),0 10px 20px rgba(0,0,0,.06);
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
 }
 
-/* Rolled cylinder (micro): a moving highlight/shadow band keyed to --toc-scroll-cap. */
-@keyframes tocRollBandIn{0%{opacity:0;transform:translateY(calc(-.55 * var(--toc-scroll-cap)))}22%{opacity:.92;transform:translateY(0)}62%{opacity:.38;transform:translateY(0)}100%{opacity:0;transform:translateY(0)}}
-@keyframes tocRollBandOut{0%{opacity:0;transform:translateY(0)}30%{opacity:.52;transform:translateY(0)}68%{opacity:.92;transform:translateY(calc(-.10 * var(--toc-scroll-cap)))}100%{opacity:0;transform:translateY(calc(-.55 * var(--toc-scroll-cap)))}}
-
-.toc-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:var(--toc-rollband-height);pointer-events:none;opacity:0;transform:translateY(calc(-.55 * var(--toc-scroll-cap)));background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 56%),linear-gradient(to bottom,rgba(0,0,0,.26) 0%,rgba(0,0,0,0) 78%);filter:blur(.2px)}
-
-.toc-panel.is-open::before{animation:tocRollBandIn var(--toc-scroll-duration) var(--toc-scroll-ease) 1 both}
-.toc-panel.is-closing::before{animation:tocRollBandOut var(--toc-scroll-duration) var(--toc-scroll-ease) 1 both}
-
-@media (prefers-reduced-motion: reduce){.toc-panel.is-open::before,.toc-panel.is-closing::before{animation:none}.toc-panel::before{display:none}}
-
-/* Bottom veil anchored to the panel (NOT the scroll container).
-   Keep it alpha-only (no blend-mode) to avoid iOS scroll compositing seams. */
-.toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 55%,rgba(0,0,0,.012) 72%,rgba(0,0,0,.045) 100%);opacity:1;pointer-events:none;z-index:3}
-
-.toc-confirm-btn{position:absolute;top:12px;right:12px;z-index:5;display:inline-flex;align-items:center;justify-content:center;padding:.42rem .82rem;border-radius:999px;border:1px solid rgba(44,62,80,.16);border-bottom-color:rgba(44,62,80,.24);background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:600;letter-spacing:.14em;font-variant-caps:all-small-caps;color:var(--toc-ink-soft);box-shadow:0 1px 0 rgba(255,255,255,.35),0 10px 20px rgba(0,0,0,.06);cursor:pointer}
 .toc-confirm-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:4px}
 .toc-confirm-btn:disabled{opacity:.52;cursor:default}
+.toc-confirm-btn.is-holding{color:rgba(44,62,80,.92)}
 
-/* Produced header bar (visible title area). */
-.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.35rem .82rem;border-bottom:1px solid rgba(44,62,80,.12);background:linear-gradient(to bottom,rgba(255,255,255,.52),rgba(255,255,255,.16))}
-.toc-produced{min-height:1.15rem;opacity:1;transform:translateY(0);transition:opacity 220ms ease,transform 260ms var(--toc-scroll-ease);will-change:opacity,transform}
-.toc-panel.toc-produced-latent .toc-produced{opacity:0;transform:translateY(-8px)}
-.toc-produced-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;line-height:1.25;color:rgba(44,62,80,.88);text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:5.4rem}
+/* -------------------------------------------------
+   Body
+   ------------------------------------------------- */
 
-/* IMPORTANT: allow vertical scrolling inside the panel body. */
 .toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
-
-/* Two-stage open: while latent, the body is rolled up under the produced header.
-   (We use clip-path rather than height so flex layout remains stable.) */
-.toc-panel.toc-body-latent .toc-panel-body{pointer-events:none;opacity:.98;transform:translateY(-6px)}
-@supports ((clip-path: inset(10px)) or (-webkit-clip-path: inset(10px))){
-  .toc-panel.toc-body-latent .toc-panel-body{clip-path:inset(0 0 100% 0);-webkit-clip-path:inset(0 0 100% 0);transition:clip-path 180ms var(--toc-scroll-ease),-webkit-clip-path 180ms var(--toc-scroll-ease),transform 180ms var(--toc-scroll-ease),opacity 180ms ease}
-  .toc-panel .toc-panel-body{clip-path:inset(0 0 0 0);-webkit-clip-path:inset(0 0 0 0);transition:clip-path 220ms var(--toc-scroll-ease),-webkit-clip-path 220ms var(--toc-scroll-ease),transform 220ms var(--toc-scroll-ease),opacity 220ms ease}
-}
-
-/* When a destination is staged, reserve a small "upper-right" plane for the confirm control. */
 .toc-panel.has-pending .toc-panel-body{padding-top:2.65rem}
 
-/* Inner grain + vignette for dimensional parchment. */
 .toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),linear-gradient(to bottom,var(--toc-parchment-hi),rgba(255,255,255,0));pointer-events:none}
-
-/* iOS Safari can render a horizontal compositing seam inside momentum scrollers when a full-surface
-   overlay lives on the scrolling element. Remove the grain/vignette overlay on iOS to keep the
-   scroll field continuous while preserving the veil and parchment elsewhere. */
-@supports (-webkit-touch-callout: none){
-  .toc-panel-body::before{display:none}
-}
-
-/* Disable the old scroll-bound veil (replaced by .toc-panel::after). */
-.toc-panel-body::after{content:none}
+@supports (-webkit-touch-callout: none){.toc-panel-body::before{display:none}}
 
 .toc-panel-body>*{position:relative}
 
 /* -------------------------------------------------
-   Cathedral Index: structure + typography
+   Index structure
    ------------------------------------------------- */
 
 .toc-index{position:relative;color:var(--toc-ink)}
-
-/* The Scriptorium rule: a quiet vertical margin line. */
 .toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1px;background:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
 
-/* Groups */
 .toc-group + .toc-group{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
-
 .toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
 
-/* Group label: NOT a button.
-   Keep it archival: ink + small-caps + a quiet rubric rule. */
-.toc-tab{display:inline-block;position:relative;padding:0;border:0;background:transparent;border-radius:0;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.84);text-shadow:0 1px 0 rgba(255,255,255,.22)}
+.toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.84);text-shadow:0 1px 0 rgba(255,255,255,.22)}
 .toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(139,115,85,.62),rgba(139,115,85,.28),rgba(139,115,85,0));border-radius:999px}
 
-/* Lists */
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
-
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative}
 
-/* Progression nodes (visual linear sequence).
-   Anchor each node to the first text line center (so ARTICLE I/II/III align cleanly even when titles wrap). */
 .toc-item::before{content:'';position:absolute;left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));top:calc(var(--toc-item-pad-y) + (1em * var(--toc-item-line) / 2));transform:translateY(-50%);width:var(--toc-node);height:var(--toc-node);border-radius:999px;background:rgba(247,244,238,.98);border:1px solid rgba(139,115,85,.66);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
-/* Current page: render the inner dot as a centered radial layer inside ::before
-   (avoids sub-pixel drift from a separate pseudo element). */
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04)}
-.toc-item--current::after{content:none}
 
-/* When a destination is staged, let the node indicate ONLY the staged selection.
-   The current page is still marked by bold type; it does not need the inner dot while staging. */
-.toc-panel.has-pending .toc-item--current::before{background:rgba(247,244,238,.98);border:1px solid rgba(139,115,85,.66);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04)}
-
-/* Pending selection: a quiet red nucleus, distinct from the current page. */
 .toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04)}
 
-/* Locked nodes: slightly smaller than unlocked (subtle hierarchy), no ornament.
-   Use a dashed ring so "locked" reads immediately. */
 .toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
 
-/* Gate marker: one clean brass hairline before the first locked page in a group.
-   The bar now begins exactly beneath the ✦ so the divider reads as a single unified mark. */
 .toc-gate{list-style:none;position:relative;height:16px;margin:.25rem 0 .62rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 2px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
-
-/* Gate location marker: ✦. */
 .toc-gate::after{content:'✦';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:#8b0000;text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
 
 .toc-item-btn,.toc-locked-btn{display:block;width:100%;background:none;border:0;padding:var(--toc-item-pad-y) 0 var(--toc-item-pad-y) 1.65rem;margin:0;font:inherit;font-size:1rem;line-height:var(--toc-item-line);text-align:left;white-space:normal;overflow-wrap:anywhere}
 
-/* Entry layout: key + title */
 .toc-entry{display:flex;gap:.7rem;align-items:baseline;min-width:0}
 .toc-entry-key{flex:0 0 auto;min-width:7.9rem;font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;color:var(--toc-ink-soft)}
 .toc-entry-title{flex:1 1 auto;min-width:0;color:var(--toc-ink)}
 
-.toc-entry--single .toc-entry-title{color:var(--toc-ink)}
-
-/* Interaction */
 .toc-item-btn{cursor:pointer;transition:color 200ms ease}
 .toc-item-btn:hover .toc-entry-title,.toc-item-btn:focus-visible .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
 .toc-item-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:3px}
-.toc-item-btn:disabled{cursor:default}
 
 .toc-item--current .toc-entry-title{font-weight:600;color:#111}
 .toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
 
 .toc-item--pending .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,0,0,.46);text-decoration-thickness:1px;text-underline-offset:3px}
 
-/* Locked: keep legible, but quiet.
-   Prefer desaturation over heavy transparency so text remains readable on mobile. */
 .toc-locked-btn{color:rgba(120,120,120,.94);opacity:.80;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
 .toc-item--locked .toc-entry-key{color:rgba(120,120,120,.62)}
 .toc-item--locked .toc-entry-title{color:rgba(120,120,120,.86)}
 
-/* Annex: Lexicon link (not a full group) */
+/* Annex: Lexicon */
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
 .toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
 .toc-annex-link:hover,.toc-annex-link:focus-visible{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
@@ -265,19 +220,23 @@ html.toc-open #lexiconToggle{transition-delay:160ms;pointer-events:none;--seal-s
 .toc-annex-sigil{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;color:rgba(139,115,85,.62)}
 .toc-annex-text{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps}
 
-/* Mobile-friendly locked feedback (native title tooltips are unreliable on touch devices). */
+/* Locked feedback (touch-safe) */
 .toc-toast{position:sticky;bottom:.65rem;margin:.95rem auto 0;width:fit-content;max-width:min(520px,92%);padding:.6rem 1rem;border-radius:999px;background:rgba(11,12,14,.92);color:rgba(245,245,240,.96);font-size:.95rem;letter-spacing:.04em;line-height:1.25;text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.22),0 2px 10px rgba(0,0,0,.12);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity 420ms ease,transform 180ms ease}
 .toc-toast.is-visible{opacity:1;transform:translateY(0)}
-@media (prefers-reduced-motion: reduce){.toc-toast{transition:none;transform:none}.toc-toast.is-visible{transform:none}}
 
-@media (prefers-reduced-motion: reduce){:root{--toc-scroll-open-duration:1ms;--toc-scroll-close-duration:1ms;--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms;--toc-tab-slide-duration:1ms}.toc-overlay{transition:none}.toc-panel{transition:opacity 160ms ease !important;transform:translateX(-50%) !important;clip-path:none !important;-webkit-clip-path:none !important}.toc-produced{transition:none !important;transform:none !important}}
+@media (prefers-reduced-motion: reduce){
+  :root{--toc-scroll-open-duration:1ms;--toc-scroll-close-duration:1ms;--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms}
+  .toc-overlay{transition:none}
+  .toc-panel{transition:opacity 160ms ease !important;transform:translateX(-50%) !important}
+  .toc-toast{transition:none;transform:none}
+  .toc-toast.is-visible{transform:none}
+}
 
 @media (max-width:600px){
-  :root{--toc-rule-x:.75rem;--toc-node:10px;--toc-node-locked:8px;--toc-tab-width:46px;--toc-tab-height:44px}
-  .toc-toggle--clasp{width:54px;height:44px}
-  .toc-panel{width:calc(100vw - 18px);border-radius:0 0 14px 14px}
+  :root{--toc-rule-x:.75rem;--toc-node:10px;--toc-node-locked:8px}
+  .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
-  .toc-produced-title{font-size:1.0rem;padding-right:5.1rem}
+  .toc-produced-title{font-size:1.0rem}
   .toc-panel-body{padding:1.0rem 1.1rem 1.05rem}
   .toc-panel.has-pending .toc-panel-body{padding-top:2.45rem}
   .toc-group-title,.toc-item-btn,.toc-locked-btn,.toc-annex-link{padding-left:1.45rem}

@@ -128,48 +128,38 @@ Files present:
 Responsibilities:
 - covenant.css: core site styling and sacred visual system.
 - lexicon.js: Lexicon interactions + sentence/subpart highlights + page standardization rules.
-- toc.js + toc.css: Table-of-Contents panel behaviors + presentation (including staged selection + confirm navigation + edge-tab/clasp toggle docking).
+- toc.js + toc.css: Table-of-Contents modal veil + progress gating + deliberate navigation.
 
 ### ToC subsystem status (Jan 2026)
 
 Primary files:
-- assets/toc.js (Table-of-Contents runtime: clasp/tab docking, panel open/close, selection staging + confirm navigation, progress gating, focus trap).
-- assets/toc.css (ToC visuals, clasp/panel positioning surfaces).
+- assets/toc.js (Table-of-Contents runtime: modal veil, focus trap, selection staging + confirm).
+- assets/toc.css (ToC visuals, veil + panel + footer choreography).
 - _includes/toc-panel.html (ToC overlay + panel shell; produced header/title bar).
-- _includes/nav-footer.html (dock integration; where ToC is exposed on journey pages).
+- _includes/nav-footer.html (dock integration; ToC seal lives in footer, left of Lexicon seal).
 
 Core behaviors / invariants:
-- The header divider line is the anchoring seam: `.section-header` uses `border-bottom`, and the ToC clasp/panel seats to that seam (not the H1 baseline).
-- Clasp positioning:
-  - Tracks `max(--toc-clasp-seat-top, .section-header.getBoundingClientRect().bottom)`.
-  - When scroll is locked (ToC open/closing), the clasp is pinned to `--toc-clasp-seat-top`.
-- Panel positioning:
-  - Panel `top` is the clasp’s exact `top` (no extra pixel offset), so the panel tucks under the divider seam.
-  - Panel `max-height` fills the available viewport down to the footer reserve:
-    `maxHeight = (viewportHeight - footerReservedPx) - panelTopPx`.
-  - Footer reserve is derived from `--footer-total-height` (with fallbacks).
-- Open/close mechanics:
-  - Uses root/body scroll lock classes; iOS uses a touchmove blocker outside the panel body.
-  - Overlay click and ESC close the panel; blur/visibilitychange also close to avoid stuck states.
+- The ToC is a modal veil that does NOT cover the footer dock area.
+- The ToC control is a footer “seal” button (`#tocToggle`) placed left of `#lexiconToggle`.
 - Navigation safety:
-  - Selecting an entry stages it (pending highlight) and requires a confirm action before navigating.
-  - Locked entries are non-navigable and show the “In due time…” tooltip.
+  - Selecting an entry stages it (pending highlight) and requires a deliberate confirm before navigating.
+  - Locked entries are non-navigable and show the “In due time…” feedback.
 - Progress gating:
   - Stores `covenant_progress` in localStorage (max unlocked index).
   - `enforceSoftGate()` redirects locked direct-access attempts back to `invocation.html`.
 
 Do not change lightly:
-- Do not reintroduce a fixed vh clamp for the panel height unless explicitly desired; current design intentionally fills down to the footer reserve.
-- Any change to header divider styling (e.g., `.section-header` border) can affect ToC docking alignment.
+- Do not allow the ToC to become a hub or shortcut.
+- Any change to footer dock layering or overlays can make the seals look “washed” or sliced.
 
-- journey.js: journey-wide runtime behaviors (loading glyphs, transitions, etc.).
+- journey.js: journey-wide runtime behaviors (journey definition + helpers).
 
 ### /_includes (shared HTML shell)  ⚠️ Core
 
 Key includes (canonical intent; verify exact filenames in repo before editing):
 - _includes/head-fonts.html (fonts + theme meta + config include)
 - _includes/covenant-config.html (runtime defaults; loads TOC/journey assets)
-- _includes/nav-footer.html (prev/next + Lexicon toggle; includes ToC panel)
+- _includes/nav-footer.html (prev/next + Lexicon toggle + TOC seal; includes ToC panel)
 - _includes/toc-panel.html (ToC overlay + panel shell, including the produced header/title bar)
 - _includes/lexicon-panel.html (panel shell; JS populates content)
 
@@ -195,10 +185,16 @@ If include structure changes, check every journey page that uses the shell.
 
 - If you change `_includes/nav-footer.html`:
   - Verify nav dock layout on desktop + mobile.
-  - Verify Lexicon toggle and citation label positioning.
+  - Verify Lexicon toggle and ToC seal both behave, and do not overlap.
+  - Verify citation label positioning.
 
 - If you change `assets/lexicon.js`:
   - Verify Lexicon opens/closes, overlay behavior, selection highlights (sentence/subpart), and any “compact header standardization” scope exclusions (rituals.html).
+
+- If you change `assets/toc.js` or `assets/toc.css`:
+  - Verify modal veil does not cover the footer dock region.
+  - Verify selection staging + deliberate confirm still work.
+  - Verify progress gating still prevents locked direct access.
 
 - If you change `assets/covenant.css`:
   - Ensure CSS guard markers remain intact and file is not truncated.
@@ -221,22 +217,26 @@ Use this when making CSS/JS/include changes—fast, human-verifiable checks:
 - Toggle Lexicon open/close.
 - Confirm overlay click closes.
 - Confirm ESC closes (if implemented).
-- Confirm ToC toggle/tab is not visible while Lexicon is open.
-- Scroll from top: confirm the ToC tab rides the page H1 until it meets the top edge, then stays pinned as the title leaves the viewport.
-- At top-of-page, open the ToC: confirm the produced header title appears a beat later (as the tab seats/docks), not as an immediate duplicate of the page H1.
-- With the ToC open, press Tab / Shift+Tab: confirm focus stays trapped within the ToC panel.
+- Confirm ToC seal is not visible while Lexicon is open.
 
-3) Selection highlights (subsection/subpart/sentence)
+3) ToC modal veil
+- Open the ToC from the footer seal; confirm the veil does not cover the dock.
+- Select an unlocked entry; confirm it stages (pending highlight).
+- Hold the confirm control to enter; confirm release-before-complete cancels.
+- Press ESC; confirm the ToC closes and focus returns to the ToC seal.
+- Tab / Shift+Tab: confirm focus stays trapped within the ToC panel.
+
+4) Selection highlights (subsection/subpart/sentence)
 - On a representative Article page (I.html or III.html):
   - Click a subsection: verify selected styling.
   - Click subpart markers (Ⓐ/Ⓑ/Ⓒ): verify independent selection styling.
   - If sentence highlighting exists: click a sentence; verify highlight.
 
-4) Footer system
+5) Footer system
 - Confirm footer colors/frames/seal render correctly.
 - Confirm mobile behavior does not trap scroll or hide the dock.
 
-5) Rituals exclusion
+6) Rituals exclusion
 - Open rituals.html and confirm any “compact header” behavior that is excluded remains excluded.
 
 ---
@@ -252,5 +252,3 @@ When making changes, update this file if any of the following change:
 Keep updates surgical:
 - Update the relevant subsection only.
 - If a new invariant is added, place it in “Prime directives.”
-
-This repository includes a CI guard workflow that fails PRs when core files change without an AGENT.md update.
