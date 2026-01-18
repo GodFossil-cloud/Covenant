@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.9 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.10 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.9';
+  window.COVENANT_TOC_VERSION = '3.1.10';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -850,7 +850,10 @@
       if (!base) return 0;
 
       var rect = tocPanel.getBoundingClientRect();
-      var openTop = rect.top - ((yNow || 0) - openLiftPx);
+
+      // Important: tab alignment is computed against the sheet's unlifted top,
+      // so a fully-open lift applies to the sheet only (relative to the carried tab).
+      var openTop = rect.top - (yNow || 0);
 
       return computeOpenToggleDyFromPanelTop(openTop, base);
     }
@@ -1199,7 +1202,12 @@
       var base = getTocToggleBaseRect();
       if (!base || !tocPanel || !tocPanel.getBoundingClientRect) return;
       var rect = tocPanel.getBoundingClientRect();
-      var dy = computeOpenToggleDyFromPanelTop(rect.top, base);
+
+      // Align tab to the sheet's unlifted top so the open lift applies to the sheet only.
+      var openLift = readCssNumberVar('--toc-open-lift');
+      var targetTop = rect.top - (openLift || 0);
+
+      var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
       setTocToggleOffset(0, dy, false);
     });
 
@@ -1306,7 +1314,12 @@
         var base = getTocToggleBaseRect();
         if (!base || !tocPanel || !tocPanel.getBoundingClientRect) return;
         var rect = tocPanel.getBoundingClientRect();
-        var dy = computeOpenToggleDyFromPanelTop(rect.top, base);
+
+        // Align tab to the sheet's unlifted top so the open lift applies to the sheet only.
+        var openLift = readCssNumberVar('--toc-open-lift');
+        var targetTop = rect.top - (openLift || 0);
+
+        var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
         setTocToggleOffset(0, dy, false);
       });
     }
