@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.0.5 (Modal Veil + Footer Seal + Hold-to-Enter) */
+/*! Covenant ToC Panel Styles v3.0.6 (Modal Veil + Footer Seal + Hold-to-Enter) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -57,7 +57,7 @@ html #tocToggle.toc-seal{
 
   /* Counter the Lexicon seal's lift (inherited from .nav-btn.center) so the ToC seal sits inside the dock.
      Fine-tuned so the top edge aligns with the dock's top surface. */
-  transform:translateY(-8px);
+  transform:translateY(-10px);
 }
 
 html #tocToggle.toc-seal::before,
