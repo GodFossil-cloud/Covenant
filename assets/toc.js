@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.13 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.15 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.13';
+  window.COVENANT_TOC_VERSION = '3.1.15';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -903,6 +903,7 @@
       // Drag-open state is complete once the panel is open.
       root.classList.remove('toc-opening');
       root.classList.remove('toc-closing');
+      root.classList.remove('toc-dock-settling');
     }
 
     function applyClosedStateFromDrag() {
@@ -935,7 +936,16 @@
           tocPanel.setAttribute('aria-hidden', 'true');
           unlockBodyScroll();
 
+          // Drag-close already has the tab at dy=0, but keep layering stable for a beat anyway.
+          var snapMs = readCssNumberVar('--toc-snap-duration');
+          if (!snapMs || snapMs <= 0) snapMs = 420;
+          root.classList.add('toc-dock-settling');
+
           root.classList.remove('toc-closing');
+
+          setTimeout(function () {
+            root.classList.remove('toc-dock-settling');
+          }, snapMs + 30);
 
           var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
           if (target && target.focus) target.focus();
@@ -1019,6 +1029,7 @@
       if (!startWasOpen) {
         root.classList.remove('toc-closing');
         root.classList.add('toc-opening');
+        root.classList.remove('toc-dock-settling');
         renderToC();
       }
 
@@ -1191,6 +1202,7 @@
     focusReturnEl = tocToggle;
 
     root.classList.remove('toc-closing');
+    root.classList.remove('toc-dock-settling');
 
     lockBodyScroll();
     positionPanel();
@@ -1254,6 +1266,9 @@
       clearPendingSelection();
     }
 
+    // Clear any previous "settle" phase.
+    root.classList.remove('toc-dock-settling');
+
     // Keep footer above sheet until close fully completes.
     root.classList.add('toc-closing');
     root.classList.remove('toc-opening');
@@ -1277,10 +1292,19 @@
       tocPanel.setAttribute('aria-hidden', 'true');
       unlockBodyScroll();
 
+      // Keep a tiny "settling" window so z-layer + hover state do not flip mid tab-transition.
+      var snapMs = readCssNumberVar('--toc-snap-duration');
+      if (!snapMs || snapMs <= 0) snapMs = 420;
+      root.classList.add('toc-dock-settling');
+
       root.classList.remove('toc-closing');
 
       // Return the tab to the dock once the sheet is gone.
       clearTocToggleOffset();
+
+      setTimeout(function () {
+        root.classList.remove('toc-dock-settling');
+      }, snapMs + 30);
 
       if (restoreFocus) {
         var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;

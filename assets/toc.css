@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.14 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.15 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -178,12 +178,17 @@ html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto S
 /* While the ToC is in motion (dragging or open), lift the whole dock above the sheet. */
 html.toc-opening .nav-footer,
 html.toc-open .nav-footer,
-html.toc-closing .nav-footer{z-index:1600}
+html.toc-closing .nav-footer,
+html.toc-dock-settling .nav-footer{z-index:1600}
 
 /* Keep the toggle above the footer dim layer and above the ToC sheet itself, including during drag-open. */
 html.toc-opening #tocToggle,
 html.toc-open #tocToggle,
-html.toc-closing #tocToggle{position:relative;z-index:1602}
+html.toc-closing #tocToggle,
+html.toc-dock-settling #tocToggle{position:relative;z-index:1602}
+
+/* During settle, ignore hover/pointer churn while the tab is sliding into place. */
+html.toc-dock-settling #tocToggle{pointer-events:none}
 
 /* -------------------------------------------------
    Scroll lock
