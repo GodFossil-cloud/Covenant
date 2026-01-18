@@ -86,9 +86,8 @@ html #mirrorToggle.dock-tab::before{
   inset:0;
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
 
-  /* Top edge: match tab face tone; other edges: #3B362B. */
+  /* Uniform brass frame on all four sides. */
   border:1px solid #3B362B;
-  border-top-color:var(--dock-tab-face);
 
   box-shadow:inset 0 0 12px rgba(0,0,0,.95);
   pointer-events:none;
