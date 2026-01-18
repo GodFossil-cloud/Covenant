@@ -26,10 +26,10 @@
   /* Footer seal (ToC) sizing. Keep Lexicon cradle geometry intact; this only shapes the ToC control itself. */
   --toc-seal-size:42px;
   --toc-seal-width:48px;
-  --toc-seal-top-radius:90px;
-  --toc-seal-bottom-radius:90px;
+  --toc-seal-top-radius:45px;
+  --toc-seal-bottom-radius:45px;
   --toc-seal-shift-x:-5px;
-  --toc-seal-shift-y:-35px;
+  --toc-seal-shift-y:-32px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
