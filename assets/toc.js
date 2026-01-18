@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.6 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.7 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.6';
+  window.COVENANT_TOC_VERSION = '3.1.7';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -787,6 +787,9 @@
 
     var openDyWanted = 0;
 
+    var panelHBase = 0;
+    var closedOffsetPx = 0;
+
     var MOVE_SLOP = 6;
 
     var OPEN_VELOCITY = -0.85;
@@ -806,7 +809,11 @@
       if (!tocPanel) return;
       var rect = tocPanel.getBoundingClientRect();
       var panelH = (rect && rect.height) ? rect.height : 1;
-      closedY = Math.max(1, panelH);
+
+      panelHBase = Math.max(1, panelH);
+      closedOffsetPx = readCssNumberVar('--toc-closed-offset') || 0;
+
+      closedY = Math.max(1, panelHBase + closedOffsetPx);
     }
 
     function applyDragFrame(y, draggingNow) {
@@ -912,13 +919,14 @@
       if (!tocPanel) return;
 
       var shouldOpen = false;
+      var baseH = panelHBase || closedY || 1;
 
       if (startWasOpen) {
         var dragDown = currentY - 0;
-        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > closedY * CLOSE_RATIO);
+        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > baseH * CLOSE_RATIO);
       } else {
         var dragUp = closedY - currentY;
-        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > closedY * OPEN_RATIO);
+        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > baseH * OPEN_RATIO);
       }
 
       tocPanel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE + ', opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
