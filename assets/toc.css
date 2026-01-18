@@ -28,7 +28,7 @@
   --toc-seal-width:48px;
   --toc-seal-top-radius:8px;
   --toc-seal-bottom-radius:8px;
-  --toc-seal-shift-x:16px;
+  --toc-seal-shift-x:6px;
   --toc-seal-shift-y:-30px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
@@ -41,6 +41,10 @@
 
 /* Keep ToC seal silent while Lexicon is open (avoid two competing doors). */
 html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Bring the ToC seal close to the center by letting it occupy the right edge of the left bay.
+   (Layout-first, then a small transform nudge for seating.) */
+html .nav-left #tocToggle.toc-seal{margin-left:auto}
 
 /* Keep Lexicon seal centered in its cradle:
    Use a symmetric 3-column row: [ToC] [Lexicon] [spacer]. */
@@ -276,7 +280,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
     --toc-seal-width:44px;
     --toc-seal-top-radius:6px;
     --toc-seal-bottom-radius:16px;
-    --toc-seal-shift-x:14px;
+    --toc-seal-shift-x:4px;
   }
   .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
