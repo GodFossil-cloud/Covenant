@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.2 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.3 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.2';
+  window.COVENANT_TOC_VERSION = '3.1.3';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -135,8 +135,8 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    var overlap = Math.round((baseRect.height || 34) * 0.55);
-    var targetTop = openPanelTop - overlap;
+    // Requirement: tab top edge flush with sheet top edge (no "protrusion" overlap).
+    var targetTop = openPanelTop;
 
     return targetTop - baseRect.top;
   }
@@ -507,7 +507,7 @@
     if (!itemsHtml) return '';
 
     return ''
-      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">'
+      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">' 
       +   '<div class="toc-group-title"><span class="toc-tab">' + escapeHtml(label) + '</span></div>'
       +   '<ol class="toc-list">'
       +     itemsHtml
@@ -946,7 +946,15 @@
 
       startWasOpen = tocPanel.classList.contains('is-open');
 
+      // Ensure layout constraints are applied before we measure height.
       positionPanel();
+
+      // Critical: when dragging from closed, the panel may have little/no content rendered yet.
+      // If we measure a "tiny" height here, it creates a fake "wall" during drag-up.
+      if (!startWasOpen) {
+        renderToC();
+      }
+
       computeClosedY();
 
       currentY = startWasOpen ? 0 : closedY;
