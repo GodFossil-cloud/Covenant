@@ -37,7 +37,7 @@
   --dock-tab-radius-top:0px;
 
   /* Dock tab face base tone (also used to "erase" the top border line). */
-  --dock-tab-face:#1c1914;
+  --dock-tab-face:#010103;
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
   --dock-tab-raise:-23px;
@@ -87,7 +87,7 @@ html #mirrorToggle.dock-tab::before{
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
 
   /* Top edge: match tab face tone; other edges: #3B362B. */
-  border:1px solid #010103;
+  border:1px solid #3B362B;
   border-top-color:var(--dock-tab-face);
 
   box-shadow:inset 0 0 12px rgba(0,0,0,.95);
