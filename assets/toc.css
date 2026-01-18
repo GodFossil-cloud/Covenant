@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.0.13 (Modal Veil + Footer Tab + Hold-to-Enter) */
+/*! Covenant ToC Panel Styles v3.1.0 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -44,6 +44,10 @@
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
+
+  /* Drag snap timing (should match JS SNAP_MS constant). */
+  --toc-snap-duration:420ms;
+  --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 }
 
 /* -------------------------------------------------
@@ -202,8 +206,41 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
-/* Inner veil (subtle), to fuse “black glass” with parchment. */
+/* Live drag: disable transition and allow manual transform override via inline style. */
+.toc-panel.is-dragging{transition:none !important}
+
+/* Inner veil (subtle), to fuse "black glass" with parchment. */
 .toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 58%,rgba(0,0,0,.012) 74%,rgba(0,0,0,.060) 100%);pointer-events:none;z-index:3}
+
+/* -------------------------------------------------
+   Drag handle region (sheet-style)
+   ------------------------------------------------- */
+
+.toc-drag-region{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:22px;
+  z-index:10;
+  cursor:ns-resize;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.toc-drag-region::before{
+  content:'';
+  width:48px;
+  height:4px;
+  border-radius:999px;
+  background:rgba(44,62,80,.20);
+  box-shadow:0 1px 0 rgba(255,255,255,.26);
+}
 
 /* -------------------------------------------------
    Header + produced title
@@ -321,7 +358,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
 .toc-toast.is-visible{opacity:1;transform:translateY(0)}
 
 @media (prefers-reduced-motion: reduce){
-  :root{--toc-scroll-open-duration:1ms;--toc-scroll-close-duration:1ms;--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms}
+  :root{--toc-scroll-open-duration:1ms;--toc-scroll-close-duration:1ms;--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms;--toc-snap-duration:1ms}
   .toc-overlay{transition:none}
   .toc-panel{transition:opacity 160ms ease !important;transform:translateX(-50%) !important}
   .toc-toast{transition:none;transform:none}
