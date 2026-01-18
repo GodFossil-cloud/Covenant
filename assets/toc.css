@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.0.6 (Modal Veil + Footer Seal + Hold-to-Enter) */
+/*! Covenant ToC Panel Styles v3.0.7 (Modal Veil + Footer Seal + Hold-to-Enter) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -26,7 +26,10 @@
   /* Footer seal (ToC) sizing. Keep Lexicon cradle geometry intact; this only shapes the ToC control itself. */
   --toc-seal-size:42px;
   --toc-seal-width:48px;
-  --toc-seal-top-radius:6px;
+  --toc-seal-top-radius:8px;
+  --toc-seal-bottom-radius:18px;
+  --toc-seal-shift-x:-5px;
+  --toc-seal-shift-y:-10px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
@@ -46,23 +49,22 @@ html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:n
 @media (max-width:600px){.nav-seals{column-gap:8px}}
 
 /* The footer already provides the cradle; this gives the ToC seal its own shape + scale.
-   Shape: softly rounded corners on top, rounded bottom (half-pill). */
+   Shape: more rounded top corners, quieter bottom corners (still a seal, not a pill). */
 html #tocToggle.toc-seal{
   position:relative;
   width:var(--toc-seal-width);
   height:var(--toc-seal-size);
-  border-radius:var(--toc-seal-top-radius) var(--toc-seal-top-radius) 999px 999px;
+  border-radius:var(--toc-seal-top-radius) var(--toc-seal-top-radius) var(--toc-seal-bottom-radius) var(--toc-seal-bottom-radius);
   justify-self:center;
   align-self:center;
 
-  /* Counter the Lexicon seal's lift (inherited from .nav-btn.center) so the ToC seal sits inside the dock.
-     Fine-tuned so the top edge aligns with the dock's top surface. */
-  transform:translateY(-25px);
+  /* Seat inside the dock + nudge a touch farther from the Lexicon seal. */
+  transform:translate(var(--toc-seal-shift-x),var(--toc-seal-shift-y));
 }
 
 html #tocToggle.toc-seal::before,
 html #tocToggle.toc-seal::after{
-  border-radius:var(--toc-seal-top-radius) var(--toc-seal-top-radius) 999px 999px;
+  border-radius:var(--toc-seal-top-radius) var(--toc-seal-top-radius) var(--toc-seal-bottom-radius) var(--toc-seal-bottom-radius);
 }
 
 html #tocToggle.toc-seal .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.88rem;line-height:1;transform:translateY(-.5px);display:inline-block}
@@ -269,7 +271,9 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
 
     --toc-seal-size:38px;
     --toc-seal-width:44px;
-    --toc-seal-top-radius:5px;
+    --toc-seal-top-radius:6px;
+    --toc-seal-bottom-radius:16px;
+    --toc-seal-shift-x:-4px;
   }
   .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
