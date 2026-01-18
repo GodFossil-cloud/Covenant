@@ -40,7 +40,7 @@
   --dock-tab-face:#010103;
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
-  --dock-tab-raise:-23px;
+  --dock-tab-raise:-22px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
@@ -334,7 +334,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
     --toc-rule-x:.75rem;
     --toc-node:10px;
     --toc-node-locked:8px;
-    --dock-tab-raise:-21px;
+    --dock-tab-raise:-20px;
   }
   .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
