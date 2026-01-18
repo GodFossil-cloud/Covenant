@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.0 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.1 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -76,11 +76,22 @@ html #mirrorToggle.dock-tab{
   padding:0;
   justify-self:center;
   align-self:center;
-  transform:translateY(var(--dock-tab-raise));
 
   /* Quiet interior shadow so the tab feels seated in the dock. */
   box-shadow:inset 0 -12px 16px -16px rgba(0,0,0,.86);
 }
+
+/* Mirror tab stays anchored to the dock slab. */
+html #mirrorToggle.dock-tab{transform:translateY(var(--dock-tab-raise))}
+
+/* ToC tab can be "drag carried" upward to stay physically attached to the ToC sheet. */
+html #tocToggle.dock-tab{
+  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px)),0);
+  transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
+  will-change:transform;
+}
+
+html #tocToggle.dock-tab.is-toc-dragging{transition:none !important}
 
 /* Override the generic "nav-btn:not(.center)" framing (which uses inset:14px). */
 html #tocToggle.dock-tab::before,
@@ -130,9 +141,12 @@ html #mirrorToggle.dock-tab:focus-visible::after{
 }
 
 /* Mechanical press: keep 1px travel relative to the raised position. */
-html #tocToggle.dock-tab:active:not(:disabled),
 html #mirrorToggle.dock-tab:active:not(:disabled){
   transform:translateY(calc(var(--dock-tab-raise) + 1px));
+}
+
+html #tocToggle.dock-tab:active:not(:disabled){
+  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px) + 1px),0);
 }
 
 html #tocToggle.dock-tab .toc-glyph,

@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.0 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.1 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.0';
+  window.COVENANT_TOC_VERSION = '3.1.1';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -54,6 +54,10 @@
   var holdStartedAt = 0;
   var holdCompleted = false;
 
+  // ToC toggle "carry" offsets (so the dock tab can ride with the sheet).
+  var tocToggleDx = 0;
+  var tocToggleDy = 0;
+
   function closestSafe(target, selector) {
     if (!target) return null;
     var el = (target.nodeType === 1) ? target : target.parentElement;
@@ -91,6 +95,60 @@
   function setProducedTitle(title) {
     if (!tocProducedTitleEl) return;
     tocProducedTitleEl.textContent = String(title || '');
+  }
+
+  function setTocToggleOffset(dx, dy, draggingNow) {
+    if (!tocToggle) return;
+
+    tocToggleDx = dx;
+    tocToggleDy = dy;
+
+    tocToggle.style.setProperty('--toc-toggle-drag-x', dx + 'px');
+    tocToggle.style.setProperty('--toc-toggle-drag-y', dy + 'px');
+
+    tocToggle.classList.toggle('is-toc-dragging', !!draggingNow);
+  }
+
+  function clearTocToggleOffset() {
+    if (!tocToggle) return;
+
+    tocToggleDx = 0;
+    tocToggleDy = 0;
+
+    tocToggle.style.removeProperty('--toc-toggle-drag-x');
+    tocToggle.style.removeProperty('--toc-toggle-drag-y');
+    tocToggle.classList.remove('is-toc-dragging');
+  }
+
+  function getTocToggleBaseRect() {
+    if (!tocToggle || !tocToggle.getBoundingClientRect) return null;
+
+    var r = tocToggle.getBoundingClientRect();
+    return {
+      left: r.left - tocToggleDx,
+      top: r.top - tocToggleDy,
+      width: r.width,
+      height: r.height
+    };
+  }
+
+  function syncTocToggleToPanel(draggingNow) {
+    if (!tocPanel || !tocToggle || !tocPanel.getBoundingClientRect) return;
+
+    var panelRect = tocPanel.getBoundingClientRect();
+    var base = getTocToggleBaseRect();
+    if (!base) return;
+
+    // Visually "weld" the tab to the sheet's top-left.
+    // X: align with panel's inner padding.
+    // Y: overlap upward so it reads like a tab protruding from the sheet.
+    var INSET_X = 18;
+    var overlap = Math.round((base.height || 34) * 0.55);
+
+    var desiredLeft = panelRect.left + INSET_X;
+    var desiredTop = panelRect.top - overlap;
+
+    setTocToggleOffset(desiredLeft - base.left, desiredTop - base.top, draggingNow);
   }
 
   function getFooterReservedPx() {
@@ -459,7 +517,7 @@
     if (!itemsHtml) return '';
 
     return ''
-      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">'
+      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">' 
       +   '<div class="toc-group-title"><span class="toc-tab">' + escapeHtml(label) + '</span></div>'
       +   '<ol class="toc-list">'
       +     itemsHtml
@@ -740,18 +798,22 @@
       closedY = Math.max(1, panelH);
     }
 
-    function setPanelY(y) {
+    function setPanelY(y, draggingNow, syncToggleNow) {
       if (!tocPanel) return;
       currentY = y;
 
-      var translateX = '-50%';
-      tocPanel.style.transform = 'translateX(' + translateX + ') translateY(' + y + 'px)';
+      tocPanel.style.transform = 'translateX(-50%) translateY(' + y + 'px)';
 
       var progress = 1 - (y / (closedY || 1));
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
+      // During live drag, follow the sheet with opacity; when open/closed, CSS classes take over.
+      tocPanel.style.opacity = String(progress);
+
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
+
+      if (syncToggleNow !== false) syncTocToggleToPanel(!!draggingNow);
     }
 
     function applyOpenStateFromDrag() {
@@ -840,7 +902,7 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
-        setPanelY(0);
+        setPanelY(0, false, true);
         applyOpenStateFromDrag();
 
         setTimeout(function () {
@@ -850,14 +912,16 @@
           else if (tocPanel.focus) tocPanel.focus();
         }, 0);
       } else {
-        currentY = closedY;
-        setPanelY(closedY);
+        // When snapping closed, return the tab to the dock.
+        setTocToggleOffset(0, 0, false);
+        setPanelY(closedY, false, false);
         applyClosedStateFromDrag();
       }
 
       setTimeout(function () {
         if (!tocPanel) return;
         tocPanel.style.transform = '';
+        tocPanel.style.opacity = '';
         tocPanel.style.transition = '';
         if (tocOverlay) {
           tocOverlay.style.opacity = '';
@@ -918,7 +982,7 @@
       if (targetY < 0) targetY = 0;
       if (targetY > closedY) targetY = closedY;
 
-      setPanelY(targetY);
+      setPanelY(targetY, true, true);
       e.preventDefault();
     }
 
@@ -927,6 +991,7 @@
 
       dragging = false;
       tocPanel.classList.remove('is-dragging');
+      if (tocToggle) tocToggle.classList.remove('is-toc-dragging');
 
       if (moved) {
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
@@ -942,7 +1007,6 @@
       }
     }
 
-    // Seal drag (open from closed, or close when open).
     tocToggle.addEventListener('pointerdown', function (e) {
       beginDrag(e, 'seal');
     });
@@ -963,7 +1027,6 @@
       endDrag(e);
     });
 
-    // Handle drag (close when open, from the panel itself).
     if (tocDragRegion) {
       tocDragRegion.addEventListener('pointerdown', function (e) {
         if (!tocPanel.classList.contains('is-open')) return;
@@ -1028,7 +1091,6 @@
   function openToC() {
     if (!tocPanel || !tocOverlay) return;
 
-    // Prevent drag-then-tap from also toggling.
     if (window.__COVENANT_TOC_DRAG_JUST_HAPPENED) {
       window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
       return;
@@ -1069,6 +1131,10 @@
 
     enableFocusTrap();
 
+    // After the panel is positioned, "carry" the tab up to the sheet.
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+    raf(function () { syncTocToggleToPanel(false); });
+
     setTimeout(function () {
       var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
       if (firstBtn && firstBtn.focus) firstBtn.focus();
@@ -1104,6 +1170,9 @@
       tocPanel.classList.remove('is-closing');
       tocPanel.setAttribute('aria-hidden', 'true');
       unlockBodyScroll();
+
+      // Return the tab to the dock once the sheet is gone.
+      clearTocToggleOffset();
 
       if (restoreFocus) {
         var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
@@ -1162,11 +1231,19 @@
     });
 
     window.addEventListener('resize', function () {
-      if (tocPanel && tocPanel.classList.contains('is-open')) positionPanel();
+      if (tocPanel && tocPanel.classList.contains('is-open')) {
+        positionPanel();
+        var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+        raf(function () { syncTocToggleToPanel(false); });
+      }
     });
 
     window.addEventListener('orientationchange', function () {
-      if (tocPanel && tocPanel.classList.contains('is-open')) positionPanel();
+      if (tocPanel && tocPanel.classList.contains('is-open')) {
+        positionPanel();
+        var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+        raf(function () { syncTocToggleToPanel(false); });
+      }
     });
 
     window.addEventListener('blur', function () {
