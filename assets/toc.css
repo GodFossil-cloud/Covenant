@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.0.11 (Modal Veil + Footer Tab + Hold-to-Enter) */
+/*! Covenant ToC Panel Styles v3.0.12 (Modal Veil + Footer Tab + Hold-to-Enter) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -202,7 +202,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
    ------------------------------------------------- */
 
 .toc-panel-header{position:relative;z-index:4;padding:.95rem 1.35rem .82rem;border-bottom:1px solid rgba(44,62,80,.12);background:linear-gradient(to bottom,rgba(255,255,255,.52),rgba(255,255,255,.16))}
-toc-produced{min-height:1.15rem}
+.toc-produced{min-height:1.15rem}
 .toc-produced-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;line-height:1.25;color:rgba(44,62,80,.88);text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:7.2rem}
 
 /* -------------------------------------------------
