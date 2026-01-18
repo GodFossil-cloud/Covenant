@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.4 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.5 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.4';
+  window.COVENANT_TOC_VERSION = '3.1.5';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -800,9 +800,8 @@
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
-      // Requirement: while dragging UP from closed, keep the sheet fully opaque (no fade-in).
-      // Keep the fade behavior for drag-CLOSE to preserve the smooth disappearance.
-      tocPanel.style.opacity = startWasOpen ? String(progress) : '1';
+      // Requirement: sheet stays opaque during drag-open AND drag-close.
+      tocPanel.style.opacity = '1';
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
@@ -952,9 +951,9 @@
       // Ensure layout constraints are applied before we measure height.
       positionPanel();
 
-      // Critical: when dragging from closed, the panel may have little/no content rendered yet.
-      // If we measure a "tiny" height here, it creates a fake "wall" during drag-up.
+      // If we are starting from closed, we are "opening" (even before fully open).
       if (!startWasOpen) {
+        root.classList.add('toc-opening');
         renderToC();
       }
 
@@ -1014,6 +1013,9 @@
       dragging = false;
       tocPanel.classList.remove('is-dragging');
       if (tocToggle) tocToggle.classList.remove('is-toc-dragging');
+
+      // Opening-class should only live during a drag-open gesture.
+      root.classList.remove('toc-opening');
 
       if (moved) {
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
