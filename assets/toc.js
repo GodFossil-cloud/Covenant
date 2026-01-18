@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.15 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.16 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.15';
+  window.COVENANT_TOC_VERSION = '3.1.16';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -119,8 +119,6 @@
 
     tocToggle.style.setProperty('--toc-toggle-drag-x', dx + 'px');
     tocToggle.style.setProperty('--toc-toggle-drag-y', dy + 'px');
-
-    tocToggle.classList.toggle('is-toc-dragging', !!draggingNow);
   }
 
   function clearTocToggleOffset() {
@@ -938,8 +936,19 @@
         var closeMs = Math.max(180, getPanelCloseMs(), SNAP_MS);
         setTimeout(function () {
           if (!tocPanel) return;
+
           tocPanel.classList.remove('is-closing');
           tocPanel.setAttribute('aria-hidden', 'true');
+
+          // Clear drag/snap inline styles only after is-closing is gone (prevents a 1-frame jump).
+          tocPanel.style.transform = '';
+          tocPanel.style.opacity = '';
+          tocPanel.style.transition = '';
+          if (tocOverlay) {
+            tocOverlay.style.opacity = '';
+            tocOverlay.style.transition = '';
+          }
+
           unlockBodyScroll();
 
           // Drag-close already has the tab at dy=0, but keep layering stable for a beat anyway.
@@ -998,12 +1007,16 @@
 
       setTimeout(function () {
         if (!tocPanel) return;
-        tocPanel.style.transform = '';
-        tocPanel.style.opacity = '';
-        tocPanel.style.transition = '';
-        if (tocOverlay) {
-          tocOverlay.style.opacity = '';
-          tocOverlay.style.transition = '';
+
+        // For drag-close, inline styles are cleared by the close cleanup (after is-closing is removed).
+        if (shouldOpen || !startWasOpen) {
+          tocPanel.style.transform = '';
+          tocPanel.style.opacity = '';
+          tocPanel.style.transition = '';
+          if (tocOverlay) {
+            tocOverlay.style.opacity = '';
+            tocOverlay.style.transition = '';
+          }
         }
 
         // If we snapped shut from a closed-start drag, we are done "opening" now.
@@ -1044,6 +1057,8 @@
       currentY = startWasOpen ? openLiftPx : closedY;
 
       tocPanel.classList.add('is-dragging');
+      if (tocToggle) tocToggle.classList.add('is-toc-dragging');
+
       tocPanel.style.transition = 'none';
       if (tocOverlay) tocOverlay.style.transition = 'none';
 
@@ -1057,7 +1072,7 @@
 
       var captureTarget = (source === 'seal') ? tocToggle : tocDragRegion;
       if (captureTarget && captureTarget.setPointerCapture) {
-        captureTarget.setPointerCapture(e.pointerId);
+        try { captureTarget.setPointerCapture(e.pointerId); } catch (err) {}
       }
 
       // Only prevent default once drag has actually begun.
@@ -1109,8 +1124,15 @@
       if (e) {
         var captureTarget = (dragSource === 'seal') ? tocToggle : tocDragRegion;
         if (captureTarget && captureTarget.hasPointerCapture && captureTarget.hasPointerCapture(e.pointerId)) {
-          captureTarget.releasePointerCapture(e.pointerId);
+          try { captureTarget.releasePointerCapture(e.pointerId); } catch (err) {}
         }
+      }
+    }
+
+    function releaseSealCapture(e) {
+      if (!e || !tocToggle) return;
+      if (tocToggle && tocToggle.hasPointerCapture && tocToggle.hasPointerCapture(e.pointerId)) {
+        try { tocToggle.releasePointerCapture(e.pointerId); } catch (err) {}
       }
     }
 
@@ -1118,9 +1140,14 @@
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
       // Prime a possible drag, but do not preventDefault so a tap can still produce a click.
+      // Still capture the pointer so iOS doesn't drop pointermove events mid-gesture.
       sealPrimed = true;
       sealPointerId = e.pointerId;
       sealStartY = e.clientY;
+
+      if (tocToggle && tocToggle.setPointerCapture) {
+        try { tocToggle.setPointerCapture(e.pointerId); } catch (err) {}
+      }
     });
 
     tocToggle.addEventListener('pointermove', function (e) {
@@ -1142,12 +1169,14 @@
     });
 
     tocToggle.addEventListener('pointerup', function (e) {
+      if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
       endDrag(e);
     });
 
     tocToggle.addEventListener('pointercancel', function (e) {
+      if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
       endDrag(e);
