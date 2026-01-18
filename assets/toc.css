@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.12 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.13 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -205,8 +205,11 @@ html.toc-open #citationLabel,html.toc-closing #citationLabel{opacity:0;visibilit
 html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{opacity:0}
 html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{opacity:0}
 
-html.toc-open .nav-footer-inner,html.toc-closing .nav-footer-inner{position:relative}
-html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.32);pointer-events:none;z-index:1}
+/* Keep the scrim defined at all times so it can fade out instead of "popping" off at close-complete. */
+html .nav-footer-inner{position:relative}
+html .nav-footer-inner::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.32);pointer-events:none;z-index:1;opacity:0;transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
+html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before{opacity:1}
+
 html.toc-open .nav-prev,html.toc-open .nav-next,html.toc-open .nav-btn:not(#lexiconToggle):not(#tocToggle),
 html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:not(#lexiconToggle):not(#tocToggle){position:relative;z-index:2}
 
