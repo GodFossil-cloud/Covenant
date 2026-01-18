@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.7 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.8 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -46,7 +46,7 @@
   --toc-top-safe:14px;
 
   /* Drag start: push the fully-closed sheet slightly lower before the first upward drag reveals it. */
-  --toc-closed-offset:15px;
+  --toc-closed-offset:12px;
 
   /* Drag snap timing (should match JS SNAP_MS constant). */
   --toc-snap-duration:420ms;
@@ -156,8 +156,9 @@ html #mirrorToggle.dock-tab:active:not(:disabled){
   transform:translateY(calc(var(--dock-tab-raise) + 1px));
 }
 
+/* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
 html #tocToggle.dock-tab:active:not(:disabled){
-  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px) + 1px),0);
+  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px)),0);
 }
 
 html #tocToggle.dock-tab .toc-glyph,
