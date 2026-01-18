@@ -205,15 +205,15 @@ html .nav-footer{isolation:isolate;transition:border-top-color 220ms var(--toc-s
 html .nav-footer::before,html .nav-footer::after{transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
 html #citationLabel{transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 0s}
 
-html.toc-open .nav-footer,html.toc-closing .nav-footer{border-top-color:transparent;border-bottom-color:transparent}
-html.toc-open #citationLabel,html.toc-closing #citationLabel{opacity:0;visibility:hidden;transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 220ms}
-html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before{opacity:0}
-html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after{opacity:0}
+html.toc-open .nav-footer,html.toc-closing .nav-footer,html.toc-dock-settling .nav-footer{border-top-color:transparent;border-bottom-color:transparent}
+html.toc-open #citationLabel,html.toc-closing #citationLabel,html.toc-dock-settling #citationLabel{opacity:0;visibility:hidden;transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 220ms}
+html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before,html.toc-dock-settling .nav-footer::before{opacity:0}
+html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after,html.toc-dock-settling .nav-footer::after{opacity:0}
 
 /* Keep the scrim defined at all times so it can fade out instead of "popping" off at close-complete. */
 html .nav-footer-inner{position:relative}
 html .nav-footer-inner::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.32);pointer-events:none;z-index:1;opacity:0;transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
-html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before{opacity:1}
+html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before,html.toc-dock-settling .nav-footer-inner::before{opacity:1}
 
 /* Keep footer controls above the scrim in all states (prevents end-of-close z-pop blink). */
 html .nav-footer-inner > *{position:relative;z-index:2}
