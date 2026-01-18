@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.8 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.9 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -46,7 +46,10 @@
   --toc-top-safe:14px;
 
   /* Drag start: push the fully-closed sheet slightly lower before the first upward drag reveals it. */
-  --toc-closed-offset:14px;
+  --toc-closed-offset:12px;
+
+  /* Fully-open lift: nudge the sheet 1px higher (JS drag math matches this baseline). */
+  --toc-open-lift:-1px;
 
   /* Drag snap timing (should match JS SNAP_MS constant). */
   --toc-snap-duration:420ms;
@@ -235,8 +238,8 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
   background-clip:padding-box;
 }
 
-.toc-panel.is-open{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(0)}
-.toc-panel.is-closing{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(0);pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
+.toc-panel.is-open{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px))}
+.toc-panel.is-closing{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px));pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 

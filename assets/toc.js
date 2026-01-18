@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.7 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.9 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.7';
+  window.COVENANT_TOC_VERSION = '3.1.9';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -789,6 +789,7 @@
 
     var panelHBase = 0;
     var closedOffsetPx = 0;
+    var openLiftPx = 0;
 
     var MOVE_SLOP = 6;
 
@@ -804,6 +805,11 @@
     var SNAP_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
+
+    function computeOpenLift() {
+      var v = readCssNumberVar('--toc-open-lift');
+      openLiftPx = (typeof v === 'number' && !isNaN(v)) ? v : 0;
+    }
 
     function computeClosedY() {
       if (!tocPanel) return;
@@ -822,7 +828,10 @@
 
       tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
 
-      var progress = 1 - (y / (closedY || 1));
+      var denom = (closedY - openLiftPx);
+      if (!denom || denom <= 0) denom = 1;
+
+      var progress = (closedY - y) / denom;
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
@@ -841,7 +850,7 @@
       if (!base) return 0;
 
       var rect = tocPanel.getBoundingClientRect();
-      var openTop = rect.top - (yNow || 0);
+      var openTop = rect.top - ((yNow || 0) - openLiftPx);
 
       return computeOpenToggleDyFromPanelTop(openTop, base);
     }
@@ -922,7 +931,7 @@
       var baseH = panelHBase || closedY || 1;
 
       if (startWasOpen) {
-        var dragDown = currentY - 0;
+        var dragDown = currentY - openLiftPx;
         shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > baseH * CLOSE_RATIO);
       } else {
         var dragUp = closedY - currentY;
@@ -933,7 +942,7 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
-        applyDragFrame(0, false);
+        applyDragFrame(openLiftPx, false);
         applyOpenStateFromDrag();
 
         setTimeout(function () {
@@ -978,6 +987,8 @@
       // Ensure layout constraints are applied before we measure height.
       positionPanel();
 
+      computeOpenLift();
+
       // If we are starting from closed, we are "opening" (even before fully open).
       if (!startWasOpen) {
         root.classList.add('toc-opening');
@@ -986,7 +997,7 @@
 
       computeClosedY();
 
-      currentY = startWasOpen ? 0 : closedY;
+      currentY = startWasOpen ? openLiftPx : closedY;
 
       tocPanel.classList.add('is-dragging');
       tocPanel.style.transition = 'none';
@@ -1025,9 +1036,9 @@
       lastY = e.clientY;
       lastT = now;
 
-      var base = startWasOpen ? 0 : closedY;
+      var base = startWasOpen ? openLiftPx : closedY;
       var targetY = base + deltaY;
-      if (targetY < 0) targetY = 0;
+      if (targetY < openLiftPx) targetY = openLiftPx;
       if (targetY > closedY) targetY = closedY;
 
       applyDragFrame(targetY, true);
