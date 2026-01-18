@@ -1531,7 +1531,7 @@ body.is-exiting #blackFadeOverlay {
   --footer-hairline: rgba(154, 119, 38, 0.18);
 
   /* Cradle highlight line (footer-only). */
-  --footer-cradle-line: rgba(242, 220, 154, 0.22);
+  --footer-cradle-line: #3B362B;
 
   /* Citation label (footer-only). */
   --citation-color: rgba(242, 220, 154, 0.95);
@@ -1586,8 +1586,8 @@ body {
     ),
     radial-gradient(circle at 50% 0%,
       transparent 0 calc(var(--seal-notch-radius) - 1px),
-      var(--footer-cradle-line) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 1px),
-      transparent calc(var(--seal-notch-radius) + 2px)
+      var(--footer-cradle-line) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 0.75px),
+      transparent calc(var(--seal-notch-radius) + 1.6px)
     );
 
   opacity: 0.90;
@@ -1635,8 +1635,7 @@ body {
 
 .nav-next:hover .nav-next-frame::before,
 .nav-next:focus-visible .nav-next-frame::before,
-.nav-prev:hover .nav-prev-frame::before,
-.nav-prev:focus-visible .nav-prev-frame::before {
+.nav-prev:hover .nav-prev-frame::before {
   border-color: rgba(192,154,63,0.62);
 }
 
