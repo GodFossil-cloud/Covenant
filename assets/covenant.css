@@ -42,7 +42,7 @@
     --lexicon-snap-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
-    --nav-pill-width: 78px;
+    --nav-pill-width: 64px;
     --nav-pill-height: 40px;
 }
 
@@ -1298,7 +1298,7 @@ body.is-exiting #blackFadeOverlay {
 
 @media (max-width: 768px) {
     :root {
-        --nav-pill-width: 70px;
+        --nav-pill-width: 60px;
         --nav-pill-height: 36px;
     }
 
@@ -1390,7 +1390,7 @@ body.is-exiting #blackFadeOverlay {
 
 @media (max-width: 480px) {
     :root {
-        --nav-pill-width: 66px;
+        --nav-pill-width: 56px;
         --nav-pill-height: 34px;
     }
 
@@ -1445,7 +1445,7 @@ body.is-exiting #blackFadeOverlay {
 
 @media (max-width: 360px) {
     :root {
-        --nav-pill-width: 60px;
+        --nav-pill-width: 52px;
         --nav-pill-height: 32px;
     }
 }
