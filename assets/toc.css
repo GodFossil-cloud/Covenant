@@ -318,7 +318,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
     --toc-rule-x:.75rem;
     --toc-node:10px;
     --toc-node-locked:8px;
-    --dock-tab-raise:-8px;
+    --dock-tab-raise:-24px;
   }
   .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
