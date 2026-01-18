@@ -44,6 +44,9 @@
     /* Pill symmetry: keep center lexicon + right next frame identical at all breakpoints. */
     --nav-pill-width: 56px;
     --nav-pill-height: 40px;
+
+    /* Wing symmetry: keep Prev/Next equal width regardless of label length. */
+    --nav-wing-width: 104px;
 }
 
 * {
@@ -635,7 +638,7 @@ body.is-exiting #blackFadeOverlay {
 .nav-next,
 .nav-prev {
     height: 100%;
-    width: auto;
+    width: var(--nav-wing-width);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -892,6 +895,8 @@ body.is-exiting #blackFadeOverlay {
 .nav-next-label,
 .nav-prev-label {
     display: inline-block;
+    width: 100%;
+    text-align: center;
     padding: 0;
     border: none;
     background: transparent;
@@ -1392,6 +1397,7 @@ body.is-exiting #blackFadeOverlay {
     :root {
         --nav-pill-width: 50px;
         --nav-pill-height: 34px;
+        --nav-wing-width: 92px;
     }
 
     .container { padding: 20px 15px; }
@@ -1473,6 +1479,9 @@ body.is-exiting #blackFadeOverlay {
 
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
+
+  /* Wing symmetry: repeat token here for footer override block clarity. */
+  --nav-wing-width: 104px;
 
   /* Obsidian plate palette (footer-only). */
   --obsidian-0: #050506;
@@ -2015,6 +2024,45 @@ body {
   #lexiconToggle.is-seal-dragging:not(.has-selection)::after {
     background-color: #7a2929;
   }
+
+  /* When a passage is highlighted, keep the interaction feedback in the leaf palette,
+     and make it unmissable: brighter glyph + stronger rim + interior gilded wash. */
+  #lexiconToggle.has-selection.is-seal-dragging {
+    filter: brightness(1.16) saturate(1.30) contrast(1.07);
+  }
+
+  #lexiconToggle.has-selection.is-seal-dragging::before {
+    box-shadow:
+      inset 0 0 24px rgba(0,0,0,0.96),
+      inset 0 0 0 1px rgba(242,220,154,0.52),
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 0 0 1px rgba(242,220,154,0.44),
+      0 0 30px rgba(242,220,154,0.26),
+      0 0 60px rgba(242,220,154,0.14),
+      0 14px 10px -12px rgba(0,0,0,0.92);
+  }
+
+  #lexiconToggle.has-selection.is-seal-dragging::after {
+    /* Warmed obsidian base so the whole medallion reads “heated”. */
+    background-color: #2a1c0d;
+
+    /* Gold-leaf veil, layered on top of the existing flecks/specular stack. */
+    background-image:
+      radial-gradient(150% 150% at 50% 22%, rgba(255,215,122,0.36), rgba(255,215,122,0) 60%),
+      radial-gradient(110% 110% at 24% 18%, rgba(242,220,154,0.22), rgba(242,220,154,0) 52%),
+      radial-gradient(circle at 18% 22%, rgba(242,220,154,0.28) 0 1px, transparent 2px),
+      radial-gradient(circle at 72% 30%, rgba(242,220,154,0.22) 0 1px, transparent 2px),
+      radial-gradient(circle at 40% 78%, rgba(242,220,154,0.18) 0 1px, transparent 2px),
+      radial-gradient(circle at 82% 74%, rgba(242,220,154,0.16) 0 1px, transparent 2px),
+      radial-gradient(120% 120% at 28% 20%, rgba(255,255,255,0.14), rgba(255,255,255,0) 44%),
+      linear-gradient(to bottom, rgba(255,255,255,0.10), rgba(0,0,0,0.46)),
+      linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
+  }
+
+  /* Default drag tint (when NOT highlighted). */
+  #lexiconToggle.is-seal-dragging:not(.has-selection)::after {
+    background-color: #7a2929;
+  }
 }
 
 /* =========================================================
@@ -2036,6 +2084,8 @@ body.compact-header .section-header {
 body.compact-header .section-header h1 {
     font-size: 2.1em;
     margin: 10px 0 8px;
+    color: var(--primary-color);
+    text-transform: uppercase;
 }
 
 /* Preserve Invocation's tighter tail gap under its end divider. */
