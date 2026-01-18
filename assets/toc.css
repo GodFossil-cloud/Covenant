@@ -46,7 +46,7 @@
   --toc-top-safe:14px;
 
   /* Drag start: push the fully-closed sheet slightly lower before the first upward drag reveals it. */
-  --toc-closed-offset:12px;
+  --toc-closed-offset:16px;
 
   /* Drag snap timing (should match JS SNAP_MS constant). */
   --toc-snap-duration:420ms;
