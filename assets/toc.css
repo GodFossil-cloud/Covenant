@@ -29,7 +29,7 @@
   --toc-seal-top-radius:8px;
   --toc-seal-bottom-radius:18px;
   --toc-seal-shift-x:-5px;
-  --toc-seal-shift-y:-10px;
+  --toc-seal-shift-y:-20px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
