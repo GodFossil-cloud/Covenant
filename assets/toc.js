@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.3 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.4 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.3';
+  window.COVENANT_TOC_VERSION = '3.1.4';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -135,7 +135,7 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Requirement: tab top edge flush with sheet top edge (no "protrusion" overlap).
+    // Requirement: tab top edge flush with sheet top edge.
     var targetTop = openPanelTop;
 
     return targetTop - baseRect.top;
@@ -800,7 +800,10 @@
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
-      tocPanel.style.opacity = String(progress);
+      // Requirement: while dragging UP from closed, keep the sheet fully opaque (no fade-in).
+      // Keep the fade behavior for drag-CLOSE to preserve the smooth disappearance.
+      tocPanel.style.opacity = startWasOpen ? String(progress) : '1';
+
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
       setTocToggleOffset(0, openDyWanted * progress, !!draggingNow);
