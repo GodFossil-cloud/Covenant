@@ -61,7 +61,7 @@ html #mirrorToggle:disabled{opacity:1;cursor:default;filter:saturate(.85) bright
 
 /* Strategy B: one centered cluster governs tab symmetry. */
 .nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0}
-@media (max-width:600px){:root{--toc-tab-gap:15px}}
+@media (max-width:600px){:root{--toc-tab-gap:14px}}
 
 html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{
