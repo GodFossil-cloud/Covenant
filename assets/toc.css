@@ -27,9 +27,9 @@
   --toc-seal-size:42px;
   --toc-seal-width:48px;
   --toc-seal-top-radius:8px;
-  --toc-seal-bottom-radius:25px;
+  --toc-seal-bottom-radius:45px;
   --toc-seal-shift-x:-5px;
-  --toc-seal-shift-y:-30px;
+  --toc-seal-shift-y:-28px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
