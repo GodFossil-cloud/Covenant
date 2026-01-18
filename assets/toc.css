@@ -57,7 +57,7 @@ html #tocToggle.toc-seal{
 
   /* Counter the Lexicon seal's lift (inherited from .nav-btn.center) so the ToC seal sits inside the dock.
      Fine-tuned so the top edge aligns with the dock's top surface. */
-  transform:translateY(-18px);
+  transform:translateY(-25px);
 }
 
 html #tocToggle.toc-seal::before,
