@@ -34,10 +34,10 @@
   --dock-tab-height:calc(var(--toc-tab-height) - 4px);
 
   /* Sharpen the top corners only; keep bottom corners seated and round. */
-  --dock-tab-radius-top:2px;
+  --dock-tab-radius-top:0px;
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
-  --dock-tab-raise:-20px;
+  --dock-tab-raise:-22px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
