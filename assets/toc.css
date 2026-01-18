@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.13 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.14 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -210,8 +210,8 @@ html .nav-footer-inner{position:relative}
 html .nav-footer-inner::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.32);pointer-events:none;z-index:1;opacity:0;transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
 html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before{opacity:1}
 
-html.toc-open .nav-prev,html.toc-open .nav-next,html.toc-open .nav-btn:not(#lexiconToggle):not(#tocToggle),
-html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:not(#lexiconToggle):not(#tocToggle){position:relative;z-index:2}
+/* Keep footer controls above the scrim in all states (prevents end-of-close z-pop blink). */
+html .nav-footer-inner > *{position:relative;z-index:2}
 
 /* -------------------------------------------------
    Modal veil
