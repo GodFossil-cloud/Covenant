@@ -52,6 +52,9 @@ html .nav-left #tocToggle.toc-seal{margin-left:auto}
 /* Symmetry: mirror seal occupies the left edge of the right bay. */
 html .nav-right #mirrorToggle.toc-seal{margin-right:auto}
 
+/* Placeholder seal should be fully painted even while disabled (layout proofing). */
+html #mirrorToggle:disabled{opacity:1;cursor:default;filter:saturate(.85) brightness(.94)}
+
 /* Keep Lexicon seal centered in its cradle:
    Use a symmetric 3-column row: [ToC] [Lexicon] [spacer]. */
 .nav-seals{display:grid;grid-template-columns:var(--seal-size) var(--seal-size) var(--seal-size);column-gap:10px;align-items:center;justify-content:center;min-width:0}
