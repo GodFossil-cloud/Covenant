@@ -148,9 +148,25 @@ Core behaviors / invariants:
   - Stores `covenant_progress` in localStorage (max unlocked index).
   - `enforceSoftGate()` redirects locked direct-access attempts back to `invocation.html`.
 
+Recent dock UI refinements (Jan 18, 2026):
+- The footer seal cluster is now explicitly symmetric: `.nav-seals` is a 3-column grid (ToC tab, Lexicon seal, Mirror tab) using `--toc-tab-width` columns in `assets/toc.css`.
+- The ToC + Mirror tabs are visually raised via `--dock-tab-raise` and `transform: translateY(...)`.
+- The ToC + Mirror tabs were refined to be slightly smaller (`--dock-tab-width`, `--dock-tab-height`) while keeping the grid columns constant.
+- The tab face and framing were darkened and thickened:
+  - `::after` uses a dedicated base tone `--dock-tab-face` plus gradient layers.
+  - `::before` border is split so the top edge matches `--dock-tab-face`, while left/right/bottom are `#3B362B`.
+- Top corners were sharpened independently via `--dock-tab-radius-top` (applied to the button + `::before` + `::after`).
+
 Do not change lightly:
 - Do not allow the ToC to become a hub or shortcut.
 - Any change to footer dock layering or overlays can make the seals look “washed” or sliced.
+
+Implementation breadcrumbs (commits):
+- Dock symmetry + fixed wing sizing (Prev/Next): https://github.com/GodFossil-cloud/Covenant/commit/6562bd52a5333aadbd855c9608dba14444911a17
+- Raise ToC/Mirror tabs: https://github.com/GodFossil-cloud/Covenant/commit/146775a2de2d495975712a12ac6d339bdb0b4d51
+- Tab size/darkness/border/radius refinement: https://github.com/GodFossil-cloud/Covenant/commit/fb24392df20436f068a072cb31688f8eb6d7eb3d
+- Fix `.toc-produced` selector typo: https://github.com/GodFossil-cloud/Covenant/commit/d599d3ea4ac8bbc9acf3c3f2d4902874db68c6da
+- Tab border edge-color split + face token: https://github.com/GodFossil-cloud/Covenant/commit/d9879eff90d85627154d6ec5e0b587b9f71fc284
 
 - journey.js: journey-wide runtime behaviors (journey definition + helpers).
 
