@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.17 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.18 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.17';
+  window.COVENANT_TOC_VERSION = '3.1.18';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1030,20 +1030,19 @@
         setTocToggleOffset(0, 0, false);
 
         if (startWasOpen) {
-          // Key change: keep the panel "open" until the snap-down finishes,
-          // then do close bookkeeping. This prevents iOS from flashing during a CSS/inline handoff.
+          // Keep the panel "open" until the snap-down finishes, then do close bookkeeping.
           snapCloseFromOpen();
         } else {
-          applyDragFrame(closedY, false);
+          // Cancel-open: snap fully offscreen, then keep the offscreen transform in place.
+          // Clearing transform here can briefly re-enable the CSS baseline translateY(10px) which iOS may flash.
+          applyDragFrame(closedY + CLOSE_SINK_PX, false);
         }
       }
 
       setTimeout(function () {
         if (!tocPanel) return;
 
-        // Only clear inline styles for open snaps or for closed-start snaps.
-        // For drag-close-from-open, inline transform/opacity are cleared on the next open.
-        if (shouldOpen || !startWasOpen) {
+        if (shouldOpen) {
           tocPanel.style.transform = '';
           tocPanel.style.opacity = '';
           tocPanel.style.transition = '';
@@ -1051,6 +1050,12 @@
             tocOverlay.style.opacity = '';
             tocOverlay.style.transition = '';
           }
+        } else if (!startWasOpen) {
+          // Cancel-open cleanup: force invisible, but keep the offscreen transform.
+          tocPanel.style.opacity = '0';
+          if (tocOverlay) tocOverlay.style.opacity = '0';
+          tocPanel.style.transition = '';
+          if (tocOverlay) tocOverlay.style.transition = '';
         }
 
         // If we snapped shut from a closed-start drag, we are done "opening" now.
@@ -1291,7 +1296,7 @@
       return;
     }
 
-    // Clear any residual inline snap styles left behind by drag-close.
+    // Clear any residual inline snap styles left behind by drag-close OR cancel-open.
     tocPanel.style.transform = '';
     tocPanel.style.opacity = '';
     tocPanel.style.transition = '';
