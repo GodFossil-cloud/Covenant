@@ -40,7 +40,7 @@
   --dock-tab-face:#1c1914;
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
-  --dock-tab-raise:-22px;
+  --dock-tab-raise:-23px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
@@ -87,7 +87,7 @@ html #mirrorToggle.dock-tab::before{
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
 
   /* Top edge: match tab face tone; other edges: #3B362B. */
-  border:1px solid #3B362B;
+  border:1px solid #010103;
   border-top-color:var(--dock-tab-face);
 
   box-shadow:inset 0 0 12px rgba(0,0,0,.95);
@@ -334,7 +334,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
     --toc-rule-x:.75rem;
     --toc-node:10px;
     --toc-node-locked:8px;
-    --dock-tab-raise:-20px;
+    --dock-tab-raise:-21px;
   }
   .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
