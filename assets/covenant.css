@@ -741,6 +741,13 @@ body.is-exiting #blackFadeOverlay {
     transform: scale(1.12);
 }
 
+/* Nudge the arrow glyph down slightly inside the framed button (do not move the frame). */
+.nav-next .nav-btn-icon--arrow,
+.nav-prev .nav-btn-icon--arrow {
+    position: relative;
+    top: 1px;
+}
+
 /* Lexicon Button - Center */
 .nav-btn.center {
     width: var(--nav-pill-width);
