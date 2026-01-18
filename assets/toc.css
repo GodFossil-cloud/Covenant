@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.0.0 (Modal Veil + Footer Seal + Hold-to-Enter) */
+/*! Covenant ToC Panel Styles v3.0.1 (Modal Veil + Footer Seal + Hold-to-Enter) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -33,6 +33,10 @@
 
 /* Keep ToC seal silent while Lexicon is open (avoid two competing doors). */
 html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Ensure the two seals sit side-by-side (covenant.css stacks .nav-center). */
+.nav-seals{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;flex-wrap:nowrap;min-width:0}
+@media (max-width:600px){.nav-seals{gap:8px}}
 
 /* The footer already provides the cradle; this only gives the ToC seal its own glyph posture. */
 html #tocToggle.toc-seal{position:relative}
