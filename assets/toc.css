@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.10 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.11 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -41,6 +41,9 @@
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
   --dock-tab-raise:-22px;
+
+  /* Space between sheet bottom and footer top (0 = flush). */
+  --toc-panel-gap:0px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
@@ -222,7 +225,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
 .toc-panel{
   position:fixed;
   left:50%;
-  bottom:calc(var(--footer-total-height) + 14px);
+  bottom:calc(var(--footer-total-height) + var(--toc-panel-gap, 0px));
   top:auto;
   width:min(760px,calc(100vw - 24px));
   max-height:70vh;
