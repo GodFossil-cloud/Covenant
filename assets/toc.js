@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.12 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.13 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.12';
+  window.COVENANT_TOC_VERSION = '3.1.13';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -108,6 +108,12 @@
   function setTocToggleOffset(dx, dy, draggingNow) {
     if (!tocToggle) return;
 
+    // The tab "blink" at settle is often subpixel/compositor churn; keep settled values integer.
+    if (!draggingNow) {
+      dx = Math.round(dx || 0);
+      dy = Math.round(dy || 0);
+    }
+
     tocToggleDx = dx;
     tocToggleDy = dy;
 
@@ -123,8 +129,9 @@
     tocToggleDx = 0;
     tocToggleDy = 0;
 
-    tocToggle.style.removeProperty('--toc-toggle-drag-x');
-    tocToggle.style.removeProperty('--toc-toggle-drag-y');
+    // Keep custom props defined (at 0) to avoid a one-frame style pop on some browsers.
+    tocToggle.style.setProperty('--toc-toggle-drag-x', '0px');
+    tocToggle.style.setProperty('--toc-toggle-drag-y', '0px');
     tocToggle.classList.remove('is-toc-dragging');
   }
 
