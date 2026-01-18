@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.16 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.17 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.16';
+  window.COVENANT_TOC_VERSION = '3.1.17';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -815,6 +815,9 @@
 
     var SNAP_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
+    // Extra sink to guarantee the sheet fully clears the viewport (prevents 1px sliver flashes on iOS).
+    var CLOSE_SINK_PX = 4;
+
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
 
     function computeOpenLift() {
@@ -909,64 +912,88 @@
       root.classList.remove('toc-dock-settling');
     }
 
-    function applyClosedStateFromDrag() {
+    function settleDockAfterSnapClose() {
+      var snapMs = readCssNumberVar('--toc-snap-duration');
+      if (!snapMs || snapMs <= 0) snapMs = 420;
+
+      root.classList.add('toc-dock-settling');
+      root.classList.remove('toc-closing');
+
+      // Return the tab to the dock once the sheet is gone.
+      clearTocToggleOffset();
+
+      setTimeout(function () {
+        root.classList.remove('toc-dock-settling');
+      }, snapMs + 30);
+    }
+
+    function finalizeCloseAfterSnap() {
       if (!tocPanel || !tocOverlay) return;
 
-      if (tocPanel.classList.contains('is-open')) {
-        disableFocusTrap();
-        cancelHold();
+      // Now that motion is complete, it is safe to perform state cleanup without affecting snap geometry.
+      disableFocusTrap();
+      cancelHold();
 
-        if (!confirmNavigating) clearPendingSelection();
+      if (!confirmNavigating) clearPendingSelection();
 
-        // Keep the footer sovereign until the close animation is finished.
-        root.classList.add('toc-closing');
+      tocPanel.classList.remove('is-open');
+      tocPanel.setAttribute('aria-hidden', 'true');
 
-        tocPanel.classList.remove('is-open');
-        tocPanel.classList.add('is-closing');
-        tocOverlay.classList.remove('is-open');
-        tocOverlay.setAttribute('aria-hidden', 'true');
+      tocOverlay.classList.remove('is-open');
+      tocOverlay.setAttribute('aria-hidden', 'true');
 
-        if (tocToggle) {
-          tocToggle.classList.remove('is-open');
-          tocToggle.setAttribute('aria-expanded', 'false');
-          tocToggle.setAttribute('aria-label', 'Open Contents');
-        }
+      // Force-invisible to avoid any iOS compositor "one last frame" flash.
+      tocPanel.style.opacity = '0';
+      tocOverlay.style.opacity = '0';
 
-        // iOS Safari: keep close cleanup aligned with the snap transform duration to avoid one-frame flicker.
-        var closeMs = Math.max(180, getPanelCloseMs(), SNAP_MS);
-        setTimeout(function () {
-          if (!tocPanel) return;
-
-          tocPanel.classList.remove('is-closing');
-          tocPanel.setAttribute('aria-hidden', 'true');
-
-          // Clear drag/snap inline styles only after is-closing is gone (prevents a 1-frame jump).
-          tocPanel.style.transform = '';
-          tocPanel.style.opacity = '';
-          tocPanel.style.transition = '';
-          if (tocOverlay) {
-            tocOverlay.style.opacity = '';
-            tocOverlay.style.transition = '';
-          }
-
-          unlockBodyScroll();
-
-          // Drag-close already has the tab at dy=0, but keep layering stable for a beat anyway.
-          var snapMs = readCssNumberVar('--toc-snap-duration');
-          if (!snapMs || snapMs <= 0) snapMs = 420;
-          root.classList.add('toc-dock-settling');
-
-          root.classList.remove('toc-closing');
-
-          setTimeout(function () {
-            root.classList.remove('toc-dock-settling');
-          }, snapMs + 30);
-
-          var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
-          if (target && target.focus) target.focus();
-          focusReturnEl = null;
-        }, closeMs + 30);
+      if (tocToggle) {
+        tocToggle.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        tocToggle.setAttribute('aria-label', 'Open Contents');
       }
+
+      // Unlock scroll after we have hidden the sheet.
+      unlockBodyScroll();
+
+      settleDockAfterSnapClose();
+
+      var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
+      if (target && target.focus) target.focus();
+      focusReturnEl = null;
+
+      // Keep the final snapped transform in place; openToC() clears it before opening.
+      tocPanel.style.transition = '';
+      tocOverlay.style.transition = '';
+    }
+
+    function snapCloseFromOpen() {
+      if (!tocPanel) return;
+
+      var done = false;
+
+      root.classList.add('toc-closing');
+      root.classList.remove('toc-opening');
+      root.classList.remove('toc-dock-settling');
+
+      var targetY = closedY + CLOSE_SINK_PX;
+      applyDragFrame(targetY, false);
+
+      var onEnd = function (e) {
+        if (!e) return;
+        if (e.target !== tocPanel) return;
+        if (e.propertyName && e.propertyName.indexOf('transform') === -1) return;
+        finish();
+      };
+
+      function finish() {
+        if (done) return;
+        done = true;
+        if (tocPanel && tocPanel.removeEventListener) tocPanel.removeEventListener('transitionend', onEnd);
+        finalizeCloseAfterSnap();
+      }
+
+      tocPanel.addEventListener('transitionend', onEnd);
+      setTimeout(finish, SNAP_MS + 90);
     }
 
     function snap() {
@@ -1001,14 +1028,21 @@
         if (!startWasOpen) root.classList.add('toc-opening');
 
         setTocToggleOffset(0, 0, false);
-        applyDragFrame(closedY, false);
-        applyClosedStateFromDrag();
+
+        if (startWasOpen) {
+          // Key change: keep the panel "open" until the snap-down finishes,
+          // then do close bookkeeping. This prevents iOS from flashing during a CSS/inline handoff.
+          snapCloseFromOpen();
+        } else {
+          applyDragFrame(closedY, false);
+        }
       }
 
       setTimeout(function () {
         if (!tocPanel) return;
 
-        // For drag-close, inline styles are cleared by the close cleanup (after is-closing is removed).
+        // Only clear inline styles for open snaps or for closed-start snaps.
+        // For drag-close-from-open, inline transform/opacity are cleared on the next open.
         if (shouldOpen || !startWasOpen) {
           tocPanel.style.transform = '';
           tocPanel.style.opacity = '';
@@ -1256,6 +1290,13 @@
       window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
       return;
     }
+
+    // Clear any residual inline snap styles left behind by drag-close.
+    tocPanel.style.transform = '';
+    tocPanel.style.opacity = '';
+    tocPanel.style.transition = '';
+    tocOverlay.style.opacity = '';
+    tocOverlay.style.transition = '';
 
     confirmNavigating = false;
     cancelHold();
