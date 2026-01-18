@@ -49,7 +49,7 @@
   --toc-closed-offset:14px;
 
   /* Fully-open lift: nudge the sheet 1px higher (JS drag math matches this baseline). */
-  --toc-open-lift:-2px;
+  --toc-open-lift:-1px;
 
   /* Drag snap timing (should match JS SNAP_MS constant). */
   --toc-snap-duration:420ms;
