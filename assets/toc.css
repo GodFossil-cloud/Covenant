@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.1 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.2 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -89,6 +89,14 @@ html #tocToggle.dock-tab{
   transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px)),0);
   transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
   will-change:transform;
+
+  /* Make the seal a reliable drag surface on touch devices (prevents pointermove loss → click snap). */
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+
+  cursor:ns-resize;
 }
 
 html #tocToggle.dock-tab.is-toc-dragging{transition:none !important}
