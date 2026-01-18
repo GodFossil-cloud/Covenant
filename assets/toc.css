@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.0.3 (Modal Veil + Footer Seal + Hold-to-Enter) */
+/*! Covenant ToC Panel Styles v3.0.4 (Modal Veil + Footer Seal + Hold-to-Enter) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -24,7 +24,7 @@
   --toc-item-line:1.55;
 
   /* Footer seal (ToC) sizing. Keep Lexicon cradle geometry intact; this only shrinks the ToC control itself. */
-  --toc-seal-size:44px;
+  --toc-seal-size:42px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:14px;
@@ -48,7 +48,7 @@ html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:n
 html #tocToggle.toc-seal{position:relative;width:var(--toc-seal-size);height:var(--toc-seal-size);border-radius:0 0 999px 999px;justify-self:center;align-self:center}
 html #tocToggle.toc-seal::before,html #tocToggle.toc-seal::after{border-radius:0 0 999px 999px}
 
-html #tocToggle.toc-seal .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.92rem;line-height:1;transform:translateY(-.5px);display:inline-block}
+html #tocToggle.toc-seal .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.88rem;line-height:1;transform:translateY(-.5px);display:inline-block}
 
 /* When ToC is open, keep the seal above the footer dim layer (same policy as Lexicon). */
 html.toc-open #tocToggle,html.toc-closing #tocToggle{position:relative;z-index:3}
@@ -245,7 +245,7 @@ html.toc-closing .nav-prev,html.toc-closing .nav-next,html.toc-closing .nav-btn:
 }
 
 @media (max-width:600px){
-  :root{--toc-rule-x:.75rem;--toc-node:10px;--toc-node-locked:8px;--toc-seal-size:40px}
+  :root{--toc-rule-x:.75rem;--toc-node:10px;--toc-node-locked:8px;--toc-seal-size:38px}
   .toc-panel{width:calc(100vw - 18px);border-radius:14px 14px 0 0}
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
   .toc-produced-title{font-size:1.0rem}
