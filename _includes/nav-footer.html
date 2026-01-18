@@ -2,11 +2,6 @@
 <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
     <div class="nav-footer-inner">
         <div class="nav-left" aria-label="Previous and Contents">
-            <!-- ToC Seal (modal veil) — left of Prev/Back. -->
-            <button class="nav-btn center toc-seal" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
-                <span class="toc-glyph" aria-hidden="true">☰</span>
-            </button>
-
             {% if include.prev_href and include.prev_href != "" %}
                 <a href="{{ include.prev_href }}" class="nav-prev" aria-label="{{ include.prev_aria | default: "Previous" }}">
                     <span class="nav-prev-frame" aria-hidden="true">
@@ -22,6 +17,11 @@
                     <span class="nav-prev-label" aria-hidden="true">{{ include.prev_label | default: "Previous" }}</span>
                 </button>
             {% endif %}
+
+            <!-- ToC Seal (modal veil) — right of Prev/Back (between Prev and center). -->
+            <button class="nav-btn center toc-seal" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
+                <span class="toc-glyph" aria-hidden="true">☰</span>
+            </button>
         </div>
 
         <div class="nav-center">
