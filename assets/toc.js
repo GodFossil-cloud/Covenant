@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.19 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.20 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.19';
+  window.COVENANT_TOC_VERSION = '3.1.20';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -145,6 +145,13 @@
     };
   }
 
+  function computeOpenToggleDxFromPanelLeft(openPanelLeft, baseRect) {
+    if (!baseRect) return 0;
+
+    // Requirement: tab left edge flush with sheet left edge.
+    return openPanelLeft - baseRect.left;
+  }
+
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
@@ -152,6 +159,28 @@
     var targetTop = openPanelTop;
 
     return targetTop - baseRect.top;
+  }
+
+  function alignToggleToPanelCorner() {
+    if (!tocPanel || !tocPanel.getBoundingClientRect || !tocToggle) return;
+
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+
+    raf(function () {
+      var base = getTocToggleBaseRect();
+      if (!base) return;
+
+      var rect = tocPanel.getBoundingClientRect();
+
+      // Align tab to the sheet's unlifted top so the open lift applies to the sheet only.
+      var openLift = readCssNumberVar('--toc-open-lift');
+      var targetTop = rect.top - (openLift || 0);
+
+      var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
+      var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
+
+      setTocToggleOffset(dx, dy, false);
+    });
   }
 
   function getFooterReservedPx() {
@@ -857,6 +886,7 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
+      // Step 1: keep existing vertical carry during drag; full dx weld during drag is deferred.
       setTocToggleOffset(0, openDyWanted * progress, !!draggingNow);
     }
 
@@ -913,6 +943,9 @@
       root.classList.remove('toc-opening');
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
+
+      // Step 1: once fully open, weld the tab to the sheet corner (even if it was opened by drag).
+      alignToggleToPanelCorner();
     }
 
     function settleDockAfterSnapClose() {
@@ -1355,20 +1388,8 @@
 
     enableFocusTrap();
 
-    // Carry the tab up into its attached position (vertical-only alignment with dock column).
-    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-    raf(function () {
-      var base = getTocToggleBaseRect();
-      if (!base || !tocPanel || !tocPanel.getBoundingClientRect) return;
-      var rect = tocPanel.getBoundingClientRect();
-
-      // Align tab to the sheet's unlifted top so the open lift applies to the sheet only.
-      var openLift = readCssNumberVar('--toc-open-lift');
-      var targetTop = rect.top - (openLift || 0);
-
-      var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
-      setTocToggleOffset(0, dy, false);
-    });
+    // Step 1: weld the tab to the sheet's top-left corner after open.
+    alignToggleToPanelCorner();
 
     setTimeout(function () {
       var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
@@ -1483,35 +1504,17 @@
       if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) closeToC(true);
     });
 
-    function recomputeOpenTabOffset() {
-      if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
-
-      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () {
-        var base = getTocToggleBaseRect();
-        if (!base || !tocPanel || !tocPanel.getBoundingClientRect) return;
-        var rect = tocPanel.getBoundingClientRect();
-
-        // Align tab to the sheet's unlifted top so the open lift applies to the sheet only.
-        var openLift = readCssNumberVar('--toc-open-lift');
-        var targetTop = rect.top - (openLift || 0);
-
-        var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
-        setTocToggleOffset(0, dy, false);
-      });
-    }
-
     window.addEventListener('resize', function () {
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
-        recomputeOpenTabOffset();
+        alignToggleToPanelCorner();
       }
     });
 
     window.addEventListener('orientationchange', function () {
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
-        recomputeOpenTabOffset();
+        alignToggleToPanelCorner();
       }
     });
 
