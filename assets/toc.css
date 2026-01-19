@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.16 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.17 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -79,7 +79,7 @@ html #mirrorToggle:disabled{opacity:1;cursor:default;filter:saturate(.85) bright
 /* Keep dock controls above any decorative socket layers. */
 html .nav-seals > .nav-btn{position:relative;z-index:2}
 
-/* ToC socket cradle: remains in the dock when the ToC tab lifts away. */
+/* ToC socket cradle: a permanent dock cutout that remains even when the tab is seated. */
 .nav-seals::before{
   content:'';
   position:absolute;
@@ -101,17 +101,10 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
     inset 0 0 0 1px rgba(59,54,43,.88),
     0 1px 0 rgba(255,255,255,.04);
 
-  opacity:0;
+  opacity:1;
   pointer-events:none;
   z-index:1;
-  transition:opacity 220ms var(--toc-scroll-ease);
 }
-
-/* Reveal the socket only while the ToC is in its open/transition states. */
-html.toc-opening .nav-seals::before,
-html.toc-open .nav-seals::before,
-html.toc-closing .nav-seals::before,
-html.toc-dock-settling .nav-seals::before{opacity:1}
 
 /* If the Lexicon door is open, keep the ToC socket silent. */
 html.lexicon-scroll-lock .nav-seals::before{opacity:0}
