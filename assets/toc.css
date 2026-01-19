@@ -85,8 +85,8 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   position:absolute;
   left:calc(var(--toc-tab-width) / 2);
   top:50%;
-  width:calc(var(--dock-tab-width) + 4px);
-  height:calc(var(--dock-tab-height) + 4px);
+  width:calc(var(--dock-tab-width) + 3px);
+  height:calc(var(--dock-tab-height) + 3px);
   transform:translate3d(-50%,calc(-50% + var(--dock-tab-raise)),0);
 
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 5px) 0;
