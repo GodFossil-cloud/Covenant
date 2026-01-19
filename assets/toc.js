@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.21 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.22 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.21';
+  window.COVENANT_TOC_VERSION = '3.1.22';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -57,6 +57,9 @@
   // ToC toggle "carry" offsets (so the dock tab can ride with the sheet).
   var tocToggleDx = 0;
   var tocToggleDy = 0;
+
+  // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
+  var tapAnimating = false;
 
   function isMobileSheet() {
     try {
@@ -198,6 +201,31 @@
 
       var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
       var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
+
+      setTocToggleOffset(dx, dy, false);
+    });
+  }
+
+  function alignToggleToPanelCornerIfDrift(thresholdPx) {
+    if (!tocPanel || !tocPanel.getBoundingClientRect || !tocToggle) return;
+
+    var thr = (typeof thresholdPx === 'number' && !isNaN(thresholdPx)) ? thresholdPx : 1;
+
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+
+    raf(function () {
+      var base = getTocToggleBaseRect();
+      if (!base) return;
+
+      var rect = tocPanel.getBoundingClientRect();
+
+      var openLift = readCssNumberVar('--toc-open-lift');
+      var targetTop = rect.top - (openLift || 0);
+
+      var dx = Math.round(computeOpenToggleDxFromPanelLeft(rect.left, base) || 0);
+      var dy = Math.round(computeOpenToggleDyFromPanelTop(targetTop, base) || 0);
+
+      if (Math.abs(dx - tocToggleDx) <= thr && Math.abs(dy - tocToggleDy) <= thr) return;
 
       setTocToggleOffset(dx, dy, false);
     });
@@ -1380,6 +1408,8 @@
   function openToC() {
     if (!tocPanel || !tocOverlay) return;
 
+    if (tapAnimating) return;
+
     if (window.__COVENANT_TOC_DRAG_JUST_HAPPENED) {
       window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
       return;
@@ -1430,11 +1460,12 @@
 
     enableFocusTrap();
 
-    // Step 2: animate the sheet up from fully-closed (so it rises in unison with the tab).
+    // Step 2/3: animate the sheet up from fully-closed, and start tab travel on the same frame.
     (function animateTapOpen() {
       var snapMs = getSnapMs();
       var snapEase = getSnapEase();
 
+      tapAnimating = true;
       root.classList.add('toc-opening');
 
       // Start from fully-closed geometry.
@@ -1449,21 +1480,20 @@
 
       setPanelTranslateY(closedY);
 
-      // Compute where the *open* top will be, even though we are currently translated down.
-      var base = getTocToggleBaseRect();
-      if (base && tocPanel && tocPanel.getBoundingClientRect) {
-        var rect = tocPanel.getBoundingClientRect();
-        var predictedOpenTop = rect.top - (closedY - openLift);
-
-        var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
-        var dy = computeOpenToggleDyFromPanelTop(predictedOpenTop, base);
-
-        // Start the tab travel now so it rides with the panel.
-        setTocToggleOffset(dx, dy, false);
-      }
-
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
+        // Compute where the *open* top will be, even though we are currently translated down.
+        var base = getTocToggleBaseRect();
+        if (base && tocPanel && tocPanel.getBoundingClientRect) {
+          var rect = tocPanel.getBoundingClientRect();
+          var predictedOpenTop = rect.top - (closedY - openLift);
+
+          var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
+          var dy = computeOpenToggleDyFromPanelTop(predictedOpenTop, base);
+
+          setTocToggleOffset(dx, dy, false);
+        }
+
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
         tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
@@ -1479,10 +1509,11 @@
           tocOverlay.style.transition = '';
 
           root.classList.remove('toc-opening');
+          tapAnimating = false;
 
-          // Final weld sanity (handles subpixel drift + ensures corner alignment).
-          alignToggleToPanelCorner();
-        }, snapMs + 40);
+          // Only re-weld if there is meaningful drift (prevents a 1px end-twitch on some devices).
+          alignToggleToPanelCornerIfDrift(1);
+        }, snapMs + 50);
       });
     })();
 
@@ -1495,6 +1526,8 @@
 
   function closeToC(restoreFocus) {
     if (!tocPanel || !tocOverlay) return;
+
+    if (tapAnimating) return;
 
     disableFocusTrap();
     cancelHold();
@@ -1515,9 +1548,6 @@
     tocPanel.classList.add('is-open');
     tocOverlay.classList.add('is-open');
 
-    // Begin tab return immediately so it travels with the panel.
-    setTocToggleOffset(0, 0, false);
-
     if (tocToggle) {
       tocToggle.classList.remove('is-open');
       tocToggle.setAttribute('aria-expanded', 'false');
@@ -1526,6 +1556,8 @@
 
     var snapMs = getSnapMs();
     var snapEase = getSnapEase();
+
+    tapAnimating = true;
 
     // Start from the open position, then slide fully down.
     var openLift = readCssNumberVar('--toc-open-lift') || 0;
@@ -1541,6 +1573,9 @@
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
+      // Begin tab return on the same frame the sheet begins its slide.
+      setTocToggleOffset(0, 0, false);
+
       tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
@@ -1582,11 +1617,15 @@
 
         // Leave the panel translated down (in inline transform) until next open clears styles.
         tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + closedY + 'px)';
-      }, snapMs + 40);
+
+        tapAnimating = false;
+      }, snapMs + 50);
     });
   }
 
   function toggleToC() {
+    if (tapAnimating) return;
+
     if (tocPanel && (tocPanel.classList.contains('is-open') || tocPanel.classList.contains('is-closing'))) {
       closeToC(true);
     } else {
