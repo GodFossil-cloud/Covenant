@@ -46,7 +46,7 @@
   --toc-panel-gap:0px;
 
   /* Optional: reserve a little top breathing-room when computing max height in JS. */
-  --toc-top-safe:14px;
+  --toc-top-safe:env(safe-area-inset-top, 0px);
 
   /* Drag start: keep the fully-closed sheet seated at the dock baseline. */
   --toc-closed-offset:0px;
