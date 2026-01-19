@@ -151,8 +151,8 @@ html #mirrorToggle.dock-tab::before{
   inset:0;
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
 
-  /* Uniform brass frame on all four sides. */
-  border:1px solid #3B362B;
+  /* Match the Lexicon seal rim (weight + tone). */
+  border:0.75px solid rgba(0,0,0,0.72);
 
   box-shadow:inset 0 0 12px rgba(0,0,0,.95);
   pointer-events:none;
