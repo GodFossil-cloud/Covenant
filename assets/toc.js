@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.20 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.21 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.20';
+  window.COVENANT_TOC_VERSION = '3.1.21';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -89,6 +89,15 @@
       .replace(/'/g, '&#39;');
   }
 
+  function readCssVarString(varName) {
+    try {
+      var raw = getComputedStyle(document.documentElement).getPropertyValue(varName);
+      return String(raw || '').trim();
+    } catch (err) {
+      return '';
+    }
+  }
+
   function readCssNumberVar(varName) {
     try {
       var raw = getComputedStyle(document.documentElement).getPropertyValue(varName);
@@ -98,6 +107,17 @@
     } catch (err) {
       return 0;
     }
+  }
+
+  function getSnapMs() {
+    var ms = readCssNumberVar('--toc-snap-duration');
+    if (ms && ms > 0) return ms;
+    return 420;
+  }
+
+  function getSnapEase() {
+    var s = readCssVarString('--toc-snap-ease');
+    return s || 'cubic-bezier(0.22, 0.61, 0.36, 1)';
   }
 
   function setProducedTitle(title) {
@@ -223,6 +243,24 @@
       tocPanel.style.removeProperty('--toc-panel-left');
       tocPanel.style.removeProperty('--toc-panel-x');
     }
+  }
+
+  function setPanelTranslateY(y) {
+    if (!tocPanel) return;
+    tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
+  }
+
+  function computePanelClosedY() {
+    if (!tocPanel || !tocPanel.getBoundingClientRect) return 1;
+
+    var rect = tocPanel.getBoundingClientRect();
+    var h = (rect && rect.height) ? rect.height : 1;
+    var closedOffsetPx = readCssNumberVar('--toc-closed-offset') || 0;
+
+    // Small extra sink to guarantee the sheet clears the viewport baseline.
+    var SINK_PX = 4;
+
+    return Math.max(1, h + closedOffsetPx + SINK_PX);
   }
 
   // ---------------------------
@@ -453,6 +491,10 @@
   }
 
   function getPanelCloseMs() {
+    // Tap-close now uses the sheet snap timing so navigation/redirect delays should match it.
+    var snap = getSnapMs();
+    if (snap && snap > 0) return snap;
+
     var ms = readCssNumberVar('--toc-scroll-close-duration');
     if (ms && ms > 0) return ms;
     ms = readCssNumberVar('--toc-scroll-duration');
@@ -1388,8 +1430,61 @@
 
     enableFocusTrap();
 
-    // Step 1: weld the tab to the sheet's top-left corner after open.
-    alignToggleToPanelCorner();
+    // Step 2: animate the sheet up from fully-closed (so it rises in unison with the tab).
+    (function animateTapOpen() {
+      var snapMs = getSnapMs();
+      var snapEase = getSnapEase();
+
+      root.classList.add('toc-opening');
+
+      // Start from fully-closed geometry.
+      var openLift = readCssNumberVar('--toc-open-lift') || 0;
+      var closedY = computePanelClosedY();
+
+      tocPanel.style.transition = 'none';
+      tocOverlay.style.transition = 'none';
+
+      tocPanel.style.opacity = '1';
+      tocOverlay.style.opacity = '0';
+
+      setPanelTranslateY(closedY);
+
+      // Compute where the *open* top will be, even though we are currently translated down.
+      var base = getTocToggleBaseRect();
+      if (base && tocPanel && tocPanel.getBoundingClientRect) {
+        var rect = tocPanel.getBoundingClientRect();
+        var predictedOpenTop = rect.top - (closedY - openLift);
+
+        var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
+        var dy = computeOpenToggleDyFromPanelTop(predictedOpenTop, base);
+
+        // Start the tab travel now so it rides with the panel.
+        setTocToggleOffset(dx, dy, false);
+      }
+
+      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+      raf(function () {
+        tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
+        tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
+
+        setPanelTranslateY(openLift);
+        tocOverlay.style.opacity = '1';
+
+        setTimeout(function () {
+          // Hand control back to CSS baseline once the snap completes.
+          tocPanel.style.transform = '';
+          tocPanel.style.opacity = '';
+          tocPanel.style.transition = '';
+          tocOverlay.style.opacity = '';
+          tocOverlay.style.transition = '';
+
+          root.classList.remove('toc-opening');
+
+          // Final weld sanity (handles subpixel drift + ensures corner alignment).
+          alignToggleToPanelCorner();
+        }, snapMs + 40);
+      });
+    })();
 
     setTimeout(function () {
       var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
@@ -1415,11 +1510,13 @@
     root.classList.add('toc-closing');
     root.classList.remove('toc-opening');
 
-    tocPanel.classList.remove('is-open');
+    // Keep the panel/overlay present for the full slide-down.
     tocPanel.classList.add('is-closing');
-    tocOverlay.classList.remove('is-open');
+    tocPanel.classList.add('is-open');
+    tocOverlay.classList.add('is-open');
 
-    tocOverlay.setAttribute('aria-hidden', 'true');
+    // Begin tab return immediately so it travels with the panel.
+    setTocToggleOffset(0, 0, false);
 
     if (tocToggle) {
       tocToggle.classList.remove('is-open');
@@ -1427,34 +1524,66 @@
       tocToggle.setAttribute('aria-label', 'Open Contents');
     }
 
-    var closeMs = Math.max(180, getPanelCloseMs());
+    var snapMs = getSnapMs();
+    var snapEase = getSnapEase();
 
-    setTimeout(function () {
-      tocPanel.classList.remove('is-closing');
-      tocPanel.setAttribute('aria-hidden', 'true');
-      unlockBodyScroll();
+    // Start from the open position, then slide fully down.
+    var openLift = readCssNumberVar('--toc-open-lift') || 0;
+    var closedY = computePanelClosedY();
 
-      // Keep a tiny "settling" window so z-layer + hover state do not flip mid tab-transition.
-      var snapMs = readCssNumberVar('--toc-snap-duration');
-      if (!snapMs || snapMs <= 0) snapMs = 420;
-      root.classList.add('toc-dock-settling');
+    tocPanel.style.transition = 'none';
+    tocOverlay.style.transition = 'none';
 
-      root.classList.remove('toc-closing');
+    tocPanel.style.opacity = '1';
+    tocOverlay.style.opacity = '1';
 
-      // Return the tab to the dock once the sheet is gone.
-      clearTocToggleOffset();
+    setPanelTranslateY(openLift);
+
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+    raf(function () {
+      tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
+      tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
+
+      setPanelTranslateY(closedY);
+      tocOverlay.style.opacity = '0';
 
       setTimeout(function () {
-        root.classList.remove('toc-dock-settling');
-      }, snapMs + 30);
+        tocPanel.style.transition = '';
+        tocPanel.style.opacity = '0';
+        tocOverlay.style.transition = '';
+        tocOverlay.style.opacity = '0';
 
-      if (restoreFocus) {
-        var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
-        if (target && target.focus) target.focus();
-      }
+        tocPanel.classList.remove('is-closing');
+        tocPanel.classList.remove('is-open');
+        tocPanel.setAttribute('aria-hidden', 'true');
 
-      focusReturnEl = null;
-    }, closeMs + 30);
+        tocOverlay.classList.remove('is-open');
+        tocOverlay.setAttribute('aria-hidden', 'true');
+
+        // Unlock scroll after we have hidden the sheet.
+        unlockBodyScroll();
+
+        // Keep a tiny "settling" window so z-layer + hover state do not flip mid tab-transition.
+        root.classList.add('toc-dock-settling');
+        root.classList.remove('toc-closing');
+
+        clearTocToggleOffset();
+
+        setTimeout(function () {
+          root.classList.remove('toc-dock-settling');
+        }, snapMs + 30);
+
+        if (restoreFocus) {
+          var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
+          if (target && target.focus) target.focus();
+        }
+
+        focusReturnEl = null;
+
+        // Leave the panel translated down (in inline transform) until next open clears styles.
+        tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + closedY + 'px)';
+      }, snapMs + 40);
+    });
   }
 
   function toggleToC() {
