@@ -131,8 +131,8 @@ html #mirrorToggle.dock-tab{
   box-shadow:inset 0 -12px 16px -16px rgba(0,0,0,.86);
 }
 
-/* Mirror tab stays anchored to the dock slab. */
-html #mirrorToggle.dock-tab{transform:translateY(var(--dock-tab-raise))}
+/* Mirror tab can be "drag carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
+html #mirrorToggle.dock-tab{transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0)}
 
 /* ToC tab can be "drag carried" upward to stay physically attached to the ToC sheet. */
 html #tocToggle.dock-tab{
@@ -208,9 +208,9 @@ html #mirrorToggle.dock-tab:focus-visible::after{
     linear-gradient(to bottom, rgba(255, 235, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
 }
 
-/* Mechanical press: keep 1px travel relative to the raised position. */
-html #mirrorToggle.dock-tab:active:not(:disabled){
-  transform:translateY(calc(var(--dock-tab-raise) + 1px));
+/* Mechanical press: keep 1px travel relative to the raised position (only when not being dragged). */
+html #mirrorToggle.dock-tab:active:not(:disabled):not(.is-reliquary-dragging){
+  transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px) + 1px),0);
 }
 
 /* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
