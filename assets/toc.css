@@ -69,9 +69,6 @@ html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:n
 /* Keep mirror tab silent while Lexicon is open (preserve single-door focus). */
 html.lexicon-scroll-lock #mirrorToggle{opacity:0;visibility:hidden;pointer-events:none}
 
-/* Placeholder mirror tab should be fully painted even while disabled (layout proofing). */
-html #mirrorToggle:disabled{opacity:1;cursor:default;filter:saturate(.85) brightness(.94)}
-
 /* Strategy B: one centered cluster governs tab symmetry. */
 .nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0;position:relative}
 @media (max-width:600px){:root{--toc-tab-gap:14px}}
@@ -79,17 +76,15 @@ html #mirrorToggle:disabled{opacity:1;cursor:default;filter:saturate(.85) bright
 /* Keep dock controls above any decorative socket layers. */
 html .nav-seals > .nav-btn{position:relative;z-index:2}
 
-/* ToC socket cradle: a permanent dock cutout that remains even when the tab is seated. */
-.nav-seals::before{
+/* ToC + Mirror socket cradles: permanent dock cutouts that remain even when the tabs are seated. */
+.nav-seals::before,
+.nav-seals::after{
   content:'';
   position:absolute;
-  left:calc(var(--toc-tab-width) / 2);
   top:50%;
   width:calc(var(--dock-tab-width) + 2px);
   height:calc(var(--dock-tab-height) + 2px);
   transform:translate3d(-50%,calc(-50% + var(--dock-tab-raise) + 1px),0);
-
-  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 5px) 0;
 
   /* Deep socket tone + faint brass edge; designed to read as a cutout in the dock slab. */
   background:
@@ -106,8 +101,21 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   z-index:1;
 }
 
-/* If the Lexicon door is open, keep the ToC socket silent. */
-html.lexicon-scroll-lock .nav-seals::before{opacity:0}
+/* Left socket (ToC tab). */
+.nav-seals::before{
+  left:calc(var(--toc-tab-width) / 2);
+  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 5px) 0;
+}
+
+/* Right socket (Mirror tab). */
+.nav-seals::after{
+  left:calc(100% - (var(--toc-tab-width) / 2));
+  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 5px);
+}
+
+/* If the Lexicon door is open, keep both sockets silent. */
+html.lexicon-scroll-lock .nav-seals::before,
+html.lexicon-scroll-lock .nav-seals::after{opacity:0}
 
 html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{
@@ -178,6 +186,11 @@ html #mirrorToggle.dock-tab::after{
 html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 3px) 0}
 html #tocToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 3px) 0}
 html #tocToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 3px) 0}
+
+/* Mirror tab: sharp bottom-right, slightly rounder bottom-left. */
+html #mirrorToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 3px)}
+html #mirrorToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 3px)}
+html #mirrorToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 3px)}
 
 html #tocToggle.dock-tab:hover::before,
 html #tocToggle.dock-tab:focus-visible::before,
