@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.0 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.1 (Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.0';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.1';
 
   var doc = document;
   var root = doc.documentElement;
@@ -350,9 +350,16 @@
     if (isMobileSheet()) {
       panel.style.top = '0px';
       panel.style.setProperty('--reliquary-panel-x', '0px');
+
+      // Mirror the ToC anchoring logic:
+      // Reliquary panel spans from viewport LEFT edge to the Mirror tab's RIGHT edge.
+      var rect = toggle.getBoundingClientRect();
+      var rightInset = Math.max(0, Math.round(window.innerWidth - rect.right));
+      panel.style.setProperty('--reliquary-panel-right', rightInset + 'px');
     } else {
       panel.style.top = '';
       panel.style.setProperty('--reliquary-panel-x', '-50%');
+      panel.style.removeProperty('--reliquary-panel-right');
     }
   }
 

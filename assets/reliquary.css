@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.0 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary Panel Styles v0.2.1 (Mobile Sheet Carry + Drag-to-Open/Close) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -237,7 +237,7 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   .reliquary-panel{
     --reliquary-panel-x:0px;
     left:0;
-    right:0;
+    right:var(--reliquary-panel-right, 0px);
     width:auto;
     border-radius:14px 14px 0 0;
   }
