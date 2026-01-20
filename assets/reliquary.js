@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.1 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.2 (Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.1';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.2';
 
   var doc = document;
   var root = doc.documentElement;
@@ -65,7 +65,6 @@
   var panel = byId('reliquaryPanel');
   var overlay = byId('reliquaryOverlay');
   var toggle = byId('mirrorToggle');
-  var closeBtn = byId('reliquaryClose');
   var dragRegion = byId('reliquaryDragRegion');
 
   // Optional: gracefully close ToC first (without touching ToC internals).
@@ -216,7 +215,7 @@
   }
 
   function focusIntoPanel() {
-    var target = closeBtn || (panel ? panel.querySelector('button, a[href], textarea, input, select') : null);
+    var target = (panel ? panel.querySelector('button:not([disabled]), a[href], textarea, input, select, [tabindex]:not([tabindex="-1"])') : null);
     if (target && target.focus) target.focus();
     else if (panel && panel.focus) panel.focus();
   }
@@ -1022,13 +1021,6 @@
     stopEvent(e);
     toggleReliquaryTap();
   });
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', function (e) {
-      stopEvent(e);
-      if (panel.classList.contains('is-open')) closeReliquaryTap(true);
-    });
-  }
 
   overlay.addEventListener('click', function (e) {
     stopEvent(e);
