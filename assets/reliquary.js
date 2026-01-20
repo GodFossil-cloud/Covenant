@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.2 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.3 (Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.2';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.3';
 
   var doc = document;
   var root = doc.documentElement;
@@ -453,7 +453,7 @@
     // Start from fully-closed geometry.
     var closedY = computePanelClosedY();
 
-    panel.classList.add('is-dragging');
+    // IMPORTANT: do not add .is-dragging here (it forces transition:none !important in CSS).
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
@@ -483,8 +483,6 @@
       overlay.style.opacity = '1';
 
       setTimeout(function () {
-        panel.classList.remove('is-dragging');
-
         panel.style.transform = '';
         panel.style.opacity = '';
         panel.style.transition = '';
@@ -518,7 +516,7 @@
 
     var closedY = computePanelClosedY();
 
-    panel.classList.add('is-dragging');
+    // IMPORTANT: do not add .is-dragging here (it forces transition:none !important in CSS).
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
@@ -538,8 +536,6 @@
       overlay.style.opacity = '0';
 
       setTimeout(function () {
-        panel.classList.remove('is-dragging');
-
         panel.style.transition = '';
         panel.style.opacity = '0';
 
