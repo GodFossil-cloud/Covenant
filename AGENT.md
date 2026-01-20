@@ -123,12 +123,15 @@ Files present:
 - assets/toc.js
 - assets/journey.js
 - assets/toc.css
+- assets/reliquary.js
+- assets/reliquary.css
 - assets/textures/
 
 Responsibilities:
 - covenant.css: core site styling and sacred visual system.
 - lexicon.js: Lexicon interactions + sentence/subpart highlights + page standardization rules.
 - toc.js + toc.css: Table-of-Contents modal veil + progress gating + deliberate navigation.
+- reliquary.js + reliquary.css: Reliquary modal veil + dock-tab carry (Mirror tab).
 
 ### ToC subsystem status (Jan 2026)
 
@@ -170,7 +173,25 @@ Implementation breadcrumbs (commits):
 
 - journey.js: journey-wide runtime behaviors (journey definition + helpers).
 
-### /_includes (shared HTML shell)  ⚠️ Core
+### Reliquary subsystem status (Jan 2026)
+
+Primary files:
+- assets/reliquary.js (Reliquary runtime: modal veil, focus trap, mobile drag-to-open/close).
+- assets/reliquary.css (Reliquary visuals: veil + panel + dock-tab carry for `#mirrorToggle`).
+- _includes/reliquary-panel.html (Reliquary overlay + panel shell).
+- _includes/nav-footer.html (dock integration; Mirror tab lives right of `#lexiconToggle`).
+
+Core behaviors / invariants:
+- The Reliquary is a modal veil that does NOT cover the footer dock area.
+- The Reliquary must not become navigation or introduce alternate journey paths.
+- Mobile interaction mirrors the ToC’s "dock-tab carry" feel:
+  - Drag/swipe on `#mirrorToggle` pulls the sheet upward.
+  - When open, the tab is welded to the sheet’s top corner.
+  - Drag down from the sheet handle closes.
+
+---
+
+## /_includes (shared HTML shell)  ⚠️ Core
 
 Key includes (canonical intent; verify exact filenames in repo before editing):
 - _includes/head-fonts.html (fonts + theme meta + config include)
@@ -178,6 +199,7 @@ Key includes (canonical intent; verify exact filenames in repo before editing):
 - _includes/nav-footer.html (prev/next + Lexicon toggle + TOC seal; includes ToC panel)
 - _includes/toc-panel.html (ToC overlay + panel shell, including the produced header/title bar)
 - _includes/lexicon-panel.html (panel shell; JS populates content)
+- _includes/reliquary-panel.html (panel shell; JS governs visibility)
 
 If include structure changes, check every journey page that uses the shell.
 
@@ -212,6 +234,11 @@ If include structure changes, check every journey page that uses the shell.
   - Verify selection staging + deliberate confirm still work.
   - Verify progress gating still prevents locked direct access.
 
+- If you change `assets/reliquary.js` or `assets/reliquary.css`:
+  - Verify Reliquary modal veil does not cover the footer dock region.
+  - Verify drag-open/drag-close does not interfere with ToC behavior.
+  - Verify focus trap and ESC close still return focus to `#mirrorToggle`.
+
 - If you change `assets/covenant.css`:
   - Ensure CSS guard markers remain intact and file is not truncated.
   - Confirm footer “Obsidian & Gold Leaf” region remains present and append-only per STYLE-GUARDS.
@@ -242,17 +269,22 @@ Use this when making CSS/JS/include changes—fast, human-verifiable checks:
 - Press ESC; confirm the ToC closes and focus returns to the ToC seal.
 - Tab / Shift+Tab: confirm focus stays trapped within the ToC panel.
 
-4) Selection highlights (subsection/subpart/sentence)
+4) Reliquary modal veil
+- Open the Reliquary from the Mirror tab; confirm the veil does not cover the dock.
+- Press ESC; confirm the Reliquary closes and focus returns to the Mirror tab.
+- On mobile: drag the Mirror tab upward to open; drag down from the sheet handle to close.
+
+5) Selection highlights (subsection/subpart/sentence)
 - On a representative Article page (I.html or III.html):
   - Click a subsection: verify selected styling.
   - Click subpart markers (Ⓐ/Ⓑ/Ⓒ): verify independent selection styling.
   - If sentence highlighting exists: click a sentence; verify highlight.
 
-5) Footer system
+6) Footer system
 - Confirm footer colors/frames/seal render correctly.
 - Confirm mobile behavior does not trap scroll or hide the dock.
 
-6) Rituals exclusion
+7) Rituals exclusion
 - Open rituals.html and confirm any “compact header” behavior that is excluded remains excluded.
 
 ---

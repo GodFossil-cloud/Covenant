@@ -1,8 +1,11 @@
-/*! Covenant Reliquary Panel Styles v0.1.0 (Mirror Tab + Dedicated Panel Shell) */
+/*! Covenant Reliquary Panel Styles v0.2.0 (Mobile Sheet Carry + Drag-to-Open/Close) */
 
 :root{
-  --reliquary-snap-duration:360ms;
+  --reliquary-snap-duration:420ms;
   --reliquary-snap-ease:cubic-bezier(.22,.61,.36,1);
+
+  --reliquary-open-lift:-1px;
+  --reliquary-closed-offset:0px;
 
   --reliquary-ink:rgba(245,236,214,.92);
   --reliquary-ink-soft:rgba(245,236,214,.74);
@@ -25,6 +28,43 @@ html.reliquary-open #lexiconToggle{opacity:0;visibility:hidden;pointer-events:no
 html.reliquary-scroll-lock{overflow:hidden}
 body.reliquary-scroll-lock{position:fixed;width:100%}
 
+/* Lift the dock above the sheet while Reliquary is in motion/open (prevents z-pop). */
+html.reliquary-opening .nav-footer,
+html.reliquary-open .nav-footer,
+html.reliquary-closing .nav-footer,
+html.reliquary-dock-settling .nav-footer{z-index:1600}
+
+html.reliquary-opening #mirrorToggle,
+html.reliquary-open #mirrorToggle,
+html.reliquary-closing #mirrorToggle,
+html.reliquary-dock-settling #mirrorToggle{position:relative;z-index:1602}
+
+html.reliquary-dock-settling #mirrorToggle{pointer-events:none}
+
+/* -------------------------------------------------
+   Dock tab carry (Mirror button)
+   ------------------------------------------------- */
+
+/* Mirror tab can be "drag carried" upward to stay physically attached to the Reliquary sheet. */
+html #mirrorToggle.dock-tab{
+  transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0);
+  transition:transform var(--reliquary-snap-duration) var(--reliquary-snap-ease);
+  will-change:transform;
+
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+
+  cursor:ns-resize;
+}
+
+html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
+
+/* -------------------------------------------------
+   Modal veil
+   ------------------------------------------------- */
+
 /* Do not cover the footer; the dock stays sovereign. */
 .reliquary-overlay{
   position:fixed;
@@ -37,6 +77,10 @@ body.reliquary-scroll-lock{position:fixed;width:100%}
 }
 
 .reliquary-overlay.is-open{opacity:1;pointer-events:auto}
+
+/* -------------------------------------------------
+   Panel
+   ------------------------------------------------- */
 
 .reliquary-panel{
   position:fixed;
@@ -57,7 +101,8 @@ body.reliquary-scroll-lock{position:fixed;width:100%}
   z-index:1501;
 
   opacity:0;
-  transform:translateX(-50%) translateY(12px);
+  --reliquary-panel-x:-50%;
+  transform:translateX(var(--reliquary-panel-x)) translateY(12px);
   transform-origin:50% 100%;
 
   transition:transform var(--reliquary-snap-duration) var(--reliquary-snap-ease),opacity 140ms ease;
@@ -69,11 +114,47 @@ body.reliquary-scroll-lock{position:fixed;width:100%}
 
 .reliquary-panel.is-open{
   opacity:1;
-  transform:translateX(-50%) translateY(0);
+  transform:translateX(var(--reliquary-panel-x)) translateY(var(--reliquary-open-lift, 0px));
 }
+
+.reliquary-panel.is-dragging{transition:none !important}
 
 .reliquary-panel[aria-hidden="true"]{pointer-events:none}
 .reliquary-panel[aria-hidden="false"]{pointer-events:auto}
+
+/* -------------------------------------------------
+   Drag handle region (sheet-style)
+   ------------------------------------------------- */
+
+.reliquary-drag-region{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:22px;
+  z-index:10;
+  cursor:ns-resize;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.reliquary-drag-region::before{
+  content:'';
+  width:48px;
+  height:4px;
+  border-radius:999px;
+  background:rgba(201,169,97,.22);
+  box-shadow:0 1px 0 rgba(0,0,0,.35);
+}
+
+/* -------------------------------------------------
+   Header + body
+   ------------------------------------------------- */
 
 .reliquary-panel-header{
   position:relative;
@@ -120,9 +201,7 @@ body.reliquary-scroll-lock{position:fixed;width:100%}
 }
 
 .reliquary-close:hover,
-.reliquary-close:focus-visible{
-  color:rgba(245,215,122,1);
-}
+.reliquary-close:focus-visible{color:rgba(245,215,122,1)}
 
 .reliquary-close:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:4px}
 
@@ -150,17 +229,16 @@ body.reliquary-scroll-lock{position:fixed;width:100%}
 @media (prefers-reduced-motion: reduce){
   :root{--reliquary-snap-duration:1ms}
   .reliquary-overlay{transition:none}
-  .reliquary-panel{transition:opacity 140ms ease !important;transform:translateX(-50%) !important}
+  .reliquary-panel{transition:opacity 140ms ease !important;transform:translateX(var(--reliquary-panel-x, -50%)) !important}
+  html #mirrorToggle.dock-tab{transition:none}
 }
 
 @media (max-width:600px){
   .reliquary-panel{
-    left:12px;
+    --reliquary-panel-x:0px;
+    left:0;
     right:0;
     width:auto;
-    transform:translateY(12px);
-    border-radius:0 14px 0 0;
+    border-radius:14px 14px 0 0;
   }
-
-  .reliquary-panel.is-open{transform:translateY(0)}
 }
