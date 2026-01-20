@@ -1,0 +1,166 @@
+/*! Covenant Reliquary Panel Styles v0.1.0 (Mirror Tab + Dedicated Panel Shell) */
+
+:root{
+  --reliquary-snap-duration:360ms;
+  --reliquary-snap-ease:cubic-bezier(.22,.61,.36,1);
+
+  --reliquary-ink:rgba(245,236,214,.92);
+  --reliquary-ink-soft:rgba(245,236,214,.74);
+
+  --reliquary-obsidian-0:#050506;
+  --reliquary-obsidian-1:#0b0c0e;
+  --reliquary-obsidian-2:#121318;
+
+  --reliquary-brass:rgba(201,169,97,1);
+}
+
+/* Keep Mirror tab silent while Lexicon is open (preserve single-door focus). */
+html.lexicon-scroll-lock #mirrorToggle{opacity:0;visibility:hidden;pointer-events:none}
+
+/* When Reliquary is open, keep the other doors silent. */
+html.reliquary-open #tocToggle,
+html.reliquary-open #lexiconToggle{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Scroll lock (Reliquary). */
+html.reliquary-scroll-lock{overflow:hidden}
+body.reliquary-scroll-lock{position:fixed;width:100%}
+
+/* Do not cover the footer; the dock stays sovereign. */
+.reliquary-overlay{
+  position:fixed;
+  inset:0 0 var(--footer-total-height) 0;
+  background:rgba(0,0,0,.66);
+  z-index:1500;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity var(--reliquary-snap-duration) var(--reliquary-snap-ease);
+}
+
+.reliquary-overlay.is-open{opacity:1;pointer-events:auto}
+
+.reliquary-panel{
+  position:fixed;
+  left:50%;
+  bottom:var(--footer-total-height);
+  width:min(760px,calc(100vw - 24px));
+  max-height:calc(100vh - var(--footer-total-height) - 16px);
+
+  background:
+    radial-gradient(900px 520px at 50% 0%, rgba(201,169,97,.08), rgba(201,169,97,0) 55%),
+    linear-gradient(to bottom, var(--reliquary-obsidian-2) 0%, var(--reliquary-obsidian-1) 55%, var(--reliquary-obsidian-0) 100%);
+
+  border:1px solid rgba(201,169,97,.16);
+  border-top-color:rgba(201,169,97,.20);
+  box-shadow:0 26px 70px rgba(0,0,0,.40),0 10px 26px rgba(0,0,0,.22),inset 0 18px 22px -22px rgba(255,255,255,.08);
+
+  border-radius:16px 16px 0 0;
+  z-index:1501;
+
+  opacity:0;
+  transform:translateX(-50%) translateY(12px);
+  transform-origin:50% 100%;
+
+  transition:transform var(--reliquary-snap-duration) var(--reliquary-snap-ease),opacity 140ms ease;
+
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.reliquary-panel.is-open{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+.reliquary-panel[aria-hidden="true"]{pointer-events:none}
+.reliquary-panel[aria-hidden="false"]{pointer-events:auto}
+
+.reliquary-panel-header{
+  position:relative;
+  padding:.95rem 1.25rem .78rem;
+  border-bottom:1px solid rgba(201,169,97,.14);
+  background:linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,0));
+}
+
+.reliquary-produced-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;
+  font-weight:650;
+  letter-spacing:.14em;
+  font-variant-caps:all-small-caps;
+  line-height:1.25;
+  color:var(--reliquary-ink);
+  text-shadow:0 1px 0 rgba(0,0,0,.72);
+  padding-right:7.2rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.reliquary-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:44px;
+  height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  border:1px solid rgba(0,0,0,.72);
+  border-radius:10px;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,.06), rgba(0,0,0,.52));
+
+  color:var(--reliquary-brass);
+  font-size:1.7rem;
+  line-height:1;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.reliquary-close:hover,
+.reliquary-close:focus-visible{
+  color:rgba(245,215,122,1);
+}
+
+.reliquary-close:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:4px}
+
+.reliquary-panel-body{
+  flex:1;
+  overflow:auto;
+  padding:1.05rem 1.25rem 1.2rem;
+  color:var(--reliquary-ink-soft);
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+
+.reliquary-placeholder{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.02rem;
+  letter-spacing:.06em;
+  line-height:1.55;
+  color:var(--reliquary-ink-soft);
+  padding:.75rem .85rem;
+  border-left:2px solid rgba(201,169,97,.34);
+  background:rgba(0,0,0,.20);
+  border-radius:8px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root{--reliquary-snap-duration:1ms}
+  .reliquary-overlay{transition:none}
+  .reliquary-panel{transition:opacity 140ms ease !important;transform:translateX(-50%) !important}
+}
+
+@media (max-width:600px){
+  .reliquary-panel{
+    left:12px;
+    right:0;
+    width:auto;
+    transform:translateY(12px);
+    border-radius:0 14px 0 0;
+  }
+
+  .reliquary-panel.is-open{transform:translateY(0)}
+}

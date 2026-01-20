@@ -1,0 +1,28 @@
+<!-- Shared Reliquary panel shell (GitHub Pages / Jekyll include). -->
+<div class="reliquary-overlay" id="reliquaryOverlay" aria-hidden="true"></div>
+
+<div class="reliquary-panel" id="reliquaryPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-labelledby="reliquaryPanelTitle">
+  <div class="reliquary-panel-header">
+    <!-- Accessibility label (kept in DOM). -->
+    <div class="reliquary-panel-title sr-only" id="reliquaryPanelTitle">Reliquary</div>
+
+    <!-- Visible produced title. -->
+    <div class="reliquary-produced" aria-live="polite" aria-atomic="true">
+      <div class="reliquary-produced-title" id="reliquaryProducedTitle" role="heading" aria-level="2">Reliquary</div>
+    </div>
+
+    <button class="reliquary-close" id="reliquaryClose" type="button" aria-label="Close Reliquary">×</button>
+  </div>
+
+  <div class="reliquary-panel-body">
+    <div class="reliquary-placeholder" role="note">
+      The Reliquary is sealed.
+    </div>
+
+    <div id="reliquaryLiveRegion" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    <noscript>
+      <p>JavaScript is required to open the Reliquary.</p>
+    </noscript>
+  </div>
+</div>
