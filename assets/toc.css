@@ -93,16 +93,19 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px),0);
 
   /* Deep socket tone + faint brass edge; designed to read as a cutout in the dock slab.
-     Corner scoops are positioned INSIDE the socket (not above it) so they can't be occluded by the raised tab. */
+     Corner scoops are positioned INSIDE the socket (not above it) so they can't be occluded by the raised tab.
+
+     IMPORTANT: the lip trace + highlight ellipses are deliberately smaller and slightly lower than the socket roofline
+     to prevent visual "X" crossings with the top seam. */
   background:
     /* Brass lip trace (thin arc) to make the scoop read at a glance. */
-    radial-gradient(44px 18px at 0% 6px, transparent 0 68%, rgba(201,169,97,.38) 69% 71%, transparent 72%),
-    radial-gradient(44px 18px at 100% 6px, transparent 0 68%, rgba(201,169,97,.38) 69% 71%, transparent 72%),
+    radial-gradient(36px 16px at 0% 9px, transparent 0 68%, rgba(201,169,97,.38) 69% 71%, transparent 72%),
+    radial-gradient(36px 16px at 100% 9px, transparent 0 68%, rgba(201,169,97,.38) 69% 71%, transparent 72%),
 
     radial-gradient(40px 26px at 0% 10px, rgba(0,0,0,.94), rgba(0,0,0,0) 78%),
     radial-gradient(40px 26px at 100% 10px, rgba(0,0,0,.94), rgba(0,0,0,0) 78%),
-    radial-gradient(44px 18px at 0% 6px, rgba(255,242,210,.16), rgba(255,242,210,0) 72%),
-    radial-gradient(44px 18px at 100% 6px, rgba(255,242,210,.16), rgba(255,242,210,0) 72%),
+    radial-gradient(38px 16px at 0% 9px, rgba(255,242,210,.16), rgba(255,242,210,0) 72%),
+    radial-gradient(38px 16px at 100% 9px, rgba(255,242,210,.16), rgba(255,242,210,0) 72%),
     linear-gradient(to bottom, rgba(0,0,0,.60), rgba(0,0,0,.86) 52%, rgba(0,0,0,.96) 100%);
 
   box-shadow:
