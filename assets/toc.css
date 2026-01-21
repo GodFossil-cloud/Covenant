@@ -287,7 +287,7 @@ html .nav-footer-inner > *{position:relative;z-index:2}
   border:1px solid rgba(44,62,80,.16);
   border-top-color:rgba(44,62,80,.18);
   box-shadow:0 22px 60px rgba(0,0,0,.26),0 8px 24px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.42);
-  border-radius:16px 16px 0 0;
+  border-radius:16px 0 0 0;
   z-index:1401;
   opacity:0;
   --toc-panel-x:-50%;
@@ -478,7 +478,7 @@ html .nav-footer-inner > *{position:relative;z-index:2}
     left:var(--toc-panel-left, 12px);
     right:0;
     width:auto;
-    border-radius:0 14px 0 0;
+    border-radius:0 0 0 0;
   }
 
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
