@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.4 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.5 (Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.4';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.5';
 
   var doc = document;
   var root = doc.documentElement;
@@ -275,13 +275,8 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Mobile requirement: mirror tab bottom edge flush with sheet top edge (tab can ride offscreen when fully open).
-    // Desktop requirement: preserve prior top-seam behavior (tab stays visible).
-    var targetTop = openPanelTop;
-
-    if (isMobileSheet()) {
-      targetTop = openPanelTop - baseRect.height;
-    }
+    // Weld rule (all viewports): tab bottom edge flush with sheet top edge.
+    var targetTop = openPanelTop - baseRect.height;
 
     return targetTop - baseRect.top;
   }
@@ -623,10 +618,17 @@
 
     var startWasOpen = false;
 
+    // "Hidden" fully-offscreen Y (below dock).
     var closedY = 0;
+    // "Dock seam" Y where the sheet top kisses the tab bottom.
+    var seamY = 0;
     var currentY = 0;
 
-    var openDyWanted = 0;
+    // Cached geometry for true weld (avoid per-frame layout reads).
+    var toggleBase = null;
+    var panelBaseTop = 0;
+    var panelStartTop = 0;
+    var panelStartY = 0;
 
     var panelHBase = 0;
     var closedOffsetPx = 0;
@@ -661,35 +663,54 @@
       closedY = Math.max(1, panelHBase + closedOffsetPx);
     }
 
+    function computeSeamY() {
+      if (!panel) return;
+
+      toggleBase = getToggleBaseRect();
+      if (!toggleBase) {
+        seamY = closedY;
+        return;
+      }
+
+      // Measure panel base-top from a known translated position.
+      panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + closedY + 'px)';
+      var rect = panel.getBoundingClientRect();
+      panelBaseTop = rect.top - closedY;
+
+      var tabBottom = toggleBase.top + toggleBase.height;
+      seamY = tabBottom - panelBaseTop;
+
+      // Clamp seam between fully-open and fully-hidden.
+      if (seamY < openLiftPx) seamY = openLiftPx;
+      if (seamY > closedY) seamY = closedY;
+    }
+
     function applyDragFrame(y, draggingNow) {
       currentY = y;
 
       panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + y + 'px)';
 
-      var denom = (closedY - openLiftPx);
+      var denom = (seamY - openLiftPx);
       if (!denom || denom <= 0) denom = 1;
 
-      var progress = (closedY - y) / denom;
+      var yForProgress = y;
+      if (yForProgress > seamY) yForProgress = seamY;
+
+      var progress = (seamY - yForProgress) / denom;
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      // Carry only vertical during drag; full weld happens on snap-open.
-      setReliquaryToggleOffset(0, openDyWanted * progress, !!draggingNow);
-    }
+      // True weld: tab bottom edge stays flush with the sheet top edge for the full drag travel.
+      var dy = 0;
+      if (toggleBase && y <= seamY) {
+        var panelTop = panelStartTop + (y - panelStartY);
+        dy = computeOpenToggleDyFromPanelTop(panelTop, toggleBase);
+      }
 
-    function computeOpenDyForCurrentDragState(yNow) {
-      var base = getToggleBaseRect();
-      if (!base) return 0;
-
-      var rect = panel.getBoundingClientRect();
-
-      // Open top is where the sheet will land when y == openLiftPx.
-      var openTop = rect.top - (yNow - openLiftPx);
-
-      return computeOpenToggleDyFromPanelTop(openTop, base);
+      setReliquaryToggleOffset(0, dy, !!draggingNow);
     }
 
     function applyOpenStateFromDrag() {
@@ -780,14 +801,14 @@
 
     function snap() {
       var shouldOpen = false;
-      var baseH = panelHBase || closedY || 1;
+      var travelH = (seamY - openLiftPx) || 1;
 
       if (startWasOpen) {
         var dragDown = currentY - openLiftPx;
-        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > baseH * CLOSE_RATIO);
+        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > travelH * CLOSE_RATIO);
       } else {
-        var dragUp = closedY - currentY;
-        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > baseH * OPEN_RATIO);
+        var dragUp = seamY - currentY;
+        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > travelH * OPEN_RATIO);
       }
 
       panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE + ', opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
@@ -866,8 +887,10 @@
       }
 
       computeClosedY();
+      computeSeamY();
 
-      currentY = startWasOpen ? openLiftPx : closedY;
+      panelStartY = startWasOpen ? openLiftPx : seamY;
+      currentY = panelStartY;
 
       panel.classList.add('is-dragging');
       toggle.classList.add('is-reliquary-dragging');
@@ -876,8 +899,7 @@
       overlay.style.transition = 'none';
 
       panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + currentY + 'px)';
-
-      openDyWanted = computeOpenDyForCurrentDragState(currentY);
+      panelStartTop = panelBaseTop + panelStartY;
 
       applyDragFrame(currentY, true);
 
@@ -906,7 +928,7 @@
       lastY = e.clientY;
       lastT = now;
 
-      var base = startWasOpen ? openLiftPx : closedY;
+      var base = startWasOpen ? openLiftPx : seamY;
       var targetY = base + deltaY;
       if (targetY < openLiftPx) targetY = openLiftPx;
       if (targetY > closedY) targetY = closedY;
