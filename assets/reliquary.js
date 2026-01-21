@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.3 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.4 (Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.3';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.4';
 
   var doc = document;
   var root = doc.documentElement;
@@ -274,7 +274,16 @@
 
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
-    return openPanelTop - baseRect.top;
+
+    // Mobile requirement: mirror tab bottom edge flush with sheet top edge (tab can ride offscreen when fully open).
+    // Desktop requirement: preserve prior top-seam behavior (tab stays visible).
+    var targetTop = openPanelTop;
+
+    if (isMobileSheet()) {
+      targetTop = openPanelTop - baseRect.height;
+    }
+
+    return targetTop - baseRect.top;
   }
 
   function alignToggleToPanelCornerIfDrift(thresholdPx) {
