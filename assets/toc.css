@@ -76,7 +76,7 @@ html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:n
 html.lexicon-scroll-lock #mirrorToggle{opacity:0;visibility:hidden;pointer-events:none}
 
 /* Strategy B: one centered cluster governs tab symmetry. */
-.nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0;position:relative}
+.nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0;position:relative;z-index:3;isolation:isolate}
 @media (max-width:600px){:root{--toc-tab-gap:14px}}
 
 /* Keep dock controls above any decorative socket layers. */
@@ -93,19 +93,19 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px),0);
 
   /* Deep socket tone + faint brass edge; designed to read as a cutout in the dock slab.
-     Add two corner "scoops" at the top lip to suggest a carved recess (concave frisbee edge). */
+     Corner scoops are positioned INSIDE the socket (not above it) so they can't be occluded by the raised tab. */
   background:
-    radial-gradient(28px 18px at 0% -2px, rgba(0,0,0,.90), rgba(0,0,0,0) 72%),
-    radial-gradient(28px 18px at 100% -2px, rgba(0,0,0,.90), rgba(0,0,0,0) 72%),
-    radial-gradient(22px 14px at 0% 0%, rgba(255,242,210,.06), rgba(255,242,210,0) 70%),
-    radial-gradient(22px 14px at 100% 0%, rgba(255,242,210,.06), rgba(255,242,210,0) 70%),
+    radial-gradient(40px 26px at 0% 10px, rgba(0,0,0,.94), rgba(0,0,0,0) 78%),
+    radial-gradient(40px 26px at 100% 10px, rgba(0,0,0,.94), rgba(0,0,0,0) 78%),
+    radial-gradient(44px 18px at 0% 6px, rgba(255,242,210,.16), rgba(255,242,210,0) 72%),
+    radial-gradient(44px 18px at 100% 6px, rgba(255,242,210,.16), rgba(255,242,210,0) 72%),
     linear-gradient(to bottom, rgba(0,0,0,.60), rgba(0,0,0,.86) 52%, rgba(0,0,0,.96) 100%);
 
   box-shadow:
     inset 0 12px 18px rgba(0,0,0,.94),
     inset 0 -10px 14px rgba(255,255,255,.06),
     inset 0 0 0 1px rgba(59,54,43,.90),
-    inset 0 1px 0 rgba(255,255,255,.03),
+    inset 0 1px 0 rgba(255,255,255,.06),
     0 1px 0 rgba(255,255,255,.04);
 
   opacity:1;
