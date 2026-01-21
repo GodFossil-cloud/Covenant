@@ -34,7 +34,7 @@
   --dock-tab-height:calc(var(--toc-tab-height) - 4px);
 
   /* Sharpen the top corners only; keep bottom corners seated and round. */
-  --dock-tab-radius-top:0px;
+  --dock-tab-radius-top:var(--toc-tab-radius);
 
   /* Dock tab face base tone (also used to "erase" the top border line). */
   --dock-tab-face:#010103;
