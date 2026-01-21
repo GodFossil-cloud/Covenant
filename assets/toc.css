@@ -31,7 +31,7 @@
 
   /* Slightly smaller face for the ToC + Mirror tabs (keep the cluster columns constant for symmetry). */
   --dock-tab-width:calc(var(--toc-tab-width) - 4px);
-  --dock-tab-height:calc(var(--toc-tab-height) - 4px);
+  --dock-tab-height:calc(var(--toc-tab-height) + 2px);
 
   /* Sharpen the top corners only; keep bottom corners seated and round. */
   --dock-tab-radius-top:var(--toc-tab-radius);
@@ -40,7 +40,7 @@
   --dock-tab-face:#010103;
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
-  --dock-tab-raise:-22px;
+  --dock-tab-raise:-24px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -469,7 +469,7 @@ html .nav-footer-inner > *{position:relative;z-index:2}
     --toc-rule-x:.75rem;
     --toc-node:10px;
     --toc-node-locked:8px;
-    --dock-tab-raise:-20px;
+    --dock-tab-raise:-22px;
   }
 
   /* Mobile: sheet begins at the ToC tab's left edge and runs flush to the viewport right edge. */
