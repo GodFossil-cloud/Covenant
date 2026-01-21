@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.22 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.23 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.22';
+  window.COVENANT_TOC_VERSION = '3.1.23';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -178,8 +178,13 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Requirement: tab top edge flush with sheet top edge.
+    // Mobile requirement: tab bottom edge flush with sheet top edge (tab can ride offscreen when fully open).
+    // Desktop requirement: preserve previous "top seam" behavior (tab remains visible as a dock affordance).
     var targetTop = openPanelTop;
+
+    if (isMobileSheet()) {
+      targetTop = openPanelTop - baseRect.height;
+    }
 
     return targetTop - baseRect.top;
   }
