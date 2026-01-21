@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.24 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.23 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.24';
+  window.COVENANT_TOC_VERSION = '3.1.23';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -178,8 +178,13 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Weld rule (all viewports): tab bottom edge flush with sheet top edge.
-    var targetTop = openPanelTop - baseRect.height;
+    // Mobile requirement: tab bottom edge flush with sheet top edge (tab can ride offscreen when fully open).
+    // Desktop requirement: preserve previous "top seam" behavior (tab remains visible as a dock affordance).
+    var targetTop = openPanelTop;
+
+    if (isMobileSheet()) {
+      targetTop = openPanelTop - baseRect.height;
+    }
 
     return targetTop - baseRect.top;
   }
@@ -892,17 +897,10 @@
 
     var startWasOpen = false;
 
-    // "Hidden" fully-offscreen Y (below dock).
     var closedY = 0;
-    // "Dock seam" Y where the sheet top kisses the tab bottom.
-    var seamY = 0;
     var currentY = 0;
 
-    // Cached geometry for true weld (avoid per-frame layout reads).
-    var toggleBase = null;
-    var panelBaseTop = 0;
-    var panelStartTop = 0;
-    var panelStartY = 0;
+    var openDyWanted = 0;
 
     var panelHBase = 0;
     var closedOffsetPx = 0;
@@ -945,41 +943,16 @@
       closedY = Math.max(1, panelHBase + closedOffsetPx);
     }
 
-    function computeSeamY() {
-      if (!tocPanel) return;
-
-      toggleBase = getTocToggleBaseRect();
-      if (!toggleBase) {
-        seamY = closedY;
-        return;
-      }
-
-      // Measure panel base-top from a known translated position.
-      tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + closedY + 'px)';
-      var rect = tocPanel.getBoundingClientRect();
-      panelBaseTop = rect.top - closedY;
-
-      var tabBottom = toggleBase.top + toggleBase.height;
-      seamY = tabBottom - panelBaseTop;
-
-      // Clamp seam between fully-open and fully-hidden.
-      if (seamY < openLiftPx) seamY = openLiftPx;
-      if (seamY > closedY) seamY = closedY;
-    }
-
     function applyDragFrame(y, draggingNow) {
       if (!tocPanel) return;
       currentY = y;
 
       tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
 
-      var denom = (seamY - openLiftPx);
+      var denom = (closedY - openLiftPx);
       if (!denom || denom <= 0) denom = 1;
 
-      var yForProgress = y;
-      if (yForProgress > seamY) yForProgress = seamY;
-
-      var progress = (seamY - yForProgress) / denom;
+      var progress = (closedY - y) / denom;
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
@@ -988,14 +961,23 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
-      // True weld: tab bottom edge stays flush with the sheet top edge for the full drag travel.
-      var dy = 0;
-      if (toggleBase && y <= seamY) {
-        var panelTop = panelStartTop + (y - panelStartY);
-        dy = computeOpenToggleDyFromPanelTop(panelTop, toggleBase);
-      }
+      // Step 1: keep existing vertical carry during drag; full dx weld during drag is deferred.
+      setTocToggleOffset(0, openDyWanted * progress, !!draggingNow);
+    }
 
-      setTocToggleOffset(0, dy, !!draggingNow);
+    function computeOpenDyForCurrentDragState(yNow) {
+      if (!tocPanel) return 0;
+
+      var base = getTocToggleBaseRect();
+      if (!base) return 0;
+
+      var rect = tocPanel.getBoundingClientRect();
+
+      // Important: tab alignment is computed against the sheet's unlifted top,
+      // so a fully-open lift applies to the sheet only (relative to the carried tab).
+      var openTop = rect.top - (yNow || 0);
+
+      return computeOpenToggleDyFromPanelTop(openTop, base);
     }
 
     function applyOpenStateFromDrag() {
@@ -1037,7 +1019,7 @@
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
 
-      // Weld the tab to the sheet corner (even if it was opened by drag).
+      // Step 1: once fully open, weld the tab to the sheet corner (even if it was opened by drag).
       alignToggleToPanelCorner();
     }
 
@@ -1129,14 +1111,14 @@
       if (!tocPanel) return;
 
       var shouldOpen = false;
-      var travelH = (seamY - openLiftPx) || 1;
+      var baseH = panelHBase || closedY || 1;
 
       if (startWasOpen) {
         var dragDown = currentY - openLiftPx;
-        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > travelH * CLOSE_RATIO);
+        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > baseH * CLOSE_RATIO);
       } else {
-        var dragUp = seamY - currentY;
-        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > travelH * OPEN_RATIO);
+        var dragUp = closedY - currentY;
+        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > baseH * OPEN_RATIO);
       }
 
       tocPanel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE + ', opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
@@ -1163,6 +1145,7 @@
           snapCloseFromOpen();
         } else {
           // Cancel-open: snap fully offscreen, then keep the offscreen transform in place.
+          // Clearing transform here can briefly re-enable the CSS baseline translateY(10px) which iOS may flash.
           applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
         }
       }
@@ -1179,6 +1162,8 @@
             tocOverlay.style.transition = '';
           }
         } else if (!startWasOpen) {
+          // Cancel-open cleanup: force invisible, but keep the offscreen transform.
+          // Also keep the footer elevated for a couple frames while iOS finishes compositor cleanup.
           tocPanel.style.opacity = '0';
           if (tocOverlay) tocOverlay.style.opacity = '0';
           tocPanel.style.transition = '';
@@ -1229,10 +1214,8 @@
       }
 
       computeClosedY();
-      computeSeamY();
 
-      panelStartY = startWasOpen ? openLiftPx : seamY;
-      currentY = panelStartY;
+      currentY = startWasOpen ? openLiftPx : closedY;
 
       tocPanel.classList.add('is-dragging');
       if (tocToggle) tocToggle.classList.add('is-toc-dragging');
@@ -1240,8 +1223,11 @@
       tocPanel.style.transition = 'none';
       if (tocOverlay) tocOverlay.style.transition = 'none';
 
+      // Make sure the panel is at the expected start transform before measuring open-top.
       tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
-      panelStartTop = panelBaseTop + panelStartY;
+
+      // Precompute the tab's open offset once, so move frames stay cheap and "vertical only".
+      openDyWanted = computeOpenDyForCurrentDragState(currentY);
 
       applyDragFrame(currentY, true);
 
@@ -1271,7 +1257,7 @@
       lastY = e.clientY;
       lastT = now;
 
-      var base = startWasOpen ? openLiftPx : seamY;
+      var base = startWasOpen ? openLiftPx : closedY;
       var targetY = base + deltaY;
       if (targetY < openLiftPx) targetY = openLiftPx;
       if (targetY > closedY) targetY = closedY;
