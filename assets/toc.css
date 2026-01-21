@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.17 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.18 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -503,6 +503,10 @@ html .nav-footer-inner > *{position:relative;z-index:2}
     right:0;
     width:auto;
     border-radius:0 0 0 0;
+
+    /* Allow the sheet to reach the top of the viewport while still respecting the dock. */
+    top:0;
+    max-height:none;
   }
 
   .toc-panel-header{padding:.9rem 1.1rem .78rem}
