@@ -104,13 +104,13 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 /* Left socket (ToC tab). */
 .nav-seals::before{
   left:calc(var(--toc-tab-width) / 2);
-  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 5px) 0;
+  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0;
 }
 
 /* Right socket (Mirror tab). */
 .nav-seals::after{
   left:calc(100% - (var(--toc-tab-width) / 2));
-  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 5px);
+  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0;
 }
 
 /* If the Lexicon door is open, keep both sockets silent. */
@@ -183,14 +183,14 @@ html #mirrorToggle.dock-tab::after{
 }
 
 /* ToC tab: sharp bottom-left, slightly rounder bottom-right. */
-html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 3px) 0}
-html #tocToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 3px) 0}
-html #tocToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) calc(var(--toc-tab-radius) + 3px) 0}
+html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #tocToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #tocToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 
 /* Mirror tab: sharp bottom-right, slightly rounder bottom-left. */
-html #mirrorToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 3px)}
-html #mirrorToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 3px)}
-html #mirrorToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 calc(var(--toc-tab-radius) + 3px)}
+html #mirrorToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #mirrorToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #mirrorToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 
 html #tocToggle.dock-tab:hover::before,
 html #tocToggle.dock-tab:focus-visible::before,
