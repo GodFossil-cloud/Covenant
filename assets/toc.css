@@ -33,6 +33,9 @@
   --dock-tab-width:calc(var(--toc-tab-width) - 4px);
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
 
+  /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
+  --dock-socket-height:calc(var(--toc-tab-height) - 4px);
+
   /* Sharpen the top corners only; keep bottom corners seated and round. */
   --dock-tab-radius-top:var(--toc-tab-radius);
 
@@ -41,6 +44,9 @@
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
   --dock-tab-raise:-24px;
+
+  /* Socket stays closer to the dock baseline so it reads as a true recess. */
+  --dock-socket-raise:-22px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -83,8 +89,8 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   position:absolute;
   top:50%;
   width:calc(var(--dock-tab-width) + 2px);
-  height:calc(var(--dock-tab-height) + 2px);
-  transform:translate3d(-50%,calc(-50% + var(--dock-tab-raise) + 1px),0);
+  height:calc(var(--dock-socket-height) + 2px);
+  transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px),0);
 
   /* Deep socket tone + faint brass edge; designed to read as a cutout in the dock slab. */
   background:
@@ -470,6 +476,7 @@ html .nav-footer-inner > *{position:relative;z-index:2}
     --toc-node:10px;
     --toc-node-locked:8px;
     --dock-tab-raise:-22px;
+    --dock-socket-raise:-20px;
   }
 
   /* Mobile: sheet begins at the ToC tab's left edge and runs flush to the viewport right edge. */
