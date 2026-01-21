@@ -46,7 +46,7 @@
   --dock-tab-raise:-24px;
 
   /* Socket stays closer to the dock baseline so it reads as a true recess. */
-  --dock-socket-raise:-22px;
+  --dock-socket-raise:-20px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -92,29 +92,32 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   height:calc(var(--dock-socket-height) + 2px);
   transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px),0);
 
-  /* Machined socket: readable rim + bevel plane + calmer depth (visible even while tab is seated). */
-  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0;
+  /* Machined slot: rectangular cutout, reads under a taller pull-tab. */
+  border-radius:0;
 
   background:
-    /* faint brass/leaf rim wash */
-    linear-gradient(to bottom, rgba(242,220,154,.10), rgba(242,220,154,0) 18%),
-    /* bevel plane: slightly lighter just under the rim */
-    linear-gradient(to bottom, rgba(22,22,28,.92) 0%, rgba(10,10,14,.96) 42%, rgba(0,0,0,.985) 100%);
+    /* Sidewall bevels (machining reads at the sides, not the top rim). */
+    linear-gradient(to right,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,0) 18%,
+      rgba(255,255,255,0) 82%,
+      rgba(0,0,0,.55) 100%),
+    /* Depth body (darker toward the bottom). */
+    linear-gradient(to bottom,
+      rgba(0,0,0,.92) 0%,
+      rgba(16,16,20,.96) 46%,
+      rgba(0,0,0,.985) 100%);
 
   box-shadow:
-    /* crisp top lip highlight (machined edge) */
-    inset 0 1px 0 rgba(255,255,255,.14),
-    /* hard rim line */
+    /* Occlusion under the tab: the top edge should not shine. */
+    inset 0 2px 0 rgba(0,0,0,.96),
+    /* Crisp cut line. */
     inset 0 0 0 1px rgba(59,54,43,.92),
-    /* warm rim ghost */
-    inset 0 0 0 2px rgba(201,169,97,.10),
-
-    /* interior depth */
-    inset 0 12px 18px rgba(0,0,0,.72),
+    /* Interior depth + faint bottom catch. */
+    inset 0 12px 18px rgba(0,0,0,.80),
     inset 0 -10px 14px rgba(255,255,255,.06),
-
-    /* tiny external lift so the cut reads against the slab */
-    0 1px 0 rgba(255,255,255,.06);
+    /* Tiny external lift so the cut reads against the slab. */
+    0 1px 0 rgba(255,255,255,.05);
 
   opacity:1;
   pointer-events:none;
@@ -124,13 +127,13 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 /* Left socket (ToC tab). */
 .nav-seals::before{
   left:calc(var(--toc-tab-width) / 2);
-  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0;
+  border-radius:0;
 }
 
 /* Right socket (Mirror tab). */
 .nav-seals::after{
   left:calc(100% - (var(--toc-tab-width) / 2));
-  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0;
+  border-radius:0;
 }
 
 /* If the Lexicon door is open, keep both sockets silent. */
