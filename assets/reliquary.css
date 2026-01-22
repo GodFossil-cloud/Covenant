@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.2 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary Panel Styles v0.2.3 (Mobile Sheet Carry + Drag-to-Open/Close) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -97,7 +97,8 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   border-top-color:rgba(201,169,97,.20);
   box-shadow:0 26px 70px rgba(0,0,0,.40),0 10px 26px rgba(0,0,0,.22),inset 0 18px 22px -22px rgba(255,255,255,.08);
 
-  border-radius:0 16px 0 0;
+  /* Sharp 90° corner (upper-right) */
+  border-radius:0;
   z-index:1501;
 
   opacity:0;
@@ -212,6 +213,7 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
     left:0;
     right:var(--reliquary-panel-right, 0px);
     width:auto;
-    border-radius:0 14px 0 0;
+    /* Sharp 90° corner (upper-right) */
+    border-radius:0;
   }
 }
