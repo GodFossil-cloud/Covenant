@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.24 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.25 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.24';
+  window.COVENANT_TOC_VERSION = '3.1.25';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -959,9 +959,11 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
-      // Mobile: keep the tab welded to the sheet's current top edge during live drag.
+      // During live drag on mobile: keep the tab welded to the sheet's current top edge.
+      // During snap settle: do NOT recompute from getBoundingClientRect() (it will freeze at release-time);
+      // use the precomputed openDyWanted so the tab can transition smoothly.
       var dy = openDyWanted * progress;
-      if (isMobileSheet()) {
+      if (isMobileSheet() && draggingNow) {
         var base = getTocToggleBaseRect();
         if (base && tocPanel && tocPanel.getBoundingClientRect) {
           var r = tocPanel.getBoundingClientRect();
@@ -969,7 +971,9 @@
         }
       }
 
-      setTocToggleOffset(0, dy, !!draggingNow);
+      // Preserve any pre-set dx during snap (snap-open sets dx before applyDragFrame).
+      var dx = draggingNow ? 0 : tocToggleDx;
+      setTocToggleOffset(dx, dy, !!draggingNow);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
@@ -980,9 +984,9 @@
 
       var rect = tocPanel.getBoundingClientRect();
 
-      // Important: tab alignment is computed against the sheet's unlifted top,
-      // so a fully-open lift applies to the sheet only (relative to the carried tab).
-      var openTop = rect.top - (yNow || 0);
+      // Open top is where the sheet will land when y == openLiftPx.
+      var y = (typeof yNow === 'number' && !isNaN(yNow)) ? yNow : 0;
+      var openTop = rect.top - (y - openLiftPx);
 
       return computeOpenToggleDyFromPanelTop(openTop, base);
     }
@@ -1026,8 +1030,7 @@
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
 
-      // Once fully open, weld the tab to the sheet corner (even if it was opened by drag).
-      alignToggleToPanelCorner();
+      // NOTE: final weld is applied after snap completes (see snap()).
     }
 
     function settleDockAfterSnapClose() {
@@ -1132,8 +1135,25 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
+        // Compute the final weld position up-front so the tab transitions smoothly during snap.
+        var base = getTocToggleBaseRect();
+        if (base && tocPanel && tocPanel.getBoundingClientRect) {
+          var rectNow = tocPanel.getBoundingClientRect();
+          var predictedOpenTop = rectNow.top - (currentY - openLiftPx);
+
+          var dxFinal = computeOpenToggleDxFromPanelLeft(rectNow.left, base);
+          var dyFinal = computeOpenToggleDyFromPanelTop(predictedOpenTop, base);
+
+          setTocToggleOffset(dxFinal, dyFinal, false);
+        }
+
         applyDragFrame(openLiftPx, false);
         applyOpenStateFromDrag();
+
+        // After snap completes, do a gentle re-weld in case of subpixel drift.
+        setTimeout(function () {
+          alignToggleToPanelCornerIfDrift(1);
+        }, SNAP_MS + 60);
 
         setTimeout(function () {
           if (!tocPanel) return;
