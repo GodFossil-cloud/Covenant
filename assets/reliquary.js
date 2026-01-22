@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.6 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.7 (Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.6';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.7';
 
   var doc = document;
   var root = doc.documentElement;
@@ -674,9 +674,11 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      // Mobile: keep the tab welded to the sheet's current top edge during live drag.
+      // During live drag on mobile: keep the tab welded to the sheet's current top edge.
+      // During snap settle: do NOT recompute from getBoundingClientRect() (it can pause/bounce at the footer lip);
+      // use the precomputed progress-based motion so it returns cleanly into the dock.
       var dy = openDyWanted * progress;
-      if (isMobileSheet()) {
+      if (isMobileSheet() && draggingNow) {
         var base = getToggleBaseRect();
         if (base && panel && panel.getBoundingClientRect) {
           var r = panel.getBoundingClientRect();
@@ -758,21 +760,13 @@
       overlay.style.transition = '';
     }
 
-    function snapCloseFromOpen(yFrom, startTop, baseRect) {
+    function snapCloseFromOpen() {
       root.classList.add('reliquary-closing');
       root.classList.remove('reliquary-opening');
       root.classList.remove('reliquary-dock-settling');
 
       var targetY = closedY + CLOSE_SINK_PX;
       applyDragFrame(targetY, false);
-
-      // Mobile: set the tab's *target* weld based on predicted end position,
-      // so it animates with the sheet instead of freezing where released.
-      if (baseRect) {
-        var predictedTop = (startTop || 0) + (targetY - (yFrom || 0));
-        var dyTarget = computeOpenToggleDyFromPanelTop(predictedTop, baseRect);
-        setReliquaryToggleOffset(0, dyTarget, false);
-      }
 
       var done = false;
 
@@ -829,20 +823,14 @@
           alignToggleToPanelCornerIfDrift(1);
         }, SNAP_MS + 30);
       } else {
-        // Desktop: return tab immediately; Mobile: let it follow the sheet down.
-        if (!baseRect) setReliquaryToggleOffset(0, 0, false);
+        // Match ToC behavior: return the tab straight into its dock on release.
+        setReliquaryToggleOffset(0, 0, false);
 
         if (startWasOpen) {
-          snapCloseFromOpen(yFrom, startTop, baseRect);
+          snapCloseFromOpen();
         } else {
           var cancelTargetY = closedY + CANCEL_OPEN_SINK_PX;
           applyDragFrame(cancelTargetY, false);
-
-          if (baseRect) {
-            var predictedCancelTop = startTop + (cancelTargetY - yFrom);
-            var dyCancel = computeOpenToggleDyFromPanelTop(predictedCancelTop, baseRect);
-            setReliquaryToggleOffset(0, dyCancel, false);
-          }
         }
       }
 
