@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.4 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.5 (Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.4';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.5';
 
   var doc = document;
   var root = doc.documentElement;
@@ -298,8 +298,7 @@
       if (!base) return;
 
       var rect = panel.getBoundingClientRect();
-      var openLift = readCssNumberVar('--reliquary-open-lift') || 0;
-      var targetTop = rect.top - openLift;
+      var targetTop = rect.top;
 
       var dx = Math.round(computeOpenToggleDxFromPanelRight(rect.right, base) || 0);
       var dy = Math.round(computeOpenToggleDyFromPanelTop(targetTop, base) || 0);
@@ -319,8 +318,7 @@
       if (!base) return;
 
       var rect = panel.getBoundingClientRect();
-      var openLift = readCssNumberVar('--reliquary-open-lift') || 0;
-      var targetTop = rect.top - openLift;
+      var targetTop = rect.top;
 
       var dx = computeOpenToggleDxFromPanelRight(rect.right, base);
       var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
@@ -676,8 +674,17 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      // Carry only vertical during drag; full weld happens on snap-open.
-      setReliquaryToggleOffset(0, openDyWanted * progress, !!draggingNow);
+      // Mobile: keep the tab welded to the sheet's current top edge during live drag.
+      var dy = openDyWanted * progress;
+      if (isMobileSheet()) {
+        var base = getToggleBaseRect();
+        if (base && panel && panel.getBoundingClientRect) {
+          var r = panel.getBoundingClientRect();
+          dy = computeOpenToggleDyFromPanelTop(r.top, base);
+        }
+      }
+
+      setReliquaryToggleOffset(0, dy, !!draggingNow);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
@@ -876,6 +883,27 @@
       overlay.style.transition = 'none';
 
       panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + currentY + 'px)';
+
+      // Mobile: re-seat the "closed" start so the sheet top begins flush to the tab bottom.
+      if (!startWasOpen && isMobileSheet()) {
+        var base = getToggleBaseRect();
+        if (base && panel && panel.getBoundingClientRect) {
+          var r = panel.getBoundingClientRect();
+          var desiredTop = base.bottom;
+          var delta = desiredTop - r.top;
+
+          if (delta && Math.abs(delta) > 0.5) {
+            var newClosedY = closedY + delta;
+            if (newClosedY < openLiftPx) newClosedY = openLiftPx;
+
+            delta = newClosedY - closedY;
+            closedY = newClosedY;
+            currentY = currentY + delta;
+
+            panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + currentY + 'px)';
+          }
+        }
+      }
 
       openDyWanted = computeOpenDyForCurrentDragState(currentY);
 

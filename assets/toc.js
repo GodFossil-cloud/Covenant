@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.23 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.24 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.23';
+  window.COVENANT_TOC_VERSION = '3.1.24';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -200,9 +200,8 @@
 
       var rect = tocPanel.getBoundingClientRect();
 
-      // Align tab to the sheet's unlifted top so the open lift applies to the sheet only.
-      var openLift = readCssNumberVar('--toc-open-lift');
-      var targetTop = rect.top - (openLift || 0);
+      // Align tab to the sheet's visible top edge (mobile seam stays welded).
+      var targetTop = rect.top;
 
       var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
       var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
@@ -224,8 +223,7 @@
 
       var rect = tocPanel.getBoundingClientRect();
 
-      var openLift = readCssNumberVar('--toc-open-lift');
-      var targetTop = rect.top - (openLift || 0);
+      var targetTop = rect.top;
 
       var dx = Math.round(computeOpenToggleDxFromPanelLeft(rect.left, base) || 0);
       var dy = Math.round(computeOpenToggleDyFromPanelTop(targetTop, base) || 0);
@@ -961,8 +959,17 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
-      // Step 1: keep existing vertical carry during drag; full dx weld during drag is deferred.
-      setTocToggleOffset(0, openDyWanted * progress, !!draggingNow);
+      // Mobile: keep the tab welded to the sheet's current top edge during live drag.
+      var dy = openDyWanted * progress;
+      if (isMobileSheet()) {
+        var base = getTocToggleBaseRect();
+        if (base && tocPanel && tocPanel.getBoundingClientRect) {
+          var r = tocPanel.getBoundingClientRect();
+          dy = computeOpenToggleDyFromPanelTop(r.top, base);
+        }
+      }
+
+      setTocToggleOffset(0, dy, !!draggingNow);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
@@ -1019,7 +1026,7 @@
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
 
-      // Step 1: once fully open, weld the tab to the sheet corner (even if it was opened by drag).
+      // Once fully open, weld the tab to the sheet corner (even if it was opened by drag).
       alignToggleToPanelCorner();
     }
 
@@ -1226,7 +1233,28 @@
       // Make sure the panel is at the expected start transform before measuring open-top.
       tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
 
-      // Precompute the tab's open offset once, so move frames stay cheap and "vertical only".
+      // Mobile: re-seat the "closed" start so the sheet top begins flush to the tab bottom.
+      if (!startWasOpen && isMobileSheet()) {
+        var base = getTocToggleBaseRect();
+        if (base && tocPanel && tocPanel.getBoundingClientRect) {
+          var r = tocPanel.getBoundingClientRect();
+          var desiredTop = base.top + base.height;
+          var delta = desiredTop - r.top;
+
+          if (delta && Math.abs(delta) > 0.5) {
+            var newClosedY = closedY + delta;
+            if (newClosedY < openLiftPx) newClosedY = openLiftPx;
+
+            delta = newClosedY - closedY;
+            closedY = newClosedY;
+            currentY = currentY + delta;
+
+            tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
+          }
+        }
+      }
+
+      // Precompute the tab's open offset once, so move frames stay cheap (desktop/fallback).
       openDyWanted = computeOpenDyForCurrentDragState(currentY);
 
       applyDragFrame(currentY, true);
