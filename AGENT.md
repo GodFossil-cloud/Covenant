@@ -89,7 +89,7 @@ Key includes:
 If include structure changes, verify every journey page that uses the shell.
 
 ### Build / Deploy / CI
-- .github/workflows/pages.yml — Jekyll build + deploy to GitHub Pages.
+- .github/workflows/pages.yml — Jekyll build + deploy to GitHub Pages; builds into `_site` and writes `_site/.nojekyll`.
 - .github/workflows/css-guard.yml — validates covenant.css integrity markers and structure.
 - .github/workflows/agent-guard.yml — requires AGENT.md update when core files change.
 - _config.yml — Jekyll behavior (include/exclude).
