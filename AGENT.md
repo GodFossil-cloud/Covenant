@@ -80,7 +80,8 @@ PHASE 5 — RESPONSE BEHAVIOR (MODE-DEPENDENT)
 
 ## Build + deploy reality
 
-- Site is built with Jekyll via GitHub Actions (`.github/workflows/pages.yml`) and deployed from `_site`.
+- Site is built with Jekyll via GitHub Actions (`.github/workflows/pages.yml`) into `_site`.
+- The workflow creates `_site/.nojekyll` to prevent GitHub Pages from attempting a second Jekyll build.
 - Jekyll behavior is controlled by `_config.yml` (include/exclude rules).
 
 Do not rely on GitHub Pages “auto-Jekyll build” assumptions; the workflow is the truth.
