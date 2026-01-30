@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.25 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.26 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.25';
+  window.COVENANT_TOC_VERSION = '3.1.26';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -235,17 +235,17 @@
   }
 
   function getFooterReservedPx() {
+    // Prefer a real measurement; CSS vars can drift (safe-area, padding, device rounding).
+    var footer = document.querySelector('.nav-footer');
+    if (footer && footer.getBoundingClientRect) {
+      var h = footer.getBoundingClientRect().height || 0;
+      if (h > 0) return Math.max(0, Math.round(h));
+    }
+
     var total = readCssNumberVar('--footer-total-height');
 
     if (!total) {
       total = readCssNumberVar('--footer-height') + readCssNumberVar('--footer-safe');
-    }
-
-    if (!total) {
-      var footer = document.querySelector('.nav-footer');
-      if (footer && footer.getBoundingClientRect) {
-        total = footer.getBoundingClientRect().height || 0;
-      }
     }
 
     return Math.max(0, Math.round(total));
@@ -1418,6 +1418,8 @@
       tocDragRegion.addEventListener('lostpointercapture', function (e) {
         endDrag(e);
       });
+
+      // (rest of file unchanged)
     }
   })();
 
