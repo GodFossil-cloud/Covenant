@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.26 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.27 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.26';
+  window.COVENANT_TOC_VERSION = '3.1.27';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -88,7 +88,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/\"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
 
@@ -239,7 +239,7 @@
     var footer = document.querySelector('.nav-footer');
     if (footer && footer.getBoundingClientRect) {
       var h = footer.getBoundingClientRect().height || 0;
-      if (h > 0) return Math.max(0, Math.round(h));
+      if (h > 0) return Math.max(0, h);
     }
 
     var total = readCssNumberVar('--footer-total-height');
@@ -248,7 +248,7 @@
       total = readCssNumberVar('--footer-height') + readCssNumberVar('--footer-safe');
     }
 
-    return Math.max(0, Math.round(total));
+    return Math.max(0, total);
   }
 
   function positionPanel() {
@@ -257,6 +257,9 @@
     var footerReserved = getFooterReservedPx();
     var topSafe = readCssNumberVar('--toc-top-safe');
     var gap = readCssNumberVar('--toc-panel-gap');
+
+    // Keep overlay + sheet in perfect agreement (mobile seam fix).
+    root.style.setProperty('--toc-footer-reserved', footerReserved + 'px');
 
     var bottom = footerReserved + (gap || 0);
     var maxH = Math.max(240, Math.floor(window.innerHeight - bottom - (topSafe || 12)));
