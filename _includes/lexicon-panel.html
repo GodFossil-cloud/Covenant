@@ -1,7 +1,7 @@
 <!-- Shared Lexicon panel shell (GitHub Pages / Jekyll include). -->
 <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
 
-<div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1">
+<div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="lexiconPanelTitle">
     <div class="lexicon-drag-region" id="lexiconDragRegion">
         <div class="lexicon-drag-handle" aria-hidden="true">
             <span class="lexicon-drag-pill" aria-hidden="true"></span>
@@ -11,7 +11,7 @@
 
     <div class="lexicon-panel-header">
         <div>
-            <div class="lexicon-panel-title">Lexicon</div>
+            <div class="lexicon-panel-title" id="lexiconPanelTitle">Lexicon</div>
             <!-- Intentionally left blank; populated by assets/lexicon.js from window.COVENANT_PAGE.modeLabel. -->
             <div class="lexicon-panel-mode" id="lexiconModeLabel"></div>
         </div>
