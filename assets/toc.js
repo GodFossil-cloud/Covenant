@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.29 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
+/*! Covenant ToC v3.1.30 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.29';
+  window.COVENANT_TOC_VERSION = '3.1.30';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -74,6 +74,81 @@
 
   // If Lexicon is open, we close it first and re-enter after its snap.
   var openDeferredByLexicon = 0;
+
+  // Optional: UI stack coordination (preferred; falls back to local mutex logic until migrated).
+  var uiRegistered = false;
+  var UI_STACK_ID = 'toc';
+
+  function getUIStack() {
+    return window.COVENANT_UI_STACK;
+  }
+
+  function uiStackReady(stack) {
+    return !!(
+      stack
+      && typeof stack.register === 'function'
+      && typeof stack.requestExclusive === 'function'
+      && typeof stack.noteOpen === 'function'
+      && typeof stack.noteClose === 'function'
+    );
+  }
+
+  function registerWithUIStack() {
+    if (uiRegistered) return;
+
+    var stack = getUIStack();
+    if (!uiStackReady(stack)) return;
+
+    try {
+      stack.register({
+        id: UI_STACK_ID,
+        priority: 30,
+        isOpen: function () {
+          return !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
+        },
+        requestClose: function () {
+          try {
+            closeToC(false);
+          } catch (err) {}
+        }
+      });
+
+      uiRegistered = true;
+    } catch (err) {}
+  }
+
+  function requestExclusiveFromUIStack() {
+    registerWithUIStack();
+
+    var stack = getUIStack();
+    if (!uiStackReady(stack)) return;
+
+    try {
+      stack.requestExclusive(UI_STACK_ID);
+    } catch (err) {}
+  }
+
+  function noteOpenToUIStack() {
+    registerWithUIStack();
+
+    var stack = getUIStack();
+    if (!uiStackReady(stack)) return;
+
+    try {
+      stack.noteOpen(UI_STACK_ID);
+    } catch (err) {}
+  }
+
+  function noteCloseToUIStack() {
+    registerWithUIStack();
+
+    var stack = getUIStack();
+    if (!uiStackReady(stack)) return;
+
+    try {
+      stack.noteClose(UI_STACK_ID);
+    } catch (err) {}
+  }
 
   function isMobileSheet() {
     try {
@@ -1079,6 +1154,8 @@
         clearPendingSelection();
         renderToC();
         enableFocusTrap();
+
+        noteOpenToUIStack();
       }
 
       // Drag-open state is complete once the panel is open.
@@ -1128,6 +1205,8 @@
         tocToggle.setAttribute('aria-expanded', 'false');
         tocToggle.setAttribute('aria-label', 'Open Contents');
       }
+
+      noteCloseToUIStack();
 
       // Unlock scroll after we have hidden the sheet.
       unlockBodyScroll();
@@ -1538,6 +1617,8 @@
       return;
     }
 
+    requestExclusiveFromUIStack();
+
     if (isReliquaryOpen()) {
       if (openDeferredByReliquary < 2) {
         openDeferredByReliquary++;
@@ -1594,6 +1675,8 @@
       tocToggle.setAttribute('aria-expanded', 'true');
       tocToggle.setAttribute('aria-label', 'Close Contents');
     }
+
+    noteOpenToUIStack();
 
     if (currentPageId) {
       for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
@@ -1744,6 +1827,8 @@
         tocOverlay.classList.remove('is-open');
         tocOverlay.setAttribute('aria-hidden', 'true');
 
+        noteCloseToUIStack();
+
         // Unlock scroll after we have hidden the sheet.
         unlockBodyScroll();
 
@@ -1855,6 +1940,8 @@
   if (!tocPanel || !tocOverlay || !tocToggle) {
     return;
   }
+
+  registerWithUIStack();
 
   bindContentClicks();
   wireControls();
