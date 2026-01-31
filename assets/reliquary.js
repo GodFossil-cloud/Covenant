@@ -73,6 +73,67 @@
 
   if (!panel || !overlay || !toggle) return;
 
+  // Optional: coordinated UI stack (dock exclusivity across panels).
+  var UI_STACK_ID = 'reliquary';
+
+  function getUIStack() {
+    try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
+  }
+
+  function registerWithUIStack() {
+    var stack = getUIStack();
+    if (!stack) return;
+
+    var registerFn = stack.register || stack.registerSurface || stack.registerPanel;
+    if (typeof registerFn !== 'function') return;
+
+    function closeFromStack() {
+      if (!panel || !panel.classList || !panel.classList.contains('is-open')) return;
+
+      // Stack-driven closes should be polite (no focus steal), but also robust against mid-animation.
+      if (tapAnimating) {
+        closeReliquaryImmediately(false);
+        return;
+      }
+
+      closeReliquaryTap(false);
+    }
+
+    try {
+      registerFn.call(stack, {
+        id: UI_STACK_ID,
+        priority: 20,
+        isOpen: function () {
+          return !!(panel && panel.classList && panel.classList.contains('is-open'));
+        },
+        close: closeFromStack
+      });
+    } catch (err) {}
+  }
+
+  function requestExclusive() {
+    var stack = getUIStack();
+    if (stack && typeof stack.requestExclusive === 'function') {
+      try { stack.requestExclusive(UI_STACK_ID); } catch (err) {}
+    }
+  }
+
+  function noteOpen() {
+    var stack = getUIStack();
+    if (stack && typeof stack.noteOpen === 'function') {
+      try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
+    }
+  }
+
+  function noteClose() {
+    var stack = getUIStack();
+    if (stack && typeof stack.noteClose === 'function') {
+      try { stack.noteClose(UI_STACK_ID); } catch (err) {}
+    }
+  }
+
+  registerWithUIStack();
+
   var focusReturnEl = null;
   var focusTrapEnabled = false;
   var focusTrapHandler = null;
@@ -404,6 +465,8 @@
   function openReliquaryImmediately() {
     focusReturnEl = toggle;
 
+    requestExclusive();
+
     root.classList.add('reliquary-open');
 
     panel.classList.add('is-open');
@@ -418,6 +481,8 @@
 
     lockBodyScroll();
     enableFocusTrap();
+
+    noteOpen();
   }
 
   function closeReliquaryImmediately(restoreFocus) {
@@ -436,6 +501,8 @@
     toggle.setAttribute('aria-label', 'Open Reliquary');
 
     unlockBodyScroll();
+
+    noteClose();
 
     if (restoreFocus) {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
@@ -596,6 +663,8 @@
 
         root.classList.remove('reliquary-open');
         unlockBodyScroll();
+
+        noteClose();
 
         if (restoreFocus) {
           var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
@@ -773,6 +842,8 @@
       root.classList.remove('reliquary-open');
 
       unlockBodyScroll();
+
+      noteClose();
 
       settleDockAfterSnapClose();
 

@@ -24,7 +24,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/\"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
 
@@ -122,6 +122,55 @@
   var tocPanel = byId('tocPanel');
   var tocToggle = byId('tocToggle');
   var openDeferredByToC = 0;
+
+  // Optional: coordinated UI stack (dock exclusivity across panels).
+  var UI_STACK_ID = 'lexicon';
+
+  function getUIStack() {
+    try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
+  }
+
+  function registerWithUIStack() {
+    var stack = getUIStack();
+    if (!stack) return;
+
+    var registerFn = stack.register || stack.registerSurface || stack.registerPanel;
+    if (typeof registerFn !== 'function') return;
+
+    try {
+      registerFn.call(stack, {
+        id: UI_STACK_ID,
+        priority: 40,
+        isOpen: function () {
+          return !!(panel && panel.classList && panel.classList.contains('is-open'));
+        },
+        close: function () {
+          if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
+        }
+      });
+    } catch (err) {}
+  }
+
+  function requestExclusive() {
+    var stack = getUIStack();
+    if (stack && typeof stack.requestExclusive === 'function') {
+      try { stack.requestExclusive(UI_STACK_ID); } catch (err) {}
+    }
+  }
+
+  function noteOpen() {
+    var stack = getUIStack();
+    if (stack && typeof stack.noteOpen === 'function') {
+      try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
+    }
+  }
+
+  function noteClose() {
+    var stack = getUIStack();
+    if (stack && typeof stack.noteClose === 'function') {
+      try { stack.noteClose(UI_STACK_ID); } catch (err) {}
+    }
+  }
 
   var sealClearTimer = null;
 
@@ -795,6 +844,8 @@
 
     focusReturnEl = lexiconToggle;
 
+    requestExclusive();
+
     panel.classList.add('is-open');
     lexOverlay.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -803,6 +854,8 @@
 
     lockBodyScroll();
     setLexiconGlyph();
+
+    noteOpen();
 
     if (isBottomSheetMode()) {
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
@@ -828,6 +881,8 @@
 
     unlockBodyScroll();
     setLexiconGlyph();
+
+    noteClose();
 
     setTimeout(function () {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : lexiconToggle;
@@ -860,6 +915,7 @@
   // Initialization / event wiring
   // ========================================
   validateSentenceKeys();
+  registerWithUIStack();
 
   if (lexiconToggle && panel && lexOverlay) {
     setModeLabel();
@@ -1135,6 +1191,8 @@
 
     function applyOpenStateFromDrag() {
       if (!panel.classList.contains('is-open')) {
+        requestExclusive();
+
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
@@ -1142,6 +1200,8 @@
         lexiconToggle.setAttribute('aria-expanded', 'true');
         lockBodyScroll();
         setLexiconGlyph();
+
+        noteOpen();
       }
 
       // Ensure drag-open lands exactly like tap-open.
@@ -1158,6 +1218,8 @@
         lexiconToggle.setAttribute('aria-expanded', 'false');
         unlockBodyScroll();
         setLexiconGlyph();
+
+        noteClose();
       }
       clearSealDragOffset();
     }
