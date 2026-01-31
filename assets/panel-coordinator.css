@@ -1,0 +1,38 @@
+/* Covenant panel coordination (stacking + shared scroll lock) */
+
+:root{
+  --covenant-sigil-pulse-ms:420ms;
+  --covenant-sigil-pulse-ease:ease-out;
+
+  /* Warm gold-leaf flare (halo) */
+  --covenant-sigil-halo:rgba(201,169,97,.60);
+}
+
+/* Shared scroll lock used by panel coordinator (prevents multi-panel scroll-lock corruption). */
+html.covenant-scroll-lock{overflow:hidden}
+body.covenant-scroll-lock{position:fixed;width:100%}
+
+/* When a panel is covered by a newer panel in the stack, make it inert. */
+[data-covenant-covered="true"]{pointer-events:none !important}
+
+/* Covered veils should not double-dim the world. */
+.toc-overlay[data-covenant-covered="true"],
+.reliquary-overlay[data-covenant-covered="true"],
+.lexicon-overlay[data-covenant-covered="true"]{opacity:0 !important}
+
+/* Lexicon lock feedback: gold-leaf sigil pulse on blocked open. */
+#lexiconToggle.is-lexicon-locked-pulse .lexicon-glyph{
+  animation:covenant-sigil-pulse var(--covenant-sigil-pulse-ms) var(--covenant-sigil-pulse-ease);
+  will-change:filter,opacity;
+}
+
+@keyframes covenant-sigil-pulse{
+  0%{opacity:1;filter:none}
+  44%{opacity:.78;filter:drop-shadow(0 0 10px var(--covenant-sigil-halo)) drop-shadow(0 0 22px rgba(201,169,97,.26))}
+  100%{opacity:1;filter:none}
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root{--covenant-sigil-pulse-ms:1ms}
+  #lexiconToggle.is-lexicon-locked-pulse .lexicon-glyph{animation:none}
+}
