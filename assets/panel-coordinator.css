@@ -12,6 +12,9 @@
 html.covenant-scroll-lock{overflow:hidden}
 body.covenant-scroll-lock{position:fixed;width:100%}
 
+/* Keep the footer dock sovereign above the Lexicon overlay/panel. */
+html.lexicon-scroll-lock .nav-footer{z-index:1600}
+
 /* When a panel is covered by a newer panel in the stack, make it inert. */
 [data-covenant-covered="true"]{pointer-events:none !important}
 

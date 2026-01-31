@@ -17,9 +17,6 @@
   --reliquary-brass:rgba(201,169,97,1);
 }
 
-/* Keep Mirror tab silent while Lexicon is open (preserve single-door focus). */
-html.lexicon-scroll-lock #mirrorToggle{opacity:0;visibility:hidden;pointer-events:none}
-
 /* When Reliquary is open, keep the other doors silent. */
 html.reliquary-open #tocToggle,
 html.reliquary-open #lexiconToggle{opacity:0;visibility:hidden;pointer-events:none}
