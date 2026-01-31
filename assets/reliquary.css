@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.3 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary Panel Styles v0.2.4 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -68,7 +68,7 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 /* Do not cover the footer; the dock stays sovereign. */
 .reliquary-overlay{
   position:fixed;
-  inset:0 0 var(--footer-total-height) 0;
+  inset:0 0 var(--reliquary-footer-reserved, var(--footer-total-height)) 0;
   background:rgba(0,0,0,.66);
   z-index:1500;
   opacity:0;
@@ -85,9 +85,9 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 .reliquary-panel{
   position:fixed;
   left:50%;
-  bottom:var(--footer-total-height);
+  bottom:var(--reliquary-footer-reserved, var(--footer-total-height));
   width:min(760px,calc(100vw - 24px));
-  max-height:calc(100vh - var(--footer-total-height) - 16px);
+  max-height:calc(100vh - var(--reliquary-footer-reserved, var(--footer-total-height)) - 16px);
 
   background:
     radial-gradient(900px 520px at 50% 0%, rgba(201,169,97,.08), rgba(201,169,97,0) 55%),

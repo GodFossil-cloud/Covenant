@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.7 (Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.8 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.7';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.8';
 
   var doc = document;
   var root = doc.documentElement;
@@ -328,16 +328,16 @@
   }
 
   function getFooterReservedPx() {
+    // Prefer a real measurement; CSS vars can drift (safe-area, padding, device rounding).
+    var footer = doc.querySelector('.nav-footer');
+    if (footer && footer.getBoundingClientRect) {
+      var h = footer.getBoundingClientRect().height || 0;
+      if (h > 0) return Math.max(0, Math.round(h));
+    }
+
     var total = readCssNumberVar('--footer-total-height');
     if (!total) {
       total = readCssNumberVar('--footer-height') + readCssNumberVar('--footer-safe');
-    }
-
-    if (!total) {
-      var footer = doc.querySelector('.nav-footer');
-      if (footer && footer.getBoundingClientRect) {
-        total = footer.getBoundingClientRect().height || 0;
-      }
     }
 
     return Math.max(0, Math.round(total));
@@ -347,6 +347,10 @@
     if (!panel) return;
 
     var footerReserved = getFooterReservedPx();
+
+    // Keep overlay + sheet in perfect agreement.
+    root.style.setProperty('--reliquary-footer-reserved', footerReserved + 'px');
+
     var bottom = footerReserved;
     var maxH = Math.max(240, Math.floor(window.innerHeight - bottom));
 
