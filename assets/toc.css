@@ -130,9 +130,9 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   border-radius:0;
 }
 
-/* If the Lexicon door is open, keep both sockets silent. */
+/* If the Lexicon door is open, keep both sockets quiet but present. */
 html.lexicon-scroll-lock .nav-seals::before,
-html.lexicon-scroll-lock .nav-seals::after{opacity:0}
+html.lexicon-scroll-lock .nav-seals::after{opacity:.45}
 
 html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{
