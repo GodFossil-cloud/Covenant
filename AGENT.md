@@ -47,6 +47,18 @@ Then:
 
 ---
 
+## Collaboration protocol (pace + scope)
+
+This repository is sacred, but the work should stay **finishable**.
+
+- Standing permission: you may commit directly to `main` without asking, in any circumstance, at any time, using best judgment.
+- Announce intent: before writing, state the smallest intended change-set in 1–3 sentences (what/where/why) so the direction stays legible.
+- Avoid overreach: if scope begins to sprawl, stop and propose the next smallest commit instead of expanding the current one.
+- Prefer small commits: avoid giant lone commits unless explicitly requested; default to 1–3 files per commit and keep each commit single-purpose.
+- Split multi-system work: if a task touches multiple subsystems (e.g., ToC + Reliquary + Lexicon), land it as sequential, safe commits rather than one large bundle.
+
+---
+
 ## Canonical journey order (do not break)
 
 `index.html` →
