@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.28 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary Mutex) */
+/*! Covenant ToC v3.1.29 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.28';
+  window.COVENANT_TOC_VERSION = '3.1.29';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -32,6 +32,10 @@
   // Optional: mutually exclusive with Reliquary (avoid scroll-lock collisions).
   var reliquaryPanel = document.getElementById('reliquaryPanel');
   var mirrorToggle = document.getElementById('mirrorToggle');
+
+  // Optional: mutually exclusive with Lexicon (prevent overlay + scroll-lock collisions).
+  var lexiconPanel = document.getElementById('lexiconPanel');
+  var lexiconToggle = document.getElementById('lexiconToggle');
 
   var root = document.documentElement;
 
@@ -67,6 +71,9 @@
 
   // If Reliquary is open, we close it first and re-enter after its snap.
   var openDeferredByReliquary = 0;
+
+  // If Lexicon is open, we close it first and re-enter after its snap.
+  var openDeferredByLexicon = 0;
 
   function isMobileSheet() {
     try {
@@ -558,6 +565,26 @@
 
   function getReliquaryCloseDelayMs() {
     var ms = readCssNumberVar('--reliquary-snap-duration');
+    if (ms && ms > 0) return ms;
+    return 420;
+  }
+
+  // ---------------------------
+  // Mutual exclusion (Lexicon)
+  // ---------------------------
+
+  function isLexiconOpen() {
+    if (root.classList && root.classList.contains('lexicon-scroll-lock')) return true;
+    return !!(lexiconPanel && lexiconPanel.classList && lexiconPanel.classList.contains('is-open'));
+  }
+
+  function requestLexiconClose() {
+    if (!lexiconToggle) return;
+    try { lexiconToggle.click(); } catch (err) {}
+  }
+
+  function getLexiconCloseDelayMs() {
+    var ms = readCssNumberVar('--lexicon-snap-duration');
     if (ms && ms > 0) return ms;
     return 420;
   }
@@ -1250,6 +1277,12 @@
         return;
       }
 
+      // Starting from closed while Lexicon is open is forbidden: close it first.
+      if (!tocPanel.classList.contains('is-open') && isLexiconOpen()) {
+        requestLexiconClose();
+        return;
+      }
+
       dragging = true;
       moved = false;
       pointerId = e.pointerId;
@@ -1517,6 +1550,19 @@
     }
 
     openDeferredByReliquary = 0;
+
+    if (isLexiconOpen()) {
+      if (openDeferredByLexicon < 2) {
+        openDeferredByLexicon++;
+        requestLexiconClose();
+        setTimeout(function () {
+          openToC();
+        }, getLexiconCloseDelayMs() + 50);
+      }
+      return;
+    }
+
+    openDeferredByLexicon = 0;
 
     // Clear any residual inline snap styles left behind by drag-close OR cancel-open.
     tocPanel.style.transform = '';

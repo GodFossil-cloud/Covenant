@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.33 */
+/*! Covenant Lexicon UI v0.2.34 */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.2.33';
+  window.COVENANT_LEXICON_VERSION = '0.2.34';
 
   var doc = document;
   var root = doc.documentElement;
@@ -118,6 +118,11 @@
 
   var citationText = byId('citationText');
 
+  // Optional: mutually exclusive with ToC (prevent overlay + scroll-lock collisions).
+  var tocPanel = byId('tocPanel');
+  var tocToggle = byId('tocToggle');
+  var openDeferredByToC = 0;
+
   var sealClearTimer = null;
 
   // Policy: On mobile bottom-sheet, the panel should ONLY be dragged down from the footer seal.
@@ -163,6 +168,20 @@
 
   var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
   function isBottomSheetMode() { return !!(bottomSheetMql && bottomSheetMql.matches); }
+
+  function isToCOpen() {
+    if (root.classList && (root.classList.contains('toc-open') || root.classList.contains('toc-scroll-lock'))) return true;
+    return !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
+  }
+
+  function requestToCClose() {
+    if (!tocToggle) return;
+    try { tocToggle.click(); } catch (err) {}
+  }
+
+  function getToCCloseDelayMs() {
+    return getCssVarNumber('--toc-snap-duration', 420);
+  }
 
   // iOS Safari/WKWebView: avoid fixed-body scroll lock which can reveal black gaps / stuck interaction.
   var isIOS = (function () {
@@ -817,6 +836,26 @@
     }, 0);
   }
 
+  function openFromToggleIntent() {
+    if (isToCOpen()) {
+      if (openDeferredByToC < 2) {
+        openDeferredByToC++;
+        requestToCClose();
+        setTimeout(function () {
+          openFromToggleIntent();
+        }, getToCCloseDelayMs() + 50);
+      }
+      return;
+    }
+
+    openDeferredByToC = 0;
+
+    if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
+    else renderOverview();
+
+    openPanel();
+  }
+
   // ========================================
   // Initialization / event wiring
   // ========================================
@@ -850,10 +889,7 @@
         return;
       }
 
-      if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
-      else renderOverview();
-
-      openPanel();
+      openFromToggleIntent();
     });
 
     bindActivate(lexOverlay, function () { closePanel(); });
@@ -1162,6 +1198,7 @@
 
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (!isMobileSheet()) return;
+      if (isToCOpen()) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
       dragging = true;
