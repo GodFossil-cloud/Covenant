@@ -139,6 +139,7 @@ Docs:
   - Verify veil does not cover footer dock.
   - Verify staged selection + deliberate confirm.
   - Verify progress gating still blocks locked direct-access.
+  - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
 
 - If you change `assets/covenant.css`:
   - Preserve CSS guard markers (do not truncate or reorder guarded regions).
@@ -169,11 +170,13 @@ Use this when making CSS/JS/include changes.
 - Hold confirm to enter; release early cancels.
 - ESC closes and focus returns to the ToC control.
 - Tab/Shift+Tab keep focus trapped in the panel.
+- If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).
 
 4) Reliquary modal veil
 - Open Reliquary from Mirror; confirm veil does not cover dock.
 - ESC closes and focus returns to the Mirror control.
 - On mobile: drag Mirror tab upward to open; drag down from sheet handle to close.
+- If ToC is open, opening Reliquary closes ToC first (no stacked scroll locks).
 
 5) Selection highlights
 - On an Article page (`I.html` or `III.html`): click subsection and subpart markers (Ⓐ/Ⓑ/Ⓒ) and confirm expected highlight behavior.

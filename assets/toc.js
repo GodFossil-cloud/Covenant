@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.27 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC v3.1.28 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary Mutex) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.27';
+  window.COVENANT_TOC_VERSION = '3.1.28';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -28,6 +28,10 @@
   var tocToast = document.getElementById('tocToast');
   var tocConfirmBtn = document.getElementById('tocConfirm');
   var tocProducedTitleEl = document.getElementById('tocProducedTitle');
+
+  // Optional: mutually exclusive with Reliquary (avoid scroll-lock collisions).
+  var reliquaryPanel = document.getElementById('reliquaryPanel');
+  var mirrorToggle = document.getElementById('mirrorToggle');
 
   var root = document.documentElement;
 
@@ -60,6 +64,9 @@
 
   // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
   var tapAnimating = false;
+
+  // If Reliquary is open, we close it first and re-enter after its snap.
+  var openDeferredByReliquary = 0;
 
   function isMobileSheet() {
     try {
@@ -534,6 +541,25 @@
     ms = readCssNumberVar('--toc-scroll-duration');
     if (ms && ms > 0) return ms;
     return 320;
+  }
+
+  // ---------------------------
+  // Mutual exclusion (Reliquary)
+  // ---------------------------
+
+  function isReliquaryOpen() {
+    return !!(reliquaryPanel && reliquaryPanel.classList && reliquaryPanel.classList.contains('is-open'));
+  }
+
+  function requestReliquaryClose() {
+    if (!mirrorToggle) return;
+    try { mirrorToggle.click(); } catch (err) {}
+  }
+
+  function getReliquaryCloseDelayMs() {
+    var ms = readCssNumberVar('--reliquary-snap-duration');
+    if (ms && ms > 0) return ms;
+    return 420;
   }
 
   // ---------------------------
@@ -1218,6 +1244,12 @@
     function beginDrag(e, source, forcedStartY) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
+      // Starting from closed while Reliquary is open is forbidden: close it first.
+      if (!tocPanel.classList.contains('is-open') && isReliquaryOpen()) {
+        requestReliquaryClose();
+        return;
+      }
+
       dragging = true;
       moved = false;
       pointerId = e.pointerId;
@@ -1472,6 +1504,19 @@
       window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
       return;
     }
+
+    if (isReliquaryOpen()) {
+      if (openDeferredByReliquary < 2) {
+        openDeferredByReliquary++;
+        requestReliquaryClose();
+        setTimeout(function () {
+          openToC();
+        }, getReliquaryCloseDelayMs() + 50);
+      }
+      return;
+    }
+
+    openDeferredByReliquary = 0;
 
     // Clear any residual inline snap styles left behind by drag-close OR cancel-open.
     tocPanel.style.transform = '';
