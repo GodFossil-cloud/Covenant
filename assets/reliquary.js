@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.8 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.9 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.8';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.9';
 
   var doc = document;
   var root = doc.documentElement;
@@ -67,7 +67,7 @@
   var toggle = byId('mirrorToggle');
   var dragRegion = byId('reliquaryDragRegion');
 
-  // Optional: gracefully close ToC first (without touching ToC internals).
+  // Optional: mutually exclusive with ToC (avoid scroll-lock collisions).
   var tocPanel = byId('tocPanel');
   var tocToggle = byId('tocToggle');
 
@@ -85,6 +85,9 @@
 
   // Tap-open/close animation guard.
   var tapAnimating = false;
+
+  // If ToC is open, we close it first and re-enter after its snap.
+  var openDeferredByToC = 0;
 
   var isIOS = (function () {
     try {
@@ -220,11 +223,19 @@
     else if (panel && panel.focus) panel.focus();
   }
 
-  function closeToCIfOpen() {
-    if (!tocPanel || !tocToggle) return;
-    if (tocPanel.classList && tocPanel.classList.contains('is-open')) {
-      try { tocToggle.click(); } catch (err) {}
-    }
+  function isToCOpen() {
+    return !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
+  }
+
+  function requestToCClose() {
+    if (!tocToggle) return;
+    try { tocToggle.click(); } catch (err) {}
+  }
+
+  function getToCCloseDelayMs() {
+    var ms = readCssNumberVar('--toc-snap-duration');
+    if (ms && ms > 0) return ms;
+    return 420;
   }
 
   function setReliquaryToggleOffset(dx, dy, draggingNow) {
@@ -391,8 +402,6 @@
   }
 
   function openReliquaryImmediately() {
-    closeToCIfOpen();
-
     focusReturnEl = toggle;
 
     root.classList.add('reliquary-open');
@@ -443,6 +452,19 @@
       window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED = false;
       return;
     }
+
+    if (isToCOpen()) {
+      if (openDeferredByToC < 2) {
+        openDeferredByToC++;
+        requestToCClose();
+        setTimeout(function () {
+          openReliquaryTap();
+        }, getToCCloseDelayMs() + 50);
+      }
+      return;
+    }
+
+    openDeferredByToC = 0;
 
     // Clear any residual inline snap styles.
     panel.style.transform = '';
@@ -873,6 +895,12 @@
     function beginDrag(e, source, forcedStartY) {
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      // Starting from closed while ToC is open is forbidden: close it first.
+      if (!panel.classList.contains('is-open') && isToCOpen()) {
+        requestToCClose();
+        return;
+      }
 
       dragging = true;
       moved = false;
