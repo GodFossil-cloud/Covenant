@@ -1,1 +1,519 @@
-/* Updated toc.css content omitted here due to size */
+/*! Covenant ToC Panel Styles v3.1.19 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+
+:root{
+  --toc-scroll-open-duration:520ms;
+  --toc-scroll-close-duration:320ms;
+  --toc-scroll-duration:var(--toc-scroll-open-duration);
+  --toc-scroll-ease:cubic-bezier(.22,.61,.36,1);
+  --toc-scroll-opacity-in:140ms;
+
+  --toc-ink:rgba(44,62,80,.92);
+  --toc-ink-soft:rgba(44,62,80,.74);
+  --toc-rule:rgba(139,115,85,.26);
+  --toc-rule-strong:rgba(139,115,85,.36);
+
+  --toc-parchment:rgba(247,244,238,1);
+  --toc-parchment-hi:rgba(255,255,255,.72);
+
+  --toc-brass:rgba(201,169,97,1);
+
+  --toc-rule-x:.95rem;
+  --toc-node:10px;
+  --toc-node-locked:8px;
+  --toc-item-pad-y:.26rem;
+  --toc-item-line:1.55;
+
+  /* Footer tabs (ToC + Mirror) live beside the Lexicon seal, but do not use the Lexicon "center" medallion styling. */
+  --toc-tab-width:calc(var(--nav-pill-width,56px) + 4px);
+  --toc-tab-height:var(--nav-pill-height,40px);
+  --toc-tab-radius:4px;
+  --toc-tab-gap:15px;
+
+  /* Slightly smaller face for the ToC + Mirror tabs (keep the cluster columns constant for symmetry). */
+  --dock-tab-width:calc(var(--toc-tab-width) - 4px);
+  --dock-tab-height:calc(var(--toc-tab-height) + 2px);
+
+  /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
+  --dock-socket-height:calc(var(--toc-tab-height) - 4px);
+
+  /* Sharpen the top corners only; keep bottom corners seated and round. */
+  --dock-tab-radius-top:var(--toc-tab-radius);
+
+  /* Dock tab face base tone (also used to "erase" the top border line). */
+  --dock-tab-face:#010103;
+
+  /* Vertical lift so dock tabs rise noticeably above the dock slab. */
+  --dock-tab-raise:-24px;
+
+  /* Socket stays closer to the dock baseline so it reads as a true recess. */
+  --dock-socket-raise:-20px;
+
+  /* Space between sheet bottom and footer top (0 = flush). */
+  --toc-panel-gap:0px;
+
+  /* Optional: reserve a little top breathing-room when computing max height in JS. */
+  --toc-top-safe:env(safe-area-inset-top, 0px);
+
+  /* Drag start: keep the fully-closed sheet seated at the dock baseline. */
+  --toc-closed-offset:0px;
+
+  /* Fully-open lift: nudge the sheet 1px higher (JS drag math matches this baseline). */
+  --toc-open-lift:-1px;
+
+  /* Drag snap timing (should match JS SNAP_MS constant). */
+  --toc-snap-duration:420ms;
+  --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
+}
+
+/* -------------------------------------------------
+   Footer tabs (ToC toggle + mirror)
+   ------------------------------------------------- */
+
+/* Keep ToC tab silent while Lexicon is open (avoid two competing doors). */
+html.lexicon-scroll-lock #tocToggle{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Keep mirror tab silent while Lexicon is open (preserve single-door focus). */
+html.lexicon-scroll-lock #mirrorToggle{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Strategy B: one centered cluster governs tab symmetry. */
+.nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0;position:relative;z-index:3;isolation:isolate}
+@media (max-width:600px){:root{--toc-tab-gap:14px}}
+
+/* Keep dock controls above any decorative socket layers. */
+html .nav-seals > .nav-btn{position:relative;z-index:2}
+
+/* ToC + Mirror socket cradles: permanent dock cutouts that remain even when the tabs are seated. */
+.nav-seals::before,
+.nav-seals::after{
+  content:'';
+  position:absolute;
+  top:50%;
+  width:calc(var(--dock-tab-width) + 2px);
+  height:calc(var(--dock-socket-height) + 2px);
+  transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px),0);
+
+  /* Machined slot: rectangular cutout, reads under a taller pull-tab. */
+  border-radius:0;
+
+  background:
+    /* Sidewall bevels (machining reads at the sides, not the top rim). */
+    linear-gradient(to right,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,0) 18%,
+      rgba(255,255,255,0) 82%,
+      rgba(0,0,0,.55) 100%),
+    /* Depth body (darker toward the bottom). */
+    linear-gradient(to bottom,
+      rgba(0,0,0,.92) 0%,
+      rgba(16,16,20,.96) 46%,
+      rgba(0,0,0,.985) 100%);
+
+  box-shadow:
+    /* Occlusion under the tab: the top edge should not shine. */
+    inset 0 2px 0 rgba(0,0,0,.96),
+    /* Crisp cut line. */
+    inset 0 0 0 1px rgba(59,54,43,.92),
+    /* Interior depth + faint bottom catch. */
+    inset 0 12px 18px rgba(0,0,0,.80),
+    inset 0 -10px 14px rgba(255,255,255,.06),
+    /* Tiny external lift so the cut reads against the slab. */
+    0 1px 0 rgba(255,255,255,.05);
+
+  opacity:1;
+  pointer-events:none;
+  z-index:1;
+}
+
+/* Left socket (ToC tab). */
+.nav-seals::before{
+  left:calc(var(--toc-tab-width) / 2);
+  border-radius:0;
+}
+
+/* Right socket (Mirror tab). */
+.nav-seals::after{
+  left:calc(100% - (var(--toc-tab-width) / 2));
+  border-radius:0;
+}
+
+/* If the Lexicon door is open, keep both sockets silent. */
+html.lexicon-scroll-lock .nav-seals::before,
+html.lexicon-scroll-lock .nav-seals::after{opacity:0}
+
+html #tocToggle.dock-tab,
+html #mirrorToggle.dock-tab{
+  position:relative;
+  width:var(--dock-tab-width);
+  height:var(--dock-tab-height);
+  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
+  padding:0;
+  justify-self:center;
+  align-self:center;
+
+  /* Quiet interior shadow so the tab feels seated in the dock. */
+  box-shadow:inset 0 -12px 16px -16px rgba(0,0,0,.86);
+}
+
+/* Mirror tab can be "drag carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
+html #mirrorToggle.dock-tab{transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0)}
+
+/* ToC tab can be "drag carried" upward to stay physically attached to the ToC sheet. */
+html #tocToggle.dock-tab{
+  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px)),0);
+  transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
+  will-change:transform;
+
+  /* Make the seal a reliable drag surface on touch devices (prevents pointermove loss → click snap). */
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+
+  cursor:ns-resize;
+}
+
+html #tocToggle.dock-tab.is-toc-dragging{transition:none !important}
+
+/* Override the generic "nav-btn:not(.center)" framing (which uses inset:14px). */
+html #tocToggle.dock-tab::before,
+html #mirrorToggle.dock-tab::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
+
+  /* Match the Lexicon seal rim (weight + tone). */
+  border:0.75px solid rgba(0,0,0,0.72);
+
+  box-shadow:inset 0 0 12px rgba(0,0,0,.95);
+  pointer-events:none;
+}
+
+html #tocToggle.dock-tab::after,
+html #mirrorToggle.dock-tab::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
+  z-index:-1;
+  pointer-events:none;
+
+  /* Base face tone + subtle highlight/gradient layers. */
+  background-color:var(--dock-tab-face);
+  background-image:
+    linear-gradient(to bottom, rgba(255, 242, 210, 0.10) 0%, rgba(255, 242, 210, 0) 14px),
+    linear-gradient(to bottom, rgba(255, 232, 180, 0.06) 0%, rgba(0, 0, 0, 0.40) 100%);
+}
+
+/* ToC tab: sharp bottom-left, slightly rounder bottom-right. */
+html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #tocToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #tocToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+
+/* Mirror tab: sharp bottom-right, slightly rounder bottom-left. */
+html #mirrorToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #mirrorToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+html #mirrorToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
+
+html #tocToggle.dock-tab:hover::before,
+html #tocToggle.dock-tab:focus-visible::before,
+html #mirrorToggle.dock-tab:hover::before,
+html #mirrorToggle.dock-tab:focus-visible::before{
+  box-shadow:inset 0 0 14px rgba(0,0,0,.95);
+}
+
+html #tocToggle.dock-tab:hover::after,
+html #tocToggle.dock-tab:focus-visible::after,
+html #mirrorToggle.dock-tab:hover::after,
+html #mirrorToggle.dock-tab:focus-visible::after{
+  background-image:
+    linear-gradient(to bottom, rgba(255, 242, 210, 0.14) 0%, rgba(255, 242, 210, 0) 14px),
+    linear-gradient(to bottom, rgba(255, 235, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
+}
+
+/* Mechanical press: keep 1px travel relative to the raised position (only when not being dragged). */
+html #mirrorToggle.dock-tab:active:not(:disabled):not(.is-reliquary-dragging){
+  transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px) + 1px),0);
+}
+
+/* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
+html #tocToggle.dock-tab:active:not(:disabled){
+  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px)),0);
+}
+
+html #tocToggle.dock-tab .toc-glyph,
+html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.88rem;line-height:1;transform:translateY(-.5px);display:inline-block}
+
+/* While the ToC is in motion (dragging or open), lift the whole dock above the sheet. */
+html.toc-opening .nav-footer,
+html.toc-open .nav-footer,
+html.toc-closing .nav-footer,
+html.toc-dock-settling .nav-footer{z-index:1600}
+
+/* Keep the toggle above the footer dim layer and above the ToC sheet itself, including during drag-open. */
+html.toc-opening #tocToggle,
+html.toc-open #tocToggle,
+html.toc-closing #tocToggle,
+html.toc-dock-settling #tocToggle{position:relative;z-index:1602}
+
+/* During settle, ignore hover/pointer churn while the tab is sliding into place. */
+html.toc-dock-settling #tocToggle{pointer-events:none}
+
+/* -------------------------------------------------
+   Scroll lock
+   ------------------------------------------------- */
+
+html.toc-scroll-lock{overflow:hidden}
+body.toc-scroll-lock{position:fixed;width:100%}
+
+/* -------------------------------------------------
+   Footer fade choreography
+   ------------------------------------------------- */
+
+html .nav-footer{isolation:isolate;transition:border-top-color 220ms var(--toc-scroll-ease),border-bottom-color 220ms var(--toc-scroll-ease)}
+html .nav-footer::before,html .nav-footer::after{transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
+html #citationLabel{transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 0s}
+
+html.toc-open .nav-footer,html.toc-closing .nav-footer,html.toc-dock-settling .nav-footer{border-top-color:transparent;border-bottom-color:transparent}
+html.toc-open #citationLabel,html.toc-closing #citationLabel,html.toc-dock-settling #citationLabel{opacity:0;visibility:hidden;transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 220ms}
+html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before,html.toc-dock-settling .nav-footer::before{opacity:0}
+html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after,html.toc-dock-settling .nav-footer::after{opacity:0}
+
+/* Keep the scrim defined at all times so it can fade out instead of "popping" off at close-complete. */
+html .nav-footer-inner{position:relative}
+html .nav-footer-inner::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.32);pointer-events:none;z-index:1;opacity:0;transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
+html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before,html.toc-dock-settling .nav-footer-inner::before{opacity:1}
+
+/* Keep footer controls above the scrim in all states (prevents end-of-close z-pop blink). */
+html .nav-footer-inner > *{position:relative;z-index:2}
+
+/* -------------------------------------------------
+   Modal veil
+   ------------------------------------------------- */
+
+/* Do not cover the footer; the dock stays sovereign. */
+.toc-overlay{position:fixed;inset:0 0 var(--toc-footer-reserved, var(--footer-total-height)) 0;background:rgba(0,0,0,.64);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms var(--toc-scroll-ease)}
+.toc-overlay.is-open{opacity:1;pointer-events:auto}
+
+/* -------------------------------------------------
+   Panel (anchored above footer)
+   ------------------------------------------------- */
+
+.toc-panel{
+  position:fixed;
+  left:50%;
+  bottom:calc(var(--toc-footer-reserved, var(--footer-total-height)) + var(--toc-panel-gap, 0px));
+  top:auto;
+  width:min(760px,calc(100vw - 24px));
+  max-height:70vh;
+  background:linear-gradient(to bottom,var(--toc-parchment) 0%,rgba(243,240,234,1) 100%);
+  border:1px solid rgba(44,62,80,.16);
+  border-top-color:rgba(44,62,80,.18);
+  box-shadow:0 22px 60px rgba(0,0,0,.26),0 8px 24px rgba(0,0,0,.14),inset 0 18px 22px -22px rgba(0,0,0,.42);
+  border-radius:16px 0 0 0;
+  z-index:1401;
+  opacity:0;
+  --toc-panel-x:-50%;
+  transform:translateX(var(--toc-panel-x)) translateY(10px);
+  transform-origin:50% 100%;
+  transition:transform 300ms var(--toc-scroll-ease),opacity var(--toc-scroll-opacity-in) ease;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background-clip:padding-box;
+}
+
+.toc-panel.is-open{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px))}
+.toc-panel.is-closing{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px));pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
+.toc-panel[aria-hidden="true"]{pointer-events:none}
+.toc-panel[aria-hidden="false"]{pointer-events:auto}
+
+/* Live drag: disable transition and allow manual transform override via inline style. */
+.toc-panel.is-dragging{transition:none !important}
+
+/* Inner veil (subtle), to fuse "black glass" with parchment. */
+.toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 58%,rgba(0,0,0,.012) 74%,rgba(0,0,0,.060) 100%);pointer-events:none;z-index:3}
+
+/* -------------------------------------------------
+   Drag handle region (sheet-style)
+   ------------------------------------------------- */
+
+.toc-drag-region{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:22px;
+  z-index:10;
+  cursor:ns-resize;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.toc-drag-region::before{
+  content:'';
+  width:48px;
+  height:4px;
+  border-radius:999px;
+  background:rgba(44,62,80,.20);
+  box-shadow:0 1px 0 rgba(255,255,255,.26);
+}
+
+/* -------------------------------------------------
+   Header + produced title
+   ------------------------------------------------- */
+
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.35rem .82rem;border-bottom:1px solid rgba(44,62,80,.12);background:linear-gradient(to bottom,rgba(255,255,255,.52),rgba(255,255,255,.16))}
+.toc-produced{min-height:1.15rem}
+.toc-produced-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;line-height:1.25;color:rgba(44,62,80,.88);text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:7.2rem}
+
+/* -------------------------------------------------
+   Hold-to-enter button
+   ------------------------------------------------- */
+
+.toc-confirm-btn{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:5;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:.42rem .82rem;
+  border-radius:999px;
+  border:1px solid rgba(44,62,80,.16);
+  border-bottom-color:rgba(44,62,80,.24);
+  background:
+    conic-gradient(from 270deg, rgba(201,169,97,.92) calc(var(--toc-hold-p, 0) * 360deg), rgba(201,169,97,0) 0),
+    linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));
+  font-family:'Cormorant Garamond',serif;
+  font-size:.90rem;
+  font-weight:650;
+  letter-spacing:.14em;
+  font-variant-caps:all-small-caps;
+  color:var(--toc-ink-soft);
+  box-shadow:0 1px 0 rgba(255,255,255,.35),0 10px 20px rgba(0,0,0,.06);
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.toc-confirm-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:4px}
+.toc-confirm-btn:disabled{opacity:.52;cursor:default}
+.toc-confirm-btn.is-holding{color:rgba(44,62,80,.92)}
+
+/* -------------------------------------------------
+   Body
+   ------------------------------------------------- */
+
+.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
+.toc-panel.has-pending .toc-panel-body{padding-top:2.65rem}
+
+.toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),linear-gradient(to bottom,var(--toc-parchment-hi),rgba(255,255,255,0));pointer-events:none}
+@supports (-webkit-touch-callout: none){.toc-panel-body::before{display:none}}
+
+.toc-panel-body>*{position:relative}
+
+/* -------------------------------------------------
+   Index structure
+   ------------------------------------------------- */
+
+.toc-index{position:relative;color:var(--toc-ink)}
+.toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1px;background:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
+
+.toc-group + .toc-group{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
+.toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
+
+.toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.84);text-shadow:0 1px 0 rgba(255,255,255,.22)}
+.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(139,115,85,.62),rgba(139,115,85,.28),rgba(139,115,85,0));border-radius:999px}
+
+.toc-list{list-style:none;max-width:100%;padding:0;margin:0}
+.toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative}
+
+.toc-item::before{content:'';position:absolute;left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));top:calc(var(--toc-item-pad-y) + (1em * var(--toc-item-line) / 2));transform:translateY(-50%);width:var(--toc-node);height:var(--toc-node);border-radius:999px;background:rgba(247,244,238,.98);border:1px solid rgba(139,115,85,.66);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
+
+.toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04)}
+
+.toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04)}
+
+.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+
+.toc-gate{list-style:none;position:relative;height:16px;margin:.25rem 0 .62rem}
+.toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 2px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
+.toc-gate::after{content:'✦';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:#8b0000;text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
+
+.toc-item-btn,.toc-locked-btn{display:block;width:100%;background:none;border:0;padding:var(--toc-item-pad-y) 0 var(--toc-item-pad-y) 1.65rem;margin:0;font:inherit;font-size:1rem;line-height:var(--toc-item-line);text-align:left;white-space:normal;overflow-wrap:anywhere}
+
+.toc-entry{display:flex;gap:.7rem;align-items:baseline;min-width:0}
+.toc-entry-key{flex:0 0 auto;min-width:7.9rem;font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;color:var(--toc-ink-soft)}
+.toc-entry-title{flex:1 1 auto;min-width:0;color:var(--toc-ink)}
+
+.toc-item-btn{cursor:pointer;transition:color 200ms ease}
+.toc-item-btn:hover .toc-entry-title,.toc-item-btn:focus-visible .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
+.toc-item-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:3px}
+
+.toc-item--current .toc-entry-title{font-weight:600;color:#111}
+.toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
+
+.toc-item--pending .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,0,0,.46);text-decoration-thickness:1px;text-underline-offset:3px}
+
+.toc-locked-btn{color:rgba(120,120,120,.94);opacity:.80;cursor:not-allowed;position:relative}
+.toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
+.toc-item--locked .toc-entry-key{color:rgba(120,120,120,.62)}
+.toc-item--locked .toc-entry-title{color:rgba(120,120,120,.86)}
+
+/* Annex: Lexicon */
+.toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
+.toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
+.toc-annex-link:hover,.toc-annex-link:focus-visible{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
+.toc-annex-link:focus-visible{outline:2px solid rgba(201,169,97,.30);outline-offset:4px}
+.toc-annex-sigil{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;color:rgba(139,115,85,.62)}
+.toc-annex-text{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps}
+
+/* Locked feedback (touch-safe) */
+.toc-toast{position:sticky;bottom:.65rem;margin:.95rem auto 0;width:fit-content;max-width:min(520px,92%);padding:.6rem 1rem;border-radius:999px;background:rgba(11,12,14,.92);color:rgba(245,245,240,.96);font-size:.95rem;letter-spacing:.04em;line-height:1.25;text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.22),0 2px 10px rgba(0,0,0,.12);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity 420ms ease,transform 180ms ease}
+.toc-toast.is-visible{opacity:1;transform:translateY(0)}
+
+@media (prefers-reduced-motion: reduce){
+  :root{--toc-scroll-open-duration:1ms;--toc-scroll-close-duration:1ms;--toc-scroll-duration:1ms;--toc-scroll-opacity-in:1ms;--toc-snap-duration:1ms}
+  .toc-overlay{transition:none}
+  .toc-panel{transition:opacity 160ms ease !important;transform:translateX(var(--toc-panel-x)) !important}
+  .toc-toast{transition:none;transform:none}
+  .toc-toast.is-visible{transform:none}
+}
+
+@media (max-width:600px){
+  :root{
+    --toc-rule-x:.75rem;
+    --toc-node:10px;
+    --toc-node-locked:8px;
+    --dock-tab-raise:-22px;
+    --dock-socket-raise:-20px;
+  }
+
+  /* Mobile: sheet begins at the ToC tab's left edge and runs flush to the viewport right edge. */
+  .toc-panel{
+    --toc-panel-x:0px;
+    left:var(--toc-panel-left, 12px);
+    right:0;
+    width:auto;
+    border-radius:0 0 0 0;
+
+    /* Allow the sheet to reach the top of the viewport while still respecting the dock. */
+    top:0;
+    max-height:none;
+  }
+
+  .toc-panel-header{padding:.9rem 1.1rem .78rem}
+  .toc-produced-title{font-size:1.0rem}
+  .toc-panel-body{padding:1.0rem 1.1rem 1.05rem}
+  .toc-panel.has-pending .toc-panel-body{padding-top:2.45rem}
+  .toc-group-title,.toc-item-btn,.toc-locked-btn,.toc-annex-link{padding-left:1.45rem}
+  .toc-entry-key{min-width:6.9rem}
+  .toc-tab::after{width:min(210px,74vw)}
+}
