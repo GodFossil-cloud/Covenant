@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.2.0 */
+/*! Covenant UI Stack v0.3.0 */
 (function () {
   'use strict';
 
@@ -7,19 +7,45 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.2.0';
+  window.COVENANT_UI_STACK_VERSION = '0.3.0';
 
   var registry = Object.create(null);
   var order = [];
 
   // True LIFO open-stack ("topmost" is last).
-  // Maintained by noteOpen/noteClose (and bringToFront for migrated callers).
+  // Maintained by noteOpen/noteClose (and bringToFront).
   var openStack = [];
+
+  // Shared scroll lock (stack-derived) — enabled only for entries that opt in.
+  var scrollLocked = false;
+  var scrollLockY = 0;
+
+  var isIOS = (function () {
+    try {
+      var ua = navigator.userAgent || '';
+      var platform = navigator.platform || '';
+      var iOSDevice = /iPad|iPhone|iPod/.test(ua);
+      var iPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+      return iOSDevice || iPadOS;
+    } catch (err) {
+      return false;
+    }
+  })();
+
+  var iosTouchMoveBlocker = null;
+  var IOS_TOUCHMOVE_OPTS = { capture: true, passive: false };
 
   function now() { return Date.now ? Date.now() : +new Date(); }
 
   function toId(value) {
     return String(value == null ? '' : value).trim();
+  }
+
+  function closestSafe(target, selector) {
+    if (!target) return null;
+    var el = (target.nodeType === 1) ? target : target.parentElement;
+    if (!el || !el.closest) return null;
+    return el.closest(selector);
   }
 
   function indexOfId(list, id) {
@@ -110,10 +136,116 @@
     return ids.length ? ids[ids.length - 1] : '';
   }
 
+  function entryAllowsScroll(entry, target) {
+    try {
+      if (!entry) return false;
+      if (entry.allowScrollEl && entry.allowScrollEl.contains && entry.allowScrollEl.contains(target)) return true;
+      if (entry.allowScrollSelector) return !!closestSafe(target, entry.allowScrollSelector);
+    } catch (err) {}
+    return false;
+  }
+
+  function enableIOSTouchScrollLock() {
+    if (iosTouchMoveBlocker) return;
+
+    iosTouchMoveBlocker = function (e) {
+      if (!scrollLocked) return;
+
+      var stackIds = getOpenIds();
+      var topId = stackIds.length ? stackIds[stackIds.length - 1] : '';
+      var entry = topId ? registry[topId] : null;
+
+      if (entryAllowsScroll(entry, e && e.target)) return;
+
+      if (e && e.cancelable) e.preventDefault();
+    };
+
+    document.addEventListener('touchmove', iosTouchMoveBlocker, IOS_TOUCHMOVE_OPTS);
+  }
+
+  function disableIOSTouchScrollLock() {
+    if (!iosTouchMoveBlocker) return;
+    document.removeEventListener('touchmove', iosTouchMoveBlocker, IOS_TOUCHMOVE_OPTS);
+    iosTouchMoveBlocker = null;
+  }
+
+  function lockBodyScroll() {
+    if (scrollLocked) return;
+
+    scrollLocked = true;
+    scrollLockY = window.scrollY || window.pageYOffset || 0;
+
+    try { document.documentElement.classList.add('ui-stack-scroll-lock'); } catch (err1) {}
+    try {
+      document.body.classList.add('ui-stack-scroll-lock');
+      document.body.style.position = 'fixed';
+      document.body.style.top = (-scrollLockY) + 'px';
+      document.body.style.width = '100%';
+    } catch (err2) {}
+
+    if (isIOS) enableIOSTouchScrollLock();
+  }
+
+  function unlockBodyScroll() {
+    if (!scrollLocked) return;
+
+    scrollLocked = false;
+
+    try { document.documentElement.classList.remove('ui-stack-scroll-lock'); } catch (err1) {}
+
+    try {
+      document.body.classList.remove('ui-stack-scroll-lock');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+    } catch (err2) {}
+
+    if (isIOS) disableIOSTouchScrollLock();
+
+    try { window.scrollTo(0, scrollLockY); } catch (err3) {}
+    scrollLockY = 0;
+  }
+
+  function shouldUseSharedScrollLock(ids) {
+    if (!ids || !ids.length) return false;
+
+    for (var i = 0; i < ids.length; i++) {
+      var entry = registry[ids[i]];
+      if (!entry) continue;
+      if (entry.useSharedScrollLock) return true;
+    }
+
+    return false;
+  }
+
+  function syncScrollLockFromIds(ids) {
+    if (!shouldUseSharedScrollLock(ids)) return;
+
+    if (ids && ids.length) lockBodyScroll();
+    else unlockBodyScroll();
+  }
+
   function applyStackState() {
     // No-op unless surfaces opt into inert hooks.
     var ids = getOpenIds();
     var topId = ids.length ? ids[ids.length - 1] : '';
+
+    // Assign explicit z-index in true LIFO order (lowest open = back, highest open = front).
+    // Entries opt in via setZIndex(zBase).
+    var Z_BASE = 6000;
+    var Z_STEP = 10;
+
+    for (var zi = 0; zi < ids.length; zi++) {
+      var zid = ids[zi];
+      var zEntry = registry[zid];
+      if (!zEntry) continue;
+
+      try {
+        if (typeof zEntry.setZIndex === 'function') {
+          zEntry.setZIndex(Z_BASE + (zi * Z_STEP));
+        }
+      } catch (errZ) {}
+    }
 
     for (var i = 0; i < ids.length; i++) {
       var id = ids[i];
@@ -129,6 +261,8 @@
         if (typeof entry.setActive === 'function') entry.setActive(!!isTop);
       } catch (err2) {}
     }
+
+    syncScrollLockFromIds(ids);
   }
 
   function requestClose(entry) {
@@ -187,8 +321,6 @@
   }
 
   function isPanelOpenByDom() {
-    var root = document.documentElement;
-
     var tocPanel = document.getElementById('tocPanel');
     var lexPanel = document.getElementById('lexiconPanel');
     var relPanel = document.getElementById('reliquaryPanel');
@@ -197,19 +329,10 @@
     if (lexPanel && lexPanel.classList && lexPanel.classList.contains('is-open')) return true;
     if (relPanel && relPanel.classList && relPanel.classList.contains('is-open')) return true;
 
-    // Fallbacks: scroll-lock/open state classes.
-    if (root && root.classList) {
-      if (root.classList.contains('toc-open') || root.classList.contains('toc-scroll-lock')) return true;
-      if (root.classList.contains('lexicon-scroll-lock')) return true;
-      if (root.classList.contains('reliquary-open') || root.classList.contains('reliquary-scroll-lock')) return true;
-    }
-
     return false;
   }
 
   function requestCloseAllByDom() {
-    var root = document.documentElement;
-
     var tocPanel = document.getElementById('tocPanel');
     var lexPanel = document.getElementById('lexiconPanel');
     var relPanel = document.getElementById('reliquaryPanel');
@@ -227,9 +350,7 @@
     } catch (err2) {}
 
     try {
-      if ((lexPanel && lexPanel.classList && lexPanel.classList.contains('is-open')) || (root && root.classList && root.classList.contains('lexicon-scroll-lock'))) {
-        if (lexToggle && lexToggle.click) lexToggle.click();
-      }
+      if (lexPanel && lexPanel.classList && lexPanel.classList.contains('is-open') && lexToggle && lexToggle.click) lexToggle.click();
     } catch (err3) {}
   }
 
@@ -310,6 +431,7 @@
       if (existing) {
         // Shallow update.
         for (var k in opts) existing[k] = opts[k];
+        applyStackState();
         return;
       }
 
@@ -380,7 +502,6 @@
       window.COVENANT_UI_STACK.noteClosed(id);
     },
 
-    // New primitives (used by the panel stacking migration).
     bringToFront: function (id) {
       bringToFront(id);
     },
