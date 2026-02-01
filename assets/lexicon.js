@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.34 */
+/*! Covenant Lexicon UI v0.2.35 */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.2.34';
+  window.COVENANT_LEXICON_VERSION = '0.2.35';
 
   var doc = document;
   var root = doc.documentElement;
@@ -152,6 +152,9 @@
   }
 
   function requestExclusive() {
+    // Self-heal: ensure registration even if lexicon.js loaded before ui-stack.js.
+    registerWithUIStack();
+
     var stack = getUIStack();
     if (stack && typeof stack.requestExclusive === 'function') {
       try { stack.requestExclusive(UI_STACK_ID); } catch (err) {}
@@ -159,6 +162,9 @@
   }
 
   function noteOpen() {
+    // Self-heal: ensure registration even if lexicon.js loaded before ui-stack.js.
+    registerWithUIStack();
+
     var stack = getUIStack();
     if (stack && typeof stack.noteOpen === 'function') {
       try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
@@ -166,6 +172,9 @@
   }
 
   function noteClose() {
+    // Self-heal: ensure registration even if lexicon.js loaded before ui-stack.js.
+    registerWithUIStack();
+
     var stack = getUIStack();
     if (stack && typeof stack.noteClose === 'function') {
       try { stack.noteClose(UI_STACK_ID); } catch (err) {}
