@@ -94,7 +94,7 @@ Rules:
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
-- `assets/ui-stack.js` — small coordinator layer used for “close panels before navigation” behavior from dock Prev/Next.
+- `assets/ui-stack.js` — small coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC Hold-to-Enter).
 
 Core invariants:
 - ToC and Reliquary are modal veils that do NOT cover the footer dock area.
@@ -141,6 +141,9 @@ Docs:
 - If you change `assets/ui-stack.js`:
   - Verify: with any panel open, clicking dock Prev/Next closes panels first, then navigates.
 
+- If you change `assets/toc.js`:
+  - Verify: Hold-to-Enter closes any open panels before navigation.
+
 - If you change `assets/reliquary.js` or `assets/reliquary.css`:
   - Verify veil does not cover footer dock.
   - Verify drag-open/drag-close on mobile.
@@ -185,6 +188,7 @@ Use this when making CSS/JS/include changes.
 - Open ToC from footer; confirm veil does not cover dock.
 - Select an unlocked entry; confirm it stages.
 - Hold confirm to enter; release early cancels.
+- Confirm Hold-to-Enter closes panels before navigation.
 - ESC closes and focus returns to the ToC control.
 - Tab/Shift+Tab keep focus trapped in the panel.
 - If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).
