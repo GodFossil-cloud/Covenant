@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.1.2 */
+/*! Covenant UI Stack v0.2.0 */
 (function () {
   'use strict';
 
@@ -7,15 +7,37 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.1.2';
+  window.COVENANT_UI_STACK_VERSION = '0.2.0';
 
   var registry = Object.create(null);
   var order = [];
+
+  // True LIFO open-stack ("topmost" is last).
+  // Maintained by noteOpen/noteClose (and bringToFront for migrated callers).
+  var openStack = [];
 
   function now() { return Date.now ? Date.now() : +new Date(); }
 
   function toId(value) {
     return String(value == null ? '' : value).trim();
+  }
+
+  function indexOfId(list, id) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i] === id) return i;
+    }
+    return -1;
+  }
+
+  function removeId(list, id) {
+    for (var i = list.length - 1; i >= 0; i--) {
+      if (list[i] === id) list.splice(i, 1);
+    }
+  }
+
+  function pushToTop(list, id) {
+    removeId(list, id);
+    list.push(id);
   }
 
   function sortOpenEntries(list) {
@@ -59,6 +81,56 @@
     return sortOpenEntries(open);
   }
 
+  function cleanOpenStack() {
+    for (var i = openStack.length - 1; i >= 0; i--) {
+      var id = openStack[i];
+      var entry = registry[id];
+      if (!entry || !isEntryOpen(entry)) openStack.splice(i, 1);
+    }
+  }
+
+  function syncOpenStackForMissingOpenEntries() {
+    // Best-effort: if something is open but never called noteOpen (or loaded before ui-stack),
+    // append it in openedAt order so stack operations still behave predictably.
+    var open = getOpenEntries();
+    for (var i = 0; i < open.length; i++) {
+      var id = open[i].id;
+      if (indexOfId(openStack, id) === -1) openStack.push(id);
+    }
+  }
+
+  function getOpenIds() {
+    cleanOpenStack();
+    syncOpenStackForMissingOpenEntries();
+    return openStack.slice();
+  }
+
+  function getTopOpenId() {
+    var ids = getOpenIds();
+    return ids.length ? ids[ids.length - 1] : '';
+  }
+
+  function applyStackState() {
+    // No-op unless surfaces opt into inert hooks.
+    var ids = getOpenIds();
+    var topId = ids.length ? ids[ids.length - 1] : '';
+
+    for (var i = 0; i < ids.length; i++) {
+      var id = ids[i];
+      var entry = registry[id];
+      if (!entry) continue;
+
+      var isTop = (id === topId);
+      try {
+        if (typeof entry.setInert === 'function') entry.setInert(!isTop);
+      } catch (err1) {}
+
+      try {
+        if (typeof entry.setActive === 'function') entry.setActive(!!isTop);
+      } catch (err2) {}
+    }
+  }
+
   function requestClose(entry) {
     if (!entry) return false;
 
@@ -83,6 +155,21 @@
     } catch (err2) {}
 
     return false;
+  }
+
+  function bringToFront(id) {
+    id = toId(id);
+    if (!id) return;
+
+    var entry = getEntry(id);
+    if (!entry) return;
+    if (!isEntryOpen(entry)) return;
+
+    entry.openedAt = now();
+    entry.open = true;
+
+    pushToTop(openStack, id);
+    applyStackState();
   }
 
   // ---------------------------
@@ -233,6 +320,22 @@
 
       registry[id] = entry;
       order.push(id);
+
+      // If the surface is already open (late load), fold it into the stack.
+      try {
+        if (isEntryOpen(entry)) {
+          if (entry.openedAt) {
+            openStack.push(id);
+            cleanOpenStack();
+          } else {
+            entry.openedAt = now();
+            entry.open = true;
+            pushToTop(openStack, id);
+          }
+        }
+      } catch (err) {}
+
+      applyStackState();
     },
 
     unregister: function (id) {
@@ -244,6 +347,9 @@
       for (var i = order.length - 1; i >= 0; i--) {
         if (order[i] === id) order.splice(i, 1);
       }
+
+      removeId(openStack, id);
+      applyStackState();
     },
 
     noteOpened: function (id) {
@@ -251,12 +357,18 @@
       if (!entry) return;
       entry.openedAt = now();
       entry.open = true;
+
+      pushToTop(openStack, entry.id);
+      applyStackState();
     },
 
     noteClosed: function (id) {
       var entry = getEntry(id);
       if (!entry) return;
       entry.open = false;
+
+      removeId(openStack, entry.id);
+      applyStackState();
     },
 
     // Aliases expected by newer callers.
@@ -268,16 +380,37 @@
       window.COVENANT_UI_STACK.noteClosed(id);
     },
 
+    // New primitives (used by the panel stacking migration).
+    bringToFront: function (id) {
+      bringToFront(id);
+    },
+
+    isOpen: function (id) {
+      var entry = getEntry(id);
+      return !!(entry && isEntryOpen(entry));
+    },
+
+    getOpenIds: function () {
+      return getOpenIds();
+    },
+
+    getTopOpenId: function () {
+      return getTopOpenId();
+    },
+
+    // Back-compat: retain the legacy view (priority-sorted list).
     getOpen: function () {
       return getOpenEntries().slice();
     },
 
+    // Updated: "top" is the most recently opened/foregrounded surface.
     getTopOpen: function () {
-      var open = getOpenEntries();
-      return open.length ? open[open.length - 1] : null;
+      var id = getTopOpenId();
+      return id ? getEntry(id) : null;
     },
 
     requestExclusive: function (id) {
+      // Legacy behavior: close all other open entries.
       id = toId(id);
       if (!id) return;
 

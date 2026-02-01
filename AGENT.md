@@ -94,7 +94,7 @@ Rules:
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
-- `assets/ui-stack.js` — small coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC Hold-to-Enter).
+- `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC Hold-to-Enter). It may also expose optional panel-stack primitives (bring-to-front, inert layering hooks) during stacking migrations.
 
 Core invariants:
 - ToC and Reliquary are modal veils that do NOT cover the footer dock area.
@@ -194,7 +194,7 @@ Use this when making CSS/JS/include changes.
 - If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).
 
 4) Reliquary modal veil
-- Open Reliquary from Mirror; confirm veil does not cover dock.
+- Open Reliquary from Mirror; confirm veil does not cover footer dock.
 - ESC closes and focus returns to the Mirror control.
 - On mobile: drag Mirror tab upward to open; drag down from sheet handle to close.
 - If ToC is open, opening Reliquary closes ToC first (no stacked scroll locks).
