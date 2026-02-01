@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.11 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.12 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.11';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.12';
 
   var doc = document;
   var root = doc.documentElement;
@@ -67,18 +67,42 @@
   var toggle = byId('mirrorToggle');
   var dragRegion = byId('reliquaryDragRegion');
 
-  // Optional: mutually exclusive with ToC (avoid scroll-lock collisions).
-  var tocPanel = byId('tocPanel');
-  var tocToggle = byId('tocToggle');
-
   if (!panel || !overlay || !toggle) return;
 
   // Optional: coordinated UI stack (dock exclusivity across panels).
   var UI_STACK_ID = 'reliquary';
   var uiRegistered = false;
 
+  // If another surface is open, we request exclusivity and re-enter after its snap.
+  var openDeferredByStack = 0;
+
   function getUIStack() {
     try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
+  }
+
+  function stackHasOtherOpen(stack) {
+    if (!stack || typeof stack.getOpenIds !== 'function') return false;
+
+    try {
+      var ids = stack.getOpenIds();
+      if (!ids || !ids.length) return false;
+
+      for (var i = 0; i < ids.length; i++) {
+        var id = String(ids[i] || '').trim();
+        if (!id) continue;
+        if (id !== UI_STACK_ID) return true;
+      }
+    } catch (err) {}
+
+    return false;
+  }
+
+  function getSiblingCloseDelayMs() {
+    var rel = getSnapMs();
+    var toc = readCssNumberVar('--toc-snap-duration');
+
+    var m = Math.max(rel || 0, toc || 0);
+    return Math.max(220, m + 60);
   }
 
   function isTopmostForDismiss() {
@@ -186,9 +210,6 @@
 
   // Tap-open/close animation guard.
   var tapAnimating = false;
-
-  // If ToC is open, we close it first and re-enter after its snap.
-  var openDeferredByToC = 0;
 
   var isIOS = (function () {
     try {
@@ -322,21 +343,6 @@
     var target = (panel ? panel.querySelector('button:not([disabled]), a[href], textarea, input, select, [tabindex]:not([tabindex="-1"])') : null);
     if (target && target.focus) target.focus();
     else if (panel && panel.focus) panel.focus();
-  }
-
-  function isToCOpen() {
-    return !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
-  }
-
-  function requestToCClose() {
-    if (!tocToggle) return;
-    try { tocToggle.click(); } catch (err) {}
-  }
-
-  function getToCCloseDelayMs() {
-    var ms = readCssNumberVar('--toc-snap-duration');
-    if (ms && ms > 0) return ms;
-    return 420;
   }
 
   function setReliquaryToggleOffset(dx, dy, draggingNow) {
@@ -560,18 +566,19 @@
       return;
     }
 
-    if (isToCOpen()) {
-      if (openDeferredByToC < 2) {
-        openDeferredByToC++;
-        requestToCClose();
+    var stack = getUIStack();
+    if (stack && stackHasOtherOpen(stack)) {
+      if (openDeferredByStack < 2) {
+        openDeferredByStack++;
+        requestExclusive();
         setTimeout(function () {
           openReliquaryTap();
-        }, getToCCloseDelayMs() + 50);
+        }, getSiblingCloseDelayMs());
       }
       return;
     }
 
-    openDeferredByToC = 0;
+    openDeferredByStack = 0;
 
     // Clear any residual inline snap styles.
     panel.style.transform = '';
@@ -1007,9 +1014,9 @@
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-      // Starting from closed while ToC is open is forbidden: close it first.
-      if (!panel.classList.contains('is-open') && isToCOpen()) {
-        requestToCClose();
+      var stack = getUIStack();
+      if (!panel.classList.contains('is-open') && stack && stackHasOtherOpen(stack)) {
+        requestExclusive();
         return;
       }
 
