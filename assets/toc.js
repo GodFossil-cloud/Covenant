@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.30 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
+/*! Covenant ToC v3.1.31 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.30';
+  window.COVENANT_TOC_VERSION = '3.1.31';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -981,6 +981,37 @@
     cancelHold();
   }
 
+  function requestCloseAllPanelsForNavigation() {
+    // Preferred: use the coordinator if present.
+    try {
+      var stack = window.COVENANT_UI_STACK;
+      if (stack && typeof stack.requestCloseAll === 'function') {
+        stack.requestCloseAll();
+        return;
+      }
+    } catch (err) {}
+
+    // Fallback: close known siblings (ToC closes itself separately).
+    try {
+      if (isReliquaryOpen()) requestReliquaryClose();
+    } catch (err2) {}
+
+    try {
+      if (isLexiconOpen()) requestLexiconClose();
+    } catch (err3) {}
+  }
+
+  function getNavigationDelayMs() {
+    // Use the longest snap timing among the panels we might close, plus a small safety buffer.
+    var maxMs = Math.max(
+      getPanelCloseMs() || 0,
+      getReliquaryCloseDelayMs() || 0,
+      getLexiconCloseDelayMs() || 0
+    );
+
+    return Math.max(220, maxMs + 90);
+  }
+
   function commitNavigation() {
     if (!pendingHref) {
       cancelHold();
@@ -991,10 +1022,16 @@
 
     if (tocConfirmBtn) tocConfirmBtn.disabled = true;
 
+    // Ensure the "holding" state clears immediately even if close is deferred by animation guards.
+    cancelHold();
+
+    requestCloseAllPanelsForNavigation();
+
+    // Close ToC last (even if other toggles close it, this is safe).
     closeToC(false);
 
     var href = pendingHref;
-    var navDelay = Math.max(180, getPanelCloseMs());
+    var navDelay = getNavigationDelayMs();
 
     setTimeout(function () {
       window.location.href = href;
