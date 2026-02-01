@@ -94,6 +94,7 @@ Rules:
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
+- `assets/ui-stack.js` — small coordinator layer used for “close panels before navigation” behavior from dock Prev/Next.
 
 Core invariants:
 - ToC and Reliquary are modal veils that do NOT cover the footer dock area.
@@ -137,6 +138,9 @@ Docs:
 - If you change `_includes/reliquary-panel.html`:
   - Verify the required anchors remain present: `reliquaryPanel`, `reliquaryOverlay`, `reliquaryDragRegion`.
 
+- If you change `assets/ui-stack.js`:
+  - Verify: with any panel open, clicking dock Prev/Next closes panels first, then navigates.
+
 - If you change `assets/reliquary.js` or `assets/reliquary.css`:
   - Verify veil does not cover footer dock.
   - Verify drag-open/drag-close on mobile.
@@ -168,6 +172,7 @@ Use this when making CSS/JS/include changes.
 
 1) Journey navigation
 - Open `invocation.html`, click Next/Prev, confirm linear progression.
+- With any panel open, click Next/Prev and confirm panels close before navigation.
 - Confirm ToC and Lexicon are reachable where expected.
 
 2) Lexicon panel + overlay
