@@ -353,6 +353,13 @@
     return true;
   }
 
+  function isPlainPrimaryPointerDown(e) {
+    if (!e) return false;
+    if (e.defaultPrevented) return false;
+    if (e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return false;
+    return true;
+  }
+
   (function wireLexiconGateInterceptors() {
     function isLexiconToggleTarget(t) {
       var toggle = document.getElementById('lexiconToggle');
@@ -375,6 +382,12 @@
 
       triggerLexiconLockedBreath(document.getElementById('lexiconToggle'));
     }
+
+    // Critical: block drag-to-open on mobile by intercepting pointerdown before lexicon.js begins seal-drag.
+    document.addEventListener('pointerdown', function (e) {
+      if (!isPlainPrimaryPointerDown(e)) return;
+      intercept(e);
+    }, true);
 
     document.addEventListener('pointerup', function (e) {
       if (!isPlainPrimaryPointerUp(e)) return;
