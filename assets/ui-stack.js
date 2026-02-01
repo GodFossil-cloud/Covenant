@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.0 */
+/*! Covenant UI Stack v0.3.1 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.0';
+  window.COVENANT_UI_STACK_VERSION = '0.3.1';
 
   var registry = Object.create(null);
   var order = [];
@@ -19,6 +19,14 @@
   // Shared scroll lock (stack-derived) — enabled only for entries that opt in.
   var scrollLocked = false;
   var scrollLockY = 0;
+
+  // Lexicon gating: Lexicon may open only if it is opened first.
+  // If Lexicon is closed and ToC or Reliquary is open, the Lexicon toggle is "locked":
+  // interactions trigger a single subtle "breath" animation and do not open Lexicon.
+  var lexiconLocked = false;
+  var lexiconBreathAnimating = false;
+  var lexiconBreathAnim = null;
+  var lastLexiconBreathAt = 0;
 
   var isIOS = (function () {
     try {
@@ -219,11 +227,174 @@
   }
 
   function syncScrollLockFromIds(ids) {
-    if (!shouldUseSharedScrollLock(ids)) return;
-
-    if (ids && ids.length) lockBodyScroll();
-    else unlockBodyScroll();
+    // If no open surface opts in, the shared lock should be off.
+    if (ids && ids.length && shouldUseSharedScrollLock(ids)) {
+      lockBodyScroll();
+    } else {
+      unlockBodyScroll();
+    }
   }
+
+  function isPanelOpenByDomId(panelId) {
+    var el = document.getElementById(panelId);
+    return !!(el && el.classList && el.classList.contains('is-open'));
+  }
+
+  function computeLexiconLocked() {
+    var lexOpen = isPanelOpenByDomId('lexiconPanel');
+    if (lexOpen) return false;
+
+    // Lexicon is locked if it is closed and either ToC or Reliquary is currently open.
+    var tocOpen = isPanelOpenByDomId('tocPanel');
+    var relOpen = isPanelOpenByDomId('reliquaryPanel');
+
+    return !!(tocOpen || relOpen);
+  }
+
+  function applyLexiconGateState() {
+    var toggle = document.getElementById('lexiconToggle');
+    if (!toggle) return;
+
+    var locked = computeLexiconLocked();
+
+    if (locked === lexiconLocked) return;
+    lexiconLocked = locked;
+
+    toggle.setAttribute('data-lexicon-locked', locked ? 'true' : 'false');
+    // Keep it focusable/clickable, but signal "locked" to AT.
+    toggle.setAttribute('aria-disabled', locked ? 'true' : 'false');
+
+    if (toggle.classList && toggle.classList.toggle) {
+      toggle.classList.toggle('is-lexicon-locked', locked);
+    }
+  }
+
+  function triggerLexiconLockedBreath(toggle) {
+    if (!toggle) return;
+
+    // Ensure it feels like a single breath (ignore spam).
+    var t = now();
+    if (lexiconBreathAnimating && (t - lastLexiconBreathAt) < 700) return;
+    lastLexiconBreathAt = t;
+
+    try {
+      if (lexiconBreathAnim && lexiconBreathAnim.cancel) {
+        lexiconBreathAnim.cancel();
+      }
+
+      if (toggle.animate) {
+        lexiconBreathAnimating = true;
+
+        var GOLD = 'rgba(218, 184, 86, 0.34)';
+        var GOLD_SOFT = 'rgba(218, 184, 86, 0.00)';
+
+        lexiconBreathAnim = toggle.animate([
+          {
+            opacity: 1,
+            transform: 'translateY(0px) scale(1)',
+            boxShadow: '0 0 0 0 ' + GOLD_SOFT,
+            filter: 'drop-shadow(0 0 0 ' + GOLD_SOFT + ')'
+          },
+          {
+            opacity: 1,
+            transform: 'translateY(-1px) scale(1.03)',
+            boxShadow: '0 0 14px 3px ' + GOLD,
+            filter: 'drop-shadow(0 0 8px ' + GOLD + ')'
+          },
+          {
+            opacity: 1,
+            transform: 'translateY(0px) scale(1)',
+            boxShadow: '0 0 0 0 ' + GOLD_SOFT,
+            filter: 'drop-shadow(0 0 0 ' + GOLD_SOFT + ')'
+          }
+        ], {
+          duration: 680,
+          easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)'
+        });
+
+        lexiconBreathAnim.onfinish = function () {
+          lexiconBreathAnimating = false;
+          lexiconBreathAnim = null;
+        };
+
+        lexiconBreathAnim.oncancel = function () {
+          lexiconBreathAnimating = false;
+          lexiconBreathAnim = null;
+        };
+
+        return;
+      }
+    } catch (err) {
+      lexiconBreathAnimating = false;
+      lexiconBreathAnim = null;
+    }
+
+    // Fallback (no WAAPI): quick inline nudge (still visual-only).
+    try {
+      lexiconBreathAnimating = true;
+      toggle.style.opacity = '1';
+      toggle.style.transform = 'translateY(-1px) scale(1.02)';
+      toggle.style.boxShadow = '0 0 12px 2px rgba(218, 184, 86, 0.28)';
+      setTimeout(function () {
+        toggle.style.opacity = '';
+        toggle.style.transform = '';
+        toggle.style.boxShadow = '';
+        lexiconBreathAnimating = false;
+      }, 420);
+    } catch (err2) {
+      lexiconBreathAnimating = false;
+    }
+  }
+
+  function isPlainPrimaryPointerUp(e) {
+    if (!e) return false;
+    if (e.defaultPrevented) return false;
+    if (e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return false;
+    return true;
+  }
+
+  (function wireLexiconGateInterceptors() {
+    function isLexiconToggleTarget(t) {
+      var toggle = document.getElementById('lexiconToggle');
+      if (!toggle) return false;
+      if (t === toggle) return true;
+      if (t && t.closest) return !!t.closest('#lexiconToggle');
+      return false;
+    }
+
+    function intercept(e) {
+      if (!lexiconLocked) return;
+      if (!isLexiconToggleTarget(e && e.target)) return;
+
+      // Must not open Lexicon, and must not affect the current topmost stack.
+      try {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      } catch (err) {}
+
+      triggerLexiconLockedBreath(document.getElementById('lexiconToggle'));
+    }
+
+    document.addEventListener('pointerup', function (e) {
+      if (!isPlainPrimaryPointerUp(e)) return;
+      intercept(e);
+    }, true);
+
+    document.addEventListener('click', function (e) {
+      intercept(e);
+    }, true);
+
+    document.addEventListener('keydown', function (e) {
+      if (!lexiconLocked) return;
+      if (!isLexiconToggleTarget(e && e.target)) return;
+
+      var k = e && e.key;
+      if (k !== 'Enter' && k !== ' ') return;
+
+      intercept(e);
+    }, true);
+  })();
 
   function applyStackState() {
     // No-op unless surfaces opt into inert hooks.
@@ -262,6 +433,7 @@
       } catch (err2) {}
     }
 
+    applyLexiconGateState();
     syncScrollLockFromIds(ids);
   }
 
