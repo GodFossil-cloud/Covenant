@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.33 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + UI Stack) */
+/*! Covenant ToC v3.2.0 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.33';
+  window.COVENANT_TOC_VERSION = '3.2.0';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -29,13 +29,6 @@
   var tocConfirmBtn = document.getElementById('tocConfirm');
   var tocProducedTitleEl = document.getElementById('tocProducedTitle');
 
-  // Optional siblings for fallback close-all (when ui-stack isn't present).
-  var reliquaryPanel = document.getElementById('reliquaryPanel');
-  var mirrorToggle = document.getElementById('mirrorToggle');
-
-  var lexiconPanel = document.getElementById('lexiconPanel');
-  var lexiconToggle = document.getElementById('lexiconToggle');
-
   var root = document.documentElement;
 
   var storageAvailable = false;
@@ -49,7 +42,6 @@
   var focusTrapEnabled = false;
   var focusTrapHandler = null;
 
-  var scrollLockY = 0;
   var pendingHref = '';
   var pendingPageId = '';
   var pendingTitle = '';
@@ -67,9 +59,6 @@
 
   // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
   var tapAnimating = false;
-
-  // If another surface is open, we request exclusivity and re-enter after its snap.
-  var openDeferredByStack = 0;
 
   // Optional: UI stack coordination.
   var uiRegistered = false;
@@ -89,27 +78,11 @@
       && typeof stack.register === 'function'
       && typeof stack.noteOpen === 'function'
       && typeof stack.noteClose === 'function'
+      && typeof stack.getTopOpenId === 'function'
     );
   }
 
-  function stackHasOtherOpen(stack) {
-    if (!stack || typeof stack.getOpenIds !== 'function') return false;
-
-    try {
-      var ids = stack.getOpenIds();
-      if (!ids || !ids.length) return false;
-
-      for (var i = 0; i < ids.length; i++) {
-        var id = String(ids[i] || '').trim();
-        if (!id) continue;
-        if (id !== UI_STACK_ID) return true;
-      }
-    } catch (err) {}
-
-    return false;
-  }
-
-  function isTopmostForDismiss() {
+  function isTopmost() {
     var stack = getUIStack();
     if (!stack || typeof stack.getTopOpenId !== 'function') return true;
 
@@ -119,6 +92,12 @@
     } catch (err) {
       return true;
     }
+  }
+
+  function bringSelfToFront() {
+    var stack = getUIStack();
+    if (!stack || typeof stack.bringToFront !== 'function') return;
+    try { stack.bringToFront(UI_STACK_ID); } catch (err) {}
   }
 
   function registerWithUIStack() {
@@ -131,14 +110,21 @@
       stack.register({
         id: UI_STACK_ID,
         priority: 30,
+
+        // Participate in shared scroll lock.
+        useSharedScrollLock: true,
+        allowScrollSelector: '#tocPanel .toc-panel-body',
+
         isOpen: function () {
           return !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
         },
+
         requestClose: function () {
           try {
             closeToC(false);
           } catch (err) {}
         },
+
         setInert: function (isInert) {
           try {
             var asleep = !!isInert;
@@ -152,30 +138,29 @@
               tocOverlay.style.pointerEvents = asleep ? 'none' : '';
             }
           } catch (err2) {}
+        },
+
+        setActive: function (isActive) {
+          try {
+            if (isActive) {
+              enableFocusTrap();
+            } else {
+              disableFocusTrap();
+              cancelHold();
+            }
+          } catch (err3) {}
+        },
+
+        setZIndex: function (baseZ) {
+          try {
+            if (tocOverlay) tocOverlay.style.zIndex = String(baseZ);
+            if (tocPanel) tocPanel.style.zIndex = String(baseZ + 1);
+          } catch (err4) {}
         }
       });
 
       uiRegistered = true;
-    } catch (err3) {}
-  }
-
-  function requestExclusiveFromUIStack() {
-    registerWithUIStack();
-
-    var stack = getUIStack();
-    if (!uiStackReady(stack)) return;
-
-    try {
-      if (typeof stack.requestExclusive === 'function') {
-        stack.requestExclusive(UI_STACK_ID);
-      }
-    } catch (err1) {}
-
-    try {
-      if (typeof stack.bringToFront === 'function') {
-        stack.bringToFront(UI_STACK_ID);
-      }
-    } catch (err2) {}
+    } catch (err5) {}
   }
 
   function noteOpenToUIStack() {
@@ -184,9 +169,8 @@
     var stack = getUIStack();
     if (!uiStackReady(stack)) return;
 
-    try {
-      stack.noteOpen(UI_STACK_ID);
-    } catch (err) {}
+    try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
+    bringSelfToFront();
   }
 
   function noteCloseToUIStack() {
@@ -195,17 +179,7 @@
     var stack = getUIStack();
     if (!uiStackReady(stack)) return;
 
-    try {
-      stack.noteClose(UI_STACK_ID);
-    } catch (err) {}
-  }
-
-  function getSiblingCloseDelayMs() {
-    // Conservative: use known snap durations for sibling panels.
-    // If additional surfaces exist, they should register with ui-stack and keep their close timing modest.
-    var rel = getReliquaryCloseDelayMs() || 0;
-    var lex = getLexiconCloseDelayMs() || 0;
-    return Math.max(220, Math.max(rel, lex) + 60);
+    try { stack.noteClose(UI_STACK_ID); } catch (err) {}
   }
 
   function isMobileSheet() {
@@ -532,7 +506,7 @@
   }
 
   // ---------------------------
-  // Modal open/close + focus
+  // Focus trap
   // ---------------------------
 
   function getFocusableInPanel() {
@@ -560,6 +534,7 @@
     focusTrapHandler = function (e) {
       if (!e || e.key !== 'Tab') return;
       if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
+      if (!isTopmost()) return;
 
       var focusables = getFocusableInPanel();
       if (!focusables.length) return;
@@ -596,126 +571,6 @@
     tocPanel.removeEventListener('keydown', focusTrapHandler);
     focusTrapEnabled = false;
     focusTrapHandler = null;
-  }
-
-  var isIOS = (function () {
-    try {
-      var ua = navigator.userAgent || '';
-      var platform = navigator.platform || '';
-      var iOSDevice = /iPad|iPhone|iPod/.test(ua);
-      var iPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
-      return iOSDevice || iPadOS;
-    } catch (err) {
-      return false;
-    }
-  })();
-
-  var iosTouchMoveBlocker = null;
-  var IOS_TOUCHMOVE_OPTS = { capture: true, passive: false };
-
-  function enableIOSTouchScrollLock() {
-    if (iosTouchMoveBlocker) return;
-
-    iosTouchMoveBlocker = function (e) {
-      if (!tocPanel || !tocPanel.classList.contains('is-open')) return;
-      if (closestSafe(e.target, '#tocPanel .toc-panel-body')) return;
-      if (e && e.cancelable) e.preventDefault();
-    };
-
-    document.addEventListener('touchmove', iosTouchMoveBlocker, IOS_TOUCHMOVE_OPTS);
-  }
-
-  function disableIOSTouchScrollLock() {
-    if (!iosTouchMoveBlocker) return;
-    document.removeEventListener('touchmove', iosTouchMoveBlocker, IOS_TOUCHMOVE_OPTS);
-    iosTouchMoveBlocker = null;
-  }
-
-  function getScrollLockTopPx() {
-    try {
-      var raw = document.body ? document.body.style.top : '';
-      if (!raw) return 0;
-      var n = parseInt(raw, 10);
-      return isNaN(n) ? 0 : n;
-    } catch (err) {
-      return 0;
-    }
-  }
-
-  function lockBodyScroll() {
-    if (root.classList.contains('toc-scroll-lock') || document.body.classList.contains('toc-scroll-lock')) return;
-
-    scrollLockY = window.scrollY || window.pageYOffset || 0;
-    root.classList.add('toc-scroll-lock', 'toc-open');
-
-    if (isIOS) enableIOSTouchScrollLock();
-
-    document.body.classList.add('toc-scroll-lock');
-    document.body.style.top = (-scrollLockY) + 'px';
-  }
-
-  function unlockBodyScroll() {
-    var wasLocked = root.classList.contains('toc-scroll-lock') || document.body.classList.contains('toc-scroll-lock');
-    var topPx = getScrollLockTopPx();
-    var y = scrollLockY;
-
-    if (!y && topPx) y = Math.abs(topPx);
-
-    root.classList.remove('toc-scroll-lock', 'toc-open');
-
-    if (isIOS) disableIOSTouchScrollLock();
-
-    document.body.classList.remove('toc-scroll-lock');
-    document.body.style.top = '';
-
-    if (wasLocked && y) window.scrollTo(0, y);
-  }
-
-  function getPanelCloseMs() {
-    // Tap-close now uses the sheet snap timing so navigation/redirect delays should match it.
-    var snap = getSnapMs();
-    if (snap && snap > 0) return snap;
-
-    var ms = readCssNumberVar('--toc-scroll-close-duration');
-    if (ms && ms > 0) return ms;
-    ms = readCssNumberVar('--toc-scroll-duration');
-    if (ms && ms > 0) return ms;
-    return 320;
-  }
-
-  // ---------------------------
-  // Fallback sibling helpers
-  // ---------------------------
-
-  function isReliquaryOpen() {
-    return !!(reliquaryPanel && reliquaryPanel.classList && reliquaryPanel.classList.contains('is-open'));
-  }
-
-  function requestReliquaryClose() {
-    if (!mirrorToggle) return;
-    try { mirrorToggle.click(); } catch (err) {}
-  }
-
-  function getReliquaryCloseDelayMs() {
-    var ms = readCssNumberVar('--reliquary-snap-duration');
-    if (ms && ms > 0) return ms;
-    return 420;
-  }
-
-  function isLexiconOpen() {
-    if (root.classList && root.classList.contains('lexicon-scroll-lock')) return true;
-    return !!(lexiconPanel && lexiconPanel.classList && lexiconPanel.classList.contains('is-open'));
-  }
-
-  function requestLexiconClose() {
-    if (!lexiconToggle) return;
-    try { lexiconToggle.click(); } catch (err) {}
-  }
-
-  function getLexiconCloseDelayMs() {
-    var ms = readCssNumberVar('--lexicon-snap-duration');
-    if (ms && ms > 0) return ms;
-    return 420;
   }
 
   // ---------------------------
@@ -1044,23 +899,14 @@
         return;
       }
     } catch (err) {}
-
-    // Fallback: close known siblings (ToC closes itself separately).
-    try {
-      if (isReliquaryOpen()) requestReliquaryClose();
-    } catch (err2) {}
-
-    try {
-      if (isLexiconOpen()) requestLexiconClose();
-    } catch (err3) {}
   }
 
   function getNavigationDelayMs() {
     // Use the longest snap timing among the panels we might close, plus a small safety buffer.
     var maxMs = Math.max(
-      getPanelCloseMs() || 0,
-      getReliquaryCloseDelayMs() || 0,
-      getLexiconCloseDelayMs() || 0
+      readCssNumberVar('--toc-snap-duration') || 0,
+      readCssNumberVar('--reliquary-snap-duration') || 0,
+      readCssNumberVar('--lexicon-snap-duration') || 0
     );
 
     return Math.max(220, maxMs + 90);
@@ -1218,7 +1064,6 @@
 
       if (!tocPanel.classList.contains('is-open')) {
         focusReturnEl = tocToggle;
-        lockBodyScroll();
 
         tocPanel.classList.remove('is-closing');
         tocPanel.classList.add('is-open');
@@ -1298,9 +1143,6 @@
       }
 
       noteCloseToUIStack();
-
-      // Unlock scroll after we have hidden the sheet.
-      unlockBodyScroll();
 
       settleDockAfterSnapClose();
 
@@ -1440,15 +1282,6 @@
 
     function beginDrag(e, source, forcedStartY) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-      // Starting from closed while another surface is open: request exclusivity and let the user re-enter.
-      if (!tocPanel.classList.contains('is-open')) {
-        var stack = getUIStack();
-        if (uiStackReady(stack) && stackHasOtherOpen(stack)) {
-          requestExclusiveFromUIStack();
-          return;
-        }
-      }
 
       dragging = true;
       moved = false;
@@ -1653,8 +1486,6 @@
       tocDragRegion.addEventListener('lostpointercapture', function (e) {
         endDrag(e);
       });
-
-      // (rest of file unchanged)
     }
   })();
 
@@ -1705,22 +1536,6 @@
       return;
     }
 
-    var stack = getUIStack();
-    if (uiStackReady(stack) && stackHasOtherOpen(stack)) {
-      if (openDeferredByStack < 2) {
-        openDeferredByStack++;
-        requestExclusiveFromUIStack();
-        setTimeout(function () {
-          openToC();
-        }, getSiblingCloseDelayMs());
-      }
-      return;
-    }
-
-    openDeferredByStack = 0;
-
-    requestExclusiveFromUIStack();
-
     // Clear any residual inline snap styles left behind by drag-close OR cancel-open.
     tocPanel.style.transform = '';
     tocPanel.style.opacity = '';
@@ -1736,7 +1551,6 @@
     root.classList.remove('toc-closing');
     root.classList.remove('toc-dock-settling');
 
-    lockBodyScroll();
     positionPanel();
 
     tocPanel.classList.remove('is-closing');
@@ -1905,9 +1719,6 @@
 
         noteCloseToUIStack();
 
-        // Unlock scroll after we have hidden the sheet.
-        unlockBodyScroll();
-
         // Keep a tiny "settling" window so z-layer + hover state do not flip mid tab-transition.
         root.classList.add('toc-dock-settling');
         root.classList.remove('toc-closing');
@@ -1937,6 +1748,11 @@
     if (tapAnimating) return;
 
     if (tocPanel && (tocPanel.classList.contains('is-open') || tocPanel.classList.contains('is-closing'))) {
+      if (!isTopmost()) {
+        bringSelfToFront();
+        return;
+      }
+
       closeToC(true);
     } else {
       openToC();
@@ -1974,16 +1790,16 @@
     if (tocOverlay) {
       tocOverlay.addEventListener('click', function (e) {
         stopEvent(e);
-        if (!isTopmostForDismiss()) return;
+        if (!isTopmost()) return;
         closeToC(true);
       });
     }
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) {
-        if (!isTopmostForDismiss()) return;
-        closeToC(true);
-      }
+      if (!e || e.key !== 'Escape') return;
+      if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
+      if (!isTopmost()) return;
+      closeToC(true);
     });
 
     window.addEventListener('resize', function () {
@@ -2001,11 +1817,11 @@
     });
 
     window.addEventListener('blur', function () {
-      if (tocPanel && tocPanel.classList.contains('is-open') && isTopmostForDismiss()) closeToC(false);
+      if (tocPanel && tocPanel.classList.contains('is-open') && isTopmost()) closeToC(false);
     });
 
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden && tocPanel && tocPanel.classList.contains('is-open') && isTopmostForDismiss()) closeToC(false);
+      if (document.hidden && tocPanel && tocPanel.classList.contains('is-open') && isTopmost()) closeToC(false);
     });
   }
 
