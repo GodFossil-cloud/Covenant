@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.32 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
+/*! Covenant ToC v3.1.33 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + UI Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.32';
+  window.COVENANT_TOC_VERSION = '3.1.33';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -29,11 +29,10 @@
   var tocConfirmBtn = document.getElementById('tocConfirm');
   var tocProducedTitleEl = document.getElementById('tocProducedTitle');
 
-  // Optional: mutually exclusive with Reliquary (avoid scroll-lock collisions).
+  // Optional siblings for fallback close-all (when ui-stack isn't present).
   var reliquaryPanel = document.getElementById('reliquaryPanel');
   var mirrorToggle = document.getElementById('mirrorToggle');
 
-  // Optional: mutually exclusive with Lexicon (prevent overlay + scroll-lock collisions).
   var lexiconPanel = document.getElementById('lexiconPanel');
   var lexiconToggle = document.getElementById('lexiconToggle');
 
@@ -69,13 +68,10 @@
   // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
   var tapAnimating = false;
 
-  // If Reliquary is open, we close it first and re-enter after its snap.
-  var openDeferredByReliquary = 0;
+  // If another surface is open, we request exclusivity and re-enter after its snap.
+  var openDeferredByStack = 0;
 
-  // If Lexicon is open, we close it first and re-enter after its snap.
-  var openDeferredByLexicon = 0;
-
-  // Optional: UI stack coordination (preferred; falls back to local mutex logic until migrated).
+  // Optional: UI stack coordination.
   var uiRegistered = false;
   var UI_STACK_ID = 'toc';
 
@@ -94,6 +90,23 @@
       && typeof stack.noteOpen === 'function'
       && typeof stack.noteClose === 'function'
     );
+  }
+
+  function stackHasOtherOpen(stack) {
+    if (!stack || typeof stack.getOpenIds !== 'function') return false;
+
+    try {
+      var ids = stack.getOpenIds();
+      if (!ids || !ids.length) return false;
+
+      for (var i = 0; i < ids.length; i++) {
+        var id = String(ids[i] || '').trim();
+        if (!id) continue;
+        if (id !== UI_STACK_ID) return true;
+      }
+    } catch (err) {}
+
+    return false;
   }
 
   function isTopmostForDismiss() {
@@ -146,8 +159,6 @@
     } catch (err3) {}
   }
 
-  // Legacy call sites: do not enforce exclusivity via ui-stack here.
-  // During migration, local mutex behavior remains in place to avoid scroll-lock collisions.
   function requestExclusiveFromUIStack() {
     registerWithUIStack();
 
@@ -155,10 +166,16 @@
     if (!uiStackReady(stack)) return;
 
     try {
+      if (typeof stack.requestExclusive === 'function') {
+        stack.requestExclusive(UI_STACK_ID);
+      }
+    } catch (err1) {}
+
+    try {
       if (typeof stack.bringToFront === 'function') {
         stack.bringToFront(UI_STACK_ID);
       }
-    } catch (err) {}
+    } catch (err2) {}
   }
 
   function noteOpenToUIStack() {
@@ -181,6 +198,14 @@
     try {
       stack.noteClose(UI_STACK_ID);
     } catch (err) {}
+  }
+
+  function getSiblingCloseDelayMs() {
+    // Conservative: use known snap durations for sibling panels.
+    // If additional surfaces exist, they should register with ui-stack and keep their close timing modest.
+    var rel = getReliquaryCloseDelayMs() || 0;
+    var lex = getLexiconCloseDelayMs() || 0;
+    return Math.max(220, Math.max(rel, lex) + 60);
   }
 
   function isMobileSheet() {
@@ -659,7 +684,7 @@
   }
 
   // ---------------------------
-  // Mutual exclusion (Reliquary)
+  // Fallback sibling helpers
   // ---------------------------
 
   function isReliquaryOpen() {
@@ -676,10 +701,6 @@
     if (ms && ms > 0) return ms;
     return 420;
   }
-
-  // ---------------------------
-  // Mutual exclusion (Lexicon)
-  // ---------------------------
 
   function isLexiconOpen() {
     if (root.classList && root.classList.contains('lexicon-scroll-lock')) return true;
@@ -1420,16 +1441,13 @@
     function beginDrag(e, source, forcedStartY) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-      // Starting from closed while Reliquary is open is forbidden: close it first.
-      if (!tocPanel.classList.contains('is-open') && isReliquaryOpen()) {
-        requestReliquaryClose();
-        return;
-      }
-
-      // Starting from closed while Lexicon is open is forbidden: close it first.
-      if (!tocPanel.classList.contains('is-open') && isLexiconOpen()) {
-        requestLexiconClose();
-        return;
+      // Starting from closed while another surface is open: request exclusivity and let the user re-enter.
+      if (!tocPanel.classList.contains('is-open')) {
+        var stack = getUIStack();
+        if (uiStackReady(stack) && stackHasOtherOpen(stack)) {
+          requestExclusiveFromUIStack();
+          return;
+        }
       }
 
       dragging = true;
@@ -1687,31 +1705,21 @@
       return;
     }
 
-    if (isReliquaryOpen()) {
-      if (openDeferredByReliquary < 2) {
-        openDeferredByReliquary++;
-        requestReliquaryClose();
+    var stack = getUIStack();
+    if (uiStackReady(stack) && stackHasOtherOpen(stack)) {
+      if (openDeferredByStack < 2) {
+        openDeferredByStack++;
+        requestExclusiveFromUIStack();
         setTimeout(function () {
           openToC();
-        }, getReliquaryCloseDelayMs() + 50);
+        }, getSiblingCloseDelayMs());
       }
       return;
     }
 
-    openDeferredByReliquary = 0;
+    openDeferredByStack = 0;
 
-    if (isLexiconOpen()) {
-      if (openDeferredByLexicon < 2) {
-        openDeferredByLexicon++;
-        requestLexiconClose();
-        setTimeout(function () {
-          openToC();
-        }, getLexiconCloseDelayMs() + 50);
-      }
-      return;
-    }
-
-    openDeferredByLexicon = 0;
+    requestExclusiveFromUIStack();
 
     // Clear any residual inline snap styles left behind by drag-close OR cancel-open.
     tocPanel.style.transform = '';
