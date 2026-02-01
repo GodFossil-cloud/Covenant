@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.12 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.3.0 (True Panel Stack + Shared Scroll Lock Opt-In) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.12';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.0';
 
   var doc = document;
   var root = doc.documentElement;
@@ -69,40 +69,22 @@
 
   if (!panel || !overlay || !toggle) return;
 
-  // Optional: coordinated UI stack (dock exclusivity across panels).
+  // Optional: coordinated UI stack (true surface layering across panels).
   var UI_STACK_ID = 'reliquary';
   var uiRegistered = false;
-
-  // If another surface is open, we request exclusivity and re-enter after its snap.
-  var openDeferredByStack = 0;
 
   function getUIStack() {
     try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
   }
 
-  function stackHasOtherOpen(stack) {
-    if (!stack || typeof stack.getOpenIds !== 'function') return false;
-
-    try {
-      var ids = stack.getOpenIds();
-      if (!ids || !ids.length) return false;
-
-      for (var i = 0; i < ids.length; i++) {
-        var id = String(ids[i] || '').trim();
-        if (!id) continue;
-        if (id !== UI_STACK_ID) return true;
-      }
-    } catch (err) {}
-
-    return false;
-  }
-
-  function getSiblingCloseDelayMs() {
-    var rel = getSnapMs();
-    var toc = readCssNumberVar('--toc-snap-duration');
-
-    var m = Math.max(rel || 0, toc || 0);
-    return Math.max(220, m + 60);
+  function uiStackReady(stack) {
+    return !!(
+      stack
+      && typeof stack.register === 'function'
+      && typeof stack.noteOpen === 'function'
+      && typeof stack.noteClose === 'function'
+      && typeof stack.getTopOpenId === 'function'
+    );
   }
 
   function isTopmostForDismiss() {
@@ -117,14 +99,22 @@
     }
   }
 
+  function bringSelfToFront() {
+    var stack = getUIStack();
+    if (!stack || typeof stack.bringToFront !== 'function') return;
+    try { stack.bringToFront(UI_STACK_ID); } catch (err) {}
+  }
+
+  function shouldUseLocalScrollLock() {
+    var stack = getUIStack();
+    return !uiStackReady(stack);
+  }
+
   function registerWithUIStack() {
     if (uiRegistered) return;
 
     var stack = getUIStack();
-    if (!stack) return;
-
-    var registerFn = stack.register || stack.registerSurface || stack.registerPanel;
-    if (typeof registerFn !== 'function') return;
+    if (!uiStackReady(stack)) return;
 
     function closeFromStack() {
       if (!panel || !panel.classList || !panel.classList.contains('is-open')) return;
@@ -139,13 +129,19 @@
     }
 
     try {
-      registerFn.call(stack, {
+      stack.register({
         id: UI_STACK_ID,
         priority: 20,
+
+        // Participate in shared scroll lock.
+        useSharedScrollLock: true,
+        allowScrollSelector: '#reliquaryPanel .reliquary-panel-body',
+
         isOpen: function () {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
-        close: closeFromStack,
+        requestClose: closeFromStack,
+
         setInert: function (isInert) {
           try {
             var asleep = !!isInert;
@@ -159,6 +155,20 @@
               overlay.style.pointerEvents = asleep ? 'none' : '';
             }
           } catch (err2) {}
+        },
+
+        setActive: function (isActive) {
+          try {
+            if (isActive) enableFocusTrap();
+            else disableFocusTrap();
+          } catch (err3) {}
+        },
+
+        setZIndex: function (baseZ) {
+          try {
+            if (overlay) overlay.style.zIndex = String(baseZ);
+            if (panel) panel.style.zIndex = String(baseZ + 1);
+          } catch (err4) {}
         }
       });
 
@@ -166,34 +176,23 @@
     } catch (err) {}
   }
 
-  function requestExclusive() {
-    // Self-heal: ensure registration even if reliquary.js loaded before ui-stack.js.
-    registerWithUIStack();
-
-    var stack = getUIStack();
-    if (stack && typeof stack.requestExclusive === 'function') {
-      try { stack.requestExclusive(UI_STACK_ID); } catch (err) {}
-    }
-  }
-
   function noteOpen() {
-    // Self-heal: ensure registration even if reliquary.js loaded before ui-stack.js.
     registerWithUIStack();
 
     var stack = getUIStack();
-    if (stack && typeof stack.noteOpen === 'function') {
-      try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
-    }
+    if (!uiStackReady(stack)) return;
+
+    try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
+    bringSelfToFront();
   }
 
   function noteClose() {
-    // Self-heal: ensure registration even if reliquary.js loaded before ui-stack.js.
     registerWithUIStack();
 
     var stack = getUIStack();
-    if (stack && typeof stack.noteClose === 'function') {
-      try { stack.noteClose(UI_STACK_ID); } catch (err) {}
-    }
+    if (!uiStackReady(stack)) return;
+
+    try { stack.noteClose(UI_STACK_ID); } catch (err) {}
   }
 
   registerWithUIStack();
@@ -247,6 +246,8 @@
   }
 
   function lockBodyScroll() {
+    if (!shouldUseLocalScrollLock()) return;
+
     if (root.classList.contains('reliquary-scroll-lock') || doc.body.classList.contains('reliquary-scroll-lock')) return;
 
     scrollLockY = window.scrollY || window.pageYOffset || 0;
@@ -263,6 +264,8 @@
   }
 
   function unlockBodyScroll() {
+    if (!shouldUseLocalScrollLock()) return;
+
     var wasLocked = root.classList.contains('reliquary-scroll-lock') || doc.body.classList.contains('reliquary-scroll-lock');
 
     root.classList.remove('reliquary-scroll-lock');
@@ -305,6 +308,7 @@
     focusTrapHandler = function (e) {
       if (!e || e.key !== 'Tab') return;
       if (!panel.classList.contains('is-open')) return;
+      if (!isTopmostForDismiss()) return;
 
       var focusables = getFocusableInPanel();
       if (!focusables.length) return;
@@ -393,8 +397,6 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Mobile requirement: mirror tab bottom edge flush with sheet top edge (tab can ride offscreen when fully open).
-    // Desktop requirement: preserve prior top-seam behavior (tab stays visible).
     var targetTop = openPanelTop;
 
     if (isMobileSheet()) {
@@ -446,7 +448,6 @@
   }
 
   function getFooterReservedPx() {
-    // Prefer a real measurement; CSS vars can drift (safe-area, padding, device rounding).
     var footer = doc.querySelector('.nav-footer');
     if (footer && footer.getBoundingClientRect) {
       var h = footer.getBoundingClientRect().height || 0;
@@ -466,7 +467,6 @@
 
     var footerReserved = getFooterReservedPx();
 
-    // Keep overlay + sheet in perfect agreement.
     root.style.setProperty('--reliquary-footer-reserved', footerReserved + 'px');
 
     var bottom = footerReserved;
@@ -479,8 +479,6 @@
       panel.style.top = '0px';
       panel.style.setProperty('--reliquary-panel-x', '0px');
 
-      // Mirror the ToC anchoring logic:
-      // Reliquary panel spans from viewport LEFT edge to the Mirror tab's RIGHT edge.
       var rect = toggle.getBoundingClientRect();
       var rightInset = Math.max(0, Math.round(window.innerWidth - rect.right));
       panel.style.setProperty('--reliquary-panel-right', rightInset + 'px');
@@ -510,8 +508,6 @@
 
   function openReliquaryImmediately() {
     focusReturnEl = toggle;
-
-    requestExclusive();
 
     root.classList.add('reliquary-open');
 
@@ -566,20 +562,6 @@
       return;
     }
 
-    var stack = getUIStack();
-    if (stack && stackHasOtherOpen(stack)) {
-      if (openDeferredByStack < 2) {
-        openDeferredByStack++;
-        requestExclusive();
-        setTimeout(function () {
-          openReliquaryTap();
-        }, getSiblingCloseDelayMs());
-      }
-      return;
-    }
-
-    openDeferredByStack = 0;
-
     // Clear any residual inline snap styles.
     panel.style.transform = '';
     panel.style.opacity = '';
@@ -597,10 +579,8 @@
     tapAnimating = true;
     root.classList.add('reliquary-opening');
 
-    // Start from fully-closed geometry.
     var closedY = computePanelClosedY();
 
-    // IMPORTANT: do not add .is-dragging here (it forces transition:none !important in CSS).
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
@@ -611,7 +591,6 @@
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
-      // Predict where the open top will be, even though we are currently translated down.
       var base = getToggleBaseRect();
       if (base && panel && panel.getBoundingClientRect) {
         var rect = panel.getBoundingClientRect();
@@ -663,7 +642,6 @@
 
     var closedY = computePanelClosedY();
 
-    // IMPORTANT: do not add .is-dragging here (it forces transition:none !important in CSS).
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
@@ -720,7 +698,6 @@
 
         focusReturnEl = null;
 
-        // Leave the panel translated down until next open clears styles.
         panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + closedY + 'px)';
 
         tapAnimating = false;
@@ -732,6 +709,11 @@
     if (tapAnimating) return;
 
     if (panel && panel.classList.contains('is-open')) {
+      if (!isTopmostForDismiss()) {
+        bringSelfToFront();
+        return;
+      }
+
       closeReliquaryTap(true);
     } else {
       openReliquaryTap();
@@ -751,7 +733,6 @@
     var pointerId = null;
     var dragSource = null; // 'seal' or 'handle'
 
-    // iOS tap compatibility: promote to drag only after MOVE_SLOP.
     var sealPrimed = false;
     var sealPointerId = null;
     var sealStartY = 0;
@@ -769,7 +750,6 @@
     var openDyWanted = 0;
 
     var panelHBase = 0;
-    var closedOffsetPx = 0;
     var openLiftPx = 0;
 
     var MOVE_SLOP = 6;
@@ -797,7 +777,7 @@
       var panelH = (rect && rect.height) ? rect.height : 1;
 
       panelHBase = Math.max(1, panelH);
-      closedOffsetPx = readCssNumberVar('--reliquary-closed-offset') || 0;
+      var closedOffsetPx = readCssNumberVar('--reliquary-closed-offset') || 0;
       closedY = Math.max(1, panelHBase + closedOffsetPx);
     }
 
@@ -816,9 +796,6 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      // During live drag on mobile: keep the tab welded to the sheet's current top edge.
-      // During snap settle: do NOT recompute from getBoundingClientRect() (it can pause/bounce at the footer lip);
-      // use the precomputed progress-based motion so it returns cleanly into the dock.
       var dy = openDyWanted * progress;
       if (isMobileSheet() && draggingNow) {
         var base = getToggleBaseRect();
@@ -836,8 +813,6 @@
       if (!base) return 0;
 
       var rect = panel.getBoundingClientRect();
-
-      // Open top is where the sheet will land when y == openLiftPx.
       var openTop = rect.top - (yNow - openLiftPx);
 
       return computeOpenToggleDyFromPanelTop(openTop, base);
@@ -854,7 +829,6 @@
       root.classList.remove('reliquary-closing');
       root.classList.remove('reliquary-dock-settling');
 
-      // Avoid re-welding mid-snap: snap() will re-seat after the transition completes.
       if (!skipAlign) alignToggleToPanelCorner();
       setTimeout(focusIntoPanel, 0);
     }
@@ -944,7 +918,6 @@
         shouldOpen = (velocity < OPEN_VELOCITY || dragUp > baseH * OPEN_RATIO);
       }
 
-      // Snapshot geometry at release for predicted weld targets.
       var yFrom = currentY;
       var startTop = (panel && panel.getBoundingClientRect) ? panel.getBoundingClientRect().top : 0;
       var baseRect = isMobileSheet() ? getToggleBaseRect() : null;
@@ -967,7 +940,6 @@
           alignToggleToPanelCornerIfDrift(1);
         }, SNAP_MS + 30);
       } else {
-        // Match ToC behavior: return the tab straight into its dock on release.
         setReliquaryToggleOffset(0, 0, false);
 
         if (startWasOpen) {
@@ -1014,12 +986,6 @@
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-      var stack = getUIStack();
-      if (!panel.classList.contains('is-open') && stack && stackHasOtherOpen(stack)) {
-        requestExclusive();
-        return;
-      }
-
       dragging = true;
       moved = false;
       pointerId = e.pointerId;
@@ -1055,7 +1021,6 @@
 
       panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + currentY + 'px)';
 
-      // Mobile: re-seat the "closed" start so the sheet top begins flush to the tab bottom.
       if (!startWasOpen && isMobileSheet()) {
         var base = getToggleBaseRect();
         if (base && panel && panel.getBoundingClientRect) {
@@ -1252,7 +1217,6 @@
     }
   });
 
-  // Safety net: avoid stuck scroll lock.
   window.addEventListener('blur', function () {
     if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryImmediately(false);

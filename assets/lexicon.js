@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.37 */
+/*! Covenant Lexicon UI v0.3.0 (True Panel Stack + Shared Scroll Lock Opt-In) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.2.37';
+  window.COVENANT_LEXICON_VERSION = '0.3.0';
 
   var doc = document;
   var root = doc.documentElement;
@@ -118,42 +118,22 @@
 
   var citationText = byId('citationText');
 
-  // Optional: coordinated UI stack (dock exclusivity across panels).
+  // Optional: coordinated UI stack (true surface layering across panels).
   var UI_STACK_ID = 'lexicon';
   var uiRegistered = false;
-
-  // If another surface is open, we request exclusivity and re-enter after its snap.
-  var openDeferredByStack = 0;
 
   function getUIStack() {
     try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
   }
 
-  function stackHasOtherOpen(stack) {
-    if (!stack || typeof stack.getOpenIds !== 'function') return false;
-
-    try {
-      var ids = stack.getOpenIds();
-      if (!ids || !ids.length) return false;
-
-      for (var i = 0; i < ids.length; i++) {
-        var id = String(ids[i] || '').trim();
-        if (!id) continue;
-        if (id !== UI_STACK_ID) return true;
-      }
-    } catch (err) {}
-
-    return false;
-  }
-
-  function getSiblingCloseDelayMs() {
-    // Conservative: use known snap durations for sibling panels.
-    // If additional surfaces exist, they should register with ui-stack and keep their close timing modest.
-    var toc = getCssVarNumber('--toc-snap-duration', 420);
-    var rel = getCssVarNumber('--reliquary-snap-duration', 420);
-
-    var m = Math.max(toc || 0, rel || 0);
-    return Math.max(220, m + 60);
+  function uiStackReady(stack) {
+    return !!(
+      stack
+      && typeof stack.register === 'function'
+      && typeof stack.noteOpen === 'function'
+      && typeof stack.noteClose === 'function'
+      && typeof stack.getTopOpenId === 'function'
+    );
   }
 
   function isTopmostForDismiss() {
@@ -168,25 +148,40 @@
     }
   }
 
+  function bringSelfToFront() {
+    var stack = getUIStack();
+    if (!stack || typeof stack.bringToFront !== 'function') return;
+    try { stack.bringToFront(UI_STACK_ID); } catch (err) {}
+  }
+
+  function shouldUseLocalScrollLock() {
+    var stack = getUIStack();
+    return !uiStackReady(stack);
+  }
+
   function registerWithUIStack() {
     if (uiRegistered) return;
 
     var stack = getUIStack();
-    if (!stack) return;
-
-    var registerFn = stack.register || stack.registerSurface || stack.registerPanel;
-    if (typeof registerFn !== 'function') return;
+    if (!uiStackReady(stack)) return;
 
     try {
-      registerFn.call(stack, {
+      stack.register({
         id: UI_STACK_ID,
         priority: 40,
+
+        // Participate in shared scroll lock.
+        useSharedScrollLock: true,
+        allowScrollSelector: '#lexiconPanel .lexicon-panel-body',
+
         isOpen: function () {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
-        close: function () {
+
+        requestClose: function () {
           if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
         },
+
         setInert: function (isInert) {
           try {
             var asleep = !!isInert;
@@ -200,6 +195,13 @@
               lexOverlay.style.pointerEvents = asleep ? 'none' : '';
             }
           } catch (err2) {}
+        },
+
+        setZIndex: function (baseZ) {
+          try {
+            if (lexOverlay) lexOverlay.style.zIndex = String(baseZ);
+            if (panel) panel.style.zIndex = String(baseZ + 1);
+          } catch (err3) {}
         }
       });
 
@@ -207,34 +209,23 @@
     } catch (err) {}
   }
 
-  function requestExclusive() {
-    // Self-heal: ensure registration even if lexicon.js loaded before ui-stack.js.
-    registerWithUIStack();
-
-    var stack = getUIStack();
-    if (stack && typeof stack.requestExclusive === 'function') {
-      try { stack.requestExclusive(UI_STACK_ID); } catch (err) {}
-    }
-  }
-
   function noteOpen() {
-    // Self-heal: ensure registration even if lexicon.js loaded before ui-stack.js.
     registerWithUIStack();
 
     var stack = getUIStack();
-    if (stack && typeof stack.noteOpen === 'function') {
-      try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
-    }
+    if (!uiStackReady(stack)) return;
+
+    try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
+    bringSelfToFront();
   }
 
   function noteClose() {
-    // Self-heal: ensure registration even if lexicon.js loaded before ui-stack.js.
     registerWithUIStack();
 
     var stack = getUIStack();
-    if (stack && typeof stack.noteClose === 'function') {
-      try { stack.noteClose(UI_STACK_ID); } catch (err) {}
-    }
+    if (!uiStackReady(stack)) return;
+
+    try { stack.noteClose(UI_STACK_ID); } catch (err) {}
   }
 
   var sealClearTimer = null;
@@ -248,21 +239,14 @@
     dragRegion.setAttribute('aria-hidden', 'true');
   }
 
-  // Standardize the "seal" glyph used for the intro loader across Covenant pages.
-  // Canonical default: _includes/covenant-config.html (included via _includes/head-fonts.html).
-  // Override options:
-  // - window.COVENANT_LOADING_GLYPH = '✦'
-  // - window.COVENANT_PAGE.loadingGlyph = '✦'
   var loadingGlyph = (pageConfig && pageConfig.loadingGlyph) || window.COVENANT_LOADING_GLYPH || '֎';
   if (loadingIcon) {
     var currentGlyph = (loadingIcon.textContent || '').trim();
     if (currentGlyph !== loadingGlyph) loadingIcon.textContent = loadingGlyph;
   }
 
-  // Back-compat: if pageConfig.defaultOverviewHTML is not set yet (older pages), fall back to DOM capture.
   var defaultOverviewHTML = pageConfig.defaultOverviewHTML || (dynamicContent ? dynamicContent.innerHTML : '');
 
-  // If a page provides overview via config, treat the panel body as JS-driven.
   if (dynamicContent && pageConfig.defaultOverviewHTML) {
     dynamicContent.innerHTML = pageConfig.defaultOverviewHTML;
   }
@@ -283,7 +267,6 @@
   var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
   function isBottomSheetMode() { return !!(bottomSheetMql && bottomSheetMql.matches); }
 
-  // iOS Safari/WKWebView: avoid fixed-body scroll lock which can reveal black gaps / stuck interaction.
   var isIOS = (function () {
     try {
       var ua = navigator.userAgent || '';
@@ -318,6 +301,8 @@
   }
 
   function lockBodyScroll() {
+    if (!shouldUseLocalScrollLock()) return;
+
     if (root.classList.contains('lexicon-scroll-lock')) return;
     scrollLockY = window.scrollY || window.pageYOffset || 0;
 
@@ -334,6 +319,8 @@
   }
 
   function unlockBodyScroll() {
+    if (!shouldUseLocalScrollLock()) return;
+
     if (!root.classList.contains('lexicon-scroll-lock')) return;
 
     root.classList.remove('lexicon-scroll-lock');
@@ -380,7 +367,6 @@
       handler(e);
     });
 
-    // Backstop for browsers/paths where click fires without pointerup.
     el.addEventListener('click', function (e) {
       if (Date.now() - lastPointerUpAt < 700) return;
       handler(e);
@@ -429,7 +415,6 @@
     if (target.getAttribute(markerAttr) === glyph) return;
     target.setAttribute(markerAttr, glyph);
 
-    // Clear children (safe in older browsers).
     while (target.firstChild) target.removeChild(target.firstChild);
 
     var star = '𖤓';
@@ -621,10 +606,8 @@
       setTimeout(function () {
         if (container) container.classList.add('fade-in');
 
-        // Spawn panel first.
         if (panel) panel.classList.add('fade-in');
 
-        // Then bring the footer in quickly; its shorter duration makes it "arrive" first.
         setTimeout(function () {
           if (navFooter) navFooter.classList.add('fade-in');
         }, introDelays.panelToFooterDelay);
@@ -642,7 +625,6 @@
   // ========================================
   var lastCitationText = '';
 
-  // Roman numeral glyphs (Unicode) for Articles/§ labels.
   var UNICODE_ROMAN_ARTICLE = {
     'I': 'Ⅰ', 'II': 'Ⅱ', 'III': 'Ⅲ', 'IV': 'Ⅳ', 'V': 'Ⅴ', 'VI': 'Ⅵ',
     'VII': 'Ⅶ', 'VIII': 'Ⅷ', 'IX': 'Ⅸ', 'X': 'Ⅹ', 'XI': 'Ⅺ', 'XII': 'Ⅻ'
@@ -665,7 +647,6 @@
     if (!letter) return '';
     var s = String(letter);
 
-    // If already a circled letter (Ⓐ..Ⓩ), keep it.
     if (/^[\u24B6-\u24CF]$/.test(s)) return s;
 
     var up = s.toUpperCase();
@@ -681,10 +662,8 @@
     if (!letter) return '';
     var s = String(letter).trim();
 
-    // If already ASCII A-Z, keep it.
     if (/^[A-Za-z]$/.test(s)) return s.toUpperCase();
 
-    // Circled capital letters (Ⓐ..Ⓩ)
     if (/^[\u24B6-\u24CF]$/.test(s)) {
       var code = s.charCodeAt(0);
       return String.fromCharCode(65 + (code - 0x24B6));
@@ -698,10 +677,6 @@
 
     if (sentenceKey) {
       if (isArticlePage) {
-        // Expected:
-        // - I.3
-        // - IV.10
-        // - IV.10.A  (optional subpart)
         var m = String(sentenceKey).match(/^([IVX]+)\.(\d+)(?:\.([A-Za-z\u24B6-\u24CF]))?$/);
 
         var articleAscii = m ? m[1] : pageConfig.pageId;
@@ -760,7 +735,7 @@
     lastCitationText = newText;
 
     if (animClass) {
-      void citationText.offsetWidth; // restart animation
+      void citationText.offsetWidth;
       citationText.classList.add(animClass);
     }
   }
@@ -800,7 +775,6 @@
       if (r && r.height) return r.height;
     }
 
-    // Fallback: CSS variable (should resolve to px in computed style).
     var val = getCssVar('--footer-total-height');
     var n = parseFloat(val);
     return isFinite(n) ? n : 0;
@@ -840,11 +814,8 @@
     var f = getFooterHeightSafe();
     var n = getSeatNudge();
 
-    // Visual correction: drop the seal slightly when fully open.
     var OPEN_DROP_PX = 6;
 
-    // NOTE: closedY logic includes a "peek" lip under the footer; open positioning should still align visually.
-    // This formula matches the intent of the original code path.
     if (h > 0) setSealDragOffset(-(h - f) + n + OPEN_DROP_PX, false);
   }
 
@@ -895,8 +866,6 @@
 
     focusReturnEl = lexiconToggle;
 
-    requestExclusive();
-
     panel.classList.add('is-open');
     lexOverlay.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -943,20 +912,6 @@
   }
 
   function openFromToggleIntent() {
-    var stack = getUIStack();
-    if (stack && stackHasOtherOpen(stack)) {
-      if (openDeferredByStack < 2) {
-        openDeferredByStack++;
-        requestExclusive();
-        setTimeout(function () {
-          openFromToggleIntent();
-        }, getSiblingCloseDelayMs());
-      }
-      return;
-    }
-
-    openDeferredByStack = 0;
-
     if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
     else renderOverview();
 
@@ -986,13 +941,17 @@
     applyPressFeedback(lexiconToggle);
 
     bindActivate(lexiconToggle, function () {
-      // Prevent drag-then-tap from also toggling
       if (window.__COVENANT_SEAL_DRAG_JUST_HAPPENED) {
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
         return;
       }
 
       if (panel.classList.contains('is-open')) {
+        if (!isTopmostForDismiss()) {
+          bringSelfToFront();
+          return;
+        }
+
         closePanel();
         return;
       }
@@ -1021,7 +980,6 @@
       }
     });
 
-    // Hard safety net: if browser loses focus or tab hides while panel is open, force-close to avoid stuck scroll lock.
     window.addEventListener('blur', function () {
       if (!isTopmostForDismiss()) return;
       if (panel.classList.contains('is-open')) closePanel();
@@ -1043,7 +1001,6 @@
       return !!(isMobileGlyphMode || (e && e.pointerType && e.pointerType !== 'mouse'));
     }
 
-    // Tap outside any glossary term closes the pinned tooltip.
     doc.addEventListener('pointerdown', function (e) {
       if (!closestSafe(e.target, '.glossary-term')) clearActiveTooltip();
     }, true);
@@ -1053,7 +1010,6 @@
         term.addEventListener('click', function (e) {
           if (!isTouchLikeEvent(e)) return;
 
-          // First tap: show tooltip only, do NOT select the sentence.
           if (currentlyActiveTooltip !== term) {
             stopEvent(e);
             clearActiveTooltip();
@@ -1061,8 +1017,6 @@
             currentlyActiveTooltip = term;
             return;
           }
-
-          // Second tap: allow bubble to selection handler (tooltip remains pinned).
         });
       })(terms[i]);
     }
@@ -1136,7 +1090,6 @@
     for (var i = 0; i < sentences.length; i++) {
       (function (sentence) {
         sentence.addEventListener('click', function (e) {
-          // If click was inside a subpart, subpart handler owns it.
           if (closestSafe(e && e.target, '.subpart')) return;
 
           clearActiveTooltip();
@@ -1194,20 +1147,17 @@
 
     var startWasOpen = false;
 
-    // closedY is the sheet's "tucked" resting translateY, measured from fully-open (0).
     var closedY = 0;
     var currentY = 0;
 
     var MOVE_SLOP = 6;
 
-    // Open/close tuning.
     var OPEN_VELOCITY = -0.85;
     var OPEN_RATIO = 0.38;
 
     var CLOSE_VELOCITY = 0.85;
     var CLOSE_RATIO = 0.28;
 
-    // Snap timing should match CSS tokens.
     var SNAP_MS = getCssVarNumber('--lexicon-snap-duration', 420);
     var SNAP_EASE = getCssVarString('--lexicon-snap-ease', 'cubic-bezier(0.22, 0.61, 0.36, 1)');
 
@@ -1235,13 +1185,11 @@
       currentY = y;
       panel.style.transform = 'translateY(' + y + 'px)';
 
-      // Progress: 0 (closed) -> 1 (open)
       var denom = (closedY || 1);
       var progress = 1 - (y / denom);
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
-      // Counterbalance seat nudge while open; reintroduce near closed.
       var seatNudge = getSeatNudge();
       var sealOffset = (y - closedY) + (seatNudge * progress);
 
@@ -1252,8 +1200,6 @@
 
     function applyOpenStateFromDrag() {
       if (!panel.classList.contains('is-open')) {
-        requestExclusive();
-
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
@@ -1263,9 +1209,10 @@
         setLexiconGlyph();
 
         noteOpen();
+      } else {
+        bringSelfToFront();
       }
 
-      // Ensure drag-open lands exactly like tap-open.
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () { setSealToOpenPosition(); });
     }
@@ -1321,13 +1268,6 @@
 
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (!isMobileSheet()) return;
-
-      // If another surface is open, request exclusivity instead of starting the drag.
-      var stack = getUIStack();
-      if (stack && stackHasOtherOpen(stack)) {
-        requestExclusive();
-        return;
-      }
 
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
