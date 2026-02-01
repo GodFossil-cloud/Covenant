@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.1.1 */
+/*! Covenant UI Stack v0.1.2 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.1.1';
+  window.COVENANT_UI_STACK_VERSION = '0.1.2';
 
   var registry = Object.create(null);
   var order = [];
@@ -210,6 +210,12 @@
 
   window.COVENANT_UI_STACK = {
     register: function (id, opts) {
+      // Back-compat: allow register({ id, ... }) as well as register(id, opts).
+      if (id && typeof id === 'object') {
+        opts = id;
+        id = opts ? opts.id : '';
+      }
+
       id = toId(id);
       if (!id) return;
 
@@ -251,6 +257,15 @@
       var entry = getEntry(id);
       if (!entry) return;
       entry.open = false;
+    },
+
+    // Aliases expected by newer callers.
+    noteOpen: function (id) {
+      window.COVENANT_UI_STACK.noteOpened(id);
+    },
+
+    noteClose: function (id) {
+      window.COVENANT_UI_STACK.noteClosed(id);
     },
 
     getOpen: function () {
