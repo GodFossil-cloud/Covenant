@@ -140,6 +140,7 @@ Docs:
 
 - If you change `assets/ui-stack.js`:
   - Verify: with any panel open, clicking dock Prev/Next closes panels first, then navigates.
+  - Verify: UI stack z-index remains below the dock lift (~1600) so panels/scrims never overlay the footer during drag/open/close.
 
 - If you change `assets/toc.js`:
   - Verify: Hold-to-Enter closes any open panels before navigation.

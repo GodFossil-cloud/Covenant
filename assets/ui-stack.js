@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.1 */
+/*! Covenant UI Stack v0.3.2 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.1';
+  window.COVENANT_UI_STACK_VERSION = '0.3.2';
 
   var registry = Object.create(null);
   var order = [];
@@ -403,7 +403,9 @@
 
     // Assign explicit z-index in true LIFO order (lowest open = back, highest open = front).
     // Entries opt in via setZIndex(zBase).
-    var Z_BASE = 6000;
+    // IMPORTANT: keep the UI stack below the footer dock (the dock lifts to ~1600 during veil motion/open).
+    // The dock must remain sovereign; panels/scrims should never overlay it.
+    var Z_BASE = 1500;
     var Z_STEP = 10;
 
     for (var zi = 0; zi < ids.length; zi++) {
