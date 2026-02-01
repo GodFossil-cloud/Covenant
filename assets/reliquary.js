@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.10 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.11 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.10';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.11';
 
   var doc = document;
   var root = doc.documentElement;
@@ -81,6 +81,18 @@
     try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
   }
 
+  function isTopmostForDismiss() {
+    var stack = getUIStack();
+    if (!stack || typeof stack.getTopOpenId !== 'function') return true;
+
+    try {
+      var top = stack.getTopOpenId();
+      return (!top || top === UI_STACK_ID);
+    } catch (err) {
+      return true;
+    }
+  }
+
   function registerWithUIStack() {
     if (uiRegistered) return;
 
@@ -109,7 +121,21 @@
         isOpen: function () {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
-        close: closeFromStack
+        close: closeFromStack,
+        setInert: function (isInert) {
+          try {
+            var asleep = !!isInert;
+
+            if (panel) {
+              if ('inert' in panel) panel.inert = asleep;
+              panel.style.pointerEvents = asleep ? 'none' : '';
+            }
+
+            if (overlay) {
+              overlay.style.pointerEvents = asleep ? 'none' : '';
+            }
+          } catch (err2) {}
+        }
       });
 
       uiRegistered = true;
@@ -1195,11 +1221,13 @@
 
   overlay.addEventListener('click', function (e) {
     stopEvent(e);
+    if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryTap(true);
   });
 
   doc.addEventListener('keydown', function (e) {
     if (!e || e.key !== 'Escape') return;
+    if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryTap(true);
   });
 
@@ -1219,11 +1247,14 @@
 
   // Safety net: avoid stuck scroll lock.
   window.addEventListener('blur', function () {
+    if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryImmediately(false);
   });
 
   doc.addEventListener('visibilitychange', function () {
-    if (doc.hidden && panel.classList.contains('is-open')) closeReliquaryImmediately(false);
+    if (!doc.hidden) return;
+    if (!isTopmostForDismiss()) return;
+    if (panel.classList.contains('is-open')) closeReliquaryImmediately(false);
   });
 
 })();
