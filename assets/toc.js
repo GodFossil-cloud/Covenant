@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.1.31 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
+/*! Covenant ToC v3.1.32 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + Reliquary/Lexicon Mutex) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.1.31';
+  window.COVENANT_TOC_VERSION = '3.1.32';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -80,17 +80,32 @@
   var UI_STACK_ID = 'toc';
 
   function getUIStack() {
-    return window.COVENANT_UI_STACK;
+    try {
+      return window.COVENANT_UI_STACK;
+    } catch (err) {
+      return null;
+    }
   }
 
   function uiStackReady(stack) {
     return !!(
       stack
       && typeof stack.register === 'function'
-      && typeof stack.requestExclusive === 'function'
       && typeof stack.noteOpen === 'function'
       && typeof stack.noteClose === 'function'
     );
+  }
+
+  function isTopmostForDismiss() {
+    var stack = getUIStack();
+    if (!stack || typeof stack.getTopOpenId !== 'function') return true;
+
+    try {
+      var top = stack.getTopOpenId();
+      return (!top || top === UI_STACK_ID);
+    } catch (err) {
+      return true;
+    }
   }
 
   function registerWithUIStack() {
@@ -110,13 +125,29 @@
           try {
             closeToC(false);
           } catch (err) {}
+        },
+        setInert: function (isInert) {
+          try {
+            var asleep = !!isInert;
+
+            if (tocPanel) {
+              if ('inert' in tocPanel) tocPanel.inert = asleep;
+              tocPanel.style.pointerEvents = asleep ? 'none' : '';
+            }
+
+            if (tocOverlay) {
+              tocOverlay.style.pointerEvents = asleep ? 'none' : '';
+            }
+          } catch (err2) {}
         }
       });
 
       uiRegistered = true;
-    } catch (err) {}
+    } catch (err3) {}
   }
 
+  // Legacy call sites: do not enforce exclusivity via ui-stack here.
+  // During migration, local mutex behavior remains in place to avoid scroll-lock collisions.
   function requestExclusiveFromUIStack() {
     registerWithUIStack();
 
@@ -124,7 +155,9 @@
     if (!uiStackReady(stack)) return;
 
     try {
-      stack.requestExclusive(UI_STACK_ID);
+      if (typeof stack.bringToFront === 'function') {
+        stack.bringToFront(UI_STACK_ID);
+      }
     } catch (err) {}
   }
 
@@ -1654,8 +1687,6 @@
       return;
     }
 
-    requestExclusiveFromUIStack();
-
     if (isReliquaryOpen()) {
       if (openDeferredByReliquary < 2) {
         openDeferredByReliquary++;
@@ -1935,12 +1966,16 @@
     if (tocOverlay) {
       tocOverlay.addEventListener('click', function (e) {
         stopEvent(e);
+        if (!isTopmostForDismiss()) return;
         closeToC(true);
       });
     }
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) closeToC(true);
+      if (e.key === 'Escape' && tocPanel && tocPanel.classList.contains('is-open')) {
+        if (!isTopmostForDismiss()) return;
+        closeToC(true);
+      }
     });
 
     window.addEventListener('resize', function () {
@@ -1958,11 +1993,11 @@
     });
 
     window.addEventListener('blur', function () {
-      if (tocPanel && tocPanel.classList.contains('is-open')) closeToC(false);
+      if (tocPanel && tocPanel.classList.contains('is-open') && isTopmostForDismiss()) closeToC(false);
     });
 
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden && tocPanel && tocPanel.classList.contains('is-open')) closeToC(false);
+      if (document.hidden && tocPanel && tocPanel.classList.contains('is-open') && isTopmostForDismiss()) closeToC(false);
     });
   }
 
