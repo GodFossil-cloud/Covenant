@@ -17,9 +17,11 @@
   --reliquary-brass:rgba(201,169,97,1);
 }
 
-/* When Reliquary is open, keep the other doors silent. */
-html.reliquary-open #tocToggle,
-html.reliquary-open #lexiconToggle{opacity:0;visibility:hidden;pointer-events:none}
+/* When Reliquary is open, keep the Lexicon gate closed (Lexicon must open first). */
+html.reliquary-opening #lexiconToggle,
+html.reliquary-open #lexiconToggle,
+html.reliquary-closing #lexiconToggle,
+html.reliquary-dock-settling #lexiconToggle{opacity:.28;filter:grayscale(1);pointer-events:none}
 
 /* Scroll lock (Reliquary). */
 html.reliquary-scroll-lock{overflow:hidden}
