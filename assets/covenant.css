@@ -1735,6 +1735,25 @@ body {
     linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0));
 }
 
+/* Lexicon Gate: when ToC or Reliquary is open, Lexicon is intentionally locked (ui-stack.js). */
+#lexiconToggle.is-lexicon-locked,
+#lexiconToggle[data-lexicon-locked="true"] {
+  opacity: 0.72;
+  filter: saturate(0.45) brightness(0.78);
+  cursor: not-allowed;
+}
+
+#lexiconToggle.is-lexicon-locked:hover,
+#lexiconToggle.is-lexicon-locked:focus-visible {
+  color: var(--brass-1);
+  text-shadow: none;
+}
+
+#lexiconToggle.is-lexicon-locked.has-selection {
+  color: rgba(242, 220, 154, 0.72);
+  text-shadow: none;
+}
+
 /* Seal press: sacred stillness (no tactile travel). */
 .nav-btn.center:active:not(:disabled),
 .nav-btn.center.is-nudging {
