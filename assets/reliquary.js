@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.2.9 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary UI v0.2.10 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.2.9';
+  window.COVENANT_RELIQUARY_VERSION = '0.2.10';
 
   var doc = document;
   var root = doc.documentElement;
@@ -75,12 +75,15 @@
 
   // Optional: coordinated UI stack (dock exclusivity across panels).
   var UI_STACK_ID = 'reliquary';
+  var uiRegistered = false;
 
   function getUIStack() {
     try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
   }
 
   function registerWithUIStack() {
+    if (uiRegistered) return;
+
     var stack = getUIStack();
     if (!stack) return;
 
@@ -108,10 +111,15 @@
         },
         close: closeFromStack
       });
+
+      uiRegistered = true;
     } catch (err) {}
   }
 
   function requestExclusive() {
+    // Self-heal: ensure registration even if reliquary.js loaded before ui-stack.js.
+    registerWithUIStack();
+
     var stack = getUIStack();
     if (stack && typeof stack.requestExclusive === 'function') {
       try { stack.requestExclusive(UI_STACK_ID); } catch (err) {}
@@ -119,6 +127,9 @@
   }
 
   function noteOpen() {
+    // Self-heal: ensure registration even if reliquary.js loaded before ui-stack.js.
+    registerWithUIStack();
+
     var stack = getUIStack();
     if (stack && typeof stack.noteOpen === 'function') {
       try { stack.noteOpen(UI_STACK_ID); } catch (err) {}
@@ -126,6 +137,9 @@
   }
 
   function noteClose() {
+    // Self-heal: ensure registration even if reliquary.js loaded before ui-stack.js.
+    registerWithUIStack();
+
     var stack = getUIStack();
     if (stack && typeof stack.noteClose === 'function') {
       try { stack.noteClose(UI_STACK_ID); } catch (err) {}
