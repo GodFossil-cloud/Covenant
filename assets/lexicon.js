@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.35 */
+/*! Covenant Lexicon UI v0.2.36 */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.2.35';
+  window.COVENANT_LEXICON_VERSION = '0.2.36';
 
   var doc = document;
   var root = doc.documentElement;
@@ -125,12 +125,27 @@
 
   // Optional: coordinated UI stack (dock exclusivity across panels).
   var UI_STACK_ID = 'lexicon';
+  var uiRegistered = false;
 
   function getUIStack() {
     try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
   }
 
+  function isTopmostForDismiss() {
+    var stack = getUIStack();
+    if (!stack || typeof stack.getTopOpenId !== 'function') return true;
+
+    try {
+      var top = stack.getTopOpenId();
+      return (!top || top === UI_STACK_ID);
+    } catch (err) {
+      return true;
+    }
+  }
+
   function registerWithUIStack() {
+    if (uiRegistered) return;
+
     var stack = getUIStack();
     if (!stack) return;
 
@@ -146,8 +161,24 @@
         },
         close: function () {
           if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
+        },
+        setInert: function (isInert) {
+          try {
+            var asleep = !!isInert;
+
+            if (panel) {
+              if ('inert' in panel) panel.inert = asleep;
+              panel.style.pointerEvents = asleep ? 'none' : '';
+            }
+
+            if (lexOverlay) {
+              lexOverlay.style.pointerEvents = asleep ? 'none' : '';
+            }
+          } catch (err2) {}
         }
       });
+
+      uiRegistered = true;
     } catch (err) {}
   }
 
@@ -957,7 +988,10 @@
       openFromToggleIntent();
     });
 
-    bindActivate(lexOverlay, function () { closePanel(); });
+    bindActivate(lexOverlay, function () {
+      if (!isTopmostForDismiss()) return;
+      closePanel();
+    });
 
     var closeBtns = qsa('.lexicon-panel-close', panel);
     for (var i = 0; i < closeBtns.length; i++) {
@@ -969,16 +1003,22 @@
     }
 
     doc.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && panel.classList.contains('is-open')) closePanel();
+      if (event.key === 'Escape' && panel.classList.contains('is-open')) {
+        if (!isTopmostForDismiss()) return;
+        closePanel();
+      }
     });
 
     // Hard safety net: if browser loses focus or tab hides while panel is open, force-close to avoid stuck scroll lock.
     window.addEventListener('blur', function () {
+      if (!isTopmostForDismiss()) return;
       if (panel.classList.contains('is-open')) closePanel();
     });
 
     doc.addEventListener('visibilitychange', function () {
-      if (doc.hidden && panel.classList.contains('is-open')) closePanel();
+      if (!doc.hidden) return;
+      if (!isTopmostForDismiss()) return;
+      if (panel.classList.contains('is-open')) closePanel();
     });
   }
 
