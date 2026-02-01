@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.2.36 */
+/*! Covenant Lexicon UI v0.2.37 */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.2.36';
+  window.COVENANT_LEXICON_VERSION = '0.2.37';
 
   var doc = document;
   var root = doc.documentElement;
@@ -118,17 +118,42 @@
 
   var citationText = byId('citationText');
 
-  // Optional: mutually exclusive with ToC (prevent overlay + scroll-lock collisions).
-  var tocPanel = byId('tocPanel');
-  var tocToggle = byId('tocToggle');
-  var openDeferredByToC = 0;
-
   // Optional: coordinated UI stack (dock exclusivity across panels).
   var UI_STACK_ID = 'lexicon';
   var uiRegistered = false;
 
+  // If another surface is open, we request exclusivity and re-enter after its snap.
+  var openDeferredByStack = 0;
+
   function getUIStack() {
     try { return window.COVENANT_UI_STACK; } catch (err) { return null; }
+  }
+
+  function stackHasOtherOpen(stack) {
+    if (!stack || typeof stack.getOpenIds !== 'function') return false;
+
+    try {
+      var ids = stack.getOpenIds();
+      if (!ids || !ids.length) return false;
+
+      for (var i = 0; i < ids.length; i++) {
+        var id = String(ids[i] || '').trim();
+        if (!id) continue;
+        if (id !== UI_STACK_ID) return true;
+      }
+    } catch (err) {}
+
+    return false;
+  }
+
+  function getSiblingCloseDelayMs() {
+    // Conservative: use known snap durations for sibling panels.
+    // If additional surfaces exist, they should register with ui-stack and keep their close timing modest.
+    var toc = getCssVarNumber('--toc-snap-duration', 420);
+    var rel = getCssVarNumber('--reliquary-snap-duration', 420);
+
+    var m = Math.max(toc || 0, rel || 0);
+    return Math.max(220, m + 60);
   }
 
   function isTopmostForDismiss() {
@@ -257,20 +282,6 @@
 
   var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
   function isBottomSheetMode() { return !!(bottomSheetMql && bottomSheetMql.matches); }
-
-  function isToCOpen() {
-    if (root.classList && (root.classList.contains('toc-open') || root.classList.contains('toc-scroll-lock'))) return true;
-    return !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
-  }
-
-  function requestToCClose() {
-    if (!tocToggle) return;
-    try { tocToggle.click(); } catch (err) {}
-  }
-
-  function getToCCloseDelayMs() {
-    return getCssVarNumber('--toc-snap-duration', 420);
-  }
 
   // iOS Safari/WKWebView: avoid fixed-body scroll lock which can reveal black gaps / stuck interaction.
   var isIOS = (function () {
@@ -871,7 +882,7 @@
     dynamicContent.style.opacity = '0';
     setTimeout(function () {
       dynamicContent.innerHTML =
-        '<div class="lexicon-sentence-quote">"' + safeSentence + '"</div><p>' + explanation + '</p>';
+        '<div class="lexicon-sentence-quote">"' + safeSentence + "\"</div><p>" + explanation + '</p>';
       dynamicContent.style.opacity = '1';
     }, 150);
   }
@@ -932,18 +943,19 @@
   }
 
   function openFromToggleIntent() {
-    if (isToCOpen()) {
-      if (openDeferredByToC < 2) {
-        openDeferredByToC++;
-        requestToCClose();
+    var stack = getUIStack();
+    if (stack && stackHasOtherOpen(stack)) {
+      if (openDeferredByStack < 2) {
+        openDeferredByStack++;
+        requestExclusive();
         setTimeout(function () {
           openFromToggleIntent();
-        }, getToCCloseDelayMs() + 50);
+        }, getSiblingCloseDelayMs());
       }
       return;
     }
 
-    openDeferredByToC = 0;
+    openDeferredByStack = 0;
 
     if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
     else renderOverview();
@@ -1309,7 +1321,14 @@
 
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (!isMobileSheet()) return;
-      if (isToCOpen()) return;
+
+      // If another surface is open, request exclusivity instead of starting the drag.
+      var stack = getUIStack();
+      if (stack && stackHasOtherOpen(stack)) {
+        requestExclusive();
+        return;
+      }
+
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
       dragging = true;
