@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.0 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
+/*! Covenant ToC v3.2.1 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.0';
+  window.COVENANT_TOC_VERSION = '3.2.1';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -115,8 +115,22 @@
         useSharedScrollLock: true,
         allowScrollSelector: '#tocPanel .toc-panel-body',
 
+        // Important: treat drag-open/drag-close as "open" so the UI stack can assign z-index
+        // immediately (prevents the ToC sheet rendering behind Reliquary during drag on iOS Safari).
         isOpen: function () {
-          return !!(tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open'));
+          if (!tocPanel || !tocPanel.classList) return false;
+
+          if (tocPanel.classList.contains('is-open')) return true;
+          if (tocPanel.classList.contains('is-dragging')) return true;
+          if (tocPanel.classList.contains('is-closing')) return true;
+
+          // Fallback: during motion state the panel may not yet have .is-open.
+          if (root && root.classList) {
+            if (root.classList.contains('toc-opening')) return true;
+            if (root.classList.contains('toc-closing')) return true;
+          }
+
+          return false;
         },
 
         requestClose: function () {
@@ -142,8 +156,11 @@
 
         setActive: function (isActive) {
           try {
+            // Only enable trap when the panel is truly open (not merely dragging/animating).
             if (isActive) {
-              enableFocusTrap();
+              if (tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open')) {
+                enableFocusTrap();
+              }
             } else {
               disableFocusTrap();
               cancelHold();
@@ -1299,6 +1316,9 @@
           tocPanel.style.transition = '';
           if (tocOverlay) tocOverlay.style.transition = '';
 
+          // If drag-open started while Reliquary was open, the ToC must release the UI stack now.
+          noteCloseToUIStack();
+
           root.classList.add('toc-dock-settling');
 
           var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
@@ -1341,6 +1361,9 @@
         root.classList.add('toc-opening');
         root.classList.remove('toc-dock-settling');
         renderToC();
+
+        // Enter the UI stack immediately so z-index assignment happens before first paint.
+        noteOpenToUIStack();
       }
 
       computeClosedY();

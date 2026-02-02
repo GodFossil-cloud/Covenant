@@ -144,6 +144,7 @@ Docs:
 
 - If you change `assets/toc.js`:
   - Verify: Hold-to-Enter closes any open panels before navigation.
+  - Verify on mobile Safari: with Reliquary open, drag the ToC tab to open and confirm the ToC layers above the Reliquary throughout the gesture.
 
 - If you change `assets/reliquary.js` or `assets/reliquary.css`:
   - Verify veil does not cover footer dock.
