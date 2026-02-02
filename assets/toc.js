@@ -357,9 +357,26 @@
 
   function getFooterReservedPx() {
     // Prefer a real measurement; CSS vars can drift (safe-area, padding, device rounding).
+    // On iOS Safari, measuring "height" can be subtly wrong if the visual viewport is in flux;
+    // reserving by footer-top-to-viewport-bottom keeps the ToC sheet flush to the dock.
     var footer = document.querySelector('.nav-footer');
     if (footer && footer.getBoundingClientRect) {
-      var h = footer.getBoundingClientRect().height || 0;
+      var r = footer.getBoundingClientRect();
+
+      var viewportH = window.innerHeight || 0;
+      try {
+        if (window.visualViewport && typeof window.visualViewport.height === 'number') {
+          viewportH = window.visualViewport.height;
+        }
+      } catch (err0) {}
+
+      if (viewportH > 0 && typeof r.top === 'number') {
+        var reserved = viewportH - r.top;
+        reserved = Math.max(0, Math.min(viewportH, reserved));
+        if (reserved > 0) return reserved;
+      }
+
+      var h = r.height || 0;
       if (h > 0) return Math.max(0, h);
     }
 
