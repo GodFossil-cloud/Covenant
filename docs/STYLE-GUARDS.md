@@ -71,6 +71,14 @@ grep -o '{' assets/covenant.css | wc -l
 grep -o '}' assets/covenant.css | wc -l
 ```
 
+## Related runtime regressions
+
+These are not enforced by the CSS guard, but they are common failure modes when editing footer/panel CSS or the panel JS that depends on those CSS boundaries.
+
+- Dock safety: ToC/Lexicon/Reliquary overlays must never cover the footer dock area (the veil should “stop” above it).
+- Mobile Safari stacking: If Reliquary is open, drag the ToC tab to open and confirm the ToC sheet stays above the Reliquary for the full gesture.
+- Z-index budget: Panel overlays/sheets should stay below the dock’s lift layer (so controls remain visible and tappable during animations).
+
 ## Permitted Changes
 
 ### Safe Operations
