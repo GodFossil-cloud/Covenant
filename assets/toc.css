@@ -498,8 +498,7 @@ html .nav-footer-inner > *{position:relative;z-index:2}
     width:auto;
     border-radius:0 0 0 0;
 
-    /* Allow the sheet to reach the top of the viewport while still respecting the dock. */
-    top:0;
+    /* On mobile, let JS handle max-height via the bottom + positionPanel() calculation. */
     max-height:none;
   }
 
