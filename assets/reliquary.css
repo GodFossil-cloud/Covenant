@@ -21,7 +21,7 @@
 html.reliquary-opening #lexiconToggle,
 html.reliquary-open #lexiconToggle,
 html.reliquary-closing #lexiconToggle,
-html.reliquary-dock-settling #lexiconToggle{opacity:.28;filter:grayscale(1);pointer-events:none}
+html.reliquary-dock-settling #lexiconToggle{opacity:.28;filter:grayscale(1)}
 
 /* Scroll lock (Reliquary). */
 html.reliquary-scroll-lock{overflow:hidden}
