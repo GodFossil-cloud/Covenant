@@ -400,13 +400,31 @@
     root.style.setProperty('--toc-footer-reserved', footerReserved + 'px');
 
     var bottom = footerReserved + (gap || 0);
-    var maxH = Math.max(240, Math.floor(window.innerHeight - bottom - (topSafe || 12)));
+
+    var viewportH = window.innerHeight || 0;
+    try {
+      if (window.visualViewport && typeof window.visualViewport.height === 'number') {
+        viewportH = window.visualViewport.height;
+      }
+    } catch (err0) {}
+
+    var mobile = isMobileSheet();
+    var topPad = mobile ? topSafe : (topSafe > 0 ? topSafe : 12);
+
+    var maxH = Math.max(240, Math.floor(viewportH - bottom - topPad));
 
     tocPanel.style.bottom = bottom + 'px';
     tocPanel.style.maxHeight = maxH + 'px';
 
+    // Mobile: fill the available height without relying on top:0 (which can cause iOS seam drift).
+    if (mobile) {
+      tocPanel.style.height = maxH + 'px';
+    } else {
+      tocPanel.style.height = '';
+    }
+
     // Mobile-only: anchor the sheet from the ToC tab's left edge to the viewport right edge.
-    if (tocToggle && isMobileSheet()) {
+    if (tocToggle && mobile) {
       var rect = tocToggle.getBoundingClientRect();
       var left = Math.max(0, Math.round(rect.left));
       tocPanel.style.setProperty('--toc-panel-left', left + 'px');
