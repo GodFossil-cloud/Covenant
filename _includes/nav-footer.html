@@ -89,9 +89,10 @@
     width: var(--nav-pill-width);
   }
 
-  #navFooter #tocToggle { justify-self: end; }
+  /* Center tabs inside their socket columns (avoid outward drift from start/end alignment). */
+  #navFooter #tocToggle { justify-self: center; }
   #navFooter #lexiconToggle { justify-self: center; }
-  #navFooter #mirrorToggle { justify-self: start; }
+  #navFooter #mirrorToggle { justify-self: center; }
 
   #navFooter #lexiconToggle,
   #navFooter #lexiconToggle::before,
