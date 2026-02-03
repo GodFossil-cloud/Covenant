@@ -4,7 +4,7 @@ This file is for AI assistants making changes in this repository.
 It is the canonical map of structure, invariants, coupling rules, and verification steps.
 
 Default behavior in a new thread: silently read this file, then respond with brief readiness confirmation.
-Do not modernize sacred tone or alter Covenant text unless explicitly requested.
+Do not modernize sacred tone. Covenant text is immutable—never alter it (including paraphrase, modernization, rewriting, or “light edits”).
 
 ---
 
@@ -24,7 +24,7 @@ Fill in before implementation:
 - Repo: GodFossil-cloud/Covenant
 - Intent (one sentence): <…>
 - Mode: <Exploration | Execution>
-- Allowed Covenant text edits? (yes/no): <…>
+- Covenant text edits: NEVER (do not ask; do not propose).
 - Files/pages in scope: <…>
 - Files/pages out of scope: <…>
 
@@ -39,7 +39,8 @@ Then:
 ## Prime directives (non‑negotiables)
 
 - Maintain the linear journey flow; do not introduce alternate paths, loops, or hub navigation.
-- Maintain sacred tone; do not modernize language or alter Covenant text unless explicitly requested.
+- Maintain sacred tone; do not modernize language.
+- Covenant text is immutable: never edit, rewrite, paraphrase, modernize, “tighten,” reorder, or otherwise alter Covenant wording.
 - `index.html` remains a minimal black threshold (password gate): keep it minimal.
 - Shared nav dock (Prev/Next + ToC + Lexicon + Mirror) is used on journey pages that use the shared include shell.
 - `rituals.html` is excluded from `lexicon.js` compact-header standardization.
