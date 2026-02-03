@@ -68,15 +68,25 @@
     --lexicon-seal-top-align: 8px;
     --lexicon-seal-w: 66px;
     --lexicon-seal-h: 40px;
+
+    /* Match the dock socket spacing: shared CSS uses 10px in the flex layout. */
+    --footer-seal-gap: 10px;
   }
 
-  /* Force a symmetric 3-column layout so the Lexicon seal stays truly centered, even as its width changes. */
+  /* Force a symmetric 3-column layout so the Lexicon seal stays truly centered, even as its width changes.
+     Use the same gap as the baseline footer so the ToC/Reliquary tabs sit in their sockets. */
   #navFooter .nav-seals {
     display: grid;
     grid-template-columns: var(--nav-pill-width) auto var(--nav-pill-width);
     align-items: start;
     justify-content: center;
-    column-gap: 10px;
+    column-gap: var(--footer-seal-gap);
+  }
+
+  /* Ensure the side tabs occupy the exact same column width as their frames. */
+  #navFooter #tocToggle,
+  #navFooter #mirrorToggle {
+    width: var(--nav-pill-width);
   }
 
   #navFooter #tocToggle { justify-self: end; }
