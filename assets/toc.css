@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.19 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.20 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -280,6 +280,34 @@ html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::befo
 
 /* Keep footer controls above the scrim in all states (prevents end-of-close z-pop blink). */
 html .nav-footer-inner > *{position:relative;z-index:2}
+
+/* Override: keep dock visuals stable during ToC open/close (no darkening, no label/cradle disappearance). */
+html.toc-open .nav-footer,
+html.toc-closing .nav-footer,
+html.toc-dock-settling .nav-footer{
+  border-top-color:rgba(0,0,0,0.70);
+  border-bottom-color:rgba(0,0,0,0.92);
+}
+
+html.toc-open #citationLabel,
+html.toc-closing #citationLabel,
+html.toc-dock-settling #citationLabel{
+  opacity:1;
+  visibility:visible;
+  transition:opacity 220ms var(--toc-scroll-ease),visibility 0s linear 0s;
+}
+
+html.toc-open .nav-footer::before,
+html.toc-closing .nav-footer::before,
+html.toc-dock-settling .nav-footer::before{opacity:1}
+
+html.toc-open .nav-footer::after,
+html.toc-closing .nav-footer::after,
+html.toc-dock-settling .nav-footer::after{opacity:.90}
+
+html.toc-open .nav-footer-inner::before,
+html.toc-closing .nav-footer-inner::before,
+html.toc-dock-settling .nav-footer-inner::before{opacity:0}
 
 /* -------------------------------------------------
    Modal veil
