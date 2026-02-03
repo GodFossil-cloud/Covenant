@@ -84,6 +84,29 @@
     width: var(--lexicon-seal-w);
     height: var(--lexicon-seal-h);
   }
+
+  /* Mobile Safari: lock the three-seal cluster into true symmetry so the Lexicon seal reads centered. */
+  #navFooter .nav-seals {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+
+  /* Make ToC and Mirror identical bookends (prevents subtle off-center drift). */
+  #navFooter #tocToggle,
+  #navFooter #mirrorToggle {
+    width: var(--nav-pill-width);
+    height: var(--nav-pill-height);
+    padding: 0;
+    flex: 0 0 var(--nav-pill-width);
+  }
+
+  /* Prevent the wide seal from flexing or shrinking unexpectedly. */
+  #navFooter #lexiconToggle {
+    flex: 0 0 var(--lexicon-seal-w);
+  }
 </style>
 
 {% include toc-panel.html %}
