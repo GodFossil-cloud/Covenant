@@ -61,5 +61,22 @@
     </div>
 </nav>
 
+<style>
+  /* Footer-only override: reshape Lexicon seal (flat top) and seat its top edge on the dock top.
+     (Do not move the ToC/Mirror tabs.) */
+  #navFooter { --lexicon-seal-top-align: 8px; }
+
+  #navFooter #lexiconToggle,
+  #navFooter #lexiconToggle::before,
+  #navFooter #lexiconToggle::after {
+    border-radius: 0 0 999px 999px !important;
+  }
+
+  #navFooter #lexiconToggle {
+    overflow: hidden;
+    margin-top: calc(-1 * var(--lexicon-seal-top-align));
+  }
+</style>
+
 {% include toc-panel.html %}
 {% include reliquary-panel.html %}
