@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.1 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
+/*! Covenant ToC v3.2.2 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.1';
+  window.COVENANT_TOC_VERSION = '3.2.2';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -123,12 +123,6 @@
           if (tocPanel.classList.contains('is-open')) return true;
           if (tocPanel.classList.contains('is-dragging')) return true;
           if (tocPanel.classList.contains('is-closing')) return true;
-
-          // Fallback: during motion state the panel may not yet have .is-open.
-          if (root && root.classList) {
-            if (root.classList.contains('toc-opening')) return true;
-            if (root.classList.contains('toc-closing')) return true;
-          }
 
           return false;
         },
@@ -1355,6 +1349,10 @@
 
       computeOpenLift();
 
+      // Ensure UI stack sees "open" during drag from frame 0 (no root-class fallback).
+      tocPanel.classList.add('is-dragging');
+      if (tocToggle) tocToggle.classList.add('is-toc-dragging');
+
       // If we are starting from closed, we are "opening" (even before fully open).
       if (!startWasOpen) {
         root.classList.remove('toc-closing');
@@ -1369,9 +1367,6 @@
       computeClosedY();
 
       currentY = startWasOpen ? openLiftPx : closedY;
-
-      tocPanel.classList.add('is-dragging');
-      if (tocToggle) tocToggle.classList.add('is-toc-dragging');
 
       tocPanel.style.transition = 'none';
       if (tocOverlay) tocOverlay.style.transition = 'none';
