@@ -1474,12 +1474,12 @@ body.is-exiting #blackFadeOverlay {
 
 :root {
   /* Declarative medallion lift. */
-  --seal-lift: 12px;
-  --seal-rise: 10px;   /* how far seal rises above dock */
+  --seal-lift: 0px;
+  --seal-rise: 0px;   /* how far seal rises above dock */
   --seal-depth: 10px;  /* legacy: how far tab extends into dock (kept for compatibility) */
 
   /* Fine seating adjustment: raise the seal a touch when closed, so it sits "in" the cradle. */
-  --seal-seat-nudge-closed: 25px;
+  --seal-seat-nudge-closed: 0px;
 
   /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
   --lexicon-panel-closed-peek: 0px;
