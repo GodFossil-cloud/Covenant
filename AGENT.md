@@ -145,6 +145,8 @@ Docs:
 - If you change `assets/toc.js`:
   - Verify: Hold-to-Enter closes any open panels before navigation.
   - Verify on mobile Safari: with Reliquary open, drag the ToC tab to open and confirm the ToC layers above the Reliquary throughout the gesture.
+  - Note: ToC UI-stack `isOpen()` should be derived from panel state (`.is-open`/`.is-dragging`/`.is-closing`) rather than root motion classes (e.g. `toc-opening`/`toc-closing`), to avoid leaving other panels inert.
+  - Note: During drag-open, set `.is-dragging` before calling `noteOpenToUIStack()` so z-index assignment is correct from frame 0.
 
 - If you change `assets/reliquary.js` or `assets/reliquary.css`:
   - Verify veil does not cover footer dock.
