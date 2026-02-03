@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.0 (True Panel Stack + Shared Scroll Lock Opt-In) */
+/*! Covenant Reliquary UI v0.3.1 (True Panel Stack + Shared Scroll Lock Opt-In) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.0';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.1';
 
   var doc = document;
   var root = doc.documentElement;
@@ -752,7 +752,7 @@
     var panelHBase = 0;
     var openLiftPx = 0;
 
-    var MOVE_SLOP = 6;
+    var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
     var OPEN_RATIO = 0.38;

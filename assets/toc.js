@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.2 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
+/*! Covenant ToC v3.2.3 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.2';
+  window.COVENANT_TOC_VERSION = '3.2.3';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1018,7 +1018,7 @@
     var closedOffsetPx = 0;
     var openLiftPx = 0;
 
-    var MOVE_SLOP = 6;
+    var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
     var OPEN_RATIO = 0.38;
