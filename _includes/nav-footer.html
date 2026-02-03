@@ -64,7 +64,10 @@
 <style>
   /* Footer-only override: reshape Lexicon seal (flat top) and seat its top edge on the dock top.
      (Do not move the ToC/Mirror tabs.) */
-  #navFooter { --lexicon-seal-top-align: 8px; }
+  #navFooter {
+    --lexicon-seal-top-align: 8px;
+    --lexicon-seal-size: 54px;
+  }
 
   #navFooter #lexiconToggle,
   #navFooter #lexiconToggle::before,
@@ -75,6 +78,10 @@
   #navFooter #lexiconToggle {
     overflow: hidden;
     margin-top: calc(-1 * var(--lexicon-seal-top-align));
+
+    /* Slightly smaller medallion (footer-local only). */
+    width: var(--lexicon-seal-size);
+    height: var(--lexicon-seal-size);
   }
 </style>
 
