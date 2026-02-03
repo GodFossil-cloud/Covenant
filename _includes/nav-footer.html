@@ -70,6 +70,19 @@
     --lexicon-seal-h: 44px;
   }
 
+  /* Force a symmetric 3-column layout so the Lexicon seal stays truly centered, even as its width changes. */
+  #navFooter .nav-seals {
+    display: grid;
+    grid-template-columns: var(--nav-pill-width) auto var(--nav-pill-width);
+    align-items: start;
+    justify-content: center;
+    column-gap: 10px;
+  }
+
+  #navFooter #tocToggle { justify-self: end; }
+  #navFooter #lexiconToggle { justify-self: center; }
+  #navFooter #mirrorToggle { justify-self: start; }
+
   #navFooter #lexiconToggle,
   #navFooter #lexiconToggle::before,
   #navFooter #lexiconToggle::after {
