@@ -69,6 +69,10 @@
     --lexicon-seal-w: 66px;
     --lexicon-seal-h: 40px;
 
+    /* Socket geometry: match the cradle line to the flat-top seal's new width. */
+    --seal-notch-radius: calc(var(--lexicon-seal-w) * 0.5);
+    --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
+
     /* Micro-nudges for glyph optical centering (mobile Safari). */
     --toc-glyph-nudge-x: 0px;
     --mirror-glyph-nudge-x: 0px;
