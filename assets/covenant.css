@@ -1479,10 +1479,10 @@ body.is-exiting #blackFadeOverlay {
   --seal-depth: 10px;  /* legacy: how far tab extends into dock (kept for compatibility) */
 
   /* Fine seating adjustment: raise the seal a touch when closed, so it sits "in" the cradle. */
-  --seal-seat-nudge-closed: 5px;
+  --seal-seat-nudge-closed: 10px;
 
   /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
-  --lexicon-panel-closed-peek: 5px;
+  --lexicon-panel-closed-peek: 10px;
 
   /* Medallion sizing (desktop baseline). */
   --seal-size: 58px;
