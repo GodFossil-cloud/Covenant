@@ -288,8 +288,8 @@
 
       var left = Math.round(centerX - footerRect.left - (w / 2));
 
-      // Nudge the window 1px upward (requested): subtract 1px from the computed top.
-      var top = Math.round(centerY - footerRect.top - (h / 2)) - 1;
+      // Nudge the window 2px upward (requested): subtract 2px from the computed top.
+      var top = Math.round(centerY - footerRect.top - (h / 2)) - 2;
 
       root.style.setProperty('--dock-window-left-px', left + 'px');
       root.style.setProperty('--dock-window-top-px', top + 'px');
