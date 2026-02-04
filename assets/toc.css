@@ -153,19 +153,44 @@ html.toc-closing{
   --dock-window-top:var(--dock-window-top-px, var(--dock-window-top-default));
 }
 
-/* Keep only the 1px cut-line on the left socket; Mirror remains a normal recess (until we design its own window). */
+/* Reliquary drag/snap-open and snap-close: create a true "window" in the dock slab under the right socket so the moving sheet reads through. */
+html.reliquary-opening,
+html.reliquary-closing{
+  /* Window geometry aligned to the right dock socket (Mirror). */
+  --dock-window-w:calc(var(--dock-tab-width) + 2px);
+  --dock-window-h:calc(var(--dock-socket-height) + 2px);
+  --dock-window-center-x:calc(50% + (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)));
+  --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px);
+  --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
+  --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
+  --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
+  --dock-window-top:var(--dock-window-top-px, var(--dock-window-top-default));
+}
+
+/* Keep only the 1px cut-line on the left socket while the ToC is in motion. */
 html.toc-opening .nav-seals::before,
 html.toc-closing .nav-seals::before{
   background:transparent;
   box-shadow:inset 0 0 0 1px rgba(59,54,43,.92);
 }
 
-/* During toc-opening/toc-closing the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
+/* Keep only the 1px cut-line on the right socket while the Reliquary is in motion. */
+html.reliquary-opening .nav-seals::after,
+html.reliquary-closing .nav-seals::after{
+  background:transparent;
+  box-shadow:inset 0 0 0 1px rgba(59,54,43,.92);
+}
+
+/* During toc-opening/toc-closing and reliquary-opening/reliquary-closing the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
 html.toc-opening .nav-footer,
-html.toc-closing .nav-footer{background:transparent}
+html.toc-closing .nav-footer,
+html.reliquary-opening .nav-footer,
+html.reliquary-closing .nav-footer{background:transparent}
 
 html.toc-opening .nav-footer::before,
-html.toc-closing .nav-footer::before{
+html.toc-closing .nav-footer::before,
+html.reliquary-opening .nav-footer::before,
+html.reliquary-closing .nav-footer::before{
   content:'';
   position:absolute;
   inset:0;
@@ -188,7 +213,11 @@ html.toc-closing .nav-footer::before{
   html.toc-opening .nav-footer::before,
   html.toc-opening .nav-footer::after,
   html.toc-closing .nav-footer::before,
-  html.toc-closing .nav-footer::after{
+  html.toc-closing .nav-footer::after,
+  html.reliquary-opening .nav-footer::before,
+  html.reliquary-opening .nav-footer::after,
+  html.reliquary-closing .nav-footer::before,
+  html.reliquary-closing .nav-footer::after{
     -webkit-mask-image:
       linear-gradient(#000 0 0),
       linear-gradient(#000 0 0);
@@ -209,7 +238,11 @@ html.toc-closing .nav-footer::before{
   html.toc-opening .nav-footer::before,
   html.toc-opening .nav-footer::after,
   html.toc-closing .nav-footer::before,
-  html.toc-closing .nav-footer::after{
+  html.toc-closing .nav-footer::after,
+  html.reliquary-opening .nav-footer::before,
+  html.reliquary-opening .nav-footer::after,
+  html.reliquary-closing .nav-footer::before,
+  html.reliquary-closing .nav-footer::after{
     mask-image:
       linear-gradient(#000 0 0),
       linear-gradient(#000 0 0);
