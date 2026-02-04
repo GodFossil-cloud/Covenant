@@ -96,6 +96,7 @@ Rules:
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC Hold-to-Enter). It may also expose optional panel-stack primitives (bring-to-front, inert layering hooks) during stacking migrations.
+- `assets/nav-footer-flat-top.css` — footer-only override for flat-top Lexicon seal geometry.
 
 Core invariants:
 - ToC and Reliquary are modal veils that do NOT cover the footer dock area.
