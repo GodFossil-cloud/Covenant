@@ -3,8 +3,8 @@
 <style id="navFooterCritical">
   /* Symmetry hardening: keep the three-seal cluster perfectly centered (iPhone Safari). */
   #navFooter {
-    /* Slightly less raise so the tab plates seat into their sockets. */
-    --dock-tab-raise: -20px;
+    /* Match tab lift to dock socket depth (keep tabs seated above their cutouts). */
+    --dock-tab-raise: -12px;
   }
 
   #navFooter .nav-seals {
@@ -29,6 +29,10 @@
 
   /* Mobile: seat the tabs inward into their sockets. */
   @media (max-width: 600px) {
+    #navFooter {
+      --dock-tab-raise: -10px;
+    }
+
     #navFooter #tocToggle,
     #navFooter #mirrorToggle { position: relative; }
 
