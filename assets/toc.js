@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.3 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
+/*! Covenant ToC v3.2.4 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.3';
+  window.COVENANT_TOC_VERSION = '3.2.4';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -287,7 +287,9 @@
       var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1;
 
       var left = Math.round(centerX - footerRect.left - (w / 2));
-      var top = Math.round(centerY - footerRect.top - (h / 2));
+
+      // Nudge the window 1px upward (requested): subtract 1px from the computed top.
+      var top = Math.round(centerY - footerRect.top - (h / 2)) - 1;
 
       root.style.setProperty('--dock-window-left-px', left + 'px');
       root.style.setProperty('--dock-window-top-px', top + 'px');
