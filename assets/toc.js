@@ -1140,8 +1140,7 @@
         noteOpenToUIStack();
       }
 
-      // Drag-open state is complete once the panel is open.
-      root.classList.remove('toc-opening');
+      // Drag-open should keep toc-opening through the snap settle; snap() removes it after motion completes.
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
 
@@ -1302,6 +1301,9 @@
             tocOverlay.style.opacity = '';
             tocOverlay.style.transition = '';
           }
+
+          // Drag-open completes only after snap settle.
+          root.classList.remove('toc-opening');
         } else if (!startWasOpen) {
           // Cancel-open cleanup: force invisible, but keep the offscreen transform.
           // Also keep the footer elevated for a couple frames while iOS finishes compositor cleanup.
