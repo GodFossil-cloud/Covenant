@@ -61,11 +61,11 @@
 </nav>
 
 <style>
-  /* Footer-only override: reshape Lexicon seal (flat top) and seat its top edge just inside the dock top.
-     (Do not move the ToC/Mirror tabs out of the cradle.) */
+  /* Footer-only override: reshape Lexicon seal (flat top) and seat its top edge where it originally rested.
+     Only the ToC/Mirror tabs move; the seal remains at its prior height. */
   #navFooter {
-    /* Raise the resting seal a touch, but keep a sliver of obsidian above it. */
-    --lexicon-seal-top-align: 8px;
+    /* Restore original seal seating. */
+    --lexicon-seal-top-align: 10px;
 
     --lexicon-seal-w: 66px;
     --lexicon-seal-h: 40px;
@@ -104,14 +104,15 @@
   }
 
   /* Make ToC and Mirror identical bookends (prevents subtle off-center drift).
-     Round their plates so they read as small medallions rather than blocky tabs. */
+     Round their plates so they read as small medallions rather than blocky tabs.
+     Lower them further into the slab; do not move the center seal. */
   #navFooter #tocToggle,
   #navFooter #mirrorToggle {
     width: var(--nav-pill-width);
     height: var(--nav-pill-height);
     padding: 0;
     flex: 0 0 var(--nav-pill-width);
-    margin-top: 3px; /* drop slightly so they do not cut the dock's top edge */
+    margin-top: 7px; /* lowered further per feedback */
     border-radius: 999px;
     overflow: hidden;
   }
