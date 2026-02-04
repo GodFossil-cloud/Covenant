@@ -27,6 +27,18 @@
     flex: 0 0 66px;
   }
 
+  /* Mobile: seat the tabs inward into their sockets. */
+  @media (max-width: 600px) {
+    #navFooter #tocToggle,
+    #navFooter #mirrorToggle { position: relative; }
+
+    /* Inward nudge: ToC right, Mirror left. */
+    #navFooter #tocToggle { left: 2px; }
+    #navFooter #mirrorToggle { left: -2px; }
+
+    #navFooter .citation-label { min-height: 16px !important; }
+  }
+
   #navFooter #lexiconToggle,
   #navFooter #lexiconToggle::before,
   #navFooter #lexiconToggle::after {
@@ -53,10 +65,6 @@
   #navFooter .citation-label:empty {
     display: flex !important;
     visibility: visible !important;
-  }
-
-  @media (max-width: 600px) {
-    #navFooter .citation-label { min-height: 16px !important; }
   }
 </style>
 
