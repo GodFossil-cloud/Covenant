@@ -137,8 +137,9 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 html.lexicon-scroll-lock .nav-seals::before,
 html.lexicon-scroll-lock .nav-seals::after{opacity:.45}
 
-/* ToC drag/snap-open: create a true "window" in the dock slab under the left socket so the moving sheet reads through. */
-html.toc-opening{
+/* ToC drag/snap-open and snap-close: create a true "window" in the dock slab under the left socket so the moving sheet reads through. */
+html.toc-opening,
+html.toc-closing{
   --toc-panel-gap:calc(-1 * var(--dock-window-depth, 0px));
 
   /* Window geometry aligned to the left dock socket (ToC). */
@@ -153,14 +154,18 @@ html.toc-opening{
 }
 
 /* Keep only the 1px cut-line on the left socket; Mirror remains a normal recess (until we design its own window). */
-html.toc-opening .nav-seals::before{
+html.toc-opening .nav-seals::before,
+html.toc-closing .nav-seals::before{
   background:transparent;
   box-shadow:inset 0 0 0 1px rgba(59,54,43,.92);
 }
 
-/* During toc-opening the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
-html.toc-opening .nav-footer{background:transparent}
-html.toc-opening .nav-footer::before{
+/* During toc-opening/toc-closing the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
+html.toc-opening .nav-footer,
+html.toc-closing .nav-footer{background:transparent}
+
+html.toc-opening .nav-footer::before,
+html.toc-closing .nav-footer::before{
   content:'';
   position:absolute;
   inset:0;
@@ -181,7 +186,9 @@ html.toc-opening .nav-footer::before{
 
 @supports (-webkit-mask-image: linear-gradient(#000 0 0)){
   html.toc-opening .nav-footer::before,
-  html.toc-opening .nav-footer::after{
+  html.toc-opening .nav-footer::after,
+  html.toc-closing .nav-footer::before,
+  html.toc-closing .nav-footer::after{
     -webkit-mask-image:
       linear-gradient(#000 0 0),
       linear-gradient(#000 0 0);
@@ -200,7 +207,9 @@ html.toc-opening .nav-footer::before{
 
 @supports (mask-image: linear-gradient(#000 0 0)){
   html.toc-opening .nav-footer::before,
-  html.toc-opening .nav-footer::after{
+  html.toc-opening .nav-footer::after,
+  html.toc-closing .nav-footer::before,
+  html.toc-closing .nav-footer::after{
     mask-image:
       linear-gradient(#000 0 0),
       linear-gradient(#000 0 0);
