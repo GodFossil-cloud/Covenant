@@ -36,6 +36,9 @@
   /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
 
+  /* Temporary window depth during ToC drag/snap-open; lets the sheet underlap the dock so the socket window can reveal motion. */
+  --dock-window-depth:calc(var(--dock-socket-height) + 2px);
+
   /* Sharpen the top corners only; keep bottom corners seated and round. */
   --dock-tab-radius-top:var(--toc-tab-radius);
 
@@ -134,13 +137,59 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 html.lexicon-scroll-lock .nav-seals::before,
 html.lexicon-scroll-lock .nav-seals::after{opacity:.45}
 
-/* During panel opening (ToC or Reliquary), the socket windows go clear so the moving sheet reads through; keep only the 1px cut-line. */
-html.toc-opening .nav-seals::before,
-html.toc-opening .nav-seals::after,
-html.reliquary-opening .nav-seals::before,
-html.reliquary-opening .nav-seals::after{
+/* ToC drag/snap-open: create a true "window" in the dock slab under the left socket so the moving sheet reads through. */
+html.toc-opening{
+  --toc-panel-gap:calc(-1 * var(--dock-window-depth, 0px));
+
+  /* Window geometry aligned to the left dock socket (ToC). */
+  --dock-window-w:calc(var(--dock-tab-width) + 2px);
+  --dock-window-h:calc(var(--dock-socket-height) + 2px);
+  --dock-window-center-x:calc(50% - (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)));
+  --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px);
+  --dock-window-left:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
+  --dock-window-top:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
+}
+
+/* Keep only the 1px cut-line on the left socket; Mirror remains a normal recess (until we design its own window). */
+html.toc-opening .nav-seals::before{
   background:transparent;
   box-shadow:inset 0 0 0 1px rgba(59,54,43,.92);
+}
+
+@supports (-webkit-mask-image: linear-gradient(#000 0 0)){
+  html.toc-opening .nav-footer::before,
+  html.toc-opening .nav-footer::after{
+    -webkit-mask-image:
+      linear-gradient(#000 0 0),
+      linear-gradient(#000 0 0);
+    -webkit-mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    -webkit-mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    -webkit-mask-repeat:no-repeat;
+
+    /* Subtract the window rectangle from the full mask. */
+    -webkit-mask-composite:destination-out;
+  }
+}
+
+@supports (mask-image: linear-gradient(#000 0 0)){
+  html.toc-opening .nav-footer::before,
+  html.toc-opening .nav-footer::after{
+    mask-image:
+      linear-gradient(#000 0 0),
+      linear-gradient(#000 0 0);
+    mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    mask-repeat:no-repeat;
+    mask-composite:subtract;
+  }
 }
 
 html #tocToggle.dock-tab,
