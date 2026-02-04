@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.5 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
+/*! Covenant ToC v3.2.6 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.5';
+  window.COVENANT_TOC_VERSION = '3.2.6';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1410,6 +1410,16 @@
       tocPanel.classList.add('is-dragging');
       if (tocToggle) tocToggle.classList.add('is-toc-dragging');
 
+      // If we are starting from open, we are "closing" (so the dock hole-punch stays active while dragging down).
+      if (startWasOpen) {
+        root.classList.add('toc-closing');
+        root.classList.remove('toc-opening');
+        root.classList.remove('toc-dock-settling');
+
+        // Align immediately; the footer socket can drift under viewport changes.
+        alignDockWindowToSocket();
+      }
+
       // If we are starting from closed, we are "opening" (even before fully open).
       if (!startWasOpen) {
         root.classList.remove('toc-closing');
@@ -1508,7 +1518,8 @@
         snap();
       } else {
         // No drag gesture actually happened (likely a click); clear transient state.
-        root.classList.remove('toc-opening');
+        if (startWasOpen) root.classList.remove('toc-closing');
+        else root.classList.remove('toc-opening');
       }
 
       if (e) {
