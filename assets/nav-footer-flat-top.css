@@ -103,6 +103,14 @@
 #navFooter .citation-label {
   margin-top: 4px;
   min-height: 18px;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* If any global CSS hides empty citation labels, override it footer-locally. */
+#navFooter .citation-label:empty {
+  display: block !important;
+  visibility: visible !important;
 }
 
 @media (max-width: 600px) {
