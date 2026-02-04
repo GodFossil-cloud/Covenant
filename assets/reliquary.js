@@ -825,7 +825,7 @@
         openReliquaryImmediately();
       }
 
-      root.classList.remove('reliquary-opening');
+      // Drag-open should keep reliquary-opening through the snap settle; snap() removes it after motion completes.
       root.classList.remove('reliquary-closing');
       root.classList.remove('reliquary-dock-settling');
 
@@ -957,6 +957,9 @@
           panel.style.transition = '';
           overlay.style.opacity = '';
           overlay.style.transition = '';
+
+          // Drag-open completes only after snap settle.
+          root.classList.remove('reliquary-opening');
         } else if (!startWasOpen) {
           panel.style.opacity = '0';
           overlay.style.opacity = '0';
