@@ -104,14 +104,23 @@
   }
 
   /* Make ToC and Mirror identical bookends (prevents subtle off-center drift).
-     Keep their original plate geometry (no rounding), but lower them into the slab. */
+     Keep their original plate geometry (no rounding), but lower them into the slab.
+     IMPORTANT: tune only for small screens so desktop retains its baseline seating. */
   #navFooter #tocToggle,
   #navFooter #mirrorToggle {
     width: var(--nav-pill-width);
     height: var(--nav-pill-height);
     padding: 0;
     flex: 0 0 var(--nav-pill-width);
-    margin-top: 16px; /* keep the current (good) seating */
+    margin-top: 0;
+  }
+
+  @media (max-width: 600px) {
+    #navFooter #tocToggle,
+    #navFooter #mirrorToggle {
+      /* Tabs were sitting slightly too low in their sockets; lift them a touch. */
+      margin-top: 13px;
+    }
   }
 
   /* Prevent the wide seal from flexing or shrinking unexpectedly. */
