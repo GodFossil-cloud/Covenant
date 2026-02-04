@@ -58,7 +58,7 @@
 
 /* Mobile: raise only the tab plates (not the sockets) so they don't overlap the socket's bottom line. */
 @media (max-width: 600px) {
-  #navFooter { --dock-tab-raise: -22px; }
+  #navFooter { --dock-tab-raise: -20px; }
 }
 
 /* Prevent the wide seal from flexing or shrinking unexpectedly. */
