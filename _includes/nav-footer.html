@@ -2,6 +2,11 @@
 <!-- iPhone Safari safety net: keep the flat-top seal + citation label visible even if external CSS fails to load. -->
 <style id="navFooterCritical">
   /* Symmetry hardening: keep the three-seal cluster perfectly centered (iPhone Safari). */
+  #navFooter {
+    /* Slightly less raise so the tab plates seat into their sockets. */
+    --dock-tab-raise: -22px;
+  }
+
   #navFooter .nav-seals {
     display: flex;
     align-items: center;
@@ -34,7 +39,7 @@
     overflow: hidden;
 
     /* Seat the flat-top seal into the cradle (iPhone Safari baseline). */
-    margin-top: -6px;
+    margin-top: -5px;
   }
 
   #navFooter .nav-center { padding-top: 4px; }

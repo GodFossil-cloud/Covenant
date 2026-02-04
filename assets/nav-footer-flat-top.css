@@ -6,7 +6,7 @@
 
 #navFooter {
   /* Restore original seal seating. */
-  --lexicon-seal-top-align: 10px;
+  --lexicon-seal-top-align: 9px;
 
   --lexicon-seal-w: 66px;
   --lexicon-seal-h: 40px;
@@ -58,7 +58,7 @@
 
 /* Mobile: raise only the tab plates (not the sockets) so they don't overlap the socket's bottom line. */
 @media (max-width: 600px) {
-  #navFooter { --dock-tab-raise: -24px; }
+  #navFooter { --dock-tab-raise: -22px; }
 }
 
 /* Prevent the wide seal from flexing or shrinking unexpectedly. */
