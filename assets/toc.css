@@ -46,7 +46,7 @@
   --dock-tab-raise:-24px;
 
   /* Socket stays closer to the dock baseline so it reads as a true recess. */
-  --dock-socket-raise:-20px;
+  --dock-socket-raise:-8px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -515,7 +515,7 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
     --toc-node:10px;
     --toc-node-locked:8px;
     --dock-tab-raise:-22px;
-    --dock-socket-raise:-20px;
+    --dock-socket-raise:-8px;
   }
 
   /* Mobile: sheet begins at the ToC tab's left edge and runs flush to the viewport right edge. */
