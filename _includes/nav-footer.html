@@ -104,8 +104,8 @@
   }
 
   /* Make ToC and Mirror identical bookends (prevents subtle off-center drift).
-     Keep their original plate geometry (no rounding), but lower them into the slab.
-     IMPORTANT: tune only for small screens so desktop retains its baseline seating. */
+     Keep their original plate geometry (no rounding).
+     IMPORTANT: do not apply additional margin offsets here; tab/socket alignment is governed by --dock-tab-raise. */
   #navFooter #tocToggle,
   #navFooter #mirrorToggle {
     width: var(--nav-pill-width);
@@ -115,11 +115,9 @@
     margin-top: 0;
   }
 
+  /* Mobile: raise only the tab plates (not the sockets) so they don't overlap the socket's bottom line. */
   @media (max-width: 600px) {
-    #navFooter #tocToggle,
-    #navFooter #mirrorToggle {   
-      margin-top: 16px;
-    }
+    #navFooter { --dock-tab-raise: -24px; }
   }
 
   /* Prevent the wide seal from flexing or shrinking unexpectedly. */
