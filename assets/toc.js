@@ -244,6 +244,56 @@
     }
   }
 
+  // Dock window alignment (hole punch): position the cutout using real socket geometry,
+  // not idealized "50%" assumptions (footer layout can shift the seals cluster).
+  function alignDockWindowToSocket() {
+    try {
+      var footer = document.querySelector('.nav-footer');
+      var seals = document.querySelector('.nav-seals');
+      if (!footer || !seals || !footer.getBoundingClientRect || !seals.getBoundingClientRect) return;
+
+      var footerRect = footer.getBoundingClientRect();
+      var sealsRect = seals.getBoundingClientRect();
+
+      var tabW = readCssNumberVar('--toc-tab-width');
+      if (!tabW || tabW <= 0) {
+        // Fallback: infer from the toggle width (close enough to cover the whole socket).
+        if (tocToggle && tocToggle.getBoundingClientRect) {
+          tabW = tocToggle.getBoundingClientRect().width || 0;
+        }
+      }
+      if (!tabW || tabW <= 0) return;
+
+      var w = readCssNumberVar('--dock-window-w');
+      var h = readCssNumberVar('--dock-window-h');
+
+      if (!w || w <= 0) {
+        var dockTabW = readCssNumberVar('--dock-tab-width');
+        if (dockTabW && dockTabW > 0) w = dockTabW + 2;
+      }
+
+      if (!h || h <= 0) {
+        var dockSocketH = readCssNumberVar('--dock-socket-height');
+        if (dockSocketH && dockSocketH > 0) h = dockSocketH + 2;
+      }
+
+      if (!w || w <= 0) w = tabW;
+      if (!h || h <= 0) h = Math.max(1, readCssNumberVar('--toc-tab-height') - 2);
+
+      var socketRaise = readCssNumberVar('--dock-socket-raise') || 0;
+
+      // Left socket center is the center of the first grid column inside .nav-seals.
+      var centerX = sealsRect.left + (tabW / 2);
+      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1;
+
+      var left = Math.round(centerX - footerRect.left - (w / 2));
+      var top = Math.round(centerY - footerRect.top - (h / 2));
+
+      root.style.setProperty('--dock-window-left-px', left + 'px');
+      root.style.setProperty('--dock-window-top-px', top + 'px');
+    } catch (err) {}
+  }
+
   function getSnapMs() {
     var ms = readCssNumberVar('--toc-snap-duration');
     if (ms && ms > 0) return ms;
@@ -1362,6 +1412,9 @@
         root.classList.remove('toc-dock-settling');
         renderToC();
 
+        // The dock window must be aligned the moment toc-opening begins.
+        alignDockWindowToSocket();
+
         // Enter the UI stack immediately so z-index assignment happens before first paint.
         noteOpenToUIStack();
       }
@@ -1645,6 +1698,9 @@
       tapAnimating = true;
       root.classList.add('toc-opening');
 
+      // The dock window must be aligned the moment toc-opening begins.
+      alignDockWindowToSocket();
+
       // Start from fully-closed geometry.
       var openLift = readCssNumberVar('--toc-open-lift') || 0;
       var closedY = computePanelClosedY();
@@ -1858,6 +1914,10 @@
     });
 
     window.addEventListener('resize', function () {
+      if (root && root.classList && root.classList.contains('toc-opening')) {
+        alignDockWindowToSocket();
+      }
+
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
         alignToggleToPanelCorner();
@@ -1865,6 +1925,10 @@
     });
 
     window.addEventListener('orientationchange', function () {
+      if (root && root.classList && root.classList.contains('toc-opening')) {
+        alignDockWindowToSocket();
+      }
+
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
         alignToggleToPanelCorner();

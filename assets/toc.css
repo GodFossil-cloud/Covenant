@@ -146,8 +146,10 @@ html.toc-opening{
   --dock-window-h:calc(var(--dock-socket-height) + 2px);
   --dock-window-center-x:calc(50% - (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)));
   --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px);
-  --dock-window-left:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
-  --dock-window-top:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
+  --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
+  --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
+  --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
+  --dock-window-top:var(--dock-window-top-px, var(--dock-window-top-default));
 }
 
 /* Keep only the 1px cut-line on the left socket; Mirror remains a normal recess (until we design its own window). */
