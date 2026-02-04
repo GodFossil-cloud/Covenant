@@ -1,11 +1,33 @@
 <!-- Shared Covenant section footer nav (GitHub Pages / Jekyll include). -->
 <!-- iPhone Safari safety net: keep the flat-top seal + citation label visible even if external CSS fails to load. -->
 <style id="navFooterCritical">
+  /* Symmetry hardening: keep the three-seal cluster perfectly centered (iPhone Safari). */
+  #navFooter .nav-seals {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  #navFooter #tocToggle,
+  #navFooter #mirrorToggle {
+    width: var(--nav-pill-width);
+    height: var(--nav-pill-height);
+    padding: 0;
+    flex: 0 0 var(--nav-pill-width);
+  }
+
+  #navFooter #lexiconToggle {
+    flex: 0 0 66px;
+  }
+
   #navFooter #lexiconToggle,
   #navFooter #lexiconToggle::before,
   #navFooter #lexiconToggle::after {
     border-radius: 0 0 999px 999px !important;
   }
+
   #navFooter #lexiconToggle {
     width: 66px !important;
     height: 40px !important;
@@ -14,16 +36,20 @@
     /* Seat the flat-top seal into the cradle (iPhone Safari baseline). */
     margin-top: -6px;
   }
+
   #navFooter .nav-center { padding-top: 4px; }
+
   #navFooter .citation-label {
     display: flex !important;
     min-height: 18px !important;
     visibility: visible !important;
   }
+
   #navFooter .citation-label:empty {
     display: flex !important;
     visibility: visible !important;
   }
+
   @media (max-width: 600px) {
     #navFooter .citation-label { min-height: 16px !important; }
   }
