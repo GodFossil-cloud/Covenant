@@ -1,8 +1,31 @@
 <!-- Shared Covenant section footer nav (GitHub Pages / Jekyll include). -->
-<!-- Footer-only override (flat-top seal + iPhone Safari symmetry).
-     NOTE: This include is rendered in <body>, and iOS Safari may ignore <link rel="stylesheet"> here.
-     Use a <style> with a single @import so the override reliably applies. -->
-<style id="navFooterFlatTopImport">@import url('{{ "/assets/nav-footer-flat-top.css" | relative_url }}?v=3');</style>
+<!-- iPhone Safari safety net: keep the flat-top seal + citation label visible even if external CSS fails to load. -->
+<style id="navFooterCritical">
+  #navFooter #lexiconToggle,
+  #navFooter #lexiconToggle::before,
+  #navFooter #lexiconToggle::after {
+    border-radius: 0 0 999px 999px !important;
+  }
+  #navFooter #lexiconToggle {
+    width: 66px !important;
+    height: 40px !important;
+    overflow: hidden;
+    margin-top: -10px;
+  }
+  #navFooter .nav-center { padding-top: 4px; }
+  #navFooter .citation-label {
+    display: flex !important;
+    min-height: 18px !important;
+    visibility: visible !important;
+  }
+  #navFooter .citation-label:empty {
+    display: flex !important;
+    visibility: visible !important;
+  }
+  @media (max-width: 600px) {
+    #navFooter .citation-label { min-height: 16px !important; }
+  }
+</style>
 
 <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
     <div class="nav-footer-inner">
