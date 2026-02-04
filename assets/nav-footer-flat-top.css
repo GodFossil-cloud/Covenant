@@ -1,0 +1,128 @@
+/* Footer-only override: reshape Lexicon seal (flat top) and seat its top edge where it originally rested.
+   Only the ToC/Mirror tabs move; the seal remains at its prior height.
+
+   Scope: #navFooter only (prevents any bleed into reference pages / non-dock contexts).
+*/
+
+#navFooter {
+  /* Restore original seal seating. */
+  --lexicon-seal-top-align: 10px;
+
+  --lexicon-seal-w: 66px;
+  --lexicon-seal-h: 40px;
+
+  /* Socket geometry: match the cradle line to the flat-top seal's new width. */
+  --seal-notch-radius: calc(var(--lexicon-seal-w) * 0.5);
+  --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
+
+  /* Micro-nudges for glyph optical centering (mobile Safari). */
+  --toc-glyph-nudge-x: 0px;
+  --mirror-glyph-nudge-x: 0px;
+}
+
+#navFooter #lexiconToggle,
+#navFooter #lexiconToggle::before,
+#navFooter #lexiconToggle::after {
+  border-radius: 0 0 999px 999px !important;
+}
+
+#navFooter #lexiconToggle {
+  overflow: hidden;
+  margin-top: calc(-1 * var(--lexicon-seal-top-align));
+
+  /* Wider + shorter medallion (footer-local only). */
+  width: var(--lexicon-seal-w);
+  height: var(--lexicon-seal-h);
+}
+
+/* Mobile Safari: lock the three-seal cluster into true symmetry so the Lexicon seal reads centered. */
+#navFooter .nav-seals {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+/* Make ToC and Mirror identical bookends (prevents subtle off-center drift).
+   Keep their original plate geometry (no rounding).
+   IMPORTANT: do not apply additional margin offsets here; tab/socket alignment is governed by --dock-tab-raise. */
+#navFooter #tocToggle,
+#navFooter #mirrorToggle {
+  width: var(--nav-pill-width);
+  height: var(--nav-pill-height);
+  padding: 0;
+  flex: 0 0 var(--nav-pill-width);
+  margin-top: 0;
+}
+
+/* Mobile: raise only the tab plates (not the sockets) so they don't overlap the socket's bottom line. */
+@media (max-width: 600px) {
+  #navFooter { --dock-tab-raise: -24px; }
+}
+
+/* Prevent the wide seal from flexing or shrinking unexpectedly. */
+#navFooter #lexiconToggle {
+  flex: 0 0 var(--lexicon-seal-w);
+}
+
+/* Ensure the tab glyphs sit on a consistent centering box (optical centering then uses nudges). */
+#navFooter #tocToggle .toc-glyph,
+#navFooter #mirrorToggle .toc-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+}
+
+/* Optical centering (the glyphs have uneven sidebearings in iOS symbol fonts). */
+#navFooter #tocToggle .toc-glyph {
+  transform: translateX(var(--toc-glyph-nudge-x));
+}
+
+#navFooter #mirrorToggle .toc-glyph {
+  transform: translateX(var(--mirror-glyph-nudge-x));
+}
+
+/* iOS Safari: seat the *tab plates* into their sockets.
+   Use left/right offsets (not transform) so :active press travel still works. */
+@media (max-width: 600px) {
+  #navFooter .nav-seals { gap: 8px; }
+
+  #navFooter #tocToggle,
+  #navFooter #mirrorToggle { position: relative; }
+
+  #navFooter #tocToggle { left: 2px; }
+  #navFooter #mirrorToggle { left: -2px; }
+}
+
+/* Option 2: altar-focused emphasis
+   - Citation sigil sits close under the seal cluster.
+   - Prev/Next labels soften slightly on small screens so the altar leads. */
+#navFooter .citation-label {
+  margin-top: 4px;
+  min-height: 18px;
+}
+
+@media (max-width: 600px) {
+  #navFooter .citation-label {
+    margin-top: 2px;
+    min-height: 16px;
+  }
+
+  #navFooter .nav-next-label,
+  #navFooter .nav-prev-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.10em;
+    opacity: 0.86;
+  }
+}
+
+@media (max-width: 480px) {
+  #navFooter .nav-next-label,
+  #navFooter .nav-prev-label {
+    font-size: 0.76rem;
+    opacity: 0.8;
+  }
+}
