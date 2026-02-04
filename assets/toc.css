@@ -156,6 +156,27 @@ html.toc-opening .nav-seals::before{
   box-shadow:inset 0 0 0 1px rgba(59,54,43,.92);
 }
 
+/* During toc-opening the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
+html.toc-opening .nav-footer{background:transparent}
+html.toc-opening .nav-footer::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  height:auto;
+  pointer-events:none;
+
+  /* Repaint the obsidian slab + brass hairline as a single layer stack, so the window mask can subtract from it. */
+  background:
+    linear-gradient(to bottom,
+      var(--footer-hairline) 0,
+      var(--footer-hairline) 1px,
+      rgba(0,0,0,0) 1px),
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+
+  opacity:1;
+}
+
 @supports (-webkit-mask-image: linear-gradient(#000 0 0)){
   html.toc-opening .nav-footer::before,
   html.toc-opening .nav-footer::after{
