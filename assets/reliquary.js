@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.1 (True Panel Stack + Shared Scroll Lock Opt-In) */
+/*! Covenant Reliquary UI v0.3.2 (Dock Hole-Punch Alignment + Drag-Close Parity) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.1';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.2';
 
   var doc = document;
   var root = doc.documentElement;
@@ -41,6 +41,54 @@
     } catch (err) {
       return 0;
     }
+  }
+
+  // Dock window alignment (hole punch): align the cutout to the RIGHT socket (Mirror tab),
+  // using live footer/seals geometry (not idealized 50% assumptions).
+  function alignDockWindowToRightSocket() {
+    try {
+      var footer = doc.querySelector('.nav-footer');
+      var seals = doc.querySelector('.nav-seals');
+      if (!footer || !seals || !footer.getBoundingClientRect || !seals.getBoundingClientRect) return;
+
+      var footerRect = footer.getBoundingClientRect();
+      var sealsRect = seals.getBoundingClientRect();
+
+      var tabW = readCssNumberVar('--toc-tab-width');
+      if (!tabW || tabW <= 0) {
+        var mirror = byId('mirrorToggle');
+        if (mirror && mirror.getBoundingClientRect) tabW = mirror.getBoundingClientRect().width || 0;
+      }
+      if (!tabW || tabW <= 0) return;
+
+      var w = readCssNumberVar('--dock-window-w');
+      var h = readCssNumberVar('--dock-window-h');
+
+      if (!w || w <= 0) {
+        var dockTabW = readCssNumberVar('--dock-tab-width');
+        if (dockTabW && dockTabW > 0) w = dockTabW + 2;
+      }
+
+      if (!h || h <= 0) {
+        var dockSocketH = readCssNumberVar('--dock-socket-height');
+        if (dockSocketH && dockSocketH > 0) h = dockSocketH + 2;
+      }
+
+      if (!w || w <= 0) w = tabW;
+      if (!h || h <= 0) h = Math.max(1, readCssNumberVar('--toc-tab-height') - 2);
+
+      var socketRaise = readCssNumberVar('--dock-socket-raise') || 0;
+
+      // Right socket center is the center of the third grid column inside .nav-seals.
+      var centerX = sealsRect.left + sealsRect.width - (tabW / 2);
+      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1;
+
+      var left = Math.round(centerX - footerRect.left - (w / 2));
+      var top = Math.round(centerY - footerRect.top - (h / 2));
+
+      root.style.setProperty('--dock-window-left-px', left + 'px');
+      root.style.setProperty('--dock-window-top-px', top + 'px');
+    } catch (err) {}
   }
 
   function getSnapMs() {
@@ -466,10 +514,13 @@
     if (!panel) return;
 
     var footerReserved = getFooterReservedPx();
-
     root.style.setProperty('--reliquary-footer-reserved', footerReserved + 'px');
 
-    var bottom = footerReserved;
+    // During opening/closing, allow the sheet to underlap the dock slab so the socket window can reveal motion.
+    var dockDepth = readCssNumberVar('--dock-window-depth') || 0;
+    var gap = (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing')) ? (-dockDepth) : 0;
+
+    var bottom = footerReserved + gap;
     var maxH = Math.max(240, Math.floor(window.innerHeight - bottom));
 
     panel.style.bottom = bottom + 'px';
@@ -570,7 +621,6 @@
     overlay.style.transition = '';
 
     openReliquaryImmediately();
-    positionPanel();
 
     var snapMs = getSnapMs();
     var snapEase = getSnapEase();
@@ -578,6 +628,9 @@
 
     tapAnimating = true;
     root.classList.add('reliquary-opening');
+
+    positionPanel();
+    alignDockWindowToRightSocket();
 
     var closedY = computePanelClosedY();
 
@@ -633,6 +686,9 @@
     root.classList.remove('reliquary-opening');
     root.classList.add('reliquary-closing');
     root.classList.remove('reliquary-dock-settling');
+
+    positionPanel();
+    alignDockWindowToRightSocket();
 
     var snapMs = getSnapMs();
     var snapEase = getSnapEase();
@@ -883,6 +939,9 @@
       root.classList.remove('reliquary-opening');
       root.classList.remove('reliquary-dock-settling');
 
+      alignDockWindowToRightSocket();
+      positionPanel();
+
       var targetY = closedY + CLOSE_SINK_PX;
       applyDragFrame(targetY, false);
 
@@ -1001,6 +1060,13 @@
 
       startWasOpen = panel.classList.contains('is-open');
 
+      if (startWasOpen) {
+        // Drag-close: enter closing state immediately so the dock-window punch stays active.
+        root.classList.add('reliquary-closing');
+        root.classList.remove('reliquary-opening');
+        root.classList.remove('reliquary-dock-settling');
+      }
+
       positionPanel();
       computeOpenLift();
 
@@ -1011,6 +1077,8 @@
 
         openReliquaryImmediately();
       }
+
+      alignDockWindowToRightSocket();
 
       computeClosedY();
 
@@ -1094,7 +1162,8 @@
         setTimeout(function () { window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       } else {
-        root.classList.remove('reliquary-opening');
+        if (startWasOpen) root.classList.remove('reliquary-closing');
+        else root.classList.remove('reliquary-opening');
       }
 
       if (e) {
@@ -1207,6 +1276,10 @@
   });
 
   window.addEventListener('resize', function () {
+    if (root && root.classList && (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing'))) {
+      alignDockWindowToRightSocket();
+    }
+
     if (panel && panel.classList.contains('is-open')) {
       positionPanel();
       alignToggleToPanelCorner();
@@ -1214,6 +1287,10 @@
   });
 
   window.addEventListener('orientationchange', function () {
+    if (root && root.classList && (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing'))) {
+      alignDockWindowToRightSocket();
+    }
+
     if (panel && panel.classList.contains('is-open')) {
       positionPanel();
       alignToggleToPanelCorner();
