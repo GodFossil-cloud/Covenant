@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.4 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
+/*! Covenant ToC v3.2.5 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.4';
+  window.COVENANT_TOC_VERSION = '3.2.5';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -288,8 +288,8 @@
 
       var left = Math.round(centerX - footerRect.left - (w / 2));
 
-      // Nudge the window 2px upward (requested): subtract 2px from the computed top.
-      var top = Math.round(centerY - footerRect.top - (h / 2)) - 2;
+      // Nudge the window 1px upward: subtract 1px from the computed top.
+      var top = Math.round(centerY - footerRect.top - (h / 2)) - 1;
 
       root.style.setProperty('--dock-window-left-px', left + 'px');
       root.style.setProperty('--dock-window-top-px', top + 'px');
@@ -1261,6 +1261,9 @@
       root.classList.remove('toc-opening');
       root.classList.remove('toc-dock-settling');
 
+      // Re-align the dock window for the snap-down phase.
+      alignDockWindowToSocket();
+
       var targetY = closedY + CLOSE_SINK_PX;
       applyDragFrame(targetY, false);
 
@@ -1778,6 +1781,9 @@
     root.classList.add('toc-closing');
     root.classList.remove('toc-opening');
 
+    // The dock window must also be aligned for the slide-down.
+    alignDockWindowToSocket();
+
     // Keep the panel/overlay present for the full slide-down.
     tocPanel.classList.add('is-closing');
     tocPanel.classList.add('is-open');
@@ -1916,7 +1922,7 @@
     });
 
     window.addEventListener('resize', function () {
-      if (root && root.classList && root.classList.contains('toc-opening')) {
+      if (root && root.classList && (root.classList.contains('toc-opening') || root.classList.contains('toc-closing'))) {
         alignDockWindowToSocket();
       }
 
@@ -1927,7 +1933,7 @@
     });
 
     window.addEventListener('orientationchange', function () {
-      if (root && root.classList && root.classList.contains('toc-opening')) {
+      if (root && root.classList && (root.classList.contains('toc-opening') || root.classList.contains('toc-closing'))) {
         alignDockWindowToSocket();
       }
 
