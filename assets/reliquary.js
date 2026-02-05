@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.9 (iOS drag: pixel-snap transforms) */
+/*! Covenant Reliquary UI v0.3.10 (Mobile drag: seal-carry, no jump) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.9';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.10';
 
   var doc = document;
   var root = doc.documentElement;
@@ -880,6 +880,10 @@
     var panelHBase = 0;
     var openLiftPx = 0;
 
+    // Mobile-only: extra nudge that gets blended in as the sheet opens,
+    // so the tab stays under the finger (no downward jump) but still seats into the notch at the end.
+    var mobileSeatNudge = 0;
+
     var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
@@ -909,6 +913,23 @@
       closedY = Math.max(1, panelHBase + closedOffsetPx);
     }
 
+    function computeMobileSeatNudge() {
+      mobileSeatNudge = 0;
+      if (!isMobileSheet()) return;
+
+      var base = getToggleBaseRect();
+      if (!base) return;
+
+      // Carry model: dyCarry(y) = (y - closedY). This is 0 at closed, and follows the finger perfectly.
+      // We then add a blended nudge so that at fully open, we land exactly on the notch seat geometry.
+      var dySeatOpen = computeOpenToggleDyFromPanelTop(openLiftPx, base);
+      var dyCarryOpen = openLiftPx - closedY;
+      mobileSeatNudge = dySeatOpen - dyCarryOpen;
+
+      if (!isFinite(mobileSeatNudge)) mobileSeatNudge = 0;
+      mobileSeatNudge = Math.round(mobileSeatNudge);
+    }
+
     function applyDragFrame(y, draggingNow) {
       // iOS Safari can reveal 1px seams when the panel/tab land on fractional pixels.
       // Pixel-snap during active drag so notch floor + tab bottom share the same device pixel row.
@@ -932,11 +953,17 @@
       var dy = openDyWanted * progress;
 
       if (draggingNow) {
-        var base = getToggleBaseRect();
-        if (base) {
-          // On mobile sheet, the panel's visual top is exactly the current translateY(y).
-          var panelTopNow = isMobileSheet() ? y : (panel.getBoundingClientRect ? panel.getBoundingClientRect().top : y);
-          dy = computeOpenToggleDyFromPanelTop(panelTopNow, base);
+        if (isMobileSheet()) {
+          // Lexicon-style: carry the seal with the sheet so it stays glued to the finger.
+          // Then blend in the notch seating nudge as we approach open.
+          dy = (y - closedY) + (mobileSeatNudge * progress);
+        } else {
+          var base = getToggleBaseRect();
+          if (base) {
+            // On desktop, the panel's visual top should come from layout.
+            var panelTopNow = (panel.getBoundingClientRect ? panel.getBoundingClientRect().top : y);
+            dy = computeOpenToggleDyFromPanelTop(panelTopNow, base);
+          }
         }
       }
 
@@ -1162,6 +1189,7 @@
       alignDockWindowToRightSocket();
 
       computeClosedY();
+      computeMobileSeatNudge();
 
       currentY = startWasOpen ? openLiftPx : closedY;
 
@@ -1173,28 +1201,9 @@
 
       panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + currentY + 'px)';
 
-      if (!startWasOpen && isMobileSheet()) {
-        var base = getToggleBaseRect();
-        if (base && panel && panel.getBoundingClientRect) {
-          var r = panel.getBoundingClientRect();
-          var desiredTop = base.bottom;
-          var delta = desiredTop - r.top;
-
-          if (delta && Math.abs(delta) > 0.5) {
-            var newClosedY = closedY + delta;
-            if (newClosedY < openLiftPx) newClosedY = openLiftPx;
-
-            delta = newClosedY - closedY;
-            closedY = newClosedY;
-            currentY = currentY + delta;
-
-            panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + currentY + 'px)';
-          }
-        }
-      }
-
       openDyWanted = computeOpenDyForCurrentDragState(currentY);
 
+      // IMPORTANT: apply first frame with a carry model on mobile so the tab never jumps downward.
       applyDragFrame(currentY, true);
 
       var captureTarget = (source === 'seal') ? toggle : dragRegion;
