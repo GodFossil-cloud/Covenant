@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.9 (Seat overlap var) */
+/*! Covenant Reliquary Panel Styles v0.3.0 (Mobile seat overbite) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -236,6 +236,9 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 }
 
 @media (max-width:600px){
+  /* On mobile, overbite a little deeper to prevent iOS/Safari clip-path seams reading as a true see-through gap. */
+  :root{--reliquary-seat-overlap:6px}
+
   .reliquary-panel{
     --reliquary-panel-x:0px;
     left:0;
