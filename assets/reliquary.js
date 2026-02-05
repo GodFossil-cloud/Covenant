@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.15 (Mirror medallion follows panel on tap-open/close) */
+/*! Covenant Reliquary UI v0.3.16 (Mirror medallion tap-open: smooth direct seat, no bounce) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.15';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.16';
 
   var doc = document;
   var root = doc.documentElement;
@@ -324,7 +324,9 @@
     if (!toggle) return;
 
     var v = (typeof y === 'number' && isFinite(y)) ? y : 0;
-    if (draggingNow) v = Math.round(v);
+
+    // Stabilize to whole pixels (prevents micro-jitter when geometry resolves to fractions).
+    v = Math.round(v);
 
     mirrorCapShiftY = v;
     toggle.style.setProperty('--mirror-cap-shift-y', v + 'px');
@@ -357,80 +359,44 @@
     } catch (err) {}
   }
 
-  function parseCubicBezier(s) {
-    var str = String(s || '');
-    var m = str.match(/cubic-bezier\(([^)]+)\)/i);
-    if (!m || !m[1]) return null;
+  // Tap-open: compute a shift target that matches where the header will be once the panel finishes its translateY.
+  // (During the open animation, header moves by the same delta as the panel transform.)
+  function computeTapOpenMirrorCapShiftTarget(closedY, openLiftPx) {
+    try {
+      if (!toggle || !panel) return 0;
 
-    var parts = m[1].split(',');
-    if (!parts || parts.length !== 4) return null;
+      var cap = toggle.querySelector('.dock-cap');
+      var header = panel.querySelector('.reliquary-panel-header');
+      if (!cap || !header || !cap.getBoundingClientRect || !header.getBoundingClientRect) return 0;
 
-    var out = [];
-    for (var i = 0; i < 4; i++) {
-      var v = parseFloat(String(parts[i]).trim());
-      if (!isFinite(v)) return null;
-      out.push(v);
+      // We expect mirrorCapShiftY to be 0 here (we force it before computing), so capCenterY is the true base.
+      var capRect = cap.getBoundingClientRect();
+      var headerRect = header.getBoundingClientRect();
+
+      var capCenterY = capRect.top + (capRect.height / 2);
+      var headerCenterClosed = headerRect.top + (headerRect.height / 2);
+
+      var delta = (closedY - openLiftPx);
+      var headerCenterOpen = headerCenterClosed - delta;
+
+      var shift = headerCenterOpen - capCenterY;
+
+      if (!isFinite(shift)) shift = 0;
+
+      // Clamp to a sane range (prevents wild jumps if layout is transient).
+      if (shift > 200) shift = 200;
+      if (shift < -200) shift = -200;
+
+      return shift;
+    } catch (err) {
+      return 0;
     }
-
-    return out;
   }
 
-  function makeCubicBezierEase(p1x, p1y, p2x, p2y) {
-    var cx = 3 * p1x;
-    var bx = 3 * (p2x - p1x) - cx;
-    var ax = 1 - cx - bx;
+  // Tap-open/close animation guard.
+  var tapAnimating = false;
 
-    var cy = 3 * p1y;
-    var by = 3 * (p2y - p1y) - cy;
-    var ay = 1 - cy - by;
-
-    function sampleCurveX(t) { return ((ax * t + bx) * t + cx) * t; }
-    function sampleCurveY(t) { return ((ay * t + by) * t + cy) * t; }
-    function sampleDerivX(t) { return (3 * ax * t + 2 * bx) * t + cx; }
-
-    function solveCurveX(x) {
-      var t2 = x;
-      for (var i = 0; i < 8; i++) {
-        var x2 = sampleCurveX(t2) - x;
-        if (Math.abs(x2) < 1e-6) return t2;
-        var d2 = sampleDerivX(t2);
-        if (Math.abs(d2) < 1e-6) break;
-        t2 = t2 - x2 / d2;
-      }
-
-      var t0 = 0;
-      var t1 = 1;
-      t2 = x;
-
-      while (t0 < t1) {
-        var x3 = sampleCurveX(t2);
-        if (Math.abs(x3 - x) < 1e-6) return t2;
-        if (x > x3) t0 = t2;
-        else t1 = t2;
-        t2 = (t1 + t0) / 2;
-      }
-
-      return t2;
-    }
-
-    return function (x) {
-      if (x <= 0) return 0;
-      if (x >= 1) return 1;
-      return sampleCurveY(solveCurveX(x));
-    };
-  }
-
-  function getTapEaseFn() {
-    var arr = parseCubicBezier(getSnapEase());
-    if (arr && arr.length === 4) return makeCubicBezierEase(arr[0], arr[1], arr[2], arr[3]);
-
-    return function (t) {
-      if (t <= 0) return 0;
-      if (t >= 1) return 1;
-      return 1 - Math.pow(1 - t, 3);
-    };
-  }
-
+  // Legacy: keep ability to cancel any cap-follow rAF if reintroduced.
   var capFollowRafId = 0;
 
   function cancelMirrorCapFollow() {
@@ -438,45 +404,6 @@
     try { caf(capFollowRafId); } catch (err) {}
     capFollowRafId = 0;
   }
-
-  function followMirrorCapProgress(fromP, toP, durationMs) {
-    cancelMirrorCapFollow();
-
-    if (!toggle || !panel) return;
-
-    var ease = getTapEaseFn();
-    var ms = (typeof durationMs === 'number' && isFinite(durationMs) && durationMs > 0) ? durationMs : 1;
-
-    // While we are explicitly driving the cap each frame, disable the CSS transitions used for drag-snap.
-    toggle.classList.add('is-reliquary-dragging');
-
-    var start = (window.performance && performance.now) ? performance.now() : Date.now();
-
-    function step(now) {
-      if (typeof now !== 'number') now = Date.now();
-      var t = (now - start) / ms;
-      if (t < 0) t = 0;
-      if (t > 1) t = 1;
-
-      var e = ease(t);
-      var p = fromP + (toP - fromP) * e;
-
-      updateMirrorCapShift(p, false);
-
-      if (t < 1 && tapAnimating) {
-        capFollowRafId = raf(step);
-        return;
-      }
-
-      capFollowRafId = 0;
-      toggle.classList.remove('is-reliquary-dragging');
-    }
-
-    capFollowRafId = raf(step);
-  }
-
-  // Tap-open/close animation guard.
-  var tapAnimating = false;
 
   var isIOS = (function () {
     try {
@@ -900,14 +827,15 @@
         setReliquaryToggleOffset(dx, dy, false);
       }
 
+      // Direct seat: set ONE target (no rAF-follow), let CSS transition carry it.
+      var capShiftTarget = computeTapOpenMirrorCapShiftTarget(closedY, openLift);
+
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
       setPanelTranslateY(openLift);
       overlay.style.opacity = '1';
-
-      // Follow the moving header instead of trusting a one-shot target measurement.
-      followMirrorCapProgress(0, 1, snapMs);
+      setMirrorCapShiftPx(capShiftTarget, false);
 
       setTimeout(function () {
         panel.style.transform = '';
@@ -965,8 +893,8 @@
       setPanelTranslateY(closedY);
       overlay.style.opacity = '0';
 
-      // Follow the header back down so the cap can't ever overshoot.
-      followMirrorCapProgress(1, 0, snapMs);
+      // Direct return: single target back to base.
+      setMirrorCapShiftPx(0, false);
 
       setTimeout(function () {
         panel.style.transition = '';
