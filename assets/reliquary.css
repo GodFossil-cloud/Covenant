@@ -21,7 +21,7 @@
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 12px);
 
   /* Move the carried Mirror tab down so it actually seats into the notch (not just above it). */
-  --reliquary-seat-dy:var(--dock-cap-lift, 10px);
+  --reliquary-seat-dy:calc(var(--dock-cap-lift, 10px) + 8px);
 }
 
 /* When Reliquary is open, keep the Lexicon gate closed (Lexicon must open first). */
