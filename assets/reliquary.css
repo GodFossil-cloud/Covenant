@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.1 (Mobile seat overbite + tab-to-divider bridge) */
+/*! Covenant Reliquary Panel Styles v0.3.2 (Mobile seat overbite + header socket extension) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -30,9 +30,6 @@
 
   /* Move the carried Mirror tab down so it actually seats into the notch (not just above it). */
   --reliquary-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
-
-  /* Visual bridge so the tab's bottom can meet the header divider line. */
-  --reliquary-tab-bridge-h:0px;
 }
 
 /* When Reliquary is open, keep the Lexicon gate closed (Lexicon must open first). */
@@ -64,9 +61,6 @@ html.reliquary-dock-settling #mirrorToggle{pointer-events:none}
 
 /* Mirror tab can be "drag carried" upward to stay physically attached to the Reliquary sheet. */
 html #mirrorToggle.dock-tab{
-  position:relative;
-  overflow:visible;
-
   transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0);
   transition:transform var(--reliquary-snap-duration) var(--reliquary-snap-ease);
   will-change:transform;
@@ -80,24 +74,6 @@ html #mirrorToggle.dock-tab{
 }
 
 html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
-
-/* Extend the tab downward so its bottom edge can meet the header divider line (measured in JS). */
-html.reliquary-opening #mirrorToggle.dock-tab::after,
-html.reliquary-open #mirrorToggle.dock-tab::after,
-html.reliquary-closing #mirrorToggle.dock-tab::after,
-html.reliquary-dock-settling #mirrorToggle.dock-tab::after{
-  content:'';
-  position:absolute;
-  left:0;
-  right:0;
-  top:100%;
-  height:var(--reliquary-tab-bridge-h, 0px);
-
-  background:linear-gradient(to bottom, rgba(18,19,24,.98) 0%, rgba(5,5,6,.98) 100%);
-  border-left:1px solid rgba(201,169,97,.18);
-  border-right:1px solid rgba(201,169,97,.18);
-  pointer-events:none;
-}
 
 /* -------------------------------------------------
    Modal veil
@@ -216,7 +192,27 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab::after{
   background:linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,0));
 }
 
+/* Socket extension: visually carry the tab material down until it meets the header divider. */
+html.reliquary-opening .reliquary-panel-header::after,
+html.reliquary-open .reliquary-panel-header::after,
+html.reliquary-closing .reliquary-panel-header::after,
+html.reliquary-dock-settling .reliquary-panel-header::after{
+  content:'';
+  position:absolute;
+  right:0;
+  top:var(--reliquary-notch-h);
+  bottom:0;
+  width:var(--reliquary-notch-w);
+
+  background:linear-gradient(to bottom, rgba(5,5,6,.92), rgba(5,5,6,.62));
+  border-left:1px solid rgba(201,169,97,.14);
+  pointer-events:none;
+  opacity:.95;
+}
+
 .reliquary-produced-title{
+  position:relative;
+  z-index:1;
   font-family:'Cormorant Garamond',serif;
   font-size:1.05rem;
   font-weight:650;
