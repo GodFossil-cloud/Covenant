@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.2 (Dock Hole-Punch Alignment + Drag-Close Parity) */
+/*! Covenant Reliquary UI v0.3.3 (Notch-Anchored Tab Seating) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.2';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.3';
 
   var doc = document;
   var root = doc.documentElement;
@@ -45,6 +45,10 @@
 
   function getSeatDy() {
     return readCssNumberVar('--reliquary-seat-dy') || 0;
+  }
+
+  function getNotchH() {
+    return readCssNumberVar('--reliquary-notch-h') || 0;
   }
 
   // Dock window alignment (hole punch): align the cutout to the RIGHT socket (Mirror tab),
@@ -449,15 +453,21 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    var targetTop = openPanelTop;
+    var notchH = getNotchH();
 
-    if (isMobileSheet()) {
-      targetTop = openPanelTop - baseRect.height;
+    // Primary: seat the tab to the notch geometry.
+    // Align the tab bottom to the notch floor: tabTop = panelTop + notchH - tabHeight.
+    if (notchH && notchH > 0) {
+      var targetTop = openPanelTop + notchH - baseRect.height;
+      targetTop = targetTop + getSeatDy();
+      return targetTop - baseRect.top;
     }
 
-    targetTop = targetTop + getSeatDy();
-
-    return targetTop - baseRect.top;
+    // Fallback: legacy behavior.
+    var legacyTop = openPanelTop;
+    if (isMobileSheet()) legacyTop = openPanelTop - baseRect.height;
+    legacyTop = legacyTop + getSeatDy();
+    return legacyTop - baseRect.top;
   }
 
   function alignToggleToPanelCornerIfDrift(thresholdPx) {
