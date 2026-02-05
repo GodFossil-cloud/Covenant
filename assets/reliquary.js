@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.8 (iOS drag: trust math, not rect) */
+/*! Covenant Reliquary UI v0.3.9 (iOS drag: pixel-snap transforms) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.8';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.9';
 
   var doc = document;
   var root = doc.documentElement;
@@ -910,6 +910,10 @@
     }
 
     function applyDragFrame(y, draggingNow) {
+      // iOS Safari can reveal 1px seams when the panel/tab land on fractional pixels.
+      // Pixel-snap during active drag so notch floor + tab bottom share the same device pixel row.
+      if (draggingNow) y = Math.round(y);
+
       currentY = y;
 
       panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + y + 'px)';
@@ -930,12 +934,13 @@
       if (draggingNow) {
         var base = getToggleBaseRect();
         if (base) {
-          // iOS Safari can lag getBoundingClientRect() for transformed fixed-position nodes at drag start.
           // On mobile sheet, the panel's visual top is exactly the current translateY(y).
           var panelTopNow = isMobileSheet() ? y : (panel.getBoundingClientRect ? panel.getBoundingClientRect().top : y);
           dy = computeOpenToggleDyFromPanelTop(panelTopNow, base);
         }
       }
+
+      if (draggingNow) dy = Math.round(dy);
 
       setReliquaryToggleOffset(0, dy, !!draggingNow);
     }
