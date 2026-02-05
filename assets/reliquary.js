@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.4 (Notch-Anchored Tab Seating + Resolved CSS Vars) */
+/*! Covenant Reliquary UI v0.3.5 (Tab Seating: remove dock-tab-raise from base rect) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.4';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.5';
 
   var doc = document;
   var root = doc.documentElement;
@@ -92,6 +92,10 @@
 
   function getNotchH() {
     return resolveCssVarPx('--reliquary-notch-h') || 0;
+  }
+
+  function getDockTabRaisePx() {
+    return resolveCssVarPx('--dock-tab-raise') || 0;
   }
 
   // Dock window alignment (hole punch): align the cutout to the RIGHT socket (Mirror tab),
@@ -477,14 +481,18 @@
   function getToggleBaseRect() {
     if (!toggle || !toggle.getBoundingClientRect) return null;
 
+    // Important: #mirrorToggle always has a baseline translateY(var(--dock-tab-raise)).
+    // When we compute the needed drag offset, we must subtract that baseline so "baseRect" represents the unraised dock position.
+    var dockRaise = getDockTabRaisePx();
+
     var r = toggle.getBoundingClientRect();
     return {
       left: r.left - reliquaryToggleDx,
-      top: r.top - reliquaryToggleDy,
+      top: r.top - dockRaise - reliquaryToggleDy,
       width: r.width,
       height: r.height,
       right: r.right - reliquaryToggleDx,
-      bottom: r.bottom - reliquaryToggleDy
+      bottom: r.bottom - dockRaise - reliquaryToggleDy
     };
   }
 
