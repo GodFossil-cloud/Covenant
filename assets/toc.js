@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.8 (Tap-open: measured tab carry, notch seat vars) */
+/*! Covenant ToC v3.2.9 (ToC cap shift seat + header title removed) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.8';
+  window.COVENANT_TOC_VERSION = '3.2.9';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -56,6 +56,9 @@
   // ToC toggle "carry" offsets (so the dock tab can ride with the sheet).
   var tocToggleDx = 0;
   var tocToggleDy = 0;
+
+  // ToC tab medallion seat shift (moves the round cap into the header cutout).
+  var tocCapShiftY = 0;
 
   // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
   var tapAnimating = false;
@@ -289,6 +292,95 @@
   function getTocSeatDy() { return resolveCssVarPx('--toc-seat-dy') || 0; }
   function getTocSeatOverlapPx() { return resolveCssVarPx('--toc-seat-overlap') || 0; }
 
+  function getDockCapLiftPx() {
+    var v = resolveCssVarPx('--dock-cap-lift');
+    if (typeof v === 'number' && !isNaN(v) && v !== 0) return v;
+    // Fallback: keep in sync with toc.css default.
+    return 10;
+  }
+
+  function setTocCapShiftPx(y, draggingNow, snapMs, snapEase) {
+    if (!tocToggle) return;
+
+    var cap = tocToggle.querySelector('.dock-cap');
+    var glyph = tocToggle.querySelector('.toc-glyph');
+    if (!cap && !glyph) return;
+
+    var ms = (typeof snapMs === 'number' && !isNaN(snapMs) && snapMs > 0) ? snapMs : getSnapMs();
+    var ease = snapEase || getSnapEase();
+
+    var next = (typeof y === 'number' && !isNaN(y)) ? y : 0;
+
+    if (!draggingNow) next = Math.round(next);
+
+    // Clamp: prevents a wild rect measurement from flinging the cap offscreen.
+    if (next > 260) next = 260;
+    if (next < -260) next = -260;
+
+    tocCapShiftY = next;
+
+    var lift = getDockCapLiftPx();
+
+    if (cap) {
+      cap.style.transform = 'translate3d(-50%,' + ((-1 * lift) + next) + 'px,0)';
+      cap.style.transition = draggingNow ? 'none' : ('transform ' + ms + 'ms ' + ease);
+      cap.style.willChange = 'transform';
+    }
+
+    if (glyph) {
+      glyph.style.transform = 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + next) + 'px)';
+      glyph.style.transition = draggingNow ? 'none' : ('transform ' + ms + 'ms ' + ease);
+      glyph.style.willChange = 'transform';
+    }
+  }
+
+  function clearTocCapShift() {
+    tocCapShiftY = 0;
+
+    if (!tocToggle) return;
+
+    var cap = tocToggle.querySelector('.dock-cap');
+    var glyph = tocToggle.querySelector('.toc-glyph');
+
+    if (cap) {
+      cap.style.transform = '';
+      cap.style.transition = '';
+      cap.style.willChange = '';
+    }
+
+    if (glyph) {
+      glyph.style.transform = '';
+      glyph.style.transition = '';
+      glyph.style.willChange = '';
+    }
+  }
+
+  function updateTocCapShift(progress, draggingNow, snapMs, snapEase) {
+    if (!tocToggle || !tocPanel) return;
+
+    var cap = tocToggle.querySelector('.dock-cap');
+    if (!cap || !cap.getBoundingClientRect) return;
+
+    var header = tocPanel.querySelector('.toc-panel-header');
+    if (!header || !header.getBoundingClientRect) return;
+
+    var p = (typeof progress === 'number' && !isNaN(progress)) ? progress : 0;
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+
+    var capRect = cap.getBoundingClientRect();
+    var headerRect = header.getBoundingClientRect();
+
+    var capCenterY = capRect.top + (capRect.height / 2);
+    var baseCenterY = capCenterY - tocCapShiftY;
+
+    var targetY = headerRect.top + (headerRect.height / 2);
+
+    var shift = (targetY - baseCenterY) * p;
+
+    setTocCapShiftPx(shift, !!draggingNow, snapMs, snapEase);
+  }
+
   // Dock window alignment (hole punch): position the cutout using real socket geometry,
   // not idealized "50%" assumptions (footer layout can shift the seals cluster).
   function alignDockWindowToSocket() {
@@ -383,6 +475,8 @@
     tocToggle.style.setProperty('--toc-toggle-drag-x', '0px');
     tocToggle.style.setProperty('--toc-toggle-drag-y', '0px');
     tocToggle.classList.remove('is-toc-dragging');
+
+    clearTocCapShift();
   }
 
   function getTocToggleBaseRect() {
@@ -449,6 +543,7 @@
       var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
 
       setTocToggleOffset(dx, dy, false);
+      updateTocCapShift(1, false);
     });
   }
 
@@ -473,13 +568,11 @@
       if (Math.abs(dx - tocToggleDx) <= thr && Math.abs(dy - tocToggleDy) <= thr) return;
 
       setTocToggleOffset(dx, dy, false);
+      updateTocCapShift(1, false);
     });
   }
 
   function getFooterReservedPx() {
-    // Prefer a real measurement; CSS vars can drift (safe-area, padding, device rounding).
-    // On iOS Safari, measuring "height" can be subtly wrong if the visual viewport is in flux;
-    // reserving by footer-top-to-viewport-bottom keeps the ToC sheet flush to the dock.
     var footer = document.querySelector('.nav-footer');
     if (footer && footer.getBoundingClientRect) {
       var r = footer.getBoundingClientRect();
@@ -517,7 +610,6 @@
     var topSafe = readCssNumberVar('--toc-top-safe');
     var gap = readCssNumberVar('--toc-panel-gap');
 
-    // Keep overlay + sheet in perfect agreement (mobile seam fix).
     root.style.setProperty('--toc-footer-reserved', footerReserved + 'px');
 
     var bottom = footerReserved + (gap || 0);
@@ -537,14 +629,12 @@
     tocPanel.style.bottom = bottom + 'px';
     tocPanel.style.maxHeight = maxH + 'px';
 
-    // Mobile: fill the available height without relying on top:0 (which can cause iOS seam drift).
     if (mobile) {
       tocPanel.style.height = maxH + 'px';
     } else {
       tocPanel.style.height = '';
     }
 
-    // Mobile-only: anchor the sheet from the ToC tab's left edge to the viewport right edge.
     if (tocToggle && mobile) {
       var rect = tocToggle.getBoundingClientRect();
       var left = Math.max(0, Math.round(rect.left));
@@ -568,7 +658,6 @@
     var h = (rect && rect.height) ? rect.height : 1;
     var closedOffsetPx = readCssNumberVar('--toc-closed-offset') || 0;
 
-    // Small extra sink to guarantee the sheet clears the viewport baseline.
     var SINK_PX = 4;
 
     return Math.max(1, h + closedOffsetPx + SINK_PX);
@@ -1047,7 +1136,6 @@
   }
 
   function requestCloseAllPanelsForNavigation() {
-    // Preferred: use the coordinator if present.
     try {
       var stack = window.COVENANT_UI_STACK;
       if (stack && typeof stack.requestCloseAll === 'function') {
@@ -1058,7 +1146,6 @@
   }
 
   function getNavigationDelayMs() {
-    // Use the longest snap timing among the panels we might close, plus a small safety buffer.
     var maxMs = Math.max(
       readCssNumberVar('--toc-snap-duration') || 0,
       readCssNumberVar('--reliquary-snap-duration') || 0,
@@ -1078,12 +1165,10 @@
 
     if (tocConfirmBtn) tocConfirmBtn.disabled = true;
 
-    // Ensure the "holding" state clears immediately even if close is deferred by animation guards.
     cancelHold();
 
     requestCloseAllPanelsForNavigation();
 
-    // Close ToC last (even if other toggles close it, this is safe).
     closeToC(false);
 
     var href = pendingHref;
@@ -1107,7 +1192,6 @@
     var pointerId = null;
     var dragSource = null; // 'seal' or 'handle'
 
-    // Allow tap-to-open on iOS Safari by only initiating drag after MOVE_SLOP.
     var sealPrimed = false;
     var sealPointerId = null;
     var sealStartY = 0;
@@ -1141,10 +1225,7 @@
 
     var SNAP_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
-    // Extra sink to guarantee the sheet fully clears the viewport (prevents 1px sliver flashes on iOS).
     var CLOSE_SINK_PX = 4;
-
-    // Cancel-open needs a deeper sink because iOS may briefly re-composite through the footer on the final frame.
     var CANCEL_OPEN_SINK_PX = 12;
 
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
@@ -1178,14 +1259,10 @@
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
-      // Requirement: sheet stays opaque during drag-open AND drag-close.
       tocPanel.style.opacity = '1';
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
-      // During live drag on mobile: keep the tab welded to the sheet's current top edge.
-      // During snap settle: do NOT recompute from getBoundingClientRect() (it will freeze at release-time);
-      // use the precomputed openDyWanted so the tab can transition smoothly.
       var dy = openDyWanted * progress;
       if (isMobileSheet() && draggingNow) {
         var base = getTocToggleBaseRect();
@@ -1195,9 +1272,10 @@
         }
       }
 
-      // Preserve any pre-set dx during snap (snap-open sets dx before applyDragFrame).
       var dx = draggingNow ? 0 : tocToggleDx;
       setTocToggleOffset(dx, dy, !!draggingNow);
+
+      updateTocCapShift(progress, !!draggingNow, SNAP_MS, SNAP_EASE);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
@@ -1208,7 +1286,6 @@
 
       var rect = tocPanel.getBoundingClientRect();
 
-      // Open top is where the sheet will land when y == openLiftPx.
       var y = (typeof yNow === 'number' && !isNaN(yNow)) ? yNow : 0;
       var openTop = rect.top - (y - openLiftPx);
 
@@ -1250,11 +1327,8 @@
         noteOpenToUIStack();
       }
 
-      // Drag-open should keep toc-opening through the snap settle; snap() removes it after motion completes.
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
-
-      // NOTE: final weld is applied after snap completes (see snap()).
     }
 
     function settleDockAfterSnapClose() {
@@ -1264,7 +1338,6 @@
       root.classList.add('toc-dock-settling');
       root.classList.remove('toc-closing');
 
-      // Return the tab to the dock once the sheet is gone.
       clearTocToggleOffset();
 
       setTimeout(function () {
@@ -1275,7 +1348,6 @@
     function finalizeCloseAfterSnap() {
       if (!tocPanel || !tocOverlay) return;
 
-      // Now that motion is complete, it is safe to perform state cleanup without affecting snap geometry.
       disableFocusTrap();
       cancelHold();
 
@@ -1287,7 +1359,6 @@
       tocOverlay.classList.remove('is-open');
       tocOverlay.setAttribute('aria-hidden', 'true');
 
-      // Force-invisible to avoid any iOS compositor "one last frame" flash.
       tocPanel.style.opacity = '0';
       tocOverlay.style.opacity = '0';
 
@@ -1305,7 +1376,6 @@
       if (target && target.focus) target.focus();
       focusReturnEl = null;
 
-      // Keep the final snapped transform in place; openToC() clears it before opening.
       tocPanel.style.transition = '';
       tocOverlay.style.transition = '';
     }
@@ -1319,7 +1389,6 @@
       root.classList.remove('toc-opening');
       root.classList.remove('toc-dock-settling');
 
-      // Re-align the dock window for the snap-down phase.
       alignDockWindowToSocket();
 
       var targetY = closedY + CLOSE_SINK_PX;
@@ -1361,7 +1430,6 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
-        // Compute the final weld position up-front so the tab transitions smoothly during snap.
         var base = getTocToggleBaseRect();
         if (base && tocPanel && tocPanel.getBoundingClientRect) {
           var rectNow = tocPanel.getBoundingClientRect();
@@ -1376,7 +1444,8 @@
         applyDragFrame(openLiftPx, false);
         applyOpenStateFromDrag();
 
-        // After snap completes, do a gentle re-weld in case of subpixel drift.
+        updateTocCapShift(1, false, SNAP_MS, SNAP_EASE);
+
         setTimeout(function () {
           alignToggleToPanelCornerIfDrift(1);
         }, SNAP_MS + 60);
@@ -1388,17 +1457,14 @@
           else if (tocPanel.focus) tocPanel.focus();
         }, 0);
       } else {
-        // Ensure the dock stays above the sheet for the full snap-down (even if not "open").
         if (!startWasOpen) root.classList.add('toc-opening');
 
         setTocToggleOffset(0, 0, false);
+        setTocCapShiftPx(0, false, SNAP_MS, SNAP_EASE);
 
         if (startWasOpen) {
-          // Keep the panel "open" until the snap-down finishes, then do close bookkeeping.
           snapCloseFromOpen();
         } else {
-          // Cancel-open: snap fully offscreen, then keep the offscreen transform in place.
-          // Clearing transform here can briefly re-enable the CSS baseline translateY(10px) which iOS may flash.
           applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
         }
       }
@@ -1415,17 +1481,13 @@
             tocOverlay.style.transition = '';
           }
 
-          // Drag-open completes only after snap settle.
           root.classList.remove('toc-opening');
         } else if (!startWasOpen) {
-          // Cancel-open cleanup: force invisible, but keep the offscreen transform.
-          // Also keep the footer elevated for a couple frames while iOS finishes compositor cleanup.
           tocPanel.style.opacity = '0';
           if (tocOverlay) tocOverlay.style.opacity = '0';
           tocPanel.style.transition = '';
           if (tocOverlay) tocOverlay.style.transition = '';
 
-          // If drag-open started while Reliquary was open, the ToC must release the UI stack now.
           noteCloseToUIStack();
 
           root.classList.add('toc-dock-settling');
@@ -1439,6 +1501,7 @@
 
           setTimeout(function () {
             root.classList.remove('toc-dock-settling');
+            clearTocCapShift();
           }, SNAP_MS + 80);
         }
       }, SNAP_MS + 20);
@@ -1459,36 +1522,29 @@
 
       startWasOpen = tocPanel.classList.contains('is-open');
 
-      // Ensure layout constraints are applied before we measure height.
       positionPanel();
 
       computeOpenLift();
 
-      // Ensure UI stack sees "open" during drag from frame 0 (no root-class fallback).
       tocPanel.classList.add('is-dragging');
       if (tocToggle) tocToggle.classList.add('is-toc-dragging');
 
-      // If we are starting from open, we are "closing" (so the dock hole-punch stays active while dragging down).
       if (startWasOpen) {
         root.classList.add('toc-closing');
         root.classList.remove('toc-opening');
         root.classList.remove('toc-dock-settling');
 
-        // Align immediately; the footer socket can drift under viewport changes.
         alignDockWindowToSocket();
       }
 
-      // If we are starting from closed, we are "opening" (even before fully open).
       if (!startWasOpen) {
         root.classList.remove('toc-closing');
         root.classList.add('toc-opening');
         root.classList.remove('toc-dock-settling');
         renderToC();
 
-        // The dock window must be aligned the moment toc-opening begins.
         alignDockWindowToSocket();
 
-        // Enter the UI stack immediately so z-index assignment happens before first paint.
         noteOpenToUIStack();
       }
 
@@ -1499,10 +1555,8 @@
       tocPanel.style.transition = 'none';
       if (tocOverlay) tocOverlay.style.transition = 'none';
 
-      // Make sure the panel is at the expected start transform before measuring open-top.
       tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
 
-      // Mobile: re-seat the "closed" start so the sheet top begins flush to the tab bottom.
       if (!startWasOpen && isMobileSheet()) {
         var base = getTocToggleBaseRect();
         if (base && tocPanel && tocPanel.getBoundingClientRect) {
@@ -1523,7 +1577,6 @@
         }
       }
 
-      // Precompute the tab's open offset once, so move frames stay cheap (desktop/fallback).
       openDyWanted = computeOpenDyForCurrentDragState(currentY);
 
       applyDragFrame(currentY, true);
@@ -1533,7 +1586,6 @@
         try { captureTarget.setPointerCapture(e.pointerId); } catch (err) {}
       }
 
-      // Only prevent default once drag has actually begun.
       if (e && e.preventDefault) e.preventDefault();
     }
 
@@ -1575,7 +1627,6 @@
         setTimeout(function () { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       } else {
-        // No drag gesture actually happened (likely a click); clear transient state.
         if (startWasOpen) root.classList.remove('toc-closing');
         else root.classList.remove('toc-opening');
       }
@@ -1598,8 +1649,6 @@
     tocToggle.addEventListener('pointerdown', function (e) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-      // Prime a possible drag, but do not preventDefault so a tap can still produce a click.
-      // Still capture the pointer so iOS doesn't drop pointermove events mid-gesture.
       sealPrimed = true;
       sealPointerId = e.pointerId;
       sealStartY = e.clientY;
@@ -1610,7 +1659,6 @@
     });
 
     tocToggle.addEventListener('pointermove', function (e) {
-      // If drag is already active, keep moving.
       if (dragging) {
         moveDrag(e);
         return;
@@ -1621,7 +1669,6 @@
       var dy = e.clientY - sealStartY;
       if (Math.abs(dy) <= MOVE_SLOP) return;
 
-      // Promote to an actual drag.
       sealPrimed = false;
       beginDrag(e, 'seal', sealStartY);
       moveDrag(e);
@@ -1718,7 +1765,6 @@
       return;
     }
 
-    // Clear any residual inline snap styles left behind by drag-close OR cancel-open.
     tocPanel.style.transform = '';
     tocPanel.style.opacity = '';
     tocPanel.style.transition = '';
@@ -1764,7 +1810,6 @@
 
     enableFocusTrap();
 
-    // Step 2/3: animate the sheet up from fully-closed, and start tab travel on the same frame.
     (function animateTapOpen() {
       var snapMs = getSnapMs();
       var snapEase = getSnapEase();
@@ -1772,20 +1817,18 @@
       tapAnimating = true;
       root.classList.add('toc-opening');
 
-      // The dock window must be aligned the moment toc-opening begins.
       alignDockWindowToSocket();
 
-      // Start from fully-closed geometry.
       var openLift = readCssNumberVar('--toc-open-lift') || 0;
       var closedY = computePanelClosedY();
 
       var dxTarget = 0;
       var dyTarget = 0;
+      var capShiftTarget = 0;
 
       tocPanel.style.transition = 'none';
       tocOverlay.style.transition = 'none';
 
-      // Measure the *real* open seat (no prediction): temporarily place the panel at openLift while hidden.
       tocPanel.style.opacity = '0';
       tocOverlay.style.opacity = '0';
 
@@ -1799,15 +1842,28 @@
           dxTarget = computeOpenToggleDxFromPanelLeft(rect.left, base);
           dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
         }
+
+        // Measure cap seat against the real header geometry at the open position.
+        var header = tocPanel.querySelector('.toc-panel-header');
+        var cap = tocToggle ? tocToggle.querySelector('.dock-cap') : null;
+        if (header && cap && header.getBoundingClientRect && cap.getBoundingClientRect) {
+          var headerRect = header.getBoundingClientRect();
+          var capRect = cap.getBoundingClientRect();
+
+          var headerCenterY = headerRect.top + (headerRect.height / 2);
+          var capCenterY = capRect.top + (capRect.height / 2);
+
+          capShiftTarget = headerCenterY - (capCenterY + dyTarget);
+        }
       } catch (err) {}
 
-      // Restore: start from fully-closed (visible) and snap up.
       tocPanel.style.opacity = '1';
       setPanelTranslateY(closedY);
 
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
         setTocToggleOffset(dxTarget, dyTarget, false);
+        setTocCapShiftPx(capShiftTarget, false, snapMs, snapEase);
 
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
         tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
@@ -1816,7 +1872,6 @@
         tocOverlay.style.opacity = '1';
 
         setTimeout(function () {
-          // Hand control back to CSS baseline once the snap completes.
           tocPanel.style.transform = '';
           tocPanel.style.opacity = '';
           tocPanel.style.transition = '';
@@ -1826,7 +1881,6 @@
           root.classList.remove('toc-opening');
           tapAnimating = false;
 
-          // Only re-weld if there is meaningful drift (prevents a 1px end-twitch on some devices).
           alignToggleToPanelCornerIfDrift(1);
         }, snapMs + 50);
       });
@@ -1851,17 +1905,13 @@
       clearPendingSelection();
     }
 
-    // Clear any previous "settle" phase.
     root.classList.remove('toc-dock-settling');
 
-    // Keep footer above sheet until close fully completes.
     root.classList.add('toc-closing');
     root.classList.remove('toc-opening');
 
-    // The dock window must also be aligned for the slide-down.
     alignDockWindowToSocket();
 
-    // Keep the panel/overlay present for the full slide-down.
     tocPanel.classList.add('is-closing');
     tocPanel.classList.add('is-open');
     tocOverlay.classList.add('is-open');
@@ -1877,7 +1927,6 @@
 
     tapAnimating = true;
 
-    // Start from the open position, then slide fully down.
     var openLift = readCssNumberVar('--toc-open-lift') || 0;
     var closedY = computePanelClosedY();
 
@@ -1891,8 +1940,8 @@
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
-      // Begin tab return on the same frame the sheet begins its slide.
       setTocToggleOffset(0, 0, false);
+      setTocCapShiftPx(0, false, snapMs, snapEase);
 
       tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
@@ -1915,7 +1964,6 @@
 
         noteCloseToUIStack();
 
-        // Keep a tiny "settling" window so z-layer + hover state do not flip mid tab-transition.
         root.classList.add('toc-dock-settling');
         root.classList.remove('toc-closing');
 
@@ -1932,7 +1980,6 @@
 
         focusReturnEl = null;
 
-        // Leave the panel translated down (in inline transform) until next open clears styles.
         tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + closedY + 'px)';
 
         tapAnimating = false;

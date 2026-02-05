@@ -6,13 +6,8 @@
     <!-- Drag handle region (for sheet-style close gesture when open). -->
     <div class="toc-drag-region" id="tocDragRegion" aria-hidden="true"></div>
 
-    <!-- Accessibility label (kept in DOM). -->
+    <!-- Accessibility label (kept in DOM; visual title removed to avoid medallion cutout conflict). -->
     <div class="toc-panel-title sr-only" id="tocPanelTitle">Contents</div>
-
-    <!-- Produced header/title (visible). Mirrors the current/staged journey title. -->
-    <div class="toc-produced" id="tocProduced" aria-live="polite" aria-atomic="true">
-      <div class="toc-produced-title" id="tocProducedTitle" role="heading" aria-level="2"></div>
-    </div>
   </div>
 
   <button class="toc-confirm-btn" id="tocConfirm" type="button" hidden disabled aria-label="Enter selected page">Enter</button>
