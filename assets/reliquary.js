@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.18 (Mirror tap-open: measured carry, no prediction, no fly-off) */
+/*! Covenant Reliquary UI v0.3.19 (Organize only; no behavior change) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.18';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.19';
 
   var doc = document;
   var root = doc.documentElement;
@@ -89,21 +89,10 @@
     }
   }
 
-  function getSeatDy() {
-    return resolveCssVarPx('--reliquary-seat-dy') || 0;
-  }
-
-  function getSeatOverlapPx() {
-    return resolveCssVarPx('--reliquary-seat-overlap') || 0;
-  }
-
-  function getNotchH() {
-    return resolveCssVarPx('--reliquary-notch-h') || 0;
-  }
-
-  function getDockTabRaisePx() {
-    return resolveCssVarPx('--dock-tab-raise') || 0;
-  }
+  function getSeatDy() { return resolveCssVarPx('--reliquary-seat-dy') || 0; }
+  function getSeatOverlapPx() { return resolveCssVarPx('--reliquary-seat-overlap') || 0; }
+  function getNotchH() { return resolveCssVarPx('--reliquary-notch-h') || 0; }
+  function getDockTabRaisePx() { return resolveCssVarPx('--dock-tab-raise') || 0; }
 
   // Dock window alignment (hole punch): align the cutout to the RIGHT socket (Mirror tab),
   // using live footer/seals geometry (not idealized 50% assumptions).
@@ -320,7 +309,7 @@
   // Mirror medallion (cap) shift.
   var mirrorCapShiftY = 0;
 
-  function setMirrorCapShiftPx(y, draggingNow) {
+  function setMirrorCapShiftPx(y) {
     if (!toggle) return;
 
     var v = (typeof y === 'number' && isFinite(y)) ? y : 0;
@@ -357,7 +346,7 @@
       var shift = (targetY - baseCenterY) * p;
 
       if (!isFinite(shift)) shift = 0;
-      setMirrorCapShiftPx(shift, !!draggingNow);
+      setMirrorCapShiftPx(shift);
     } catch (err) {}
   }
 
@@ -727,7 +716,7 @@
 
     noteClose();
 
-    setMirrorCapShiftPx(0, false);
+    setMirrorCapShiftPx(0);
 
     if (restoreFocus) {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
@@ -756,7 +745,7 @@
 
     // Tap-open carries the Mirror tab upward, but uses measurement (no prediction) to avoid fly-off.
     setReliquaryToggleOffset(0, 0, false);
-    setMirrorCapShiftPx(0, false);
+    setMirrorCapShiftPx(0);
 
     openReliquaryImmediately();
 
@@ -823,7 +812,7 @@
       overlay.style.opacity = '1';
 
       setReliquaryToggleOffset(dxTarget, dyTarget, false);
-      setMirrorCapShiftPx(capShiftTarget, false);
+      setMirrorCapShiftPx(capShiftTarget);
 
       setTimeout(function () {
         panel.style.transform = '';
@@ -880,7 +869,7 @@
 
       // Snap both the sheet and the carried tab back into the dock.
       setReliquaryToggleOffset(0, 0, false);
-      setMirrorCapShiftPx(0, false);
+      setMirrorCapShiftPx(0);
 
       setPanelTranslateY(closedY);
       overlay.style.opacity = '0';
@@ -1119,7 +1108,7 @@
 
       settleDockAfterSnapClose();
 
-      setMirrorCapShiftPx(0, false);
+      setMirrorCapShiftPx(0);
 
       if (restoreFocus) {
         var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
@@ -1197,7 +1186,7 @@
         }, SNAP_MS + 30);
       } else {
         setReliquaryToggleOffset(0, 0, false);
-        setMirrorCapShiftPx(0, false);
+        setMirrorCapShiftPx(0);
 
         if (startWasOpen) {
           snapCloseFromOpen();
@@ -1453,7 +1442,7 @@
     if (panel.classList.contains('is-open')) closeReliquaryTap(true);
   });
 
-  window.addEventListener('resize', function () {
+  function onViewportChange() {
     if (root && root.classList && (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing'))) {
       alignDockWindowToRightSocket();
     }
@@ -1462,18 +1451,10 @@
       positionPanel();
       alignToggleToPanelCorner();
     }
-  });
+  }
 
-  window.addEventListener('orientationchange', function () {
-    if (root && root.classList && (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing'))) {
-      alignDockWindowToRightSocket();
-    }
-
-    if (panel && panel.classList.contains('is-open')) {
-      positionPanel();
-      alignToggleToPanelCorner();
-    }
-  });
+  window.addEventListener('resize', onViewportChange);
+  window.addEventListener('orientationchange', onViewportChange);
 
   window.addEventListener('blur', function () {
     if (!isTopmostForDismiss()) return;

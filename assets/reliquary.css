@@ -1,4 +1,8 @@
-/*! Covenant Reliquary Panel Styles v0.3.3 (Medallion-only tab + divider-to-top connector) */
+/*! Covenant Reliquary Panel Styles v0.3.4 (Organize only; no behavior change) */
+
+/* -------------------------------------------------
+   Variables
+   ------------------------------------------------- */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -32,15 +36,15 @@
   --reliquary-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
 }
 
+/* -------------------------------------------------
+   State gates
+   ------------------------------------------------- */
+
 /* When Reliquary is open, keep the Lexicon gate closed (Lexicon must open first). */
 html.reliquary-opening #lexiconToggle,
 html.reliquary-open #lexiconToggle,
 html.reliquary-closing #lexiconToggle,
 html.reliquary-dock-settling #lexiconToggle{opacity:.28;filter:grayscale(1)}
-
-/* Scroll lock (Reliquary). */
-html.reliquary-scroll-lock{overflow:hidden}
-body.reliquary-scroll-lock{position:fixed;width:100%}
 
 /* Lift the dock above the sheet while Reliquary is in motion/open (prevents z-pop). */
 html.reliquary-opening .nav-footer,
@@ -54,6 +58,13 @@ html.reliquary-closing #mirrorToggle,
 html.reliquary-dock-settling #mirrorToggle{position:relative;z-index:1602}
 
 html.reliquary-dock-settling #mirrorToggle{pointer-events:none}
+
+/* -------------------------------------------------
+   Scroll lock
+   ------------------------------------------------- */
+
+html.reliquary-scroll-lock{overflow:hidden}
+body.reliquary-scroll-lock{position:fixed;width:100%}
 
 /* -------------------------------------------------
    Dock tab carry (Mirror button)
@@ -127,11 +138,7 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   overflow:hidden;
 }
 
-.reliquary-panel.is-open{
-  opacity:1;
-  transform:translateX(var(--reliquary-panel-x)) translateY(var(--reliquary-open-lift, 0px));
-}
-
+.reliquary-panel.is-open{opacity:1;transform:translateX(var(--reliquary-panel-x)) translateY(var(--reliquary-open-lift, 0px))}
 .reliquary-panel.is-dragging{transition:none !important}
 
 .reliquary-panel[aria-hidden="true"]{pointer-events:none}
@@ -235,12 +242,20 @@ html.reliquary-dock-settling .reliquary-panel-header::after{
   border-radius:8px;
 }
 
+/* -------------------------------------------------
+   Reduced motion
+   ------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce){
   :root{--reliquary-snap-duration:1ms}
   .reliquary-overlay{transition:none}
   .reliquary-panel{transition:opacity 140ms ease !important;transform:translateX(var(--reliquary-panel-x, -50%)) !important}
   html #mirrorToggle.dock-tab{transition:none}
 }
+
+/* -------------------------------------------------
+   Mobile
+   ------------------------------------------------- */
 
 @media (max-width:600px){
   /* On mobile, overbite a little deeper to prevent iOS/Safari seams reading as a true see-through gap. */
@@ -251,6 +266,7 @@ html.reliquary-dock-settling .reliquary-panel-header::after{
     left:0;
     right:var(--reliquary-panel-right, 0px);
     width:auto;
+
     /* Sharp 90° corner (upper-right) */
     border-radius:0;
   }
