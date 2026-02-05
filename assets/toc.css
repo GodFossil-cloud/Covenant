@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.23 (Mirror medallion shift transition + Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.24 (Mirror tab carries on Reliquary tap-open/close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -292,8 +292,22 @@ html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0) translateY(-.5px);z-index:2}
 
-/* Mirror tab can be "drag carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
-html #mirrorToggle.dock-tab{transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0)}
+/* Mirror tab can be "carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
+html #mirrorToggle.dock-tab{
+  transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0);
+  transition:transform var(--reliquary-snap-duration, 420ms) var(--reliquary-snap-ease, cubic-bezier(.22,.61,.36,1));
+  will-change:transform;
+
+  /* Make the seal a reliable drag surface on touch devices. */
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+
+  cursor:ns-resize;
+}
+
+html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 
 /* ToC tab can be "drag carried" upward to stay physically attached to the ToC sheet. */
 html #tocToggle.dock-tab{

@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.17 (Mirror tap-open: no carry, no bounce, no fly-off) */
+/*! Covenant Reliquary UI v0.3.18 (Mirror tap-open: measured carry, no prediction, no fly-off) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.17';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.18';
 
   var doc = document;
   var root = doc.documentElement;
@@ -754,8 +754,7 @@
     overlay.style.opacity = '';
     overlay.style.transition = '';
 
-    // Tap-open is deliberately "direct": do NOT carry the Mirror tab upward.
-    // (Drag-open still carries it.)
+    // Tap-open carries the Mirror tab upward, but uses measurement (no prediction) to avoid fly-off.
     setReliquaryToggleOffset(0, 0, false);
     setMirrorCapShiftPx(0, false);
 
@@ -773,12 +772,47 @@
 
     var closedY = computePanelClosedY();
 
+    // Measure the *real* open seat so the tab carry lands cleanly across layouts.
+    var dxTarget = 0;
+    var dyTarget = 0;
+    var capShiftTarget = 0;
+
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
-    panel.style.opacity = '1';
+    // Hide during measurement to avoid any flash.
+    panel.style.opacity = '0';
     overlay.style.opacity = '0';
 
+    // Temporarily place the panel at its open target so we can measure header + corner.
+    setPanelTranslateY(openLift);
+
+    try {
+      var base = getToggleBaseRect();
+      var rect = panel.getBoundingClientRect();
+
+      if (base && rect) {
+        dxTarget = computeOpenToggleDxFromPanelRight(rect.right, base);
+        dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
+      }
+
+      var cap = toggle.querySelector('.dock-cap');
+      var header = panel.querySelector('.reliquary-panel-header');
+
+      if (cap && header && cap.getBoundingClientRect && header.getBoundingClientRect) {
+        var capRect = cap.getBoundingClientRect();
+        var headerRect = header.getBoundingClientRect();
+
+        var headerCenterY = headerRect.top + (headerRect.height / 2);
+        var capCenterY = capRect.top + (capRect.height / 2);
+
+        // Cap center will move with the tab carry by dyTarget.
+        capShiftTarget = headerCenterY - (capCenterY + dyTarget);
+      }
+    } catch (err) {}
+
+    // Restore the start state (closed) for the snap animation.
+    panel.style.opacity = '1';
     setPanelTranslateY(closedY);
 
     raf(function () {
@@ -787,6 +821,9 @@
 
       setPanelTranslateY(openLift);
       overlay.style.opacity = '1';
+
+      setReliquaryToggleOffset(dxTarget, dyTarget, false);
+      setMirrorCapShiftPx(capShiftTarget, false);
 
       setTimeout(function () {
         panel.style.transform = '';
@@ -798,6 +835,9 @@
 
         root.classList.remove('reliquary-opening');
         tapAnimating = false;
+
+        // Ensure the tab stays snapped to the real panel corner after the open settles.
+        alignToggleToPanelCornerIfDrift(1);
 
         setTimeout(focusIntoPanel, 0);
       }, snapMs + 50);
@@ -835,11 +875,12 @@
     setPanelTranslateY(openLift);
 
     raf(function () {
-      setReliquaryToggleOffset(0, 0, false);
-      setMirrorCapShiftPx(0, false);
-
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
+
+      // Snap both the sheet and the carried tab back into the dock.
+      setReliquaryToggleOffset(0, 0, false);
+      setMirrorCapShiftPx(0, false);
 
       setPanelTranslateY(closedY);
       overlay.style.opacity = '0';
