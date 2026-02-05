@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.6 (Seat overlap shim) */
+/*! Covenant Reliquary UI v0.3.7 (Drag seat: continuous notch lock) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.6';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.7';
 
   var doc = document;
   var root = doc.documentElement;
@@ -924,8 +924,11 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
+      // IMPORTANT: during drag-open we must keep the tab mechanically locked to the notch each frame.
+      // Scaling "openDyWanted * progress" causes a tiny early gap that only closes at full open.
       var dy = openDyWanted * progress;
-      if (isMobileSheet() && draggingNow) {
+
+      if (draggingNow) {
         var base = getToggleBaseRect();
         if (base && panel && panel.getBoundingClientRect) {
           var r = panel.getBoundingClientRect();
