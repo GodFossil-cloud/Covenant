@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.27 (Darken header notch connector strip) */
+/*! Covenant ToC Panel Styles v3.1.28 (Persistent header connector strip) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -716,10 +716,8 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
   --toc-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
 }
 
-html.toc-opening .toc-panel-header::after,
-html.toc-open .toc-panel-header::after,
-html.toc-closing .toc-panel-header::after,
-html.toc-dock-settling .toc-panel-header::after{
+/* Persistent connector strip: visible regardless of root motion classes. */
+.toc-panel-header::after{
   content:'';
   position:absolute;
   left:0;
@@ -743,6 +741,12 @@ html.toc-dock-settling .toc-panel-header::after{
   z-index:0;
   opacity:1;
 }
+
+/* Belt + suspenders: keep the strip fully present during drag/snap choreography. */
+html.toc-opening .toc-panel-header::after,
+html.toc-open .toc-panel-header::after,
+html.toc-closing .toc-panel-header::after,
+html.toc-dock-settling .toc-panel-header::after{opacity:1}
 
 html.toc-opening .toc-produced,
 html.toc-open .toc-produced,
