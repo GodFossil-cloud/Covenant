@@ -237,7 +237,7 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 
 @media (max-width:600px){
   /* On mobile, overbite a little deeper to prevent iOS/Safari clip-path seams reading as a true see-through gap. */
-  :root{--reliquary-seat-overlap:14px}
+  :root{--reliquary-seat-overlap:15px}
 
   .reliquary-panel{
     --reliquary-panel-x:0px;
