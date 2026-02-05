@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.7 (Tap-open: measured tab carry, no prediction) */
+/*! Covenant ToC v3.2.8 (Tap-open: measured tab carry, notch seat vars) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.7';
+  window.COVENANT_TOC_VERSION = '3.2.8';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -244,6 +244,51 @@
     }
   }
 
+  // Resolve calc()/var()-based custom properties to computed px using a probe element.
+  var cssVarProbeEl = null;
+
+  function getCssVarProbeEl() {
+    if (cssVarProbeEl) return cssVarProbeEl;
+
+    try {
+      var el = document.createElement('div');
+      el.setAttribute('data-covenant-css-probe', '1');
+      el.style.position = 'fixed';
+      el.style.left = '0';
+      el.style.top = '0';
+      el.style.width = '0';
+      el.style.height = '0';
+      el.style.overflow = 'hidden';
+      el.style.visibility = 'hidden';
+      el.style.pointerEvents = 'none';
+
+      (document.body || document.documentElement).appendChild(el);
+      cssVarProbeEl = el;
+      return el;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function resolveCssVarPx(varName) {
+    try {
+      var el = getCssVarProbeEl();
+      if (!el) return 0;
+
+      // margin-top is safe to read as a computed px length.
+      el.style.marginTop = 'var(' + varName + ')';
+      var raw = getComputedStyle(el).marginTop;
+      var v = parseFloat(String(raw || '').trim());
+      return isNaN(v) ? 0 : v;
+    } catch (err) {
+      return 0;
+    }
+  }
+
+  function getTocNotchH() { return resolveCssVarPx('--toc-notch-h') || 0; }
+  function getTocSeatDy() { return resolveCssVarPx('--toc-seat-dy') || 0; }
+  function getTocSeatOverlapPx() { return resolveCssVarPx('--toc-seat-overlap') || 0; }
+
   // Dock window alignment (hole punch): position the cutout using real socket geometry,
   // not idealized "50%" assumptions (footer layout can shift the seals cluster).
   function alignDockWindowToSocket() {
@@ -362,15 +407,28 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Mobile requirement: tab bottom edge flush with sheet top edge (tab can ride offscreen when fully open).
-    // Desktop requirement: preserve previous "top seam" behavior (tab remains visible as a dock affordance).
-    var targetTop = openPanelTop;
+    // Prefer the notch-seat model when available.
+    // targetTop = panelTop + notchH - tabH + seatDy + seatOverlap
+    var notchH = getTocNotchH();
+    var seatDy = getTocSeatDy();
+    var overlapPx = getTocSeatOverlapPx();
 
-    if (isMobileSheet()) {
-      targetTop = openPanelTop - baseRect.height;
+    if (notchH && notchH > 0) {
+      var targetTop = openPanelTop + notchH - baseRect.height;
+      targetTop = targetTop + seatDy + overlapPx;
+      return targetTop - baseRect.top;
     }
 
-    return targetTop - baseRect.top;
+    // Legacy behavior (mobile: bottom flush to sheet top; desktop: top seam visible).
+    var legacyTop = openPanelTop;
+
+    if (isMobileSheet()) {
+      legacyTop = openPanelTop - baseRect.height;
+    }
+
+    legacyTop = legacyTop + seatDy + overlapPx;
+
+    return legacyTop - baseRect.top;
   }
 
   function alignToggleToPanelCorner() {
