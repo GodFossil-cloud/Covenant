@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.7 (Notch floor seam shim) */
+/*! Covenant Reliquary Panel Styles v0.2.8 (Notch depth tighten) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -18,7 +18,9 @@
 
   /* Corner seat: carve a notch so the Mirror tab reads as mechanically seated into the panel corner. */
   --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 0px);
-  --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 12px);
+
+  /* Tighten notch depth so there is no visible floor gap under the tab. */
+  --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);
 
   /* Clip-path antialias seam shim: make the cutout floor 1px shallower than the seating math. */
   --reliquary-notch-h-clip:calc(var(--reliquary-notch-h) - 1px);
