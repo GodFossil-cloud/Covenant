@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.25 (ToC tab medallion-only + header socket cutout) */
+/*! Covenant ToC Panel Styles v3.1.26 (Header size aligned to Reliquary) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -298,7 +298,6 @@ html #mirrorToggle.dock-tab{
   transition:transform var(--reliquary-snap-duration, 420ms) var(--reliquary-snap-ease, cubic-bezier(.22,.61,.36,1));
   will-change:transform;
 
-  /* Make the seal a reliable drag surface on touch devices. */
   touch-action:none;
   -webkit-tap-highlight-color:transparent;
   user-select:none;
@@ -315,7 +314,6 @@ html #tocToggle.dock-tab{
   transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
   will-change:transform;
 
-  /* Make the seal a reliable drag surface on touch devices (prevents pointermove loss → click snap). */
   touch-action:none;
   -webkit-tap-highlight-color:transparent;
   user-select:none;
@@ -334,7 +332,6 @@ html #mirrorToggle.dock-tab::before{
   inset:0;
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
 
-  /* Match the Lexicon seal rim (weight + tone). */
   border:0.75px solid rgba(0,0,0,0.72);
 
   box-shadow:inset 0 0 12px rgba(0,0,0,.95);
@@ -350,7 +347,6 @@ html #mirrorToggle.dock-tab::after{
   z-index:-1;
   pointer-events:none;
 
-  /* Base face tone + subtle highlight/gradient layers. */
   background-color:var(--dock-tab-face);
   background-image:
     linear-gradient(to bottom, rgba(255, 242, 210, 0.10) 0%, rgba(255, 242, 210, 0) 14px),
@@ -452,15 +448,12 @@ html.toc-open #citationLabel,html.toc-closing #citationLabel,html.toc-dock-settl
 html.toc-open .nav-footer::before,html.toc-closing .nav-footer::before,html.toc-dock-settling .nav-footer::before{opacity:0}
 html.toc-open .nav-footer::after,html.toc-closing .nav-footer::after,html.toc-dock-settling .nav-footer::after{opacity:0}
 
-/* Keep the scrim defined at all times so it can fade out instead of "popping" off at close-complete. */
 html .nav-footer-inner{position:relative}
 html .nav-footer-inner::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.32);pointer-events:none;z-index:1;opacity:0;transition:opacity 220ms var(--toc-scroll-ease);will-change:opacity}
 html.toc-open .nav-footer-inner::before,html.toc-closing .nav-footer-inner::before,html.toc-dock-settling .nav-footer-inner::before{opacity:1}
 
-/* Keep footer controls above the scrim in all states (prevents end-of-close z-pop blink). */
 html .nav-footer-inner > *{position:relative;z-index:2}
 
-/* Override: keep dock visuals stable during ToC open/close (no darkening, no label/cradle disappearance). */
 html.toc-open .nav-footer,
 html.toc-closing .nav-footer,
 html.toc-dock-settling .nav-footer{
@@ -492,7 +485,6 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
    Modal veil
    ------------------------------------------------- */
 
-/* Do not cover the footer; the dock stays sovereign. */
 .toc-overlay{position:fixed;inset:0 0 var(--toc-footer-reserved, var(--footer-total-height)) 0;background:rgba(0,0,0,.64);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms var(--toc-scroll-ease)}
 .toc-overlay.is-open{opacity:1;pointer-events:auto}
 
@@ -529,10 +521,8 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
-/* Live drag: disable transition and allow manual transform override via inline style. */
 .toc-panel.is-dragging{transition:none !important}
 
-/* Inner veil (subtle), to fuse "black glass" with parchment. */
 .toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 58%,rgba(0,0,0,.012) 74%,rgba(0,0,0,.060) 100%);pointer-events:none;z-index:3}
 
 /* -------------------------------------------------
@@ -569,7 +559,8 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
    Header + produced title
    ------------------------------------------------- */
 
-.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.35rem .82rem;border-bottom:1px solid rgba(44,62,80,.12);background:linear-gradient(to bottom,rgba(255,255,255,.52),rgba(255,255,255,.16))}
+/* Match Reliquary header sizing so both veils feel like the same instrument family. */
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(44,62,80,.12);background:linear-gradient(to bottom,rgba(255,255,255,.52),rgba(255,255,255,.16))}
 .toc-produced{min-height:1.15rem}
 .toc-produced-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;line-height:1.25;color:rgba(44,62,80,.88);text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:7.2rem}
 
@@ -668,7 +659,6 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
 .toc-item--locked .toc-entry-key{color:rgba(120,120,120,.62)}
 .toc-item--locked .toc-entry-title{color:rgba(120,120,120,.86)}
 
-/* Annex: Lexicon */
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
 .toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
 .toc-annex-link:hover,.toc-annex-link:focus-visible{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
@@ -676,7 +666,6 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
 .toc-annex-sigil{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;color:rgba(139,115,85,.62)}
 .toc-annex-text{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps}
 
-/* Locked feedback (touch-safe) */
 .toc-toast{position:sticky;bottom:.65rem;margin:.95rem auto 0;width:fit-content;max-width:min(520px,92%);padding:.6rem 1rem;border-radius:999px;background:rgba(11,12,14,.92);color:rgba(245,245,240,.96);font-size:.95rem;letter-spacing:.04em;line-height:1.25;text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.22),0 2px 10px rgba(0,0,0,.12);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity 420ms ease,transform 180ms ease}
 .toc-toast.is-visible{opacity:1;transform:translateY(0)}
 
@@ -697,7 +686,6 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
     --dock-socket-raise:-8px;
   }
 
-  /* Mobile: sheet begins at the ToC tab's left edge and runs flush to the viewport right edge. */
   .toc-panel{
     --toc-panel-x:0px;
     left:var(--toc-panel-left, 12px);
@@ -705,11 +693,10 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
     width:auto;
     border-radius:0 0 0 0;
 
-    /* On mobile, JS sets an explicit height (avoids using top:0, which can reintroduce an iOS bottom seam). */
     max-height:none;
   }
 
-  .toc-panel-header{padding:.9rem 1.1rem .78rem}
+  .toc-panel-header{padding:.95rem 1.25rem .78rem;min-height:3.05rem}
   .toc-produced-title{font-size:1.0rem}
   .toc-panel-body{padding:1.0rem 1.1rem 1.05rem}
   .toc-panel.has-pending .toc-panel-body{padding-top:2.45rem}
@@ -723,14 +710,12 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
    ------------------------------------------------- */
 
 :root{
-  /* Mirror Reliquary socket tokens (left-side). */
   --toc-notch-w:calc(var(--dock-tab-width, 52px) + 0px);
   --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
   --toc-seat-overlap:2px;
   --toc-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
 }
 
-/* ToC header: parchment-on-parchment connector strip (appears only while ToC is moving/open). */
 html.toc-opening .toc-panel-header::after,
 html.toc-open .toc-panel-header::after,
 html.toc-closing .toc-panel-header::after,
@@ -742,7 +727,6 @@ html.toc-dock-settling .toc-panel-header::after{
   bottom:0;
   width:var(--toc-notch-w);
 
-  /* Parchment-on-parchment: quiet, no obsidian bite yet. */
   background:
     linear-gradient(to bottom,
       rgba(247,244,238,.94) 0%,
@@ -757,19 +741,16 @@ html.toc-dock-settling .toc-panel-header::after{
   opacity:.98;
 }
 
-/* Ensure header text sits above the connector strip. */
 html.toc-opening .toc-produced,
 html.toc-open .toc-produced,
 html.toc-closing .toc-produced,
 html.toc-dock-settling .toc-produced{position:relative;z-index:1}
 
-/* Keep title clear of the connector width while open (prevents overlap with the socket). */
 html.toc-opening .toc-produced-title,
 html.toc-open .toc-produced-title,
 html.toc-closing .toc-produced-title,
 html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) + .9rem)}
 
-/* ToC tab: medallion-only (remove welded tab box permanently). */
 html #tocToggle.dock-tab{box-shadow:none;background:transparent}
 html #tocToggle.dock-tab::before,
 html #tocToggle.dock-tab::after{content:none !important;display:none !important}
