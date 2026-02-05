@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.12 (Mobile drag: seal-carry, no jump + header socket extension) */
+/*! Covenant Reliquary UI v0.3.13 (Mirror medallion nests into header connector strip) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.12';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.13';
 
   var doc = document;
   var root = doc.documentElement;
@@ -314,6 +314,46 @@
   var reliquaryToggleDx = 0;
   var reliquaryToggleDy = 0;
 
+  // Mirror medallion (cap) shift: nests into the Reliquary header connector strip at full-open.
+  var mirrorCapShiftY = 0;
+
+  function setMirrorCapShiftPx(y, draggingNow) {
+    if (!toggle) return;
+
+    var v = (typeof y === 'number' && isFinite(y)) ? y : 0;
+    if (draggingNow) v = Math.round(v);
+
+    mirrorCapShiftY = v;
+    toggle.style.setProperty('--mirror-cap-shift-y', v + 'px');
+  }
+
+  function updateMirrorCapShift(progress, draggingNow) {
+    try {
+      if (!toggle || !panel) return;
+
+      var p = (typeof progress === 'number' && isFinite(progress)) ? progress : 0;
+      if (p < 0) p = 0;
+      if (p > 1) p = 1;
+
+      var cap = toggle.querySelector('.dock-cap');
+      var header = panel.querySelector('.reliquary-panel-header');
+      if (!cap || !header || !cap.getBoundingClientRect || !header.getBoundingClientRect) return;
+
+      var capRect = cap.getBoundingClientRect();
+      var headerRect = header.getBoundingClientRect();
+
+      var targetY = headerRect.top + (headerRect.height / 2);
+      var capCenterY = capRect.top + (capRect.height / 2);
+
+      // Compute the cap's "base" center (no shift) so p=0 always returns to the original position.
+      var baseCenterY = capCenterY - mirrorCapShiftY;
+      var shift = (targetY - baseCenterY) * p;
+
+      if (!isFinite(shift)) shift = 0;
+      setMirrorCapShiftPx(shift, !!draggingNow);
+    } catch (err) {}
+  }
+
   // Tap-open/close animation guard.
   var tapAnimating = false;
 
@@ -479,6 +519,10 @@
 
     toggle.style.setProperty('--reliquary-toggle-drag-x', '0px');
     toggle.style.setProperty('--reliquary-toggle-drag-y', '0px');
+    toggle.style.setProperty('--mirror-cap-shift-y', '0px');
+
+    mirrorCapShiftY = 0;
+
     toggle.classList.remove('is-reliquary-dragging');
   }
 
@@ -543,8 +587,13 @@
       var dx = Math.round(computeOpenToggleDxFromPanelRight(rect.right, base) || 0);
       var dy = Math.round(computeOpenToggleDyFromPanelTop(targetTop, base) || 0);
 
-      if (Math.abs(dx - reliquaryToggleDx) <= thr && Math.abs(dy - reliquaryToggleDy) <= thr) return;
+      if (Math.abs(dx - reliquaryToggleDx) <= thr && Math.abs(dy - reliquaryToggleDy) <= thr) {
+        updateMirrorCapShift(1, false);
+        return;
+      }
+
       setReliquaryToggleOffset(dx, dy, false);
+      updateMirrorCapShift(1, false);
     });
   }
 
@@ -564,6 +613,7 @@
       var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
 
       setReliquaryToggleOffset(dx, dy, false);
+      updateMirrorCapShift(1, false);
     });
   }
 
@@ -669,6 +719,8 @@
 
     noteClose();
 
+    setMirrorCapShiftPx(0, false);
+
     if (restoreFocus) {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
       if (target && target.focus) target.focus();
@@ -713,6 +765,7 @@
     overlay.style.opacity = '0';
 
     setPanelTranslateY(closedY);
+    setMirrorCapShiftPx(0, false);
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
@@ -781,6 +834,7 @@
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
       setReliquaryToggleOffset(0, 0, false);
+      setMirrorCapShiftPx(0, false);
 
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
@@ -970,6 +1024,7 @@
       if (draggingNow) dy = Math.round(dy);
 
       setReliquaryToggleOffset(0, dy, !!draggingNow);
+      updateMirrorCapShift(progress, !!draggingNow);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
@@ -1031,6 +1086,8 @@
       noteClose();
 
       settleDockAfterSnapClose();
+
+      setMirrorCapShiftPx(0, false);
 
       if (restoreFocus) {
         var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
@@ -1108,6 +1165,7 @@
         }, SNAP_MS + 30);
       } else {
         setReliquaryToggleOffset(0, 0, false);
+        setMirrorCapShiftPx(0, false);
 
         if (startWasOpen) {
           snapCloseFromOpen();

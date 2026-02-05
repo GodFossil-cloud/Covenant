@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.21 (Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
+/*! Covenant ToC Panel Styles v3.1.22 (Mirror medallion shift + Modal Veil + Footer Tab + Hold-to-Enter + Drag-to-Open/Close) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -347,6 +347,10 @@ html #mirrorToggle.dock-tab::after{
 html #mirrorToggle.dock-tab{box-shadow:none;background:transparent}
 html #mirrorToggle.dock-tab::before,
 html #mirrorToggle.dock-tab::after{content:none !important;display:none !important}
+
+/* Mirror tab: allow the medallion to nest into the Reliquary header connector strip (driven by JS). */
+html #mirrorToggle.dock-tab .dock-cap{transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + var(--mirror-cap-shift-y, 0px)),0)}
+html #mirrorToggle.dock-tab .toc-glyph{top:calc(0px - var(--dock-cap-lift) + var(--dock-cap-half) + var(--mirror-cap-shift-y, 0px))}
 
 /* ToC tab: sharp bottom-left, slightly rounder bottom-right. */
 html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
