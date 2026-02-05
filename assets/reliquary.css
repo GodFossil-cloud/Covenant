@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.6 (Notch seat tighten) */
+/*! Covenant Reliquary Panel Styles v0.2.7 (Notch floor seam shim) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -19,6 +19,9 @@
   /* Corner seat: carve a notch so the Mirror tab reads as mechanically seated into the panel corner. */
   --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 0px);
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 12px);
+
+  /* Clip-path antialias seam shim: make the cutout floor 1px shallower than the seating math. */
+  --reliquary-notch-h-clip:calc(var(--reliquary-notch-h) - 1px);
 
   /* Move the carried Mirror tab down so it actually seats into the notch (not just above it). */
   --reliquary-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
@@ -125,8 +128,8 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
     clip-path:polygon(
       0 0,
       calc(100% - var(--reliquary-notch-w)) 0,
-      calc(100% - var(--reliquary-notch-w)) var(--reliquary-notch-h),
-      100% var(--reliquary-notch-h),
+      calc(100% - var(--reliquary-notch-w)) var(--reliquary-notch-h-clip),
+      100% var(--reliquary-notch-h-clip),
       100% 100%,
       0 100%
     );
