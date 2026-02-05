@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.10 (Mobile drag: seal-carry, no jump) */
+/*! Covenant Reliquary UI v0.3.11 (Mobile drag: seal-carry, no jump + tab-to-divider bridge) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.10';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.11';
 
   var doc = document;
   var root = doc.documentElement;
@@ -317,6 +317,47 @@
   // Tap-open/close animation guard.
   var tapAnimating = false;
 
+  // Tab bridge (tab bottom -> header divider line).
+  var bridgeRaf = 0;
+
+  function clearTabBridge() {
+    try { root.style.setProperty('--reliquary-tab-bridge-h', '0px'); } catch (err) {}
+  }
+
+  function updateTabBridgeToHeaderDivider() {
+    try {
+      if (!panel || !toggle) return;
+
+      var header = panel.querySelector('.reliquary-panel-header');
+      if (!header || !header.getBoundingClientRect) return;
+
+      if (!panel.classList.contains('is-open')) {
+        clearTabBridge();
+        return;
+      }
+
+      var hr = header.getBoundingClientRect();
+      var tr = toggle.getBoundingClientRect();
+
+      // Stop 1px above the divider so we don't hide/double it.
+      var h = Math.round((hr.bottom - tr.bottom) - 1);
+      if (!isFinite(h)) h = 0;
+      if (h < 0) h = 0;
+      if (h > 120) h = 120;
+
+      root.style.setProperty('--reliquary-tab-bridge-h', h + 'px');
+    } catch (err) {}
+  }
+
+  function scheduleTabBridgeUpdate() {
+    if (bridgeRaf) return;
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+    bridgeRaf = raf(function () {
+      bridgeRaf = 0;
+      updateTabBridgeToHeaderDivider();
+    });
+  }
+
   var isIOS = (function () {
     try {
       var ua = navigator.userAgent || '';
@@ -545,6 +586,8 @@
 
       if (Math.abs(dx - reliquaryToggleDx) <= thr && Math.abs(dy - reliquaryToggleDy) <= thr) return;
       setReliquaryToggleOffset(dx, dy, false);
+
+      scheduleTabBridgeUpdate();
     });
   }
 
@@ -564,6 +607,7 @@
       var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
 
       setReliquaryToggleOffset(dx, dy, false);
+      scheduleTabBridgeUpdate();
     });
   }
 
@@ -648,6 +692,7 @@
     enableFocusTrap();
 
     noteOpen();
+    scheduleTabBridgeUpdate();
   }
 
   function closeReliquaryImmediately(restoreFocus) {
@@ -668,6 +713,8 @@
     unlockBodyScroll();
 
     noteClose();
+
+    clearTabBridge();
 
     if (restoreFocus) {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
@@ -745,6 +792,7 @@
         tapAnimating = false;
 
         alignToggleToPanelCornerIfDrift(1);
+        scheduleTabBridgeUpdate();
         setTimeout(focusIntoPanel, 0);
       }, snapMs + 50);
     });
@@ -781,6 +829,7 @@
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
       setReliquaryToggleOffset(0, 0, false);
+      clearTabBridge();
 
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
@@ -994,6 +1043,7 @@
       root.classList.remove('reliquary-dock-settling');
 
       if (!skipAlign) alignToggleToPanelCorner();
+      scheduleTabBridgeUpdate();
       setTimeout(focusIntoPanel, 0);
     }
 
@@ -1002,6 +1052,7 @@
       root.classList.remove('reliquary-closing');
 
       clearReliquaryToggleOffset();
+      clearTabBridge();
 
       setTimeout(function () {
         root.classList.remove('reliquary-dock-settling');
@@ -1105,9 +1156,11 @@
 
         setTimeout(function () {
           alignToggleToPanelCornerIfDrift(1);
+          scheduleTabBridgeUpdate();
         }, SNAP_MS + 30);
       } else {
         setReliquaryToggleOffset(0, 0, false);
+        clearTabBridge();
 
         if (startWasOpen) {
           snapCloseFromOpen();
@@ -1148,6 +1201,7 @@
 
           closeReliquaryImmediately(false);
           clearReliquaryToggleOffset();
+          clearTabBridge();
         }
       }, SNAP_MS + 20);
     }
@@ -1205,6 +1259,8 @@
 
       // IMPORTANT: apply first frame with a carry model on mobile so the tab never jumps downward.
       applyDragFrame(currentY, true);
+
+      clearTabBridge();
 
       var captureTarget = (source === 'seal') ? toggle : dragRegion;
       if (captureTarget && captureTarget.setPointerCapture) {
@@ -1373,6 +1429,7 @@
     if (panel && panel.classList.contains('is-open')) {
       positionPanel();
       alignToggleToPanelCorner();
+      scheduleTabBridgeUpdate();
     }
   });
 
@@ -1384,6 +1441,7 @@
     if (panel && panel.classList.contains('is-open')) {
       positionPanel();
       alignToggleToPanelCorner();
+      scheduleTabBridgeUpdate();
     }
   });
 
