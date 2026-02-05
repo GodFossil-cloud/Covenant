@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.28 (Persistent header connector strip) */
+/*! Covenant ToC Panel Styles v3.1.29 (Tidiness pass: remove redundant state-gated connector opacity) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -741,12 +741,6 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
   z-index:0;
   opacity:1;
 }
-
-/* Belt + suspenders: keep the strip fully present during drag/snap choreography. */
-html.toc-opening .toc-panel-header::after,
-html.toc-open .toc-panel-header::after,
-html.toc-closing .toc-panel-header::after,
-html.toc-dock-settling .toc-panel-header::after{opacity:1}
 
 html.toc-opening .toc-produced,
 html.toc-open .toc-produced,
