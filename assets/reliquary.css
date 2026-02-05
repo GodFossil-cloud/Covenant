@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.8 (Notch depth tighten) */
+/*! Covenant Reliquary Panel Styles v0.2.9 (Seat overlap var) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -19,11 +19,14 @@
   /* Corner seat: carve a notch so the Mirror tab reads as mechanically seated into the panel corner. */
   --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 0px);
 
-  /* Tighten notch depth so there is no visible floor gap under the tab. */
+  /* Notch depth. */
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);
 
   /* Clip-path antialias seam shim: make the cutout floor 1px shallower than the seating math. */
   --reliquary-notch-h-clip:calc(var(--reliquary-notch-h) - 1px);
+
+  /* Mechanical bite: push the tab into the notch floor to eliminate any true gap (independent of notch depth). */
+  --reliquary-seat-overlap:2px;
 
   /* Move the carried Mirror tab down so it actually seats into the notch (not just above it). */
   --reliquary-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);

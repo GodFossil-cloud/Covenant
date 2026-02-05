@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.5 (Tab Seating: remove dock-tab-raise from base rect) */
+/*! Covenant Reliquary UI v0.3.6 (Seat overlap shim) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.5';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.6';
 
   var doc = document;
   var root = doc.documentElement;
@@ -88,6 +88,10 @@
 
   function getSeatDy() {
     return resolveCssVarPx('--reliquary-seat-dy') || 0;
+  }
+
+  function getSeatOverlapPx() {
+    return resolveCssVarPx('--reliquary-seat-overlap') || 0;
   }
 
   function getNotchH() {
@@ -505,19 +509,20 @@
     if (!baseRect) return 0;
 
     var notchH = getNotchH();
+    var overlapPx = getSeatOverlapPx();
 
     // Primary: seat the tab to the notch geometry.
     // Align the tab bottom to the notch floor: tabTop = panelTop + notchH - tabHeight.
     if (notchH && notchH > 0) {
       var targetTop = openPanelTop + notchH - baseRect.height;
-      targetTop = targetTop + getSeatDy();
+      targetTop = targetTop + getSeatDy() + overlapPx;
       return targetTop - baseRect.top;
     }
 
     // Fallback: legacy behavior.
     var legacyTop = openPanelTop;
     if (isMobileSheet()) legacyTop = openPanelTop - baseRect.height;
-    legacyTop = legacyTop + getSeatDy();
+    legacyTop = legacyTop + getSeatDy() + overlapPx;
     return legacyTop - baseRect.top;
   }
 
