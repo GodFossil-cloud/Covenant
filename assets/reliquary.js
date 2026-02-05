@@ -43,6 +43,10 @@
     }
   }
 
+  function getSeatDy() {
+    return readCssNumberVar('--reliquary-seat-dy') || 0;
+  }
+
   // Dock window alignment (hole punch): align the cutout to the RIGHT socket (Mirror tab),
   // using live footer/seals geometry (not idealized 50% assumptions).
   function alignDockWindowToRightSocket() {
@@ -450,6 +454,8 @@
     if (isMobileSheet()) {
       targetTop = openPanelTop - baseRect.height;
     }
+
+    targetTop = targetTop + getSeatDy();
 
     return targetTop - baseRect.top;
   }

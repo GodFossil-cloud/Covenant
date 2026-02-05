@@ -19,6 +19,9 @@
   /* Corner seat: carve a notch so the Mirror tab reads as mechanically seated into the panel corner. */
   --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 2px);
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 12px);
+
+  /* Move the carried Mirror tab down so it actually seats into the notch (not just above it). */
+  --reliquary-seat-dy:var(--dock-cap-lift, 10px);
 }
 
 /* When Reliquary is open, keep the Lexicon gate closed (Lexicon must open first). */
