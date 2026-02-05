@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.6 (Modal Veil + Footer Seal + Hold-to-Enter + Drag-to-Open/Close + True Panel Stack) */
+/*! Covenant ToC v3.2.7 (Tap-open: measured tab carry, no prediction) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.6';
+  window.COVENANT_TOC_VERSION = '3.2.7';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1721,27 +1721,35 @@
       var openLift = readCssNumberVar('--toc-open-lift') || 0;
       var closedY = computePanelClosedY();
 
+      var dxTarget = 0;
+      var dyTarget = 0;
+
       tocPanel.style.transition = 'none';
       tocOverlay.style.transition = 'none';
 
-      tocPanel.style.opacity = '1';
+      // Measure the *real* open seat (no prediction): temporarily place the panel at openLift while hidden.
+      tocPanel.style.opacity = '0';
       tocOverlay.style.opacity = '0';
 
+      setPanelTranslateY(openLift);
+
+      try {
+        var base = getTocToggleBaseRect();
+        var rect = tocPanel.getBoundingClientRect();
+
+        if (base && rect) {
+          dxTarget = computeOpenToggleDxFromPanelLeft(rect.left, base);
+          dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
+        }
+      } catch (err) {}
+
+      // Restore: start from fully-closed (visible) and snap up.
+      tocPanel.style.opacity = '1';
       setPanelTranslateY(closedY);
 
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
-        // Compute where the *open* top will be, even though we are currently translated down.
-        var base = getTocToggleBaseRect();
-        if (base && tocPanel && tocPanel.getBoundingClientRect) {
-          var rect = tocPanel.getBoundingClientRect();
-          var predictedOpenTop = rect.top - (closedY - openLift);
-
-          var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
-          var dy = computeOpenToggleDyFromPanelTop(predictedOpenTop, base);
-
-          setTocToggleOffset(dx, dy, false);
-        }
+        setTocToggleOffset(dxTarget, dyTarget, false);
 
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
         tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
