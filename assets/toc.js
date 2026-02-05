@@ -1430,19 +1430,20 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
+        // IMPORTANT: apply the final open frame first, then compute the tab carry/seat.
+        // If we set carry before applyDragFrame(), applyDragFrame() will overwrite it.
+        applyDragFrame(openLiftPx, false);
+        applyOpenStateFromDrag();
+
         var base = getTocToggleBaseRect();
         if (base && tocPanel && tocPanel.getBoundingClientRect) {
           var rectNow = tocPanel.getBoundingClientRect();
-          var predictedOpenTop = rectNow.top - (currentY - openLiftPx);
 
           var dxFinal = computeOpenToggleDxFromPanelLeft(rectNow.left, base);
-          var dyFinal = computeOpenToggleDyFromPanelTop(predictedOpenTop, base);
+          var dyFinal = computeOpenToggleDyFromPanelTop(rectNow.top, base);
 
           setTocToggleOffset(dxFinal, dyFinal, false);
         }
-
-        applyDragFrame(openLiftPx, false);
-        applyOpenStateFromDrag();
 
         updateTocCapShift(1, false, SNAP_MS, SNAP_EASE);
 
