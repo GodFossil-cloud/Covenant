@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.13 (Mirror medallion nests into header connector strip) */
+/*! Covenant Reliquary UI v0.3.14 (Mirror medallion nests on tap-open + drag) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.13';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.14';
 
   var doc = document;
   var root = doc.documentElement;
@@ -352,6 +352,40 @@
       if (!isFinite(shift)) shift = 0;
       setMirrorCapShiftPx(shift, !!draggingNow);
     } catch (err) {}
+  }
+
+  // Tap-open: compute a shift target that matches where the header will be once the panel finishes its translateY.
+  // (During the open animation, header moves by the same delta as the panel transform.)
+  function computeTapOpenMirrorCapShiftTarget(closedY, openLiftPx) {
+    try {
+      if (!toggle || !panel) return 0;
+
+      var cap = toggle.querySelector('.dock-cap');
+      var header = panel.querySelector('.reliquary-panel-header');
+      if (!cap || !header || !cap.getBoundingClientRect || !header.getBoundingClientRect) return 0;
+
+      var capRect = cap.getBoundingClientRect();
+      var headerRect = header.getBoundingClientRect();
+
+      var capCenterY = capRect.top + (capRect.height / 2);
+      var baseCenterY = capCenterY - mirrorCapShiftY;
+
+      var headerCenterClosed = headerRect.top + (headerRect.height / 2);
+      var delta = (closedY - openLiftPx);
+
+      var headerCenterOpen = headerCenterClosed - delta;
+      var shift = headerCenterOpen - baseCenterY;
+
+      if (!isFinite(shift)) shift = 0;
+
+      // Clamp to a sane range (prevents wild jumps if layout is transient).
+      if (shift > 240) shift = 240;
+      if (shift < -240) shift = -240;
+
+      return shift;
+    } catch (err) {
+      return 0;
+    }
   }
 
   // Tap-open/close animation guard.
@@ -780,11 +814,14 @@
         setReliquaryToggleOffset(dx, dy, false);
       }
 
+      var capShiftTarget = computeTapOpenMirrorCapShiftTarget(closedY, openLift);
+
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
       setPanelTranslateY(openLift);
       overlay.style.opacity = '1';
+      setMirrorCapShiftPx(capShiftTarget, false);
 
       setTimeout(function () {
         panel.style.transform = '';
