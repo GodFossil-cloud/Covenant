@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.7 (Drag seat: continuous notch lock) */
+/*! Covenant Reliquary UI v0.3.8 (iOS drag: trust math, not rect) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.7';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.8';
 
   var doc = document;
   var root = doc.documentElement;
@@ -924,15 +924,16 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      // IMPORTANT: during drag-open we must keep the tab mechanically locked to the notch each frame.
-      // Scaling "openDyWanted * progress" causes a tiny early gap that only closes at full open.
+      // Default: simple carry.
       var dy = openDyWanted * progress;
 
       if (draggingNow) {
         var base = getToggleBaseRect();
-        if (base && panel && panel.getBoundingClientRect) {
-          var r = panel.getBoundingClientRect();
-          dy = computeOpenToggleDyFromPanelTop(r.top, base);
+        if (base) {
+          // iOS Safari can lag getBoundingClientRect() for transformed fixed-position nodes at drag start.
+          // On mobile sheet, the panel's visual top is exactly the current translateY(y).
+          var panelTopNow = isMobileSheet() ? y : (panel.getBoundingClientRect ? panel.getBoundingClientRect().top : y);
+          dy = computeOpenToggleDyFromPanelTop(panelTopNow, base);
         }
       }
 
