@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.24 (Mirror tab carries on Reliquary tap-open/close) */
+/*! Covenant ToC Panel Styles v3.1.25 (ToC tab medallion-only + header socket cutout) */
 
 :root{
   --toc-scroll-open-duration:520ms;
@@ -717,3 +717,59 @@ html.toc-dock-settling .nav-footer-inner::before{opacity:0}
   .toc-entry-key{min-width:6.9rem}
   .toc-tab::after{width:min(210px,74vw)}
 }
+
+/* -------------------------------------------------
+   ToC socket + medallion-only tab
+   ------------------------------------------------- */
+
+:root{
+  /* Mirror Reliquary socket tokens (left-side). */
+  --toc-notch-w:calc(var(--dock-tab-width, 52px) + 0px);
+  --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
+  --toc-seat-overlap:2px;
+  --toc-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
+}
+
+/* ToC header: parchment-on-parchment connector strip (appears only while ToC is moving/open). */
+html.toc-opening .toc-panel-header::after,
+html.toc-open .toc-panel-header::after,
+html.toc-closing .toc-panel-header::after,
+html.toc-dock-settling .toc-panel-header::after{
+  content:'';
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:var(--toc-notch-w);
+
+  /* Parchment-on-parchment: quiet, no obsidian bite yet. */
+  background:
+    linear-gradient(to bottom,
+      rgba(247,244,238,.94) 0%,
+      rgba(247,244,238,.78) 52%,
+      rgba(247,244,238,.62) 100%);
+
+  border-right:1px solid rgba(44,62,80,.12);
+  box-shadow:inset -10px 0 14px -14px rgba(0,0,0,.22);
+
+  pointer-events:none;
+  z-index:0;
+  opacity:.98;
+}
+
+/* Ensure header text sits above the connector strip. */
+html.toc-opening .toc-produced,
+html.toc-open .toc-produced,
+html.toc-closing .toc-produced,
+html.toc-dock-settling .toc-produced{position:relative;z-index:1}
+
+/* Keep title clear of the connector width while open (prevents overlap with the socket). */
+html.toc-opening .toc-produced-title,
+html.toc-open .toc-produced-title,
+html.toc-closing .toc-produced-title,
+html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) + .9rem)}
+
+/* ToC tab: medallion-only (remove welded tab box permanently). */
+html #tocToggle.dock-tab{box-shadow:none;background:transparent}
+html #tocToggle.dock-tab::before,
+html #tocToggle.dock-tab::after{content:none !important;display:none !important}
