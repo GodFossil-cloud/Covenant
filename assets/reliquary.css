@@ -15,6 +15,10 @@
   --reliquary-obsidian-2:#121318;
 
   --reliquary-brass:rgba(201,169,97,1);
+
+  /* Corner seat: carve a notch so the Mirror tab reads as mechanically seated into the panel corner. */
+  --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 2px);
+  --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 12px);
 }
 
 /* When Reliquary is open, keep the Lexicon gate closed (Lexicon must open first). */
@@ -110,6 +114,20 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   display:flex;
   flex-direction:column;
   overflow:hidden;
+}
+
+/* Seat notch (supported browsers): remove a rectangle at the top-right so the tab reads as inserted into the panel. */
+@supports (clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%)){
+  .reliquary-panel{
+    clip-path:polygon(
+      0 0,
+      calc(100% - var(--reliquary-notch-w)) 0,
+      calc(100% - var(--reliquary-notch-w)) var(--reliquary-notch-h),
+      100% var(--reliquary-notch-h),
+      100% 100%,
+      0 100%
+    );
+  }
 }
 
 .reliquary-panel.is-open{
