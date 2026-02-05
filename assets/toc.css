@@ -66,6 +66,10 @@
   /* Drag snap timing (should match JS SNAP_MS constant). */
   --toc-snap-duration:420ms;
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
+
+  /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
+  --dock-cap-size:48px;
+  --dock-cap-lift:14px;
 }
 
 /* -------------------------------------------------
@@ -74,7 +78,7 @@
 
 /* Strategy B: one centered cluster governs tab symmetry. */
 .nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0;position:relative;z-index:3;isolation:isolate}
-@media (max-width:600px){:root{--toc-tab-gap:14px}}
+@media (max-width:600px){:root{--toc-tab-gap:14px;--dock-cap-size:44px;--dock-cap-lift:12px}}
 
 /* Keep dock controls above any decorative socket layers. */
 html .nav-seals > .nav-btn{position:relative;z-index:2}
@@ -270,6 +274,22 @@ html #mirrorToggle.dock-tab{
   /* Quiet interior shadow so the tab feels seated in the dock. */
   box-shadow:inset 0 -12px 16px -16px rgba(0,0,0,.86);
 }
+
+/* Decorative: medallion cap on a stem (keeps the welded tab box intact). */
+html #tocToggle.dock-tab,
+html #mirrorToggle.dock-tab{overflow:visible}
+
+html #tocToggle.dock-tab .dock-cap,
+html #mirrorToggle.dock-tab .dock-cap{position:absolute;left:50%;top:0;width:var(--dock-cap-size);height:var(--dock-cap-size);transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift)),0);border-radius:999px;pointer-events:none;z-index:0}
+
+html #tocToggle.dock-tab .dock-cap::before,
+html #mirrorToggle.dock-tab .dock-cap::before{content:'';position:absolute;inset:0;border-radius:999px;border:0.75px solid rgba(0,0,0,0.72);box-shadow:inset 0 0 18px rgba(0,0,0,0.86),inset 0 1px 0 rgba(255,255,255,0.05)}
+
+html #tocToggle.dock-tab .dock-cap::after,
+html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:0;border-radius:999px;background:radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40)),var(--dock-tab-face,#010103)}
+
+html #tocToggle.dock-tab .toc-glyph,
+html #mirrorToggle.dock-tab .toc-glyph{position:relative;z-index:2}
 
 /* Mirror tab can be "drag carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
 html #mirrorToggle.dock-tab{transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0)}
