@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.16 (Mirror medallion tap-open: smooth direct seat, no bounce) */
+/*! Covenant Reliquary UI v0.3.17 (Mirror tap-open: no carry, no bounce, no fly-off) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.16';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.17';
 
   var doc = document;
   var root = doc.documentElement;
@@ -317,7 +317,7 @@
   var reliquaryToggleDx = 0;
   var reliquaryToggleDy = 0;
 
-  // Mirror medallion (cap) shift: nests into the Reliquary header connector strip at full-open.
+  // Mirror medallion (cap) shift.
   var mirrorCapShiftY = 0;
 
   function setMirrorCapShiftPx(y, draggingNow) {
@@ -325,7 +325,10 @@
 
     var v = (typeof y === 'number' && isFinite(y)) ? y : 0;
 
-    // Stabilize to whole pixels (prevents micro-jitter when geometry resolves to fractions).
+    // Hard safety clamp: never allow a computed shift to throw the medallion outside the viewport.
+    if (v > 240) v = 240;
+    if (v < -240) v = -240;
+
     v = Math.round(v);
 
     mirrorCapShiftY = v;
@@ -350,7 +353,6 @@
       var targetY = headerRect.top + (headerRect.height / 2);
       var capCenterY = capRect.top + (capRect.height / 2);
 
-      // Compute the cap's "base" center (no shift) so p=0 always returns to the original position.
       var baseCenterY = capCenterY - mirrorCapShiftY;
       var shift = (targetY - baseCenterY) * p;
 
@@ -359,44 +361,10 @@
     } catch (err) {}
   }
 
-  // Tap-open: compute a shift target that matches where the header will be once the panel finishes its translateY.
-  // (During the open animation, header moves by the same delta as the panel transform.)
-  function computeTapOpenMirrorCapShiftTarget(closedY, openLiftPx) {
-    try {
-      if (!toggle || !panel) return 0;
-
-      var cap = toggle.querySelector('.dock-cap');
-      var header = panel.querySelector('.reliquary-panel-header');
-      if (!cap || !header || !cap.getBoundingClientRect || !header.getBoundingClientRect) return 0;
-
-      // We expect mirrorCapShiftY to be 0 here (we force it before computing), so capCenterY is the true base.
-      var capRect = cap.getBoundingClientRect();
-      var headerRect = header.getBoundingClientRect();
-
-      var capCenterY = capRect.top + (capRect.height / 2);
-      var headerCenterClosed = headerRect.top + (headerRect.height / 2);
-
-      var delta = (closedY - openLiftPx);
-      var headerCenterOpen = headerCenterClosed - delta;
-
-      var shift = headerCenterOpen - capCenterY;
-
-      if (!isFinite(shift)) shift = 0;
-
-      // Clamp to a sane range (prevents wild jumps if layout is transient).
-      if (shift > 200) shift = 200;
-      if (shift < -200) shift = -200;
-
-      return shift;
-    } catch (err) {
-      return 0;
-    }
-  }
-
   // Tap-open/close animation guard.
   var tapAnimating = false;
 
-  // Legacy: keep ability to cancel any cap-follow rAF if reintroduced.
+  // Cancel slot kept for API continuity (drag uses none; tap uses none).
   var capFollowRafId = 0;
 
   function cancelMirrorCapFollow() {
@@ -577,8 +545,6 @@
   function getToggleBaseRect() {
     if (!toggle || !toggle.getBoundingClientRect) return null;
 
-    // Important: #mirrorToggle always has a baseline translateY(var(--dock-tab-raise)).
-    // When we compute the needed drag offset, we must subtract that baseline so "baseRect" represents the unraised dock position.
     var dockRaise = getDockTabRaisePx();
 
     var r = toggle.getBoundingClientRect();
@@ -603,15 +569,12 @@
     var notchH = getNotchH();
     var overlapPx = getSeatOverlapPx();
 
-    // Primary: seat the tab to the notch geometry.
-    // Align the tab bottom to the notch floor: tabTop = panelTop + notchH - tabHeight.
     if (notchH && notchH > 0) {
       var targetTop = openPanelTop + notchH - baseRect.height;
       targetTop = targetTop + getSeatDy() + overlapPx;
       return targetTop - baseRect.top;
     }
 
-    // Fallback: legacy behavior.
     var legacyTop = openPanelTop;
     if (isMobileSheet()) legacyTop = openPanelTop - baseRect.height;
     legacyTop = legacyTop + getSeatDy() + overlapPx;
@@ -682,7 +645,6 @@
     var footerReserved = getFooterReservedPx();
     root.style.setProperty('--reliquary-footer-reserved', footerReserved + 'px');
 
-    // During opening/closing, allow the sheet to underlap the dock slab so the socket window can reveal motion.
     var dockDepth = readCssNumberVar('--dock-window-depth') || 0;
     var gap = (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing')) ? (-dockDepth) : 0;
 
@@ -792,6 +754,11 @@
     overlay.style.opacity = '';
     overlay.style.transition = '';
 
+    // Tap-open is deliberately "direct": do NOT carry the Mirror tab upward.
+    // (Drag-open still carries it.)
+    setReliquaryToggleOffset(0, 0, false);
+    setMirrorCapShiftPx(0, false);
+
     openReliquaryImmediately();
 
     var snapMs = getSnapMs();
@@ -813,29 +780,13 @@
     overlay.style.opacity = '0';
 
     setPanelTranslateY(closedY);
-    setMirrorCapShiftPx(0, false);
 
     raf(function () {
-      var base = getToggleBaseRect();
-      if (base && panel && panel.getBoundingClientRect) {
-        var rect = panel.getBoundingClientRect();
-        var predictedOpenTop = rect.top - (closedY - openLift);
-
-        var dx = computeOpenToggleDxFromPanelRight(rect.right, base);
-        var dy = computeOpenToggleDyFromPanelTop(predictedOpenTop, base);
-
-        setReliquaryToggleOffset(dx, dy, false);
-      }
-
-      // Direct seat: set ONE target (no rAF-follow), let CSS transition carry it.
-      var capShiftTarget = computeTapOpenMirrorCapShiftTarget(closedY, openLift);
-
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
       setPanelTranslateY(openLift);
       overlay.style.opacity = '1';
-      setMirrorCapShiftPx(capShiftTarget, false);
 
       setTimeout(function () {
         panel.style.transform = '';
@@ -848,7 +799,6 @@
         root.classList.remove('reliquary-opening');
         tapAnimating = false;
 
-        alignToggleToPanelCornerIfDrift(1);
         setTimeout(focusIntoPanel, 0);
       }, snapMs + 50);
     });
@@ -886,15 +836,13 @@
 
     raf(function () {
       setReliquaryToggleOffset(0, 0, false);
+      setMirrorCapShiftPx(0, false);
 
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
       setPanelTranslateY(closedY);
       overlay.style.opacity = '0';
-
-      // Direct return: single target back to base.
-      setMirrorCapShiftPx(0, false);
 
       setTimeout(function () {
         panel.style.transition = '';
@@ -988,8 +936,6 @@
     var panelHBase = 0;
     var openLiftPx = 0;
 
-    // Mobile-only: extra nudge that gets blended in as the sheet opens,
-    // so the tab stays under the finger (no downward jump) but still seats into the notch at the end.
     var mobileSeatNudge = 0;
 
     var MOVE_SLOP = 2;
@@ -1028,8 +974,6 @@
       var base = getToggleBaseRect();
       if (!base) return;
 
-      // Carry model: dyCarry(y) = (y - closedY). This is 0 at closed, and follows the finger perfectly.
-      // We then add a blended nudge so that at fully open, we land exactly on the notch seat geometry.
       var dySeatOpen = computeOpenToggleDyFromPanelTop(openLiftPx, base);
       var dyCarryOpen = openLiftPx - closedY;
       mobileSeatNudge = dySeatOpen - dyCarryOpen;
@@ -1039,8 +983,6 @@
     }
 
     function applyDragFrame(y, draggingNow) {
-      // iOS Safari can reveal 1px seams when the panel/tab land on fractional pixels.
-      // Pixel-snap during active drag so notch floor + tab bottom share the same device pixel row.
       if (draggingNow) y = Math.round(y);
 
       currentY = y;
@@ -1057,18 +999,14 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      // Default: simple carry.
       var dy = openDyWanted * progress;
 
       if (draggingNow) {
         if (isMobileSheet()) {
-          // Lexicon-style: carry the seal with the sheet so it stays glued to the finger.
-          // Then blend in the notch seating nudge as we approach open.
           dy = (y - closedY) + (mobileSeatNudge * progress);
         } else {
           var base = getToggleBaseRect();
           if (base) {
-            // On desktop, the panel's visual top should come from layout.
             var panelTopNow = (panel.getBoundingClientRect ? panel.getBoundingClientRect().top : y);
             dy = computeOpenToggleDyFromPanelTop(panelTopNow, base);
           }
@@ -1098,7 +1036,6 @@
         openReliquaryImmediately();
       }
 
-      // Drag-open should keep reliquary-opening through the snap settle; snap() removes it after motion completes.
       root.classList.remove('reliquary-closing');
       root.classList.remove('reliquary-dock-settling');
 
@@ -1237,7 +1174,6 @@
           overlay.style.opacity = '';
           overlay.style.transition = '';
 
-          // Drag-open completes only after snap settle.
           root.classList.remove('reliquary-opening');
         } else if (!startWasOpen) {
           panel.style.opacity = '0';
@@ -1282,7 +1218,6 @@
       startWasOpen = panel.classList.contains('is-open');
 
       if (startWasOpen) {
-        // Drag-close: enter closing state immediately so the dock-window punch stays active.
         root.classList.add('reliquary-closing');
         root.classList.remove('reliquary-opening');
         root.classList.remove('reliquary-dock-settling');
@@ -1316,7 +1251,6 @@
 
       openDyWanted = computeOpenDyForCurrentDragState(currentY);
 
-      // IMPORTANT: apply first frame with a carry model on mobile so the tab never jumps downward.
       applyDragFrame(currentY, true);
 
       var captureTarget = (source === 'seal') ? toggle : dragRegion;
