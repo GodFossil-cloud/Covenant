@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.3 (Notch-Anchored Tab Seating) */
+/*! Covenant Reliquary UI v0.3.4 (Notch-Anchored Tab Seating + Resolved CSS Vars) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.3';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.4';
 
   var doc = document;
   var root = doc.documentElement;
@@ -43,12 +43,55 @@
     }
   }
 
+  // CSS custom properties can contain calc()/var() token streams; getComputedStyle returns the raw tokens.
+  // To get computed px, we resolve via a tiny probe element (computed margin-top is always a resolved length).
+  var cssVarProbeEl = null;
+
+  function getCssVarProbeEl() {
+    if (cssVarProbeEl) return cssVarProbeEl;
+
+    try {
+      var el = doc.createElement('div');
+      el.setAttribute('data-covenant-css-probe', '1');
+      el.style.position = 'fixed';
+      el.style.left = '0';
+      el.style.top = '0';
+      el.style.width = '0';
+      el.style.height = '0';
+      el.style.overflow = 'hidden';
+      el.style.visibility = 'hidden';
+      el.style.pointerEvents = 'none';
+
+      var mount = doc.body || doc.documentElement;
+      if (mount && mount.appendChild) mount.appendChild(el);
+
+      cssVarProbeEl = el;
+      return cssVarProbeEl;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function resolveCssVarPx(varName) {
+    try {
+      var el = getCssVarProbeEl();
+      if (!el) return 0;
+
+      el.style.marginTop = 'var(' + varName + ')';
+      var raw = getComputedStyle(el).marginTop;
+      var v = parseFloat(String(raw || '').trim());
+      return isNaN(v) ? 0 : v;
+    } catch (err) {
+      return 0;
+    }
+  }
+
   function getSeatDy() {
-    return readCssNumberVar('--reliquary-seat-dy') || 0;
+    return resolveCssVarPx('--reliquary-seat-dy') || 0;
   }
 
   function getNotchH() {
-    return readCssNumberVar('--reliquary-notch-h') || 0;
+    return resolveCssVarPx('--reliquary-notch-h') || 0;
   }
 
   // Dock window alignment (hole punch): align the cutout to the RIGHT socket (Mirror tab),
