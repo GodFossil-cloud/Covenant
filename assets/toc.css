@@ -68,8 +68,8 @@
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 
   /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
-  --dock-cap-size:48px;
-  --dock-cap-lift:14px;
+  --dock-cap-size:46px;
+  --dock-cap-lift:10px;
   --dock-cap-half:calc(var(--dock-cap-size) / 2);
 }
 
@@ -79,7 +79,7 @@
 
 /* Strategy B: one centered cluster governs tab symmetry. */
 .nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0;position:relative;z-index:3;isolation:isolate}
-@media (max-width:600px){:root{--toc-tab-gap:14px;--dock-cap-size:44px;--dock-cap-lift:12px}}
+@media (max-width:600px){:root{--toc-tab-gap:14px;--dock-cap-size:42px;--dock-cap-lift:9px}}
 
 /* Keep dock controls above any decorative socket layers. */
 html .nav-seals > .nav-btn{position:relative;z-index:2}
