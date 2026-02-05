@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.2 (Mobile seat overbite + header socket extension) */
+/*! Covenant Reliquary Panel Styles v0.3.3 (Medallion-only tab + divider-to-top connector) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -16,13 +16,13 @@
 
   --reliquary-brass:rgba(201,169,97,1);
 
-  /* Corner seat: carve a notch so the Mirror tab reads as mechanically seated into the panel corner. */
+  /* Corner socket geometry: used for width + seating math (even if the panel corner is not clipped). */
   --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 0px);
 
-  /* Notch depth. */
+  /* Notch depth (used for seating math). */
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);
 
-  /* Clip-path antialias seam shim: make the cutout floor 1px shallower than the seating math. */
+  /* Clip-path antialias seam shim (legacy token; clip is currently disabled). */
   --reliquary-notch-h-clip:calc(var(--reliquary-notch-h) - 1px);
 
   /* Mechanical bite: push the tab into the notch floor to eliminate any true gap (independent of notch depth). */
@@ -127,20 +127,6 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   overflow:hidden;
 }
 
-/* Seat notch (supported browsers): remove a rectangle at the top-right so the tab reads as inserted into the panel. */
-@supports (clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%)){
-  .reliquary-panel{
-    clip-path:polygon(
-      0 0,
-      calc(100% - var(--reliquary-notch-w)) 0,
-      calc(100% - var(--reliquary-notch-w)) var(--reliquary-notch-h-clip),
-      100% var(--reliquary-notch-h-clip),
-      100% 100%,
-      0 100%
-    );
-  }
-}
-
 .reliquary-panel.is-open{
   opacity:1;
   transform:translateX(var(--reliquary-panel-x)) translateY(var(--reliquary-open-lift, 0px));
@@ -192,7 +178,8 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   background:linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,0));
 }
 
-/* Socket extension: visually carry the tab material down until it meets the header divider. */
+/* Connector: replace the Mirror tab's former square base with a clean socket stem,
+   welded to the header divider and reaching to the top edge of the panel. */
 html.reliquary-opening .reliquary-panel-header::after,
 html.reliquary-open .reliquary-panel-header::after,
 html.reliquary-closing .reliquary-panel-header::after,
@@ -200,7 +187,7 @@ html.reliquary-dock-settling .reliquary-panel-header::after{
   content:'';
   position:absolute;
   right:0;
-  top:var(--reliquary-notch-h);
+  top:0;
   bottom:0;
   width:var(--reliquary-notch-w);
 
@@ -256,7 +243,7 @@ html.reliquary-dock-settling .reliquary-panel-header::after{
 }
 
 @media (max-width:600px){
-  /* On mobile, overbite a little deeper to prevent iOS/Safari clip-path seams reading as a true see-through gap. */
+  /* On mobile, overbite a little deeper to prevent iOS/Safari seams reading as a true see-through gap. */
   :root{--reliquary-seat-overlap:15px}
 
   .reliquary-panel{
