@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.2.4 (Measured Footer Reserve + Mobile Sheet Carry + Drag-to-Open/Close) */
+/*! Covenant Reliquary Panel Styles v0.2.5 (Notch width trim) */
 
 :root{
   --reliquary-snap-duration:420ms;
@@ -17,7 +17,7 @@
   --reliquary-brass:rgba(201,169,97,1);
 
   /* Corner seat: carve a notch so the Mirror tab reads as mechanically seated into the panel corner. */
-  --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 2px);
+  --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 0px);
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 12px);
 
   /* Move the carried Mirror tab down so it actually seats into the notch (not just above it). */
