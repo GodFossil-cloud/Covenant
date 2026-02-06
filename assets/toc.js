@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.10 (Reseat cap after fast drag-open drift) */
+/*! Covenant ToC v3.2.11 (Seat cap against final geometry) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.10';
+  window.COVENANT_TOC_VERSION = '3.2.11';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -299,6 +299,39 @@
     return 10;
   }
 
+  function getDockCapSizePx() {
+    var v = resolveCssVarPx('--dock-cap-size');
+    if (typeof v === 'number' && !isNaN(v) && v > 0) return v;
+
+    // Fallback: try measuring the element (safe when not in-flight).
+    try {
+      if (tocToggle) {
+        var cap = tocToggle.querySelector('.dock-cap');
+        if (cap && cap.getBoundingClientRect) {
+          var r = cap.getBoundingClientRect();
+          if (r && r.height) return r.height;
+        }
+      }
+    } catch (err) {}
+
+    // Final fallback: keep in sync with toc.css default.
+    return 46;
+  }
+
+  function computeCapSeatShiftToHeaderCenter(headerCenterY, baseToggleTop, dyFinal) {
+    var lift = getDockCapLiftPx();
+    var capSize = getDockCapSizePx();
+    var capHalf = (capSize && capSize > 0) ? (capSize / 2) : 0;
+
+    var dy = (typeof dyFinal === 'number' && !isNaN(dyFinal)) ? dyFinal : 0;
+
+    // .dock-cap is positioned at toggle top (top: 0) and lifted upward by --dock-cap-lift.
+    // Its center at seatShift==0 is: toggleTop + dy + (-lift + capHalf).
+    var capCenterAtShift0 = baseToggleTop + dy + (-1 * lift) + capHalf;
+
+    return headerCenterY - capCenterAtShift0;
+  }
+
   function setTocCapShiftPx(y, draggingNow, snapMs, snapEase) {
     if (!tocToggle) return;
 
@@ -399,7 +432,7 @@
           tabW = tocToggle.getBoundingClientRect().width || 0;
         }
       }
-      if (!tabW || tabW <= 0) return;
+      if (!tabW || !tabW <= 0) return;
 
       var w = readCssNumberVar('--dock-window-w');
       var h = readCssNumberVar('--dock-window-h');
@@ -1434,22 +1467,41 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
-        // IMPORTANT: apply the final open frame first, then compute the tab carry/seat.
-        // If we set carry before applyDragFrame(), applyDragFrame() will overwrite it.
-        applyDragFrame(openLiftPx, false);
-        applyOpenStateFromDrag();
-
+        // Compute final seat targets using the predicted OPEN geometry (not an in-flight cap rect).
         var base = getTocToggleBaseRect();
-        if (base && tocPanel && tocPanel.getBoundingClientRect) {
-          var rectNow = tocPanel.getBoundingClientRect();
+        var rectNow = tocPanel.getBoundingClientRect();
+        var openDeltaY = openLiftPx - currentY;
 
-          var dxFinal = computeOpenToggleDxFromPanelLeft(rectNow.left, base);
-          var dyFinal = computeOpenToggleDyFromPanelTop(rectNow.top, base);
+        var dxFinal = 0;
+        var dyFinal = 0;
+        var capShiftFinal = 0;
 
-          setTocToggleOffset(dxFinal, dyFinal, false);
+        if (base && rectNow) {
+          var openPanelLeft = rectNow.left;
+          var openPanelTop = rectNow.top + openDeltaY;
+
+          dxFinal = computeOpenToggleDxFromPanelLeft(openPanelLeft, base);
+          dyFinal = computeOpenToggleDyFromPanelTop(openPanelTop, base);
+
+          try {
+            var header = tocPanel.querySelector('.toc-panel-header');
+            if (header && header.getBoundingClientRect) {
+              var headerRectNow = header.getBoundingClientRect();
+              var headerCenterOpen = (headerRectNow.top + (headerRectNow.height / 2)) + openDeltaY;
+              capShiftFinal = computeCapSeatShiftToHeaderCenter(headerCenterOpen, base.top, dyFinal);
+            }
+          } catch (err0) {}
         }
 
-        updateTocCapShift(1, false, SNAP_MS, SNAP_EASE);
+        // Snap the sheet to open while the toggle + cap animate into their final seat.
+        tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + openLiftPx + 'px)';
+        tocPanel.style.opacity = '1';
+        if (tocOverlay) tocOverlay.style.opacity = '1';
+
+        applyOpenStateFromDrag();
+
+        setTocToggleOffset(dxFinal, dyFinal, false);
+        setTocCapShiftPx(capShiftFinal, false, SNAP_MS, SNAP_EASE);
 
         setTimeout(function () {
           alignToggleToPanelCornerIfDrift(1);
@@ -1846,19 +1898,14 @@
         if (base && rect) {
           dxTarget = computeOpenToggleDxFromPanelLeft(rect.left, base);
           dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
-        }
 
-        // Measure cap seat against the real header geometry at the open position.
-        var header = tocPanel.querySelector('.toc-panel-header');
-        var cap = tocToggle ? tocToggle.querySelector('.dock-cap') : null;
-        if (header && cap && header.getBoundingClientRect && cap.getBoundingClientRect) {
-          var headerRect = header.getBoundingClientRect();
-          var capRect = cap.getBoundingClientRect();
-
-          var headerCenterY = headerRect.top + (headerRect.height / 2);
-          var capCenterY = capRect.top + (capRect.height / 2);
-
-          capShiftTarget = headerCenterY - (capCenterY + dyTarget);
+          // Solve cap seat shift against the open header center using final dyTarget.
+          var header = tocPanel.querySelector('.toc-panel-header');
+          if (header && header.getBoundingClientRect) {
+            var headerRect = header.getBoundingClientRect();
+            var headerCenterY = headerRect.top + (headerRect.height / 2);
+            capShiftTarget = computeCapSeatShiftToHeaderCenter(headerCenterY, base.top, dyTarget);
+          }
         }
       } catch (err) {}
 
