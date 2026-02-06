@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.9 (ToC cap shift seat + header title removed) */
+/*! Covenant ToC v3.2.10 (Reseat cap after fast drag-open drift) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.9';
+  window.COVENANT_TOC_VERSION = '3.2.10';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -565,7 +565,11 @@
       var dx = Math.round(computeOpenToggleDxFromPanelLeft(rect.left, base) || 0);
       var dy = Math.round(computeOpenToggleDyFromPanelTop(targetTop, base) || 0);
 
-      if (Math.abs(dx - tocToggleDx) <= thr && Math.abs(dy - tocToggleDy) <= thr) return;
+      // Even if the carry offsets are already correct, the cap seat can drift on fast drag/snap.
+      if (Math.abs(dx - tocToggleDx) <= thr && Math.abs(dy - tocToggleDy) <= thr) {
+        updateTocCapShift(1, false);
+        return;
+      }
 
       setTocToggleOffset(dx, dy, false);
       updateTocCapShift(1, false);
