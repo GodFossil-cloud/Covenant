@@ -77,8 +77,9 @@
 
   /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
   --dock-cap-size:45px;
+  --dock-cap-h:calc(var(--dock-cap-size) / 2);
   --dock-cap-lift:10px;
-  --dock-cap-half:calc(var(--dock-cap-size) / 2);
+  --dock-cap-half:calc(var(--dock-cap-h) / 2);
 
   /* Socket cradle geometry: true semicircle tracing the lower half of the socket.
      IMPORTANT: keep socket geometry independent of the medallion cap size. */
@@ -529,7 +530,7 @@ html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{overflow:visible}
 
 html #tocToggle.dock-tab .dock-cap,
-html #mirrorToggle.dock-tab .dock-cap{position:absolute;left:50%;top:0;width:var(--dock-cap-size);height:var(--dock-cap-size);transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift)),0);border-radius:0 0 999px 999px;overflow:hidden;pointer-events:none;z-index:0}
+html #mirrorToggle.dock-tab .dock-cap{position:absolute;left:50%;top:0;width:var(--dock-cap-size);height:var(--dock-cap-h);transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h))),0);border-radius:0 0 999px 999px;overflow:hidden;pointer-events:none;z-index:0}
 
 html #tocToggle.dock-tab .dock-cap::before,
 html #mirrorToggle.dock-tab .dock-cap::before{content:'';position:absolute;inset:0;border-radius:0 0 999px 999px;border:0.75px solid rgba(0,0,0,0.72);box-shadow:inset 0 0 18px rgba(0,0,0,0.86),inset 0 1px 0 rgba(255,255,255,0.05)}
@@ -538,7 +539,7 @@ html #tocToggle.dock-tab .dock-cap::after,
 html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:0;border-radius:0 0 999px 999px;background:radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40)),var(--dock-tab-face,#010103)}
 
 html #tocToggle.dock-tab .toc-glyph,
-html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0) translateY(-.5px);z-index:2}
+html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0) translateY(-.5px);z-index:2}
 
 /* Mirror tab can be "carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
 html #mirrorToggle.dock-tab{
@@ -608,7 +609,7 @@ html #mirrorToggle.dock-tab::after{content:none !important;display:none !importa
 
 /* Mirror tab: allow the medallion to nest into the Reliquary header connector strip (driven by JS). */
 html #mirrorToggle.dock-tab .dock-cap{
-  transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + var(--mirror-cap-shift-y, 0px)),0);
+  transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--mirror-cap-shift-y, 0px)),0);
   transition:transform var(--reliquary-snap-duration, 420ms) var(--reliquary-snap-ease, cubic-bezier(.22,.61,.36,1));
   will-change:transform;
 }
