@@ -74,7 +74,7 @@
     --toc-tab-gap: 8px;
 
     /* Horizontal seating for the bookend medallions (ToC + Mirror). */
-    --dock-tab-outset: 4px;
+    --dock-tab-outset: 6px;
   }
 }
 
