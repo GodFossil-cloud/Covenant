@@ -112,8 +112,10 @@
       }
       if (!tabW || tabW <= 0) return;
 
-      var w = readCssNumberVar('--dock-window-w');
-      var h = readCssNumberVar('--dock-window-h');
+      // Important: these can be authored as var(...) token streams during open/close.
+      // Use probe resolution to get computed px.
+      var w = resolveCssVarPx('--dock-window-w');
+      var h = resolveCssVarPx('--dock-window-h');
 
       if (!w || w <= 0) {
         var dockTabW = readCssNumberVar('--dock-tab-width');
@@ -1203,6 +1205,7 @@
           panel.style.transform = '';
           panel.style.opacity = '';
           panel.style.transition = '';
+
           overlay.style.opacity = '';
           overlay.style.transition = '';
 
