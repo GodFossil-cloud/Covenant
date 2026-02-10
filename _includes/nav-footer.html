@@ -16,7 +16,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: var(--toc-tab-gap, 6px);
     flex-wrap: nowrap;
   }
 
@@ -72,13 +72,13 @@
   }
 
   #navFooter #lexiconToggle {
-    flex: 0 0 66px;
+    flex: 0 0 var(--lexicon-seal-w, 66px);
   }
 
   /* Mobile: seat the tabs inward into their sockets. */
   @media (max-width: 600px) {
     #navFooter {
-      --dock-tab-raise: -9px;
+      --dock-tab-raise: -20px;
       --dock-cap-size: 42px;
       --dock-cap-lift: 9px;
       --dock-cap-half: calc(var(--dock-cap-size) / 2);
@@ -101,15 +101,15 @@
   }
 
   #navFooter #lexiconToggle {
-    width: 66px !important;
-    height: 40px !important;
+    width: var(--lexicon-seal-w, 66px) !important;
+    height: var(--lexicon-seal-h, 40px) !important;
     overflow: hidden;
 
     /* Seat the flat-top seal into the cradle (iPhone Safari baseline). */
-    margin-top: -5px;
+    margin-top: calc(-1 * var(--lexicon-seal-top-align, 5px));
   }
 
-  #navFooter .nav-center { padding-top: 4px; }
+  #navFooter .nav-center { padding-top: var(--nav-center-pad-top, 4px); }
 
   #navFooter .citation-label {
     display: flex !important;
