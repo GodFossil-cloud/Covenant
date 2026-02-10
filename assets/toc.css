@@ -50,7 +50,7 @@
   --dock-tab-face:#010103;
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
-  --dock-tab-raise:-12px;
+  --dock-tab-raise:-16px;
 
   /* Socket stays closer to the dock baseline so it reads as a true recess. */
   --dock-socket-raise:-8px;
@@ -735,7 +735,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --toc-rule-x:.75rem;
     --toc-node:10px;
     --toc-node-locked:8px;
-    --dock-tab-raise:-10px;
+    --dock-tab-raise:-14px;
     --dock-socket-raise:-8px;
     --dock-socket-spread:5px;
     --dock-socket-y-nudge:-4px;
