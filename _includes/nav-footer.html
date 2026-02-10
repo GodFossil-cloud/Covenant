@@ -75,7 +75,7 @@
     flex: 0 0 var(--lexicon-seal-w, 66px);
   }
 
-  /* Mobile: seat the tabs inward into their sockets. */
+  /* Mobile: seat the tabs outward into their sockets. */
   @media (max-width: 600px) {
     #navFooter {
       --dock-tab-raise: -20px;
@@ -87,9 +87,9 @@
     #navFooter #tocToggle,
     #navFooter #mirrorToggle { position: relative; }
 
-    /* Inward nudge: ToC right, Mirror left. */
-    #navFooter #tocToggle { left: 2px; }
-    #navFooter #mirrorToggle { left: -2px; }
+    /* Outward nudge: ToC left, Mirror right. */
+    #navFooter #tocToggle { left: -4px; }
+    #navFooter #mirrorToggle { left: 4px; }
 
     #navFooter .citation-label { min-height: 16px !important; }
   }
