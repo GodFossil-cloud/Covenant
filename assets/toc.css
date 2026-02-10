@@ -55,9 +55,9 @@
   /* Socket stays closer to the dock baseline so it reads as a true recess. */
   --dock-socket-raise:-8px;
 
-  /* Socket tuning: push the two cradles slightly outward from the center seal, and lift them slightly. */
+  /* Socket tuning: push the two cradles slightly outward from the center seal, and lift them so their top edge meets the footer slab top. */
   --dock-socket-spread:6px;
-  --dock-socket-y-nudge:-2px;
+  --dock-socket-y-nudge:-10px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -734,7 +734,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-tab-raise:-9px;
     --dock-socket-raise:-8px;
     --dock-socket-spread:5px;
-    --dock-socket-y-nudge:-1px;
+    --dock-socket-y-nudge:-9px;
     --toc-tab-gap:14px;
     --dock-cap-size:42px;
     --dock-cap-lift:9px;
