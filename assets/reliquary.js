@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.20 (Organize only; no behavior change) */
+/*! Covenant Reliquary UI v0.3.21 (Dock window aligns to computed tab width var) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.20';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.21';
 
   var doc = document;
   var root = doc.documentElement;
@@ -105,7 +105,9 @@
       var footerRect = footer.getBoundingClientRect();
       var sealsRect = seals.getBoundingClientRect();
 
-      var tabW = readCssNumberVar('--toc-tab-width');
+      // Important: --toc-tab-width is authored as calc()/var() and may not parse via parseFloat.
+      // Resolve to computed px so the JS center matches the CSS cradle geometry.
+      var tabW = resolveCssVarPx('--toc-tab-width');
       if (!tabW || tabW <= 0) {
         var mirror = byId('mirrorToggle');
         if (mirror && mirror.getBoundingClientRect) tabW = mirror.getBoundingClientRect().width || 0;
