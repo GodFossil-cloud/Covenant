@@ -76,7 +76,7 @@
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 
   /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
-  --dock-cap-size:34px;
+  --dock-cap-size:38px;
   --dock-cap-lift:10px;
   --dock-cap-half:calc(var(--dock-cap-size) / 2);
 
@@ -740,7 +740,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-socket-spread:5px;
     --dock-socket-y-nudge:-4px;
     --toc-tab-gap:14px;
-    --dock-cap-size:30px;
+    --dock-cap-size:34px;
     --dock-cap-lift:9px;
 
     --dock-socket-d:42px;
