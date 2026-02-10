@@ -57,7 +57,7 @@
 
   /* Socket tuning: push the two cradles slightly outward from the center seal, and lift them so their top edge meets the footer slab top. */
   --dock-socket-spread:6px;
-  --dock-socket-y-nudge:-10px;
+  --dock-socket-y-nudge:-8px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -277,7 +277,10 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
 
 .toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.84);text-shadow:0 1px 0 rgba(255,255,255,.22)}
-.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(139,115,85,.62),rgba(139,115,85,.28),rgba(139,115,85,0));border-radius:999px}
+.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,
+      rgba(139,115,85,.62),
+      rgba(139,115,85,.28),
+      rgba(139,115,85,0));border-radius:999px}
 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative}
@@ -734,7 +737,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-tab-raise:-9px;
     --dock-socket-raise:-8px;
     --dock-socket-spread:5px;
-    --dock-socket-y-nudge:-9px;
+    --dock-socket-y-nudge:-7px;
     --toc-tab-gap:14px;
     --dock-cap-size:42px;
     --dock-cap-lift:9px;
