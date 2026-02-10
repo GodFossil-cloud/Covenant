@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.13 (Dock window aligns to CSS socket vars; remove hardcoded nudge) */
+/*! Covenant ToC v3.2.14 (Dock window aligns to computed tab width var) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.13';
+  window.COVENANT_TOC_VERSION = '3.2.14';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -223,7 +223,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;')
+      .replace(/\\"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
 
@@ -425,7 +425,9 @@
       var footerRect = footer.getBoundingClientRect();
       var sealsRect = seals.getBoundingClientRect();
 
-      var tabW = readCssNumberVar('--toc-tab-width');
+      // Important: --toc-tab-width is authored as calc()/var() and may not parse via parseFloat.
+      // Resolve to computed px so the JS center matches the CSS cradle geometry.
+      var tabW = resolveCssVarPx('--toc-tab-width');
       if (!tabW || tabW <= 0) {
         // Fallback: infer from the toggle width (close enough to cover the whole socket).
         if (tocToggle && tocToggle.getBoundingClientRect) {
