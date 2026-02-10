@@ -76,7 +76,7 @@
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 
   /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
-  --dock-cap-size:40px;
+  --dock-cap-size:39px;
   --dock-cap-lift:10px;
   --dock-cap-half:calc(var(--dock-cap-size) / 2);
 
@@ -292,7 +292,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04)}
 
-.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px solid rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.25rem 0 .62rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 2px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
@@ -740,7 +740,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-socket-spread:5px;
     --dock-socket-y-nudge:-4px;
     --toc-tab-gap:14px;
-    --dock-cap-size:36px;
+    --dock-cap-size:35px;
     --dock-cap-lift:9px;
 
     --dock-socket-d:42px;
