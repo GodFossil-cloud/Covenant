@@ -1,6 +1,8 @@
-/*! Covenant Tab Weld v0.1.0
+/*! Covenant Tab Weld v0.1.1
    Purpose: keep ToC + Mirror tabs welded to the live top edge of their panels during drag/snap/tap,
    eliminating any independent "gradual reposition" of the tabs.
+
+   v0.1.1: seat tabs on the panel top edge (not centered in the notch cutout).
 */
 (function () {
   'use strict';
@@ -98,40 +100,35 @@
 
     var p = panel.getBoundingClientRect();
 
-    var notchH = resolveVarPx('--toc-notch-h') || 0;
     var seatDy = resolveVarPx('--toc-seat-dy') || 0;
     var overlap = resolveVarPx('--toc-seat-overlap') || 0;
 
     var dx = p.left - baseLeft;
 
-    var targetTop = p.top + notchH - t.height;
-    targetTop = targetTop + seatDy + overlap;
+    // Seat the *tab* to the panel top edge (tab bottom flush to panel top).
+    var tabTop = p.top - t.height;
+    tabTop = tabTop + seatDy + overlap;
 
-    var dy = targetTop - baseTop;
+    var dy = tabTop - baseTop;
 
     setVarPx(toggle, '--toc-toggle-drag-x', dx);
     setVarPx(toggle, '--toc-toggle-drag-y', dy);
 
-    // Cap seat: keep medallion centered in the header socket.
+    // Cap seat: keep the medallion sitting on the panel edge (cap bottom flush to panel top).
     try {
-      var header = panel.querySelector('.toc-panel-header');
       var cap = toggle.querySelector('.dock-cap');
       var glyph = toggle.querySelector('.toc-glyph');
-      if (!header || !cap || !glyph || !header.getBoundingClientRect || !cap.getBoundingClientRect) return;
-
-      var headerRect = header.getBoundingClientRect();
-      var headerCenterY = headerRect.top + (headerRect.height / 2);
+      if (!cap || !glyph) return;
 
       var lift = resolveVarPx('--dock-cap-lift') || 10;
       var capSize = resolveVarPx('--dock-cap-size') || 46;
-      var capHalf = capSize / 2;
+      var capH = capSize / 2;
 
-      // Base toggle top after we have set dy.
-      var baseToggleTop = baseTop;
+      // Want cap bottom at p.top => capTop = p.top - capH.
+      var desiredCapTop = p.top - capH;
 
-      // Absolute seat shift that puts the cap center on headerCenterY.
-      var capCenterAtShift0 = baseToggleTop + dy + (-1 * lift) + capHalf;
-      var capShift = headerCenterY - capCenterAtShift0;
+      // capTop = tabTop + (-lift + capShift).
+      var capShift = desiredCapTop - tabTop + lift;
 
       cap.style.transition = 'none';
       glyph.style.transition = 'none';
@@ -160,34 +157,30 @@
 
     var p = panel.getBoundingClientRect();
 
-    var notchH = resolveVarPx('--reliquary-notch-h') || 0;
     var seatDy = resolveVarPx('--reliquary-seat-dy') || 0;
     var overlap = resolveVarPx('--reliquary-seat-overlap') || 0;
 
     var dx = p.right - baseRight;
 
-    var targetTop = p.top + notchH - t.height;
-    targetTop = targetTop + seatDy + overlap;
+    // Seat the *tab* to the panel top edge (tab bottom flush to panel top).
+    var tabTop = p.top - t.height;
+    tabTop = tabTop + seatDy + overlap;
 
-    var dy = targetTop - baseTop;
+    var dy = tabTop - baseTop;
 
     setVarPx(toggle, '--reliquary-toggle-drag-x', dx);
     setVarPx(toggle, '--reliquary-toggle-drag-y', dy);
 
-    // Cap seat: move the Mirror cap into the header connector strip.
+    // Cap seat: keep the Mirror medallion sitting on the panel edge (cap bottom flush to panel top).
     try {
-      var header = panel.querySelector('.reliquary-panel-header');
       var cap = toggle.querySelector('.dock-cap');
-      if (!header || !cap || !header.getBoundingClientRect || !cap.getBoundingClientRect) return;
-
-      var headerRect = header.getBoundingClientRect();
-      var headerCenterY = headerRect.top + (headerRect.height / 2);
+      if (!cap || !cap.getBoundingClientRect) return;
 
       var capRect = cap.getBoundingClientRect();
-      var capCenterY = capRect.top + (capRect.height / 2);
+      var desiredBottom = p.top;
 
       var currentShift = readElVarPx(toggle, '--mirror-cap-shift-y');
-      var nextShift = currentShift + (headerCenterY - capCenterY);
+      var nextShift = currentShift + (desiredBottom - capRect.bottom);
 
       if (!isFinite(nextShift)) nextShift = 0;
       if (nextShift > 240) nextShift = 240;
