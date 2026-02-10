@@ -72,6 +72,9 @@
   #navFooter {
     --dock-tab-raise: -20px;
     --toc-tab-gap: 8px;
+
+    /* Horizontal seating for the bookend medallions (ToC + Mirror). */
+    --dock-tab-outset: 4px;
   }
 }
 
@@ -108,8 +111,8 @@
   #navFooter #tocToggle,
   #navFooter #mirrorToggle { position: relative; }
 
-  #navFooter #tocToggle { left: -2px; }
-  #navFooter #mirrorToggle { left: 2px; }
+  #navFooter #tocToggle { left: calc(-1 * var(--dock-tab-outset)); }
+  #navFooter #mirrorToggle { left: var(--dock-tab-outset); }
 }
 
 /* Option 2: altar-focused emphasis
