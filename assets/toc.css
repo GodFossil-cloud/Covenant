@@ -77,7 +77,7 @@
 
   /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
   --dock-cap-size:45px;
-  --dock-cap-lift:10px;
+  --dock-cap-lift:8px;
   --dock-cap-half:calc(var(--dock-cap-size) / 2);
 
   /* Socket cradle geometry: true semicircle tracing the lower half of the socket.
@@ -741,7 +741,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-socket-y-nudge:-4px;
     --toc-tab-gap:14px;
     --dock-cap-size:41px;
-    --dock-cap-lift:9px;
+    --dock-cap-lift:7px;
 
     --dock-socket-d:42px;
     --dock-socket-r:calc(var(--dock-socket-d) / 2);
