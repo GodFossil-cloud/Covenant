@@ -392,10 +392,12 @@ html.toc-closing{
   /* Window geometry aligned to the left dock socket (ToC). */
   --dock-window-w:var(--dock-socket-d);
   --dock-window-h:var(--dock-socket-h);
-  --dock-window-bottom-trim:1px;
-  --dock-window-h-mask:calc(var(--dock-window-h) - var(--dock-window-bottom-trim));
+
+  /* Reposition: nudge the dock window upward relative to the cradle/socket. */
+  --dock-window-y-shift:-1px;
+
   --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) - (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) - var(--dock-socket-spread, 0px));
-  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px));
+  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px));
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
   --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
   --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
@@ -408,10 +410,12 @@ html.reliquary-closing{
   /* Window geometry aligned to the right dock socket (Mirror). */
   --dock-window-w:var(--dock-socket-d);
   --dock-window-h:var(--dock-socket-h);
-  --dock-window-bottom-trim:1px;
-  --dock-window-h-mask:calc(var(--dock-window-h) - var(--dock-window-bottom-trim));
+
+  /* Reposition: nudge the dock window upward relative to the cradle/socket. */
+  --dock-window-y-shift:-1px;
+
   --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) + (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) + var(--dock-socket-spread, 0px));
-  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px));
+  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px));
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
   --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
   --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
@@ -468,7 +472,7 @@ html.reliquary-closing .nav-footer::before{
       radial-gradient(circle farthest-side at 50% 0, #000 99%, transparent 100%);
     -webkit-mask-size:
       100% 100%,
-      var(--dock-window-w) var(--dock-window-h-mask, var(--dock-window-h));
+      var(--dock-window-w) var(--dock-window-h);
     -webkit-mask-position:
       0 0,
       var(--dock-window-left) var(--dock-window-top);
@@ -493,7 +497,7 @@ html.reliquary-closing .nav-footer::before{
       radial-gradient(circle farthest-side at 50% 0, #000 99%, transparent 100%);
     mask-size:
       100% 100%,
-      var(--dock-window-w) var(--dock-window-h-mask, var(--dock-window-h));
+      var(--dock-window-w) var(--dock-window-h);
     mask-position:
       0 0,
       var(--dock-window-left) var(--dock-window-top);
