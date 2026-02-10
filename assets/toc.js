@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.15 (Dock window respects --dock-window-y-shift) */
+/*! Covenant ToC v3.2.16 (Dock window respects --dock-window-y-shift) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.15';
+  window.COVENANT_TOC_VERSION = '3.2.16';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1305,19 +1305,32 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
+      var dx = tocToggleDx;
       var dy = openDyWanted * progress;
-      if (isMobileSheet() && draggingNow) {
+
+      // While dragging, weld the tab to the panel's live edge (no gradual easing by progress).
+      if (draggingNow) {
+        dx = 0;
+        dy = 0;
+
         var base = getTocToggleBaseRect();
         if (base && tocPanel && tocPanel.getBoundingClientRect) {
           var r = tocPanel.getBoundingClientRect();
+          dx = computeOpenToggleDxFromPanelLeft(r.left, base);
           dy = computeOpenToggleDyFromPanelTop(r.top, base);
         }
+
+        if (!isFinite(dx)) dx = 0;
+        if (!isFinite(dy)) dy = 0;
+
+        dx = Math.round(dx);
+        dy = Math.round(dy);
       }
 
-      var dx = draggingNow ? 0 : tocToggleDx;
       setTocToggleOffset(dx, dy, !!draggingNow);
 
-      updateTocCapShift(progress, !!draggingNow, SNAP_MS, SNAP_EASE);
+      // While dragging, keep the cap fully seated (no progress easing).
+      updateTocCapShift(draggingNow ? 1 : progress, !!draggingNow, SNAP_MS, SNAP_EASE);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
