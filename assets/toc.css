@@ -76,6 +76,11 @@
   --dock-cap-lift:10px;
   --dock-cap-half:calc(var(--dock-cap-size) / 2);
 
+  /* Socket cradle geometry: true semicircle tracing the lower half of the medallion cap. */
+  --dock-socket-d:var(--dock-cap-size);
+  --dock-socket-r:calc(var(--dock-socket-d) / 2);
+  --dock-socket-h:var(--dock-socket-r);
+
   /* ToC header connector geometry. */
   --toc-notch-w:calc(var(--dock-tab-width, 52px) + 0px);
   --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
@@ -331,12 +336,12 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   content:'';
   position:absolute;
   top:50%;
-  width:calc(var(--dock-tab-width) + 2px);
-  height:calc(var(--dock-socket-height) + 2px);
+  width:var(--dock-socket-d);
+  height:var(--dock-socket-h);
   transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px),0);
 
-  /* Machined slot: rectangular cutout, reads under a taller pull-tab. */
-  border-radius:0;
+  /* True upward-facing semicircle (open top). */
+  border-radius:0 0 var(--dock-socket-r) var(--dock-socket-r);
 
   background:
     /* Sidewall bevels (machining reads at the sides, not the top rim). */
@@ -345,16 +350,14 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
       rgba(255,255,255,0) 18%,
       rgba(255,255,255,0) 82%,
       rgba(0,0,0,.55) 100%),
-    /* Depth body (darker toward the bottom). */
-    linear-gradient(to bottom,
+    /* Depth body (darker toward the arc floor). */
+    radial-gradient(circle farthest-side at 50% 0,
       rgba(0,0,0,.92) 0%,
       rgba(16,16,20,.96) 46%,
       rgba(0,0,0,.985) 100%);
 
   box-shadow:
-    /* Occlusion under the tab: the top edge should not shine. */
-    inset 0 2px 0 rgba(0,0,0,.96),
-    /* Crisp cut line. */
+    /* Crisp cut line (curved). */
     inset 0 0 0 1px rgba(59,54,43,.92),
     /* Interior depth + faint bottom catch. */
     inset 0 12px 18px rgba(0,0,0,.80),
@@ -368,10 +371,10 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 }
 
 /* Left socket (ToC tab). */
-.nav-seals::before{left:calc(var(--toc-tab-width) / 2);border-radius:0}
+.nav-seals::before{left:calc(var(--toc-tab-width) / 2)}
 
 /* Right socket (Mirror tab). */
-.nav-seals::after{left:calc(100% - (var(--toc-tab-width) / 2));border-radius:0}
+.nav-seals::after{left:calc(100% - (var(--toc-tab-width) / 2))}
 
 /* If the Lexicon door is open, keep both sockets quiet but present. */
 html.lexicon-scroll-lock .nav-seals::before,
@@ -383,8 +386,8 @@ html.toc-closing{
   --toc-panel-gap:calc(-1 * var(--dock-window-depth, 0px));
 
   /* Window geometry aligned to the left dock socket (ToC). */
-  --dock-window-w:calc(var(--dock-tab-width) + 2px);
-  --dock-window-h:calc(var(--dock-socket-height) + 2px);
+  --dock-window-w:var(--dock-socket-d);
+  --dock-window-h:var(--dock-socket-h);
   --dock-window-center-x:calc(50% - (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)));
   --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px);
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
@@ -397,8 +400,8 @@ html.toc-closing{
 html.reliquary-opening,
 html.reliquary-closing{
   /* Window geometry aligned to the right dock socket (Mirror). */
-  --dock-window-w:calc(var(--dock-tab-width) + 2px);
-  --dock-window-h:calc(var(--dock-socket-height) + 2px);
+  --dock-window-w:var(--dock-socket-d);
+  --dock-window-h:var(--dock-socket-h);
   --dock-window-center-x:calc(50% + (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)));
   --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px);
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
@@ -454,7 +457,7 @@ html.reliquary-closing .nav-footer::before{
   html.reliquary-closing .nav-footer::after{
     -webkit-mask-image:
       linear-gradient(#000 0 0),
-      linear-gradient(#000 0 0);
+      radial-gradient(circle farthest-side at 50% 0, #000 99%, transparent 100%);
     -webkit-mask-size:
       100% 100%,
       var(--dock-window-w) var(--dock-window-h);
@@ -463,7 +466,7 @@ html.reliquary-closing .nav-footer::before{
       var(--dock-window-left) var(--dock-window-top);
     -webkit-mask-repeat:no-repeat;
 
-    /* Subtract the window rectangle from the full mask. */
+    /* Subtract the window semicircle from the full mask. */
     -webkit-mask-composite:destination-out;
   }
 }
@@ -479,7 +482,7 @@ html.reliquary-closing .nav-footer::before{
   html.reliquary-closing .nav-footer::after{
     mask-image:
       linear-gradient(#000 0 0),
-      linear-gradient(#000 0 0);
+      radial-gradient(circle farthest-side at 50% 0, #000 99%, transparent 100%);
     mask-size:
       100% 100%,
       var(--dock-window-w) var(--dock-window-h);
