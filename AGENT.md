@@ -48,18 +48,6 @@ Then:
 
 ---
 
-## Collaboration protocol (pace + scope)
-
-This repository is sacred, but the work should stay **finishable**.
-
-- Standing permission: you may commit directly to `main` without asking, in any circumstance, at any time, using best judgment.
-- Announce intent: before writing, state the smallest intended change-set in 1–3 sentences (what/where/why) so the direction stays legible.
-- Avoid overreach: if scope begins to sprawl, stop and propose the next smallest commit instead of expanding the current one.
-- Prefer small commits: avoid giant lone commits unless explicitly requested; default to 1–3 files per commit and keep each commit single-purpose.
-- Split multi-system work: if a task touches multiple subsystems (e.g., ToC + Reliquary + Lexicon), land it as sequential, safe commits rather than one large bundle.
-
----
-
 ## Canonical journey order (do not break)
 
 `index.html` →
@@ -97,6 +85,7 @@ Rules:
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
 - Note: If JS needs numeric px from calc()/var()-based CSS custom properties, do not `parseFloat(getComputedStyle(...).getPropertyValue('--x'))` (it returns token strings); resolve via a probe element (e.g., set `margin-top: var(--x)` and read computed px).
+- Note (dock mask window): `--dock-window-w` / `--dock-window-h` are authored as `var(...)` during open/close; align code must resolve them via the probe helper (otherwise the dock cutout can drift vertically while the mask is active).
 - Note (mobile Safari): Reliquary notch is a real `clip-path` cutout; if a see-through seam appears during drag, prefer increasing `--reliquary-seat-overlap` on mobile rather than changing notch geometry.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC Hold-to-Enter). It may also expose optional panel-stack primitives (bring-to-front, inert layering hooks) during stacking migrations.
 - `assets/nav-footer-flat-top.css` — footer-only override for flat-top Lexicon seal geometry.
