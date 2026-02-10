@@ -1,8 +1,8 @@
-/*! Covenant Tab Weld v0.1.1
-   Purpose: keep ToC + Mirror tabs welded to the live top edge of their panels during drag/snap/tap,
-   eliminating any independent "gradual reposition" of the tabs.
+/*! Covenant Tab Weld v0.1.2
+   Purpose: keep ToC + Mirror tabs welded to the live top edge of their panels during drag/snap/tap.
 
-   v0.1.1: seat tabs on the panel top edge (not centered in the notch cutout).
+   v0.1.2: seat tabs flush to the panel top edge (ignore notch-centering vars),
+           and treat ToC as active based on panel state (.is-open) not root toc-open.
 */
 (function () {
   'use strict';
@@ -68,20 +68,29 @@
     } catch (err) {}
   }
 
+  function hasState(el, cls) {
+    try { return !!(el && el.classList && el.classList.contains(cls)); } catch (err) { return false; }
+  }
+
   function isTocActive() {
-    return !!(
-      root.classList.contains('toc-opening')
-      || root.classList.contains('toc-closing')
-      || root.classList.contains('toc-open')
-    );
+    var panel = byId('tocPanel');
+
+    if (root.classList.contains('toc-opening') || root.classList.contains('toc-closing')) return true;
+
+    // ToC does not set html.toc-open; use panel state.
+    if (hasState(panel, 'is-open') || hasState(panel, 'is-dragging') || hasState(panel, 'is-closing')) return true;
+
+    return false;
   }
 
   function isReliquaryActive() {
-    return !!(
-      root.classList.contains('reliquary-opening')
-      || root.classList.contains('reliquary-closing')
-      || root.classList.contains('reliquary-open')
-    );
+    var panel = byId('reliquaryPanel');
+
+    if (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing') || root.classList.contains('reliquary-open')) return true;
+
+    if (hasState(panel, 'is-open') || hasState(panel, 'is-dragging')) return true;
+
+    return false;
   }
 
   function weldToC() {
@@ -100,21 +109,16 @@
 
     var p = panel.getBoundingClientRect();
 
-    var seatDy = resolveVarPx('--toc-seat-dy') || 0;
-    var overlap = resolveVarPx('--toc-seat-overlap') || 0;
-
     var dx = p.left - baseLeft;
 
-    // Seat the *tab* to the panel top edge (tab bottom flush to panel top).
+    // Seat the tab on the panel top edge: tab bottom flush to panel top.
     var tabTop = p.top - t.height;
-    tabTop = tabTop + seatDy + overlap;
-
     var dy = tabTop - baseTop;
 
     setVarPx(toggle, '--toc-toggle-drag-x', dx);
     setVarPx(toggle, '--toc-toggle-drag-y', dy);
 
-    // Cap seat: keep the medallion sitting on the panel edge (cap bottom flush to panel top).
+    // Cap seat: keep medallion sitting on the panel top edge (cap bottom flush to panel top).
     try {
       var cap = toggle.querySelector('.dock-cap');
       var glyph = toggle.querySelector('.toc-glyph');
@@ -122,10 +126,10 @@
 
       var lift = resolveVarPx('--dock-cap-lift') || 10;
       var capSize = resolveVarPx('--dock-cap-size') || 46;
-      var capH = capSize / 2;
+      var capHalfH = capSize / 2;
 
-      // Want cap bottom at p.top => capTop = p.top - capH.
-      var desiredCapTop = p.top - capH;
+      // Want cap bottom at p.top => capTop = p.top - capHalfH.
+      var desiredCapTop = p.top - capHalfH;
 
       // capTop = tabTop + (-lift + capShift).
       var capShift = desiredCapTop - tabTop + lift;
@@ -157,15 +161,10 @@
 
     var p = panel.getBoundingClientRect();
 
-    var seatDy = resolveVarPx('--reliquary-seat-dy') || 0;
-    var overlap = resolveVarPx('--reliquary-seat-overlap') || 0;
-
     var dx = p.right - baseRight;
 
-    // Seat the *tab* to the panel top edge (tab bottom flush to panel top).
+    // Seat the tab on the panel top edge: tab bottom flush to panel top.
     var tabTop = p.top - t.height;
-    tabTop = tabTop + seatDy + overlap;
-
     var dy = tabTop - baseTop;
 
     setVarPx(toggle, '--reliquary-toggle-drag-x', dx);
@@ -198,13 +197,18 @@
       var tocToggle = byId('tocToggle');
       var relToggle = byId('mirrorToggle');
 
+      var tocPanel = byId('tocPanel');
+      var relPanel = byId('reliquaryPanel');
+
       // Disable independent tab transitions while the panels are moving.
       if (tocToggle) {
-        tocToggle.classList.toggle('is-toc-dragging', !!(root.classList.contains('toc-opening') || root.classList.contains('toc-closing')));
+        var tocDragging = root.classList.contains('toc-opening') || root.classList.contains('toc-closing') || hasState(tocPanel, 'is-dragging');
+        tocToggle.classList.toggle('is-toc-dragging', !!tocDragging);
       }
 
       if (relToggle) {
-        relToggle.classList.toggle('is-reliquary-dragging', !!(root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing')));
+        var relDragging = root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing') || hasState(relPanel, 'is-dragging');
+        relToggle.classList.toggle('is-reliquary-dragging', !!relDragging);
       }
 
       if (tocActive) weldToC();
