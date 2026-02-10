@@ -100,13 +100,16 @@
 }
 
 /* iOS Safari: seat the *tab plates* into their sockets.
-   Use left/right offsets (not transform) so :active press travel still works. */
+   Use left/right offsets (not transform) so :active press travel still works.
+
+   NOTE: Offsets should push the bookends outward so each medallion sits in its own cradle.
+*/
 @media (max-width: 600px) {
   #navFooter #tocToggle,
   #navFooter #mirrorToggle { position: relative; }
 
-  #navFooter #tocToggle { left: 2px; }
-  #navFooter #mirrorToggle { left: -2px; }
+  #navFooter #tocToggle { left: -2px; }
+  #navFooter #mirrorToggle { left: 2px; }
 }
 
 /* Option 2: altar-focused emphasis
