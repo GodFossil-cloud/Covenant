@@ -3,9 +3,6 @@
 <style id="navFooterCritical">
   /* Symmetry hardening: keep the three-seal cluster perfectly centered (iPhone Safari). */
   #navFooter {
-    /* Match tab lift to dock socket depth (keep tabs seated above their cutouts). */
-    --dock-tab-raise: -11px;
-
     /* Decorative cap defaults (fallback only; toc.css will override). */
     --dock-cap-lift: 10px;
   }
@@ -76,7 +73,6 @@
   /* Mobile: seat the tabs outward into their sockets. */
   @media (max-width: 600px) {
     #navFooter {
-      --dock-tab-raise: -20px;
       --dock-cap-lift: 9px;
     }
 
@@ -168,7 +164,7 @@
                     <span class="nav-next-frame" aria-hidden="true">
                         <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
                     </span>
-                    <span class="nav-next-label" aria-hidden="true">{{ include.next_label | default: "Next" }}</span>
+                    <span class="nav-next-label" aria-hidden="true">{{ include.next_label | default: "Next" }}%</span>
                 </a>
             {% else %}
                 <button class="nav-next nav-next--disabled" type="button" disabled aria-label="{{ include.next_aria | default: "Next section" }}">
