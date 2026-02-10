@@ -18,6 +18,10 @@
   /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep the cradle + window math in sync. */
   --toc-tab-width: var(--nav-pill-width);
 
+  /* Dock window mask origin: the center seal is seated higher by --lexicon-seal-top-align, so shift the mask origin to match. */
+  --dock-window-origin-x: 50%;
+  --dock-window-origin-y: calc(50% - (var(--lexicon-seal-top-align) / 2));
+
   /* Socket geometry: match the cradle line to the flat-top seal's new width. */
   --seal-notch-radius: calc(var(--lexicon-seal-w) * 0.5);
   --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
