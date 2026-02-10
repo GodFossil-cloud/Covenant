@@ -108,8 +108,8 @@
   #navFooter #tocToggle,
   #navFooter #mirrorToggle { position: relative; }
 
-  #navFooter #tocToggle { left: -4px; }
-  #navFooter #mirrorToggle { left: 4px; }
+  #navFooter #tocToggle { left: -3px; }
+  #navFooter #mirrorToggle { left: 3px; }
 }
 
 /* Option 2: altar-focused emphasis
