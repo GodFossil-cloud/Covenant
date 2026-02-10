@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.14 (Dock window aligns to computed tab width var) */
+/*! Covenant ToC v3.2.15 (Dock window respects --dock-window-y-shift) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.14';
+  window.COVENANT_TOC_VERSION = '3.2.15';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -457,10 +457,11 @@
       var socketRaise = readCssNumberVar('--dock-socket-raise') || 0;
       var socketSpread = readCssNumberVar('--dock-socket-spread') || 0;
       var socketYNudge = readCssNumberVar('--dock-socket-y-nudge') || 0;
+      var windowYShift = readCssNumberVar('--dock-window-y-shift') || 0;
 
       // Left socket center is the center of the first grid column inside .nav-seals.
       var centerX = sealsRect.left + (tabW / 2) - socketSpread;
-      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge;
+      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge + windowYShift;
 
       var left = Math.round(centerX - footerRect.left - (w / 2));
       var top = Math.round(centerY - footerRect.top - (h / 2));
