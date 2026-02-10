@@ -1485,7 +1485,7 @@ body.is-exiting #blackFadeOverlay {
   --lexicon-panel-closed-peek: 0px;
 
   /* Medallion sizing (desktop baseline). */
-  --seal-size: 58px;
+  --seal-size: 56px;
 
   /* Wing symmetry: repeat token here for footer override block clarity. */
   --nav-wing-width: 104px;
@@ -1897,7 +1897,7 @@ body {
 
 @media (max-width: 600px) {
   :root {
-    --seal-size: 54px;
+    --seal-size: 52px;
     --seal-lift: 8px;
   }
 }
