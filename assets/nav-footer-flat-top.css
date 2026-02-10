@@ -15,6 +15,9 @@
      (toc.css uses --toc-tab-gap when positioning the animated dock “window” mask.) */
   --toc-tab-gap: 10px;
 
+  /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep the cradle + window math in sync. */
+  --toc-tab-width: var(--nav-pill-width);
+
   /* Socket geometry: match the cradle line to the flat-top seal's new width. */
   --seal-notch-radius: calc(var(--lexicon-seal-w) * 0.5);
   --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
