@@ -76,12 +76,13 @@
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 
   /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
-  --dock-cap-size:46px;
+  --dock-cap-size:44px;
   --dock-cap-lift:10px;
   --dock-cap-half:calc(var(--dock-cap-size) / 2);
 
-  /* Socket cradle geometry: true semicircle tracing the lower half of the medallion cap. */
-  --dock-socket-d:var(--dock-cap-size);
+  /* Socket cradle geometry: true semicircle tracing the lower half of the medallion cap.
+     Keep the socket slightly larger than the medallion so the cap can sit cleanly inside the cradle. */
+  --dock-socket-d:calc(var(--dock-cap-size) + 2px);
   --dock-socket-r:calc(var(--dock-socket-d) / 2);
   --dock-socket-h:var(--dock-socket-r);
 
@@ -739,7 +740,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-socket-spread:5px;
     --dock-socket-y-nudge:-4px;
     --toc-tab-gap:14px;
-    --dock-cap-size:42px;
+    --dock-cap-size:40px;
     --dock-cap-lift:9px;
   }
 
