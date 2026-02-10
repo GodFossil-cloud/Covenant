@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.19 (Organize only; no behavior change) */
+/*! Covenant Reliquary UI v0.3.20 (Organize only; no behavior change) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.19';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.20';
 
   var doc = document;
   var root = doc.documentElement;
@@ -129,13 +129,15 @@
       if (!h || h <= 0) h = Math.max(1, readCssNumberVar('--toc-tab-height') - 2);
 
       var socketRaise = readCssNumberVar('--dock-socket-raise') || 0;
+      var socketSpread = readCssNumberVar('--dock-socket-spread') || 0;
+      var socketYNudge = readCssNumberVar('--dock-socket-y-nudge') || 0;
 
       // Right socket center is the center of the third grid column inside .nav-seals.
-      var centerX = sealsRect.left + sealsRect.width - (tabW / 2);
-      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1;
+      var centerX = sealsRect.left + sealsRect.width - (tabW / 2) + socketSpread;
+      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge;
 
       var left = Math.round(centerX - footerRect.left - (w / 2));
-      var top = Math.round(centerY - footerRect.top - (h / 2)) - 2;
+      var top = Math.round(centerY - footerRect.top - (h / 2));
 
       root.style.setProperty('--dock-window-left-px', left + 'px');
       root.style.setProperty('--dock-window-top-px', top + 'px');
