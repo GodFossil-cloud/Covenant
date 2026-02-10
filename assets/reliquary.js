@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.22 (Dock window respects --dock-window-y-shift) */
+/*! Covenant Reliquary UI v0.3.23 (Dock window respects --dock-window-y-shift) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.22';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.23';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1036,24 +1036,32 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
+      var dx = reliquaryToggleDx;
       var dy = openDyWanted * progress;
 
+      // While dragging, weld the tab to the panel's live edge (no gradual easing by progress).
       if (draggingNow) {
-        if (isMobileSheet()) {
-          dy = (y - closedY) + (mobileSeatNudge * progress);
-        } else {
-          var base = getToggleBaseRect();
-          if (base) {
-            var panelTopNow = (panel.getBoundingClientRect ? panel.getBoundingClientRect().top : y);
-            dy = computeOpenToggleDyFromPanelTop(panelTopNow, base);
-          }
+        dx = 0;
+        dy = 0;
+
+        var base = getToggleBaseRect();
+        if (base && panel && panel.getBoundingClientRect) {
+          var r = panel.getBoundingClientRect();
+          dx = computeOpenToggleDxFromPanelRight(r.right, base);
+          dy = computeOpenToggleDyFromPanelTop(r.top, base);
         }
+
+        if (!isFinite(dx)) dx = 0;
+        if (!isFinite(dy)) dy = 0;
+
+        dx = Math.round(dx);
+        dy = Math.round(dy);
       }
 
-      if (draggingNow) dy = Math.round(dy);
+      setReliquaryToggleOffset(dx, dy, !!draggingNow);
 
-      setReliquaryToggleOffset(0, dy, !!draggingNow);
-      updateMirrorCapShift(progress, !!draggingNow);
+      // While dragging, keep the cap fully seated (no progress easing).
+      updateMirrorCapShift(draggingNow ? 1 : progress, !!draggingNow);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
