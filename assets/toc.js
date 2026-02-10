@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.12 (Seat cap against final geometry + dock window guard fix) */
+/*! Covenant ToC v3.2.13 (Dock window aligns to CSS socket vars; remove hardcoded nudge) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.12';
+  window.COVENANT_TOC_VERSION = '3.2.13';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -415,7 +415,7 @@
   }
 
   // Dock window alignment (hole punch): position the cutout using real socket geometry,
-  // not idealized "50%" assumptions (footer layout can shift the seals cluster).
+  // and align it to the CSS-authored socket tuning vars.
   function alignDockWindowToSocket() {
     try {
       var footer = document.querySelector('.nav-footer');
@@ -451,15 +451,15 @@
       if (!h || h <= 0) h = Math.max(1, readCssNumberVar('--toc-tab-height') - 2);
 
       var socketRaise = readCssNumberVar('--dock-socket-raise') || 0;
+      var socketSpread = readCssNumberVar('--dock-socket-spread') || 0;
+      var socketYNudge = readCssNumberVar('--dock-socket-y-nudge') || 0;
 
       // Left socket center is the center of the first grid column inside .nav-seals.
-      var centerX = sealsRect.left + (tabW / 2);
-      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1;
+      var centerX = sealsRect.left + (tabW / 2) - socketSpread;
+      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge;
 
       var left = Math.round(centerX - footerRect.left - (w / 2));
-
-      // Nudge the window 2px upward: subtract 2px from the computed top.
-      var top = Math.round(centerY - footerRect.top - (h / 2)) - 2;
+      var top = Math.round(centerY - footerRect.top - (h / 2));
 
       root.style.setProperty('--dock-window-left-px', left + 'px');
       root.style.setProperty('--dock-window-top-px', top + 'px');
