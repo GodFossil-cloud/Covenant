@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.30 (Organize + prune overridden blocks; no behavior change) */
+/*! Covenant ToC Panel Styles v3.1.31 (Socket spacing tune; no behavior change) */
 
 /* -------------------------------------------------
    Variables
@@ -54,6 +54,10 @@
 
   /* Socket stays closer to the dock baseline so it reads as a true recess. */
   --dock-socket-raise:-8px;
+
+  /* Socket tuning: push the two cradles slightly outward from the center seal, and lift them slightly. */
+  --dock-socket-spread:6px;
+  --dock-socket-y-nudge:-2px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -338,7 +342,7 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   top:50%;
   width:var(--dock-socket-d);
   height:var(--dock-socket-h);
-  transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px),0);
+  transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px)),0);
 
   /* True upward-facing semicircle (open top). */
   border-radius:0 0 var(--dock-socket-r) var(--dock-socket-r);
@@ -371,10 +375,10 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 }
 
 /* Left socket (ToC tab). */
-.nav-seals::before{left:calc(var(--toc-tab-width) / 2)}
+.nav-seals::before{left:calc(var(--toc-tab-width) / 2 - var(--dock-socket-spread, 0px))}
 
 /* Right socket (Mirror tab). */
-.nav-seals::after{left:calc(100% - (var(--toc-tab-width) / 2))}
+.nav-seals::after{left:calc(100% - (var(--toc-tab-width) / 2) + var(--dock-socket-spread, 0px))}
 
 /* If the Lexicon door is open, keep both sockets quiet but present. */
 html.lexicon-scroll-lock .nav-seals::before,
@@ -388,8 +392,8 @@ html.toc-closing{
   /* Window geometry aligned to the left dock socket (ToC). */
   --dock-window-w:var(--dock-socket-d);
   --dock-window-h:var(--dock-socket-h);
-  --dock-window-center-x:calc(50% - (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)));
-  --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px);
+  --dock-window-center-x:calc(50% - (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)) - var(--dock-socket-spread, 0px));
+  --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px));
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
   --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
   --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
@@ -402,8 +406,8 @@ html.reliquary-closing{
   /* Window geometry aligned to the right dock socket (Mirror). */
   --dock-window-w:var(--dock-socket-d);
   --dock-window-h:var(--dock-socket-h);
-  --dock-window-center-x:calc(50% + (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)));
-  --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px);
+  --dock-window-center-x:calc(50% + (var(--toc-tab-width) / 2 + (var(--seal-size, 66px) / 2) + var(--toc-tab-gap)) + var(--dock-socket-spread, 0px));
+  --dock-window-center-y:calc(50% + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px));
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
   --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
   --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
@@ -721,6 +725,8 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --toc-node-locked:8px;
     --dock-tab-raise:-9px;
     --dock-socket-raise:-8px;
+    --dock-socket-spread:5px;
+    --dock-socket-y-nudge:-1px;
     --toc-tab-gap:14px;
     --dock-cap-size:42px;
     --dock-cap-lift:9px;
