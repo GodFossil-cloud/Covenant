@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.22 (Hash-gated iOS debug badge; add toggle rect + centering delta) */
+/*! Covenant ToC v3.2.23 (Seat cap+glyph via --toc-cap-shift-y; avoid inline transforms) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.22';
+  window.COVENANT_TOC_VERSION = '3.2.23';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -121,6 +121,10 @@
         lines.push('toggle display: ' + dbgStr(toggleCS.display) + ' ai=' + dbgStr(toggleCS.alignItems) + ' jc=' + dbgStr(toggleCS.justifyContent));
         lines.push('toggle box: w=' + dbgStr(toggleCS.width) + ' h=' + dbgStr(toggleCS.height) + ' padT=' + dbgStr(toggleCS.paddingTop) + ' padB=' + dbgStr(toggleCS.paddingBottom));
         lines.push('toggle transform: ' + dbgStr(toggleCS.transform));
+
+        var capShift = '';
+        try { capShift = dbgStr(toggleCS.getPropertyValue('--toc-cap-shift-y')).trim(); } catch (errcs2) { capShift = ''; }
+        if (capShift) lines.push('--toc-cap-shift-y: ' + capShift);
       }
 
       var toggleRect = null;
@@ -476,36 +480,32 @@
         var cap = tocToggle.querySelector('.dock-cap');
         if (cap && cap.getBoundingClientRect) {
           var r = cap.getBoundingClientRect();
-          if (r && r.height) return r.height;
+          if (r && r.height) return r.height * 2;
         }
       }
     } catch (err) {}
 
     // Final fallback: keep in sync with toc.css default.
-    return 46;
+    return 45;
   }
 
   function computeCapSeatShiftToPanelTop(panelTopY, baseToggleTop, dyFinal) {
     var lift = getDockCapLiftPx();
+    var capSize = getDockCapSizePx();
+    var capH = capSize / 2;
 
     var dy = (typeof dyFinal === 'number' && !isNaN(dyFinal)) ? dyFinal : 0;
 
-    // .dock-cap is positioned at toggle top (top: 0) and lifted upward by --dock-cap-lift.
+    // .dock-cap is positioned at toggle top (top: 0) and lifted upward by --dock-cap-lift,
+    // then pushed down by (cap-size - cap-h) == cap-h.
     // We align CAP TOP to the panel top edge (notch remains visual).
-    var capTopAtShift0 = baseToggleTop + dy + (-1 * lift);
+    var capTopAtShift0 = baseToggleTop + dy + (-1 * lift + capH);
 
     return panelTopY - capTopAtShift0;
   }
 
   function setTocCapShiftPx(y, draggingNow, snapMs, snapEase) {
     if (!tocToggle) return;
-
-    var cap = tocToggle.querySelector('.dock-cap');
-    var glyph = tocToggle.querySelector('.toc-glyph');
-    if (!cap && !glyph) return;
-
-    var ms = (typeof snapMs === 'number' && !isNaN(snapMs) && snapMs > 0) ? snapMs : getSnapMs();
-    var ease = snapEase || getSnapEase();
 
     var next = (typeof y === 'number' && !isNaN(y)) ? y : 0;
 
@@ -517,21 +517,8 @@
 
     tocCapShiftY = next;
 
-    var lift = getDockCapLiftPx();
-
-    if (cap) {
-      cap.style.transform = 'translate3d(-50%,' + ((-1 * lift) + next) + 'px,0)';
-      cap.style.transition = draggingNow ? 'none' : ('transform ' + ms + 'ms ' + ease);
-      cap.style.willChange = 'transform';
-    }
-
-    // IMPORTANT: The hamburger glyph must stay centered in the tab in all states.
-    // Do not apply cap seat shift to the glyph; leave it to CSS.
-    if (glyph) {
-      glyph.style.transform = '';
-      glyph.style.transition = '';
-      glyph.style.willChange = '';
-    }
+    // Drive CSS-only seating so cap + glyph ride together.
+    tocToggle.style.setProperty('--toc-cap-shift-y', next + 'px');
   }
 
   function clearTocCapShift() {
@@ -539,20 +526,25 @@
 
     if (!tocToggle) return;
 
-    var cap = tocToggle.querySelector('.dock-cap');
-    var glyph = tocToggle.querySelector('.toc-glyph');
+    tocToggle.style.setProperty('--toc-cap-shift-y', '0px');
 
-    if (cap) {
-      cap.style.transform = '';
-      cap.style.transition = '';
-      cap.style.willChange = '';
-    }
+    // Safety: clear any stale inline transforms from older cached builds.
+    try {
+      var cap = tocToggle.querySelector('.dock-cap');
+      var glyph = tocToggle.querySelector('.toc-glyph');
 
-    if (glyph) {
-      glyph.style.transform = '';
-      glyph.style.transition = '';
-      glyph.style.willChange = '';
-    }
+      if (cap) {
+        cap.style.transform = '';
+        cap.style.transition = '';
+        cap.style.willChange = '';
+      }
+
+      if (glyph) {
+        glyph.style.transform = '';
+        glyph.style.transition = '';
+        glyph.style.willChange = '';
+      }
+    } catch (err) {}
   }
 
   function updateTocCapShift(progress, draggingNow, snapMs, snapEase) {
