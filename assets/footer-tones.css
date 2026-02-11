@@ -12,6 +12,9 @@
   /* Lexicon seal: closed/base surface tones (keep selection/leaf styling untouched). */
   --lexicon-seal-face:#08090b;
   --lexicon-seal-face-hover:#0a0b0e;
+
+  /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
+  --lexicon-cradle-h:calc(var(--seal-notch-height) + 1px);
 }
 
 /* Darken the Lexicon seal base (closed state). */
@@ -23,6 +26,11 @@
 #lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
 #lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{
   background-color:var(--lexicon-seal-face-hover);
+}
+
+/* Make the Lexicon seal cradle border/field 1px taller without touching socket geometry tokens. */
+.nav-footer::after{
+  height:var(--lexicon-cradle-h, var(--seal-notch-height));
 }
 
 /* Touch/coarse pointer: neutralize any fallback hover tint that would re-lighten the seal. */
