@@ -98,13 +98,75 @@ Core invariants:
 - ToC must not become a hub/shortcut; it requires deliberate confirm to navigate.
 - Reliquary must not introduce navigation or alternate journey paths.
 
+### _includes/ (shared HTML shell) — core
+
+Key includes:
+- `_includes/head-fonts.html`
+- `_includes/covenant-config.html`
+- `_includes/nav-footer.html` (dock: Prev/Next + ToC + Lexicon + Mirror)
+- `_includes/toc-panel.html`
+- `_includes/lexicon-panel.html`
+- `_includes/reliquary-panel.html`
+
+If include structure changes, verify every journey page that uses the shell.
+
+### Build / Deploy / CI
+
+- `.github/workflows/pages.yml` — Jekyll build + deploy to GitHub Pages; builds into `_site` and writes `_site/.nojekyll`.
+- `.github/workflows/css-guard.yml` — validates `covenant.css` integrity markers and structure.
+- `.github/workflows/agent-guard.yml` — requires `AGENT.md` update when core files change.
+- `_config.yml` — Jekyll behavior (include/exclude).
+
+Docs:
+- `docs/STYLE-GUARDS.md` — `covenant.css` integrity requirements and architectural markers.
+
 ---
 
 ## Coupling rules (if you touch X, check Y)
 
+- If you change any journey page:
+  - Verify Prev/Next links on that page and adjacent pages.
+  - Verify ToC and Lexicon still open/close and do not cover the dock.
+
+- If you change `_includes/nav-footer.html`:
+  - Verify dock layout on desktop + mobile.
+  - Verify the control IDs remain present: `tocToggle`, `lexiconToggle`, `mirrorToggle`.
+
+- If you change `_includes/reliquary-panel.html`:
+  - Verify the required anchors remain present: `reliquaryPanel`, `reliquaryOverlay`, `reliquaryDragRegion`.
+
+- If you change `assets/ui-stack.js`:
+  - Verify: with any panel open, clicking dock Prev/Next closes panels first, then navigates.
+  - Verify: UI stack z-index remains below the dock lift (~1600) so panels/scrims never overlay the footer during drag/open/close.
+
 - If you change `assets/toc.js`:
   - Verify: Hold-to-Enter closes any open panels before navigation.
   - Verify on mobile Safari: with Reliquary open, drag the ToC tab to open and confirm the ToC layers above the Reliquary throughout the gesture.
+  - Note: ToC UI-stack `isOpen()` should be derived from panel state (`.is-open`/`.is-dragging`/`.is-closing`) rather than root motion classes (e.g. `toc-opening`/`toc-closing`), to avoid leaving other panels inert.
+  - Note: During drag-open, set `.is-dragging` before calling `noteOpenToUIStack()` so z-index assignment is correct from frame 0.
+
+- If you change `assets/reliquary.js` or `assets/reliquary.css`:
+  - Verify veil does not cover footer dock.
+  - Verify drag-open/drag-close on mobile.
+  - Verify focus trap + ESC close returns focus to `#mirrorToggle`.
+  - Note: Reliquary will attempt to close the ToC by clicking `#tocToggle` when opening; if ToC wiring changes, re-test this interaction.
+
+- If you change `assets/lexicon.js`:
+  - Verify Lexicon open/close, overlay click close, ESC close (if implemented), and selection highlights.
+  - Verify `rituals.html` remains excluded from compact-header standardization.
+
+- If you change `assets/toc.js` or `assets/toc.css`:
+  - Verify veil does not cover footer dock.
+  - Verify staged selection + deliberate confirm.
+  - Verify progress gating still blocks locked direct-access.
+  - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
+
+- If you change `assets/covenant.css`:
+  - Preserve CSS guard markers (do not truncate or reorder guarded regions).
+  - Preserve the footer “Obsidian & Gold Leaf” region per `docs/STYLE-GUARDS.md`.
+
+- If you change build/deploy files (`pages.yml`, `_config.yml`, guards):
+  - Ensure the site still builds and deploys via the Pages workflow.
 
 ---
 
@@ -117,7 +179,45 @@ Use this when making CSS/JS/include changes.
 - With any panel open, click Next/Prev and confirm panels close before navigation.
 - Confirm ToC and Lexicon are reachable where expected.
 
-2) ToC modal veil
-- Open ToC from footer; confirm veil does not cover dock.
-- Drag-open: confirm the ToC tab stays welded to the panel top edge throughout the gesture.
+2) Lexicon panel + overlay
+- Toggle Lexicon open/close.
+- Overlay click closes.
+- ESC closes (if implemented).
+- Confirm ToC is not visible while Lexicon is open (if that is the intended behavior).
 
+3) ToC modal veil
+- Open ToC from footer; confirm veil does not cover dock.
+- Select an unlocked entry; confirm it stages.
+- Hold confirm to enter; release early cancels.
+- Confirm Hold-to-Enter closes panels before navigation.
+- ESC closes and focus returns to the ToC control.
+- Tab/Shift+Tab keep focus trapped in the panel.
+- Drag-open: confirm the ToC tab stays welded to the panel top edge throughout the gesture.
+- If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).
+
+4) Reliquary modal veil
+- Open Reliquary from Mirror; confirm veil does not cover footer dock.
+- ESC closes and focus returns to the Mirror control.
+- On mobile: drag Mirror tab upward to open; drag down from sheet handle to close.
+- Drag-open: confirm the Mirror tab stays welded to the panel top edge throughout the gesture.
+- If ToC is open, opening Reliquary closes ToC first (no stacked scroll locks).
+
+5) Selection highlights
+- On an Article page (`I.html` or `III.html`): click subsection and subpart markers (Ⓐ/Ⓑ/Ⓒ) and confirm expected highlight behavior.
+
+6) Footer system
+- Confirm footer colors/frames/seals render correctly.
+- Confirm mobile behavior does not trap scroll or hide the dock.
+
+7) Rituals exclusion
+- Open `rituals.html` and confirm compact-header exclusion still applies.
+
+---
+
+## When to update AGENT.md (same change-set)
+
+Update this file if you change any of:
+- Linear flow order, filenames, or navigation rules.
+- Shared includes or shared JS/CSS responsibilities.
+- Build/deploy workflows or `_config.yml` behavior.
+- Any newly discovered coupling rule (X breaks Y).
