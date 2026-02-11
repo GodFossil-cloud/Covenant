@@ -80,19 +80,20 @@
     padding: 0 !important;
   }
 
-  /* ToC: do NOT use absolute centering on iOS; force grid-centered in-flow glyph. */
-  html #navFooter #tocToggle.dock-tab{
-    display: grid !important;
-    place-items: center !important;
+  /* ToC (iOS Safari): Center via layout; forbid any absolute/inset geometry on the hamburger glyph. */
+  html body #navFooter .nav-seals #tocToggle.dock-tab{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
-  html #navFooter #tocToggle.dock-tab .toc-glyph{
-    position: relative !important;
-    inset: auto !important;
-    left: auto !important;
-    right: auto !important;
+  html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph{
+    position: static !important;
+    inset: unset !important;
     top: auto !important;
+    right: auto !important;
     bottom: auto !important;
+    left: auto !important;
 
     display: inline-grid !important;
     place-items: center;
@@ -220,4 +221,4 @@
 {% include toc-panel.html %}
 {% include reliquary-panel.html %}
 
-<script src="{{ '/assets/tab-weld.js' | relative_url }}?v=12" defer></script>
+<script src="{{ '/assets/tab-weld.js' | relative_url }}?v=13" defer></script>
