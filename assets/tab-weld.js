@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.7
+/*! Covenant Tab Weld v0.1.8
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -10,6 +10,8 @@
            preventing iOS Safari from leaving dock tabs translated "stuck" after close.
    v0.1.7: brute-force pin the ToC hamburger glyph to the center with inline !important styles
            every frame (iOS Safari safety net), so it cannot stick to top/bottom in any state.
+   v0.1.8: also clear/override `inset` (Safari shorthand clobber), and schedule a post-frame
+           re-pin so late style writes can't strand the glyph at top/bottom.
 */
 (function () {
   'use strict';
@@ -100,12 +102,29 @@
     return false;
   }
 
+  var postPinTimer = 0;
+
+  function schedulePostPin() {
+    try {
+      if (postPinTimer) return;
+      postPinTimer = window.setTimeout(function () {
+        postPinTimer = 0;
+        forceCenterTocGlyph();
+      }, 0);
+    } catch (err) {}
+  }
+
   function forceCenterTocGlyph() {
     try {
       var toggle = byId('tocToggle');
       if (!toggle) return;
       var glyph = toggle.querySelector('.toc-glyph');
       if (!glyph || !glyph.style) return;
+
+      // iOS Safari: sometimes a late writer (or serialization) reintroduces `inset: 50% auto`,
+      // which effectively sets both top and bottom and can strand the glyph.
+      glyph.style.removeProperty('inset');
+      glyph.style.setProperty('inset', 'auto', 'important');
 
       glyph.style.setProperty('position', 'absolute', 'important');
       glyph.style.setProperty('left', '50%', 'important');
@@ -139,6 +158,7 @@
         glyph.style.removeProperty('transform');
         glyph.style.removeProperty('transition');
         glyph.style.removeProperty('will-change');
+        glyph.style.removeProperty('inset');
       }
 
       // Critical: also reset carry vars so iOS Safari can't strand the tab translated after close.
@@ -299,6 +319,7 @@
         forceCenterTocGlyph();
         if (isTocActive()) weldToC();
         if (isReliquaryActive()) weldReliquary();
+        schedulePostPin();
       }
 
       if (tocToggle && tocToggle.addEventListener) {
@@ -327,6 +348,8 @@
 
       if (isReliquaryActive()) weldReliquary();
       else resetInlineWeld(byId('mirrorToggle'));
+
+      schedulePostPin();
     } catch (err) {}
 
     requestAnimationFrame(tick);
