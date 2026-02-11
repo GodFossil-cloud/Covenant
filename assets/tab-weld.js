@@ -1,8 +1,9 @@
-/*! Covenant Tab Weld v0.1.3
+/*! Covenant Tab Weld v0.1.4
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
            force drag-frame welding to run after panel drag handlers on iOS Safari.
+   v0.1.4: seat the top edge of the clickable pill/tab to the panel top edge.
 */
 (function () {
   'use strict';
@@ -144,8 +145,9 @@
 
     var dx = p.left - baseLeft;
 
-    // Seat the tab on the panel top edge: tab bottom flush to panel top.
-    var tabTop = p.top - t.height;
+    // Seat the tab on the panel top edge: tab top flush to panel top.
+    // Note: baseTop excludes --dock-tab-raise; re-apply it here so the computed dy yields a correct viewport top.
+    var tabTop = p.top - dockRaise;
     var dy = tabTop - baseTop;
 
     setVarPx(toggle, '--toc-toggle-drag-x', dx);
@@ -172,8 +174,9 @@
 
     var dx = p.right - baseRight;
 
-    // Seat the tab on the panel top edge: tab bottom flush to panel top.
-    var tabTop = p.top - t.height;
+    // Seat the tab on the panel top edge: tab top flush to panel top.
+    // Note: baseTop excludes --dock-tab-raise; re-apply it here so the computed dy yields a correct viewport top.
+    var tabTop = p.top - dockRaise;
     var dy = tabTop - baseTop;
 
     setVarPx(toggle, '--reliquary-toggle-drag-x', dx);
