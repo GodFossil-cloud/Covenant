@@ -12,8 +12,8 @@ html.reliquary-closing{
   /* Keep the window box close to the socket geometry; the circle radius below defines the actual cut. */
   --dock-window-h:calc(var(--dock-socket-h) + 2px);
 
-  /* Lower the cutout a touch more (bottom edge was still riding too high). */
-  --dock-window-y-shift:-4px;
+  /* Lower the cutout a touch more. */
+  --dock-window-y-shift:-3px;
 }
 
 @supports (-webkit-mask-image: linear-gradient(#000 0 0)){
