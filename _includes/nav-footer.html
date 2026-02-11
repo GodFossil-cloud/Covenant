@@ -41,6 +41,15 @@
     z-index: 0;
   }
 
+  /* iOS critical fallback: honor the JS-driven cap seat shift so cap + glyph stay together. */
+  #navFooter #tocToggle .dock-cap{
+    transform: translate3d(-50%, calc(-1 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--toc-cap-shift-y, 0px)), 0);
+  }
+
+  #navFooter #mirrorToggle .dock-cap{
+    transform: translate3d(-50%, calc(-1 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--mirror-cap-shift-y, 0px)), 0);
+  }
+
   :where(#navFooter .dock-tab .dock-cap)::before {
     content: '';
     position: absolute;
@@ -84,7 +93,7 @@
     right: auto !important;
     top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
     bottom: auto !important;
-    transform: translate3d(-50%, -50%, 0) translateY(-0.5px);
+    transform: translate3d(-50%, -50%, 0) translateY(calc(-0.5px + var(--mirror-cap-shift-y, 0px)));
     z-index: 2;
 
     display: inline-grid !important;
@@ -103,7 +112,7 @@
     right: auto !important;
     top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
     bottom: auto !important;
-    transform: translate3d(-50%, -50%, 0) translateY(-0.5px);
+    transform: translate3d(-50%, -50%, 0) translateY(calc(-0.5px + var(--toc-cap-shift-y, 0px)));
     z-index: 2;
 
     display: inline-grid !important;
