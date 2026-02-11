@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.2 */
+/*! Covenant UI Stack v0.3.3 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.2';
+  window.COVENANT_UI_STACK_VERSION = '0.3.3';
 
   var registry = Object.create(null);
   var order = [];
@@ -425,6 +425,63 @@
 
       intercept(e);
     }, true);
+  })();
+
+  // Keep Lexicon gate in sync with DOM state even when no stack event fires
+  // (e.g., edge cases where ToC closes but ui-stack doesn't get a corresponding noteClose).
+  (function wireLexiconGateAutoSync() {
+    var pending = false;
+
+    function schedule() {
+      if (pending) return;
+      pending = true;
+
+      var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
+
+      raf(function () {
+        pending = false;
+        try { applyLexiconGateState(); } catch (err) {}
+      });
+    }
+
+    function bindObserver() {
+      if (!window.MutationObserver) {
+        schedule();
+        return;
+      }
+
+      try {
+        var targets = [];
+        targets.push(document.documentElement);
+
+        var tocPanel = document.getElementById('tocPanel');
+        var relPanel = document.getElementById('reliquaryPanel');
+        var lexPanel = document.getElementById('lexiconPanel');
+
+        if (tocPanel) targets.push(tocPanel);
+        if (relPanel) targets.push(relPanel);
+        if (lexPanel) targets.push(lexPanel);
+
+        var observer = new MutationObserver(function () { schedule(); });
+
+        for (var i = 0; i < targets.length; i++) {
+          observer.observe(targets[i], { attributes: true, attributeFilter: ['class'] });
+        }
+      } catch (err2) {}
+
+      schedule();
+    }
+
+    if (document && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindObserver);
+    } else {
+      bindObserver();
+    }
+
+    // Also resync on bfcache restore.
+    try {
+      window.addEventListener('pageshow', schedule);
+    } catch (err3) {}
   })();
 
   function applyStackState() {
