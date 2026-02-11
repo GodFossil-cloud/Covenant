@@ -90,13 +90,15 @@
   line-height: 1;
 }
 
-/* Optical centering (the glyphs have uneven sidebearings in iOS symbol fonts). */
+/* IMPORTANT: do not set `transform` here.
+   Other layers (critical CSS / toc.css / tab-weld.js) rely on `transform` for true vertical centering.
+   Use margin-left for small optical nudges instead. */
 #navFooter #tocToggle .toc-glyph {
-  transform: translateX(var(--toc-glyph-nudge-x));
+  margin-left: var(--toc-glyph-nudge-x);
 }
 
 #navFooter #mirrorToggle .toc-glyph {
-  transform: translateX(var(--mirror-glyph-nudge-x));
+  margin-left: var(--mirror-glyph-nudge-x);
 }
 
 /* iOS Safari: seat the *tab plates* into their sockets.
