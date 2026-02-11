@@ -237,7 +237,25 @@
 
   function isPanelOpenByDomId(panelId) {
     var el = document.getElementById(panelId);
-    return !!(el && el.classList && el.classList.contains('is-open'));
+    if (!el || !el.classList) return false;
+
+    if (el.classList.contains('is-open')) return true;
+
+    // Lexicon gating should engage as soon as ToC/Reliquary begin drag-open,
+    // matching the Reliquary behavior (which marks itself open immediately on drag start).
+    var root = document.documentElement;
+
+    if (panelId === 'tocPanel') {
+      if (el.classList.contains('is-dragging') || el.classList.contains('is-closing')) return true;
+      if (root && root.classList && (root.classList.contains('toc-opening') || root.classList.contains('toc-closing'))) return true;
+    }
+
+    if (panelId === 'reliquaryPanel') {
+      if (el.classList.contains('is-dragging')) return true;
+      if (root && root.classList && (root.classList.contains('reliquary-open') || root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing'))) return true;
+    }
+
+    return false;
   }
 
   function computeLexiconLocked() {
