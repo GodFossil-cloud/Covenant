@@ -5,8 +5,8 @@
 */
 
 #navFooter {
-  /* Restore original seal seating. */
-  --lexicon-seal-top-align: 9px;
+  /* Seal seating: raise the flat-top seal so its top edge aligns with the Lexicon panel lip. */
+  --lexicon-seal-top-align: 13px;
 
   --lexicon-seal-w: 66px;
   --lexicon-seal-h: 40px;
