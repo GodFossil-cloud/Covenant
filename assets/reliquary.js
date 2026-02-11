@@ -345,12 +345,12 @@
       var capRect = cap.getBoundingClientRect();
       var panelRect = panel.getBoundingClientRect();
 
-      // Align cap bottom to the panel's top edge (notch is visual only).
+      // Align cap TOP to the panel's top edge (notch is visual only).
       var targetY = panelRect.top;
-      var capBottomY = capRect.bottom;
+      var capTopY = capRect.top;
 
-      var baseBottomY = capBottomY - mirrorCapShiftY;
-      var shift = (targetY - baseBottomY) * p;
+      var baseTopY = capTopY - mirrorCapShiftY;
+      var shift = (targetY - baseTopY) * p;
 
       if (!isFinite(shift)) shift = 0;
       setMirrorCapShiftPx(shift);
@@ -562,7 +562,7 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Requirement: tab bottom edge seats to the sheet top edge (notch is visual only).
+    // Requirement: tab box TOP edge meets the sheet TOP edge (seat vars are tuned accordingly).
     var overlapPx = getSeatOverlapPx();
 
     var targetTop = openPanelTop - baseRect.height;
@@ -785,11 +785,11 @@
         dxTarget = computeOpenToggleDxFromPanelRight(rect.right, base);
         dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
 
-        // Seat cap bottom to panel top, assuming the cap rides with the same dyTarget carry.
+        // Seat cap TOP to panel top, assuming the cap rides with the same dyTarget carry.
         var cap = toggle.querySelector('.dock-cap');
         if (cap && cap.getBoundingClientRect) {
           var capRect = cap.getBoundingClientRect();
-          capShiftTarget = rect.top - (capRect.bottom + dyTarget);
+          capShiftTarget = rect.top - (capRect.top + dyTarget);
         }
       }
     } catch (err) {}
