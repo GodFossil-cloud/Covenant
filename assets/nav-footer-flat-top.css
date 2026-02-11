@@ -123,6 +123,11 @@
   overflow: hidden;
   margin-top: calc(-1 * var(--lexicon-seal-top-align) + 4px);
 
+  /* Base seal positioning uses a translateY to "lift" the button.
+     In the flat-top footer, we want the seal top edge flush with the slab, so push it down 1px
+     while preserving drag math (lexicon.js drives --seal-drag-y). */
+  transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 1px)) !important;
+
   /* Wider + shorter medallion (footer-local only). */
   width: var(--lexicon-seal-w);
   height: var(--lexicon-seal-h);
