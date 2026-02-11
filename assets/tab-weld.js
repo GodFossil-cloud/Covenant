@@ -1,8 +1,8 @@
-/*! Covenant Tab Weld v0.1.2
-   Purpose: keep ToC + Mirror tabs welded to the live top edge of their panels during drag/snap/tap.
+/*! Covenant Tab Weld v0.1.3
+   Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
-   v0.1.2: seat tabs flush to the panel top edge (ignore notch-centering vars),
-           and treat ToC as active based on panel state (.is-open) not root toc-open.
+   v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
+           force drag-frame welding to run after panel drag handlers on iOS Safari.
 */
 (function () {
   'use strict';
@@ -93,6 +93,39 @@
     return false;
   }
 
+  function seatCapToPanelTop(toggle, panel, tabTop) {
+    try {
+      if (!toggle || !panel) return;
+
+      var cap = toggle.querySelector('.dock-cap');
+      var glyph = toggle.querySelector('.toc-glyph');
+      if (!cap || !glyph || !cap.getBoundingClientRect) return;
+
+      var p = panel.getBoundingClientRect();
+      var capRect = cap.getBoundingClientRect();
+
+      var lift = resolveVarPx('--dock-cap-lift') || 10;
+      var capH = (capRect && capRect.height) ? capRect.height : (resolveVarPx('--dock-cap-size') / 2);
+      if (!capH || capH <= 0) capH = 23;
+
+      // Want cap bottom at panel top.
+      var desiredCapTop = p.top - capH;
+
+      // capTop = tabTop + (-lift + capShift).
+      var capShift = desiredCapTop - tabTop + lift;
+
+      cap.style.transition = 'none';
+      glyph.style.transition = 'none';
+
+      // Important: beat any inline transforms authored by toc.js/reliquary.js during drag (iOS Safari ordering).
+      cap.style.setProperty('transform', 'translate3d(-50%,' + ((-1 * lift) + capShift) + 'px,0)', 'important');
+      glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + capShift) + 'px)', 'important');
+
+      cap.style.willChange = 'transform';
+      glyph.style.willChange = 'transform';
+    } catch (err2) {}
+  }
+
   function weldToC() {
     var panel = byId('tocPanel');
     var toggle = byId('tocToggle');
@@ -118,31 +151,7 @@
     setVarPx(toggle, '--toc-toggle-drag-x', dx);
     setVarPx(toggle, '--toc-toggle-drag-y', dy);
 
-    // Cap seat: keep medallion sitting on the panel top edge (cap bottom flush to panel top).
-    try {
-      var cap = toggle.querySelector('.dock-cap');
-      var glyph = toggle.querySelector('.toc-glyph');
-      if (!cap || !glyph) return;
-
-      var lift = resolveVarPx('--dock-cap-lift') || 10;
-      var capSize = resolveVarPx('--dock-cap-size') || 46;
-      var capHalfH = capSize / 2;
-
-      // Want cap bottom at p.top => capTop = p.top - capHalfH.
-      var desiredCapTop = p.top - capHalfH;
-
-      // capTop = tabTop + (-lift + capShift).
-      var capShift = desiredCapTop - tabTop + lift;
-
-      cap.style.transition = 'none';
-      glyph.style.transition = 'none';
-
-      cap.style.transform = 'translate3d(-50%,' + ((-1 * lift) + capShift) + 'px,0)';
-      glyph.style.transform = 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + capShift) + 'px)';
-
-      cap.style.willChange = 'transform';
-      glyph.style.willChange = 'transform';
-    } catch (err2) {}
+    seatCapToPanelTop(toggle, panel, tabTop);
   }
 
   function weldReliquary() {
@@ -170,37 +179,33 @@
     setVarPx(toggle, '--reliquary-toggle-drag-x', dx);
     setVarPx(toggle, '--reliquary-toggle-drag-y', dy);
 
-    // Cap seat: keep the Mirror medallion sitting on the panel edge (cap bottom flush to panel top).
+    // Seat the cap the same way (do not allow header-notch centering to pull it down).
+    seatCapToPanelTop(toggle, panel, tabTop);
+
+    // Also keep the legacy shift var coherent (some CSS paths still read it).
     try {
       var cap = toggle.querySelector('.dock-cap');
-      if (!cap || !cap.getBoundingClientRect) return;
-
-      var capRect = cap.getBoundingClientRect();
-      var desiredBottom = p.top;
-
-      var currentShift = readElVarPx(toggle, '--mirror-cap-shift-y');
-      var nextShift = currentShift + (desiredBottom - capRect.bottom);
-
-      if (!isFinite(nextShift)) nextShift = 0;
-      if (nextShift > 240) nextShift = 240;
-      if (nextShift < -240) nextShift = -240;
-
-      setVarPx(toggle, '--mirror-cap-shift-y', nextShift);
+      if (cap && cap.getBoundingClientRect) {
+        var capRect = cap.getBoundingClientRect();
+        var desiredBottom = p.top;
+        var currentShift = readElVarPx(toggle, '--mirror-cap-shift-y');
+        var nextShift = currentShift + (desiredBottom - capRect.bottom);
+        if (!isFinite(nextShift)) nextShift = 0;
+        if (nextShift > 240) nextShift = 240;
+        if (nextShift < -240) nextShift = -240;
+        setVarPx(toggle, '--mirror-cap-shift-y', nextShift);
+      }
     } catch (err3) {}
   }
 
-  function tick() {
+  function updateDraggingClasses() {
     try {
-      var tocActive = isTocActive();
-      var relActive = isReliquaryActive();
-
       var tocToggle = byId('tocToggle');
       var relToggle = byId('mirrorToggle');
 
       var tocPanel = byId('tocPanel');
       var relPanel = byId('reliquaryPanel');
 
-      // Disable independent tab transitions while the panels are moving.
       if (tocToggle) {
         var tocDragging = root.classList.contains('toc-opening') || root.classList.contains('toc-closing') || hasState(tocPanel, 'is-dragging');
         tocToggle.classList.toggle('is-toc-dragging', !!tocDragging);
@@ -210,9 +215,45 @@
         var relDragging = root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing') || hasState(relPanel, 'is-dragging');
         relToggle.classList.toggle('is-reliquary-dragging', !!relDragging);
       }
+    } catch (err) {}
+  }
 
-      if (tocActive) weldToC();
-      if (relActive) weldReliquary();
+  // iOS Safari: ensure our weld runs AFTER the drag handlers (toc.js / reliquary.js) that write cap transforms.
+  function wirePointerWeld() {
+    try {
+      if (!window.PointerEvent) return;
+
+      var tocToggle = byId('tocToggle');
+      var relToggle = byId('mirrorToggle');
+
+      function weldFromPointer() {
+        updateDraggingClasses();
+        if (isTocActive()) weldToC();
+        if (isReliquaryActive()) weldReliquary();
+      }
+
+      if (tocToggle && tocToggle.addEventListener) {
+        tocToggle.addEventListener('pointermove', weldFromPointer);
+        tocToggle.addEventListener('pointerdown', weldFromPointer);
+        tocToggle.addEventListener('pointerup', weldFromPointer);
+        tocToggle.addEventListener('pointercancel', weldFromPointer);
+      }
+
+      if (relToggle && relToggle.addEventListener) {
+        relToggle.addEventListener('pointermove', weldFromPointer);
+        relToggle.addEventListener('pointerdown', weldFromPointer);
+        relToggle.addEventListener('pointerup', weldFromPointer);
+        relToggle.addEventListener('pointercancel', weldFromPointer);
+      }
+    } catch (err) {}
+  }
+
+  function tick() {
+    try {
+      updateDraggingClasses();
+
+      if (isTocActive()) weldToC();
+      if (isReliquaryActive()) weldReliquary();
     } catch (err) {}
 
     requestAnimationFrame(tick);
@@ -220,6 +261,7 @@
 
   function start() {
     if (!window.requestAnimationFrame) return;
+    wirePointerWeld();
     requestAnimationFrame(tick);
   }
 
