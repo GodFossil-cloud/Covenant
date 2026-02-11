@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.17 (Seat tab + cap to panel top; notch remains visual) */
+/*! Covenant ToC v3.2.18 (Top-edge weld for dock cap) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.17';
+  window.COVENANT_TOC_VERSION = '3.2.18';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -320,15 +320,14 @@
 
   function computeCapSeatShiftToPanelTop(panelTopY, baseToggleTop, dyFinal) {
     var lift = getDockCapLiftPx();
-    var capSize = getDockCapSizePx();
 
     var dy = (typeof dyFinal === 'number' && !isNaN(dyFinal)) ? dyFinal : 0;
 
     // .dock-cap is positioned at toggle top (top: 0) and lifted upward by --dock-cap-lift.
-    // Its bottom at seatShift==0 is: toggleTop + dy + (-lift + capSize).
-    var capBottomAtShift0 = baseToggleTop + dy + (-1 * lift) + capSize;
+    // We align CAP TOP to the panel top edge (notch remains visual).
+    var capTopAtShift0 = baseToggleTop + dy + (-1 * lift);
 
-    return panelTopY - capBottomAtShift0;
+    return panelTopY - capTopAtShift0;
   }
 
   function setTocCapShiftPx(y, draggingNow, snapMs, snapEase) {
@@ -400,13 +399,13 @@
     var capRect = cap.getBoundingClientRect();
     var panelRect = tocPanel.getBoundingClientRect();
 
-    // We align cap bottom to panel top (panel notch is visual only).
-    var capBottomY = capRect.bottom;
-    var baseBottomY = capBottomY - tocCapShiftY;
+    // Align cap TOP to panel top (notch is visual only).
+    var capTopY = capRect.top;
+    var baseTopY = capTopY - tocCapShiftY;
 
     var targetY = panelRect.top;
 
-    var shift = (targetY - baseBottomY) * p;
+    var shift = (targetY - baseTopY) * p;
 
     setTocCapShiftPx(shift, !!draggingNow, snapMs, snapEase);
   }
@@ -536,7 +535,7 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Requirement: tab bottom edge seats to the sheet top edge.
+    // Requirement: tab TOP edge meets the sheet TOP edge.
     var seatDy = getTocSeatDy();
     var overlapPx = getTocSeatOverlapPx();
 
