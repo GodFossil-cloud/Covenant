@@ -13,7 +13,7 @@
   --seal-cradle-shift-y: calc(-1 * (var(--lexicon-seal-top-align) - 5px));
 
   /* Fine adjustment: lower the socket/cutout relative to the seal. */
-  --seal-cradle-drop-y: 4px;
+  --seal-cradle-drop-y: 5px;
 
   --lexicon-seal-w: 66px;
   --lexicon-seal-h: 40px;
@@ -121,7 +121,7 @@
 
 #navFooter #lexiconToggle {
   overflow: hidden;
-  margin-top: calc(-1 * var(--lexicon-seal-top-align));
+  margin-top: calc(-1 * var(--lexicon-seal-top-align) + 1px);
 
   /* Wider + shorter medallion (footer-local only). */
   width: var(--lexicon-seal-w);
@@ -152,7 +152,7 @@
 /* Mobile: raise only the tab plates (not the sockets) so they don't overlap the socket's bottom line. */
 @media (max-width: 600px) {
   #navFooter {
-    --dock-tab-raise: -19px;
+    --dock-tab-raise: -18px;
     --toc-tab-gap: 8px;
   }
 }
