@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.32 (Dock medallion cap size tune; no socket change) */
+/*! Covenant ToC Panel Styles v3.1.33 (ToC glyph stays centered in tab face) */
 
 /* -------------------------------------------------
    Variables
@@ -543,6 +543,9 @@ html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:
 
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0) translateY(-.5px);z-index:2}
+
+/* ToC hamburger must stay centered in the tab face (do not ride cap geometry or cap seat shifts). */
+html #tocToggle.dock-tab .toc-glyph{top:50%}
 
 /* Mirror tab can be "carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
 html #mirrorToggle.dock-tab{
