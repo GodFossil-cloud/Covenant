@@ -91,7 +91,10 @@
   --toc-notch-w:calc(var(--dock-tab-width, 52px) + 0px);
   --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
   --toc-seat-overlap:2px;
-  --toc-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
+
+  /* Seat welding: JS seats the tab box using (seat-dy + seat-overlap).
+     Tune so the tab TOP edge meets the panel TOP edge; notch/cap remain visual. */
+  --toc-seat-dy:calc(var(--dock-tab-height) - var(--toc-seat-overlap));
 }
 
 /* -------------------------------------------------

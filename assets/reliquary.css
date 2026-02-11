@@ -32,8 +32,9 @@
   /* Mechanical bite: push the tab into the notch floor to eliminate any true gap (independent of notch depth). */
   --reliquary-seat-overlap:2px;
 
-  /* Move the carried Mirror tab down so it actually seats into the notch (not just above it). */
-  --reliquary-seat-dy:calc(var(--dock-cap-lift, 10px) - 4px);
+  /* Seat welding: JS seats the tab box using (seat-dy + seat-overlap).
+     Tune so the tab TOP edge meets the panel TOP edge; notch/cap remain visual. */
+  --reliquary-seat-dy:calc(var(--dock-tab-height) - var(--reliquary-seat-overlap));
 }
 
 /* -------------------------------------------------

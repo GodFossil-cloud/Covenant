@@ -83,7 +83,9 @@ Rules:
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
+- Note (ToC tab welding): `--toc-seat-dy` + `--toc-seat-overlap` are tuned so the tab box top edge meets the panel top edge; notch/cap remain visual.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
+- Note (Reliquary tab welding): `--reliquary-seat-dy` + `--reliquary-seat-overlap` are tuned so the tab box top edge meets the panel top edge; notch/cap remain visual.
 - Note: If JS needs numeric px from calc()/var()-based CSS custom properties, do not `parseFloat(getComputedStyle(...).getPropertyValue('--x'))` (it returns token strings); resolve via a probe element (e.g., set `margin-top: var(--x)` and read computed px).
 - Note (dock mask window): `--dock-window-w` / `--dock-window-h` are authored as `var(...)` during open/close; align code must resolve them via the probe helper (otherwise the dock cutout can drift vertically while the mask is active).
 - Note (mobile Safari): Reliquary notch is a real `clip-path` cutout; if a see-through seam appears during drag, prefer increasing `--reliquary-seat-overlap` on mobile rather than changing notch geometry.
