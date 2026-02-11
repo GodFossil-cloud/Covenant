@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.0 (True Panel Stack + Shared Scroll Lock Opt-In) */
+/*! Covenant Lexicon UI v0.3.1 (True Panel Stack + Shared Scroll Lock Opt-In) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.0';
+  window.COVENANT_LEXICON_VERSION = '0.3.1';
 
   var doc = document;
   var root = doc.documentElement;
@@ -226,6 +226,14 @@
     if (!uiStackReady(stack)) return;
 
     try { stack.noteClose(UI_STACK_ID); } catch (err) {}
+  }
+
+  function clearStackZIndex() {
+    // Important: when Lexicon closes back to its "peek" state, it must not keep the
+    // last UI-stack inline z-index from its open state; otherwise it can sit above
+    // ToC/Reliquary tabs after an open→close cycle.
+    try { if (lexOverlay) lexOverlay.style.zIndex = ''; } catch (err1) {}
+    try { if (panel) panel.style.zIndex = ''; } catch (err2) {}
   }
 
   var sealClearTimer = null;
@@ -903,6 +911,7 @@
     setLexiconGlyph();
 
     noteClose();
+    clearStackZIndex();
 
     setTimeout(function () {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : lexiconToggle;
@@ -1228,6 +1237,7 @@
         setLexiconGlyph();
 
         noteClose();
+        clearStackZIndex();
       }
       clearSealDragOffset();
     }
