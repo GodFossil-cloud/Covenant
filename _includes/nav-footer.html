@@ -25,7 +25,7 @@
     flex: 0 0 var(--nav-pill-width);
   }
 
-  /* Decorative: medallion cap on a stem (fallback styling; does not change the welded tab box). */
+  /* Decorative: medallion cap on a stem (fallback styling). */
   :where(#navFooter .dock-tab) { position: relative; overflow: visible; }
 
   :where(#navFooter .dock-tab .dock-cap) {
@@ -61,6 +61,22 @@
       #010103;
   }
 
+  /* Non-negotiable: dock tabs are medallion-only (no welded box frame ever). */
+  #navFooter #tocToggle.dock-tab,
+  #navFooter #mirrorToggle.dock-tab{
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  #navFooter #tocToggle.dock-tab::before,
+  #navFooter #tocToggle.dock-tab::after,
+  #navFooter #mirrorToggle.dock-tab::before,
+  #navFooter #mirrorToggle.dock-tab::after{
+    content: none !important;
+    display: none !important;
+  }
+
   /* Mirror: cap geometry is intentional (it is “carried” by the Reliquary). */
   #navFooter #mirrorToggle .toc-glyph {
     position: absolute !important;
@@ -80,49 +96,26 @@
     padding: 0 !important;
   }
 
-  /* ToC (iOS Safari): use a geometric hamburger (not the ☰ character) so visual centering is true. */
-  html body #navFooter .nav-seals #tocToggle.dock-tab{
-    position: relative !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph{
+  /* ToC: Unicode hamburger centered in the same seat model as Mirror. */
+  #navFooter #tocToggle .toc-glyph{
     position: absolute !important;
-    inset: auto !important;
     left: 50% !important;
-    top: 50% !important;
     right: auto !important;
+    top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
     bottom: auto !important;
-    z-index: 2 !important;
+    transform: translate3d(-50%, -50%, 0) translateY(-0.5px);
+    z-index: 2;
 
-    display: block !important;
-    width: 18px !important;
-    height: 12px !important;
-
+    display: inline-grid !important;
+    place-items: center;
+    width: 1em;
+    height: 1em;
+    line-height: 1 !important;
     margin: 0 !important;
     padding: 0 !important;
 
-    font-size: 0 !important;
-    line-height: 0 !important;
-
-    color: rgba(245,245,240,.94) !important;
-
-    /* True center (avoid “bottom-right drift” if JS rewrites transform). */
-    transform: translate3d(-50%,-50%,0) translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0) !important;
-  }
-
-  html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph::before{
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 2px;
-    border-radius: 999px;
-    background: currentColor;
-    box-shadow: 0 5px 0 currentColor, 0 10px 0 currentColor;
+    /* If a glyph font fails, keep the fallback readable. */
+    font-size: 0.88rem !important;
   }
 
   #navFooter #lexiconToggle {
@@ -201,7 +194,7 @@
                 <!-- Strategy B: one centered cluster governs symmetry. -->
                 <button class="nav-btn dock-tab" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
                     <span class="dock-cap" aria-hidden="true"></span>
-                    <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true"></span>
+                    <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">☰</span>
                 </button>
 
                 <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="{{ include.center_aria_label | default: "Open Lexicon" }}" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𖤓</span></button>
