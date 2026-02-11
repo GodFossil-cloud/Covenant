@@ -80,30 +80,27 @@
     padding: 0 !important;
   }
 
-  /* ToC (iOS Safari): Center via layout; forbid any absolute/inset geometry on the hamburger glyph. */
+  /* ToC (iOS Safari): hard-center the hamburger in the tab face. */
   html body #navFooter .nav-seals #tocToggle.dock-tab{
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    position: relative !important;
+    display: grid !important;
+    place-items: center !important;
   }
 
   html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph{
-    position: static !important;
-    inset: unset !important;
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: auto !important;
+    position: absolute !important;
+    inset: 0 !important;
 
-    display: inline-grid !important;
-    place-items: center;
-    width: 1em;
-    height: 1em;
+    display: grid !important;
+    place-items: center !important;
+
+    width: auto !important;
+    height: auto !important;
     line-height: 1 !important;
     margin: 0 !important;
     padding: 0 !important;
 
-    transform: translateY(-0.5px) !important;
+    transform: translateX(var(--toc-glyph-nudge-x, 0px)) !important;
   }
 
   #navFooter #lexiconToggle {
