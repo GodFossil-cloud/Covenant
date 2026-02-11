@@ -547,6 +547,16 @@ html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px -
 /* ToC hamburger must stay centered in the tab face (do not ride cap geometry or cap seat shifts). */
 html #tocToggle.dock-tab .toc-glyph{top:50%}
 
+/* Hard lock (iOS Safari): do not allow any later transforms/centering helpers to clobber true centering. */
+html #navFooter #tocToggle.dock-tab .toc-glyph{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  bottom:auto !important;
+  right:auto !important;
+  transform:translate3d(-50%,-50%,0) translateY(-.5px) translateX(var(--toc-glyph-nudge-x, 0px)) !important;
+}
+
 /* Mirror tab can be "carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
 html #mirrorToggle.dock-tab{
   transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0);
