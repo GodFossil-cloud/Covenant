@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.12
+/*! Covenant Tab Weld v0.1.13
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -21,6 +21,8 @@
             center the toggle via flex. This makes “stick to top/bottom edge” impossible.
    v0.1.12: remove the vertical micro-nudge for the ToC hamburger and rely on a geometric icon
             (CSS bars) so visual centering is true on iOS Safari.
+   v0.1.13: fix iOS “bottom-right drift”: when the glyph is absolutely centered with left/top 50%,
+            JS must preserve translate(-50%,-50%) when writing transforms.
 */
 (function () {
   'use strict';
@@ -134,21 +136,15 @@
       toggle.style.setProperty('display', 'flex', 'important');
       toggle.style.setProperty('align-items', 'center', 'important');
       toggle.style.setProperty('justify-content', 'center', 'important');
+      toggle.style.setProperty('position', 'relative', 'important');
 
-      // iOS Safari edge-pin killer: make the glyph static so top/bottom/left/right cannot apply.
-      glyph.style.setProperty('position', 'static', 'important');
-      glyph.style.setProperty('inset', 'unset', 'important');
-
-      // Defensive: clear any previously-applied absolute geometry.
-      glyph.style.removeProperty('top');
-      glyph.style.removeProperty('bottom');
-      glyph.style.removeProperty('left');
-      glyph.style.removeProperty('right');
-
-      glyph.style.setProperty('top', 'auto', 'important');
-      glyph.style.setProperty('bottom', 'auto', 'important');
-      glyph.style.setProperty('left', 'auto', 'important');
+      // iOS Safari edge-pin killer: force true absolute centering and neutralize edge pins.
+      glyph.style.setProperty('position', 'absolute', 'important');
+      glyph.style.setProperty('inset', 'auto', 'important');
+      glyph.style.setProperty('left', '50%', 'important');
+      glyph.style.setProperty('top', '50%', 'important');
       glyph.style.setProperty('right', 'auto', 'important');
+      glyph.style.setProperty('bottom', 'auto', 'important');
 
       glyph.style.setProperty('margin', '0', 'important');
       glyph.style.setProperty('padding', '0', 'important');
@@ -160,8 +156,12 @@
       glyph.style.setProperty('font-size', '0', 'important');
       glyph.style.setProperty('line-height', '0', 'important');
 
-      // No vertical micro-nudge; keep true center.
-      glyph.style.setProperty('transform', 'translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0)', 'important');
+      // Preserve the -50%/-50% translate whenever JS writes transform.
+      glyph.style.setProperty(
+        'transform',
+        'translate3d(-50%,-50%,0) translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0)',
+        'important'
+      );
     } catch (err) {}
   }
 
@@ -223,7 +223,7 @@
 
       // ToC glyph must remain centered in the tab face; do not carry it with capShift.
       if (toggle.id === 'tocToggle') {
-        glyph.style.setProperty('transform', 'translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0)', 'important');
+        glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0)', 'important');
       } else {
         glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + capShift) + 'px)', 'important');
       }

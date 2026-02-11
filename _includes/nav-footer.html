@@ -82,13 +82,20 @@
 
   /* ToC (iOS Safari): use a geometric hamburger (not the ☰ character) so visual centering is true. */
   html body #navFooter .nav-seals #tocToggle.dock-tab{
+    position: relative !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
   }
 
   html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph{
-    position: relative !important;
+    position: absolute !important;
+    inset: auto !important;
+    left: 50% !important;
+    top: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: 2 !important;
 
     display: block !important;
     width: 18px !important;
@@ -102,8 +109,8 @@
 
     color: rgba(245,245,240,.94) !important;
 
-    /* Nudge only in X (optical), do not shift vertically. */
-    transform: translateX(var(--toc-glyph-nudge-x, 0px)) !important;
+    /* True center (avoid “bottom-right drift” if JS rewrites transform). */
+    transform: translate3d(-50%,-50%,0) translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0) !important;
   }
 
   html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph::before{
