@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.3 */
+/*! Covenant UI Stack v0.3.4 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.3';
+  window.COVENANT_UI_STACK_VERSION = '0.3.4';
 
   var registry = Object.create(null);
   var order = [];
@@ -239,20 +239,30 @@
     var el = document.getElementById(panelId);
     if (!el || !el.classList) return false;
 
+    // Cancel-open signature (drag released early): Reliquary marks itself open immediately on drag start,
+    // but on cancel it snaps back down and sets overlay opacity to 0 right away.
+    if (panelId === 'reliquaryPanel') {
+      try {
+        var root = document.documentElement;
+        var opening = !!(root && root.classList && root.classList.contains('reliquary-opening'));
+        var closing = !!(root && root.classList && root.classList.contains('reliquary-closing'));
+        if (opening && !closing && !el.classList.contains('is-dragging')) {
+          var ov = document.getElementById('reliquaryOverlay');
+          var op = (ov && ov.style) ? parseFloat(ov.style.opacity) : NaN;
+          if (op === 0) return false;
+        }
+      } catch (errR) {}
+    }
+
     if (el.classList.contains('is-open')) return true;
 
-    // Lexicon gating should engage as soon as ToC/Reliquary begin drag-open,
-    // matching the Reliquary behavior (which marks itself open immediately on drag start).
-    var root = document.documentElement;
-
+    // Lexicon gating should engage as soon as ToC/Reliquary begin drag-open.
     if (panelId === 'tocPanel') {
       if (el.classList.contains('is-dragging') || el.classList.contains('is-closing')) return true;
-      if (root && root.classList && (root.classList.contains('toc-opening') || root.classList.contains('toc-closing'))) return true;
     }
 
     if (panelId === 'reliquaryPanel') {
       if (el.classList.contains('is-dragging')) return true;
-      if (root && root.classList && (root.classList.contains('reliquary-open') || root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing'))) return true;
     }
 
     return false;
@@ -465,7 +475,7 @@
         var observer = new MutationObserver(function () { schedule(); });
 
         for (var i = 0; i < targets.length; i++) {
-          observer.observe(targets[i], { attributes: true, attributeFilter: ['class'] });
+          observer.observe(targets[i], { attributes: true, attributeFilter: ['class', 'style'] });
         }
       } catch (err2) {}
 
