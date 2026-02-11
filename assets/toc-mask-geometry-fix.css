@@ -13,7 +13,7 @@ html.reliquary-closing{
   --dock-window-h:calc(var(--dock-socket-h) + 2px);
 
   /* Lower the cutout a touch more. */
-  --dock-window-y-shift:-3px;
+  --dock-window-y-shift:-2px;
 }
 
 @supports (-webkit-mask-image: linear-gradient(#000 0 0)){
