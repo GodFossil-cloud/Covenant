@@ -218,16 +218,22 @@
 (function () {
   try {
     var t = document.getElementById('tocToggle');
-    if (!t) return;
+    if (!t || !t.style) return;
     var g = t.querySelector('.toc-glyph');
     if (!g || !g.style) return;
 
-    g.style.setProperty('position', 'absolute', 'important');
+    // Center in-flow (no absolute/inset anchoring).
+    t.style.setProperty('display', 'grid', 'important');
+    t.style.setProperty('place-items', 'center', 'important');
+
+    g.style.removeProperty('inset');
+    g.style.removeProperty('top');
+    g.style.removeProperty('bottom');
+    g.style.removeProperty('left');
+    g.style.removeProperty('right');
+
+    g.style.setProperty('position', 'relative', 'important');
     g.style.setProperty('inset', 'auto', 'important');
-    g.style.setProperty('left', '50%', 'important');
-    g.style.setProperty('right', 'auto', 'important');
-    g.style.setProperty('top', '50%', 'important');
-    g.style.setProperty('bottom', 'auto', 'important');
     g.style.setProperty('margin', '0', 'important');
     g.style.setProperty('padding', '0', 'important');
     g.style.setProperty('line-height', '1', 'important');
@@ -235,9 +241,9 @@
     g.style.setProperty('place-items', 'center', 'important');
     g.style.setProperty('width', '1em', 'important');
     g.style.setProperty('height', '1em', 'important');
-    g.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(-0.5px)', 'important');
+    g.style.setProperty('transform', 'translateY(-0.5px)', 'important');
   } catch (err) {}
 })();
 </script>
 
-<script src="{{ '/assets/tab-weld.js' | relative_url }}?v=10" defer></script>
+<script src="{{ '/assets/tab-weld.js' | relative_url }}?v=11" defer></script>
