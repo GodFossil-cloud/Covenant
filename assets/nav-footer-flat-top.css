@@ -13,7 +13,7 @@
   --seal-cradle-shift-y: calc(-1 * (var(--lexicon-seal-top-align) - 5px));
 
   /* Fine adjustment: lower the socket/cutout relative to the seal. */
-  --seal-cradle-drop-y: 5px;
+  --seal-cradle-drop-y: 6px;
 
   --lexicon-seal-w: 66px;
   --lexicon-seal-h: 40px;
@@ -121,7 +121,7 @@
 
 #navFooter #lexiconToggle {
   overflow: hidden;
-  margin-top: calc(-1 * var(--lexicon-seal-top-align) + 1px);
+  margin-top: calc(-1 * var(--lexicon-seal-top-align) + 2px);
 
   /* Wider + shorter medallion (footer-local only). */
   width: var(--lexicon-seal-w);
