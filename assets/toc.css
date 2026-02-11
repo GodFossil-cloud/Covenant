@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.33 (ToC glyph stays centered in tab face) */
+/*! Covenant ToC Panel Styles v3.1.34 (ToC cap + glyph seat together) */
 
 /* -------------------------------------------------
    Variables
@@ -404,8 +404,8 @@ html.toc-closing{
   /* Reposition: nudge the dock window upward relative to the cradle/socket. */
   --dock-window-y-shift:-1px;
 
-  --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) - (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) - var(--dock-socket-spread, 0px));
-  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px));
+  --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) - (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) - var(--dock-socket-spread, 0px)));
+  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px)));
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
   --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
   --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
@@ -422,8 +422,8 @@ html.reliquary-closing{
   /* Reposition: nudge the dock window upward relative to the cradle/socket. */
   --dock-window-y-shift:-1px;
 
-  --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) + (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) + var(--dock-socket-spread, 0px));
-  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px));
+  --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) + (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) + var(--dock-socket-spread, 0px)));
+  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px)));
   --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
   --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
   --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
@@ -544,19 +544,6 @@ html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0) translateY(-.5px);z-index:2}
 
-/* ToC hamburger must stay centered in the tab face (do not ride cap geometry or cap seat shifts). */
-html #tocToggle.dock-tab .toc-glyph{top:50%}
-
-/* Hard lock (iOS Safari): do not allow any later transforms/centering helpers to clobber true centering. */
-html #navFooter #tocToggle.dock-tab .toc-glyph{
-  position:absolute !important;
-  left:50% !important;
-  top:50% !important;
-  bottom:auto !important;
-  right:auto !important;
-  transform:translate3d(-50%,-50%,0) translateY(-.5px) translateX(var(--toc-glyph-nudge-x, 0px)) !important;
-}
-
 /* Mirror tab can be "carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
 html #mirrorToggle.dock-tab{
   transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0);
@@ -639,6 +626,27 @@ html #mirrorToggle.dock-tab .toc-glyph{
 html #mirrorToggle.dock-tab.is-reliquary-dragging .dock-cap,
 html #mirrorToggle.dock-tab.is-reliquary-dragging .toc-glyph{transition:none !important}
 
+/* ToC tab: medallion-only (remove welded tab box permanently). */
+html #tocToggle.dock-tab{box-shadow:none;background:transparent}
+html #tocToggle.dock-tab::before,
+html #tocToggle.dock-tab::after{content:none !important;display:none !important}
+
+/* ToC tab: allow the medallion to nest into the ToC header connector strip (driven by JS). */
+html #tocToggle.dock-tab .dock-cap{
+  transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--toc-cap-shift-y, 0px)),0);
+  transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
+  will-change:transform;
+}
+
+html #tocToggle.dock-tab .toc-glyph{
+  transform:translate3d(-50%,-50%,0) translateY(calc(-.5px + var(--toc-cap-shift-y, 0px)));
+  transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
+  will-change:transform;
+}
+
+html #tocToggle.dock-tab.is-toc-dragging .dock-cap,
+html #tocToggle.dock-tab.is-toc-dragging .toc-glyph{transition:none !important}
+
 /* ToC tab: sharp bottom-left, slightly rounder bottom-right. */
 html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 html #tocToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
@@ -690,11 +698,6 @@ html.toc-dock-settling #tocToggle{position:relative;z-index:1602}
 
 /* During settle, ignore hover/pointer churn while the tab is sliding into place. */
 html.toc-dock-settling #tocToggle{pointer-events:none}
-
-/* ToC tab: medallion-only (remove welded tab box permanently). */
-html #tocToggle.dock-tab{box-shadow:none;background:transparent}
-html #tocToggle.dock-tab::before,
-html #tocToggle.dock-tab::after{content:none !important;display:none !important}
 
 /* -------------------------------------------------
    Footer fade choreography
@@ -783,11 +786,3 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
   .toc-entry-key{min-width:6.9rem}
   .toc-tab::after{width:min(210px,74vw)}
 }
-
-/* -------------------------------------------------
-   ToC tab glyph centering
-   ------------------------------------------------- */
-
-/* Center the ToC hamburger via layout, not absolute top math (avoids font-metric drift). */
-html #tocToggle.dock-tab{display:grid;place-items:center}
-html #tocToggle.dock-tab>.toc-glyph{position:static !important;display:inline-grid !important;place-items:center;width:1em;height:1em;line-height:1 !important;margin:0 !important;padding:0 !important;transform:translateX(var(--toc-glyph-nudge-x, 0px)) !important}
