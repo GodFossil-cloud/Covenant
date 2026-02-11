@@ -3,6 +3,7 @@
    - Lowers the cutout slightly (bottom edge was riding too high).
    - Keeps footer chrome visually consistent at drag start (removes the perceived 1px "snap").
    - Keeps the footer's top-edge shadow present during drag; the panel can slide over it.
+   - Keeps the faint dark top bar (border line) present during drag too, without drawing it across the cutout notch.
 
    Scope: only affects toc-opening/toc-closing and reliquary-opening/reliquary-closing.
 */
@@ -19,29 +20,50 @@ html.reliquary-closing{
 }
 
 /* While the dock window is active, don't let the *base* footer chrome change (that reads as a 1px snap).
-   Keep the slab's *outer* shadow on the base element (unmasked), and keep all linework on the repainted ::before
-   (masked), so the notch cleanly removes lines without clipping the shadow.
+   Keep the slab's *outer* shadow on the base element (unmasked).
+
+   Also keep the faint dark top bar on the base element so it doesn't vanish when masking begins.
+   Draw it as two segments so the line does NOT cross the cutout notch.
 */
 html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
 html.reliquary-opening .nav-footer,
 html.reliquary-closing .nav-footer{
-  /* Keep the element's own border from drawing across the notch. */
-  border-top:1px solid transparent;
+  border-top:0;
 
-  /* Preserve the top-edge outer shadow so it doesn't pop on/off when masking begins. */
   box-shadow:0 -14px 22px -14px rgba(0,0,0,0.78);
+
+  background-image:
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px),
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px);
+
+  background-size:
+    calc(var(--dock-window-left)) 1px,
+    calc(100% - (var(--dock-window-left) + var(--dock-window-w))) 1px;
+
+  background-position:
+    0 0,
+    calc(var(--dock-window-left) + var(--dock-window-w)) 0;
+
+  background-repeat:no-repeat;
 }
 
 /* Motion repaint layer: match the normal footer slab surface.
-   The notch mask subtracts this layer, so border/hairline vanish only *over the cutout*.
-   IMPORTANT: do not include the outer shadow here (masked shadows can clip/vanish). */
+   The notch mask subtracts this layer, so brass hairline / surface shading vanish only *over the cutout*.
+   IMPORTANT: do not include the outer shadow here (masked shadows can clip/vanish).
+   IMPORTANT: do not include the dark top border line here (it's handled on the base footer for stability).
+*/
 html.toc-opening .nav-footer::before,
 html.toc-closing .nav-footer::before,
 html.reliquary-opening .nav-footer::before,
 html.reliquary-closing .nav-footer::before{
-  /* Dark border line (will be cut away at the notch by the mask). */
-  border-top:1px solid rgba(0,0,0,0.70);
+  border-top:0;
   border-bottom:1px solid rgba(0,0,0,0.92);
 
   /* Inset depth only (outer shadow lives on .nav-footer). */
