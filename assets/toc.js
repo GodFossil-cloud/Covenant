@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.16 (Dock window respects --dock-window-y-shift) */
+/*! Covenant ToC v3.2.17 (Seat tab + cap to panel top; notch remains visual) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.16';
+  window.COVENANT_TOC_VERSION = '3.2.17';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -318,18 +318,17 @@
     return 46;
   }
 
-  function computeCapSeatShiftToHeaderCenter(headerCenterY, baseToggleTop, dyFinal) {
+  function computeCapSeatShiftToPanelTop(panelTopY, baseToggleTop, dyFinal) {
     var lift = getDockCapLiftPx();
     var capSize = getDockCapSizePx();
-    var capHalf = (capSize && capSize > 0) ? (capSize / 2) : 0;
 
     var dy = (typeof dyFinal === 'number' && !isNaN(dyFinal)) ? dyFinal : 0;
 
     // .dock-cap is positioned at toggle top (top: 0) and lifted upward by --dock-cap-lift.
-    // Its center at seatShift==0 is: toggleTop + dy + (-lift + capHalf).
-    var capCenterAtShift0 = baseToggleTop + dy + (-1 * lift) + capHalf;
+    // Its bottom at seatShift==0 is: toggleTop + dy + (-lift + capSize).
+    var capBottomAtShift0 = baseToggleTop + dy + (-1 * lift) + capSize;
 
-    return headerCenterY - capCenterAtShift0;
+    return panelTopY - capBottomAtShift0;
   }
 
   function setTocCapShiftPx(y, draggingNow, snapMs, snapEase) {
@@ -394,22 +393,20 @@
     var cap = tocToggle.querySelector('.dock-cap');
     if (!cap || !cap.getBoundingClientRect) return;
 
-    var header = tocPanel.querySelector('.toc-panel-header');
-    if (!header || !header.getBoundingClientRect) return;
-
     var p = (typeof progress === 'number' && !isNaN(progress)) ? progress : 0;
     if (p < 0) p = 0;
     if (p > 1) p = 1;
 
     var capRect = cap.getBoundingClientRect();
-    var headerRect = header.getBoundingClientRect();
+    var panelRect = tocPanel.getBoundingClientRect();
 
-    var capCenterY = capRect.top + (capRect.height / 2);
-    var baseCenterY = capCenterY - tocCapShiftY;
+    // We align cap bottom to panel top (panel notch is visual only).
+    var capBottomY = capRect.bottom;
+    var baseBottomY = capBottomY - tocCapShiftY;
 
-    var targetY = headerRect.top + (headerRect.height / 2);
+    var targetY = panelRect.top;
 
-    var shift = (targetY - baseCenterY) * p;
+    var shift = (targetY - baseBottomY) * p;
 
     setTocCapShiftPx(shift, !!draggingNow, snapMs, snapEase);
   }
@@ -539,28 +536,14 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Prefer the notch-seat model when available.
-    // targetTop = panelTop + notchH - tabH + seatDy + seatOverlap
-    var notchH = getTocNotchH();
+    // Requirement: tab bottom edge seats to the sheet top edge.
     var seatDy = getTocSeatDy();
     var overlapPx = getTocSeatOverlapPx();
 
-    if (notchH && notchH > 0) {
-      var targetTop = openPanelTop + notchH - baseRect.height;
-      targetTop = targetTop + seatDy + overlapPx;
-      return targetTop - baseRect.top;
-    }
+    var targetTop = openPanelTop - baseRect.height;
+    targetTop = targetTop + seatDy + overlapPx;
 
-    // Legacy behavior (mobile: bottom flush to sheet top; desktop: top seam visible).
-    var legacyTop = openPanelTop;
-
-    if (isMobileSheet()) {
-      legacyTop = openPanelTop - baseRect.height;
-    }
-
-    legacyTop = legacyTop + seatDy + overlapPx;
-
-    return legacyTop - baseRect.top;
+    return targetTop - baseRect.top;
   }
 
   function alignToggleToPanelCorner() {
@@ -574,7 +557,6 @@
 
       var rect = tocPanel.getBoundingClientRect();
 
-      // Align tab to the sheet's visible top edge (mobile seam stays welded).
       var targetTop = rect.top;
 
       var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
@@ -1485,7 +1467,7 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
-        // Compute final seat targets using the predicted OPEN geometry (not an in-flight cap rect).
+        // Compute final seat targets using the predicted OPEN geometry.
         var base = getTocToggleBaseRect();
         var rectNow = tocPanel.getBoundingClientRect();
         var openDeltaY = openLiftPx - currentY;
@@ -1501,14 +1483,7 @@
           dxFinal = computeOpenToggleDxFromPanelLeft(openPanelLeft, base);
           dyFinal = computeOpenToggleDyFromPanelTop(openPanelTop, base);
 
-          try {
-            var header = tocPanel.querySelector('.toc-panel-header');
-            if (header && header.getBoundingClientRect) {
-              var headerRectNow = header.getBoundingClientRect();
-              var headerCenterOpen = (headerRectNow.top + (headerRectNow.height / 2)) + openDeltaY;
-              capShiftFinal = computeCapSeatShiftToHeaderCenter(headerCenterOpen, base.top, dyFinal);
-            }
-          } catch (err0) {}
+          capShiftFinal = computeCapSeatShiftToPanelTop(openPanelTop, base.top, dyFinal);
         }
 
         // Snap the sheet to open while the toggle + cap animate into their final seat.
@@ -1917,13 +1892,7 @@
           dxTarget = computeOpenToggleDxFromPanelLeft(rect.left, base);
           dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
 
-          // Solve cap seat shift against the open header center using final dyTarget.
-          var header = tocPanel.querySelector('.toc-panel-header');
-          if (header && header.getBoundingClientRect) {
-            var headerRect = header.getBoundingClientRect();
-            var headerCenterY = headerRect.top + (headerRect.height / 2);
-            capShiftTarget = computeCapSeatShiftToHeaderCenter(headerCenterY, base.top, dyTarget);
-          }
+          capShiftTarget = computeCapSeatShiftToPanelTop(rect.top, base.top, dyTarget);
         }
       } catch (err) {}
 
