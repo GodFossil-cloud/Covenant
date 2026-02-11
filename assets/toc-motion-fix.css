@@ -1,0 +1,12 @@
+/* Motion-only dock hairline suppression
+   Purpose: during toc-opening/toc-closing + reliquary-opening/reliquary-closing,
+   the footer slab is repainted on ::before so the window mask can subtract.
+   Any remaining border-top hairline on .nav-footer itself must be silenced.
+*/
+
+html.toc-opening .nav-footer,
+html.toc-closing .nav-footer,
+html.reliquary-opening .nav-footer,
+html.reliquary-closing .nav-footer{
+  border-top-color:transparent !important;
+}
