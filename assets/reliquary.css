@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.4 (Organize only; no behavior change) */
+/*! Covenant Reliquary Panel Styles v0.3.5 (Lexicon dims only when dragging/committed open) */
 
 /* -------------------------------------------------
    Variables
@@ -41,11 +41,11 @@
    State gates
    ------------------------------------------------- */
 
-/* When Reliquary is open, keep the Lexicon gate closed (Lexicon must open first). */
-html.reliquary-opening #lexiconToggle,
+/* When Reliquary is committed open (or closing), keep the Lexicon gate closed.
+   During drag-open we dim via html.reliquary-dragging so a cancelled drag re-enables immediately on release. */
 html.reliquary-open #lexiconToggle,
 html.reliquary-closing #lexiconToggle,
-html.reliquary-dock-settling #lexiconToggle{opacity:.28;filter:grayscale(1)}
+html.reliquary-dragging #lexiconToggle{opacity:.28;filter:grayscale(1)}
 
 /* Lift the dock above the sheet while Reliquary is in motion/open (prevents z-pop). */
 html.reliquary-opening .nav-footer,

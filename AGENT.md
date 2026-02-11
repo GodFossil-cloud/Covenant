@@ -87,6 +87,7 @@ Rules:
 - Note (ToC tab welding): `--toc-seat-dy` + `--toc-seat-overlap` are tuned so the tab box top edge meets the panel top edge; notch/cap remain visual.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
 - Note (Reliquary tab welding): `--reliquary-seat-dy` + `--reliquary-seat-overlap` are tuned so the tab box top edge meets the panel top edge; notch/cap remain visual.
+- Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
 - Note: If JS needs numeric px from calc()/var()-based CSS custom properties, do not `parseFloat(getComputedStyle(...).getPropertyValue('--x'))` (it returns token strings); resolve via a probe element (e.g., set `margin-top: var(--x)` and read computed px).
 - Note (dock mask window): `--dock-window-w` / `--dock-window-h` are authored as `var(...)` during open/close; align code must resolve them via the probe helper (otherwise the dock cutout can drift vertically while the mask is active).
 - Note (mobile Safari): Reliquary notch is a real `clip-path` cutout; if a see-through seam appears during drag, prefer increasing `--reliquary-seat-overlap` on mobile rather than changing notch geometry.
@@ -201,6 +202,7 @@ Use this when making CSS/JS/include changes.
 - On mobile: drag Mirror tab upward to open; drag down from sheet handle to close.
 - Drag-open: confirm the Mirror tab stays welded to the panel top edge throughout the gesture.
 - If ToC is open, opening Reliquary closes ToC first (no stacked scroll locks).
+- Drag-open cancel (release early): confirm Lexicon seal returns to normal immediately on release.
 
 5) Selection highlights
 - On an Article page (`I.html` or `III.html`): click subsection and subpart markers (Ⓐ/Ⓑ/Ⓒ) and confirm expected highlight behavior.

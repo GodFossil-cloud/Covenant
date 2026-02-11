@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.24 (Seat tab + cap to panel top; notch visual only) */
+/*! Covenant Reliquary UI v0.3.25 (Drag shell keeps Lexicon responsive on cancel) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.24';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.25';
 
   var doc = document;
   var root = doc.documentElement;
@@ -675,6 +675,28 @@
     return Math.max(1, h + closedOffsetPx + SINK_PX);
   }
 
+  function openReliquaryShellForDrag() {
+    focusReturnEl = toggle;
+
+    // IMPORTANT: during drag-open we intentionally do NOT set html.reliquary-open yet.
+    // That class is reserved for committed-open state so the Lexicon seal can re-enable
+    // immediately when a drag-open is cancelled.
+
+    panel.classList.add('is-open');
+    overlay.classList.add('is-open');
+
+    panel.setAttribute('aria-hidden', 'false');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    toggle.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Close Reliquary');
+
+    lockBodyScroll();
+
+    noteOpen();
+  }
+
   function openReliquaryImmediately() {
     focusReturnEl = toggle;
 
@@ -1064,9 +1086,8 @@
     function applyOpenStateFromDrag(skipAlign) {
       if (!panel || !overlay) return;
 
-      if (!panel.classList.contains('is-open')) {
-        openReliquaryImmediately();
-      }
+      // Commit full open state (including html.reliquary-open + focus trap).
+      openReliquaryImmediately();
 
       root.classList.remove('reliquary-closing');
       root.classList.remove('reliquary-dock-settling');
@@ -1183,10 +1204,16 @@
 
         applyOpenStateFromDrag(true);
 
+        // Drag is over; keep Lexicon disabled via committed open state (not via dragging).
+        root.classList.remove('reliquary-dragging');
+
         setTimeout(function () {
           alignToggleToPanelCornerIfDrift(1);
         }, SNAP_MS + 30);
       } else {
+        // Drag is over; on cancel-open we want Lexicon to re-enable immediately.
+        root.classList.remove('reliquary-dragging');
+
         setReliquaryToggleOffset(0, 0, false);
         setMirrorCapShiftPx(0);
 
@@ -1250,6 +1277,8 @@
 
       startWasOpen = panel.classList.contains('is-open');
 
+      root.classList.add('reliquary-dragging');
+
       if (startWasOpen) {
         root.classList.add('reliquary-closing');
         root.classList.remove('reliquary-opening');
@@ -1264,7 +1293,7 @@
         root.classList.add('reliquary-opening');
         root.classList.remove('reliquary-dock-settling');
 
-        openReliquaryImmediately();
+        openReliquaryShellForDrag();
       }
 
       alignDockWindowToRightSocket();
@@ -1332,6 +1361,7 @@
         setTimeout(function () { window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       } else {
+        root.classList.remove('reliquary-dragging');
         if (startWasOpen) root.classList.remove('reliquary-closing');
         else root.classList.remove('reliquary-opening');
       }
