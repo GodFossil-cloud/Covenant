@@ -295,11 +295,11 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-item::before{content:'';position:absolute;left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));top:calc(var(--toc-item-pad-y) + (1em * var(--toc-item-line) / 2));transform:translateY(-50%);width:var(--toc-node);height:var(--toc-node);border-radius:999px;background:rgba(247,244,238,.98);border:1px solid rgba(139,115,85,.66);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
-.toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04)}
+.toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
-.toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04)}
+.toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
-.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.25rem 0 .62rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 2px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
@@ -358,6 +358,13 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   /* True upward-facing semicircle (open top). */
   border-radius:0 0 var(--dock-socket-r) var(--dock-socket-r);
 
+  /* Keep the border from changing the socket geometry. */
+  box-sizing:border-box;
+
+  /* Cut line: U-shape only (no top horizontal rim). */
+  border:1px solid rgba(59,54,43,.92);
+  border-top:0;
+
   background:
     /* Sidewall bevels (machining reads at the sides, not the top rim). */
     linear-gradient(to right,
@@ -372,8 +379,6 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
       rgba(0,0,0,.985) 100%);
 
   box-shadow:
-    /* Crisp cut line (curved). */
-    inset 0 0 0 1px rgba(59,54,43,.92),
     /* Interior depth + faint bottom catch. */
     inset 0 12px 18px rgba(0,0,0,.80),
     inset 0 -10px 14px rgba(255,255,255,.06),
@@ -435,11 +440,11 @@ html.reliquary-closing{
 
 /* Keep only the 1px cut-line on the left socket while the ToC is in motion. */
 html.toc-opening .nav-seals::before,
-html.toc-closing .nav-seals::before{background:transparent;box-shadow:inset 0 0 0 1px rgba(59,54,43,.92)}
+html.toc-closing .nav-seals::before{background:transparent;border:1px solid rgba(59,54,43,.92);border-top:0;box-shadow:none}
 
 /* Keep only the 1px cut-line on the right socket while the Reliquary is in motion. */
 html.reliquary-opening .nav-seals::after,
-html.reliquary-closing .nav-seals::after{background:transparent;box-shadow:inset 0 0 0 1px rgba(59,54,43,.92)}
+html.reliquary-closing .nav-seals::after{background:transparent;border:1px solid rgba(59,54,43,.92);border-top:0;box-shadow:none}
 
 /* During toc-opening/toc-closing and reliquary-opening/reliquary-closing the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
 html.toc-opening .nav-footer,
