@@ -1,6 +1,7 @@
 /* Dock mask geometry fix (motion states only)
    - Restores a true semicircle cutout (no sharp side vertices) by using a fixed radius.
    - Lowers the cutout slightly (bottom edge was riding too high).
+   - Restricts the footer hairline to only the cradle cutout width (no full-width line while dragging).
 
    Scope: only affects toc-opening/toc-closing and reliquary-opening/reliquary-closing.
 */
@@ -14,6 +15,36 @@ html.reliquary-closing{
 
   /* Lower the cutout a touch more. */
   --dock-window-y-shift:-2px;
+}
+
+/* During motion the footer slab is repainted on ::before so it can be mask-subtracted.
+   Limit the 1px brass hairline to the cutout span only. */
+html.toc-opening .nav-footer::before,
+html.toc-closing .nav-footer::before,
+html.reliquary-opening .nav-footer::before,
+html.reliquary-closing .nav-footer::before{
+  background-image:
+    /* Hairline only over the notch/cutout span. */
+    linear-gradient(to bottom,
+      var(--footer-hairline) 0,
+      var(--footer-hairline) 1px,
+      rgba(0,0,0,0) 1px),
+    /* Subtle top glow. */
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    /* Obsidian slab. */
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+
+  background-size:
+    var(--dock-window-w) 1px,
+    100% 100%,
+    100% 100%;
+
+  background-position:
+    var(--dock-window-left) 0,
+    50% 0,
+    0 0;
+
+  background-repeat:no-repeat;
 }
 
 @supports (-webkit-mask-image: linear-gradient(#000 0 0)){
