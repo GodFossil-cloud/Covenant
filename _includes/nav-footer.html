@@ -80,27 +80,42 @@
     padding: 0 !important;
   }
 
-  /* ToC (iOS Safari): hard-center the hamburger in the tab face. */
+  /* ToC (iOS Safari): use a geometric hamburger (not the ☰ character) so visual centering is true. */
   html body #navFooter .nav-seals #tocToggle.dock-tab{
-    position: relative !important;
-    display: grid !important;
-    place-items: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph{
-    position: absolute !important;
-    inset: 0 !important;
+    position: relative !important;
 
-    display: grid !important;
-    place-items: center !important;
+    display: block !important;
+    width: 18px !important;
+    height: 12px !important;
 
-    width: auto !important;
-    height: auto !important;
-    line-height: 1 !important;
     margin: 0 !important;
     padding: 0 !important;
 
+    font-size: 0 !important;
+    line-height: 0 !important;
+
+    color: rgba(245,245,240,.94) !important;
+
+    /* Nudge only in X (optical), do not shift vertically. */
     transform: translateX(var(--toc-glyph-nudge-x, 0px)) !important;
+  }
+
+  html body #navFooter .nav-seals #tocToggle.dock-tab > .toc-glyph::before{
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 5px 0 currentColor, 0 10px 0 currentColor;
   }
 
   #navFooter #lexiconToggle {
@@ -179,7 +194,7 @@
                 <!-- Strategy B: one centered cluster governs symmetry. -->
                 <button class="nav-btn dock-tab" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
                     <span class="dock-cap" aria-hidden="true"></span>
-                    <span class="toc-glyph" aria-hidden="true">☰</span>
+                    <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true"></span>
                 </button>
 
                 <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="{{ include.center_aria_label | default: "Open Lexicon" }}" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𖤓</span></button>

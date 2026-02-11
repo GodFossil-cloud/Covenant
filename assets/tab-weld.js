@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.11
+/*! Covenant Tab Weld v0.1.12
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -19,6 +19,8 @@
    v0.1.11: ToC glyph was still being edge-pinned (top/bottom/left/right = 0) by some global
             nav button span rule on iOS; force the glyph to position:static + inset:unset and
             center the toggle via flex. This makes “stick to top/bottom edge” impossible.
+   v0.1.12: remove the vertical micro-nudge for the ToC hamburger and rely on a geometric icon
+            (CSS bars) so visual centering is true on iOS Safari.
 */
 (function () {
   'use strict';
@@ -150,14 +152,16 @@
 
       glyph.style.setProperty('margin', '0', 'important');
       glyph.style.setProperty('padding', '0', 'important');
-      glyph.style.setProperty('line-height', '1', 'important');
-      glyph.style.setProperty('display', 'inline-grid', 'important');
-      glyph.style.setProperty('place-items', 'center', 'important');
-      glyph.style.setProperty('width', '1em', 'important');
-      glyph.style.setProperty('height', '1em', 'important');
 
-      // Micro-nudge only (no %-based translate).
-      glyph.style.setProperty('transform', 'translateY(-0.5px)', 'important');
+      // Geometry box for the CSS hamburger (bars are drawn in CSS, not by font).
+      glyph.style.setProperty('display', 'block', 'important');
+      glyph.style.setProperty('width', '18px', 'important');
+      glyph.style.setProperty('height', '12px', 'important');
+      glyph.style.setProperty('font-size', '0', 'important');
+      glyph.style.setProperty('line-height', '0', 'important');
+
+      // No vertical micro-nudge; keep true center.
+      glyph.style.setProperty('transform', 'translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0)', 'important');
     } catch (err) {}
   }
 
@@ -219,7 +223,7 @@
 
       // ToC glyph must remain centered in the tab face; do not carry it with capShift.
       if (toggle.id === 'tocToggle') {
-        glyph.style.setProperty('transform', 'translateY(-0.5px)', 'important');
+        glyph.style.setProperty('transform', 'translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0)', 'important');
       } else {
         glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + capShift) + 'px)', 'important');
       }
