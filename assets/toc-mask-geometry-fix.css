@@ -2,6 +2,7 @@
    - Restores a true semicircle cutout (no sharp side vertices) by using a fixed radius.
    - Lowers the cutout slightly (bottom edge was riding too high).
    - Restores a full-width top hairline during motion (the brass line), without reintroducing the darker border/inset sliver.
+   - Restores the darker border-top during motion too, but leaves a gap over the cutout notch.
 
    Scope: only affects toc-opening/toc-closing and reliquary-opening/reliquary-closing.
 */
@@ -32,7 +33,9 @@ html.reliquary-closing .nav-footer{
 }
 
 /* During motion the footer slab is repainted on ::before so it can be mask-subtracted.
-   Restore the 1px brass hairline across the full top edge. */
+   - Brass hairline: full width.
+   - Dark border-top: full width EXCEPT over the cutout notch.
+*/
 html.toc-opening .nav-footer::before,
 html.toc-closing .nav-footer::before,
 html.reliquary-opening .nav-footer::before,
@@ -43,18 +46,36 @@ html.reliquary-closing .nav-footer::before{
       var(--footer-hairline) 0,
       var(--footer-hairline) 1px,
       rgba(0,0,0,0) 1px),
+
+    /* Dark border-top (left of notch). */
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px),
+
+    /* Dark border-top (right of notch). */
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px),
+
     /* Subtle top glow. */
     radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+
     /* Obsidian slab. */
     linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
 
   background-size:
     100% 1px,
+    calc(var(--dock-window-left)) 1px,
+    calc(100% - (var(--dock-window-left) + var(--dock-window-w))) 1px,
     100% 100%,
     100% 100%;
 
   background-position:
     0 0,
+    0 0,
+    calc(var(--dock-window-left) + var(--dock-window-w)) 0,
     50% 0,
     0 0;
 
