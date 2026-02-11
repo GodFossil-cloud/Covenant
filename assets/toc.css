@@ -87,6 +87,9 @@
   --dock-socket-r:calc(var(--dock-socket-d) / 2);
   --dock-socket-h:var(--dock-socket-r);
 
+  /* Cradle border only: make the permanent socket cradle 1px taller than the window mask. */
+  --dock-cradle-h:calc(var(--dock-socket-h) + 1px);
+
   /* ToC header connector geometry. */
   --toc-notch-w:calc(var(--dock-tab-width, 52px) + 0px);
   --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
@@ -349,7 +352,7 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   position:absolute;
   top:50%;
   width:var(--dock-socket-d);
-  height:var(--dock-socket-h);
+  height:var(--dock-cradle-h, var(--dock-socket-h));
   transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + 1px + var(--dock-socket-y-nudge, 0px)),0);
 
   /* True upward-facing semicircle (open top). */
