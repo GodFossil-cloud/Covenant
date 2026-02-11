@@ -61,17 +61,26 @@
       #010103;
   }
 
-  :where(#navFooter .dock-tab .toc-glyph) {
+  /* NOTE: Do not use :where() for glyph positioning — it has zero specificity, and iOS Safari
+     will happily let later “normal” rules override the absolute centering during drag/open/close.
+     The ToC hamburger must be pinned to the tab face center in all states. */
+  #navFooter .dock-tab .toc-glyph {
     position: absolute;
     left: 50%;
+    z-index: 2;
+  }
+
+  /* Mirror: cap geometry is intentional (it is “carried” by the Reliquary). */
+  #navFooter #mirrorToggle .toc-glyph {
     top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
     transform: translate3d(-50%, -50%, 0) translateY(-0.5px);
-    z-index: 2;
   }
 
   /* ToC: keep hamburger centered in the tab face, independent of the cap seat shift. */
   #navFooter #tocToggle .toc-glyph {
-    top: 50%;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translate3d(-50%, -50%, 0) translateY(-0.5px) !important;
   }
 
   #navFooter #lexiconToggle {
