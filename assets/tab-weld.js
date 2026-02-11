@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.9
+/*! Covenant Tab Weld v0.1.10
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -14,6 +14,8 @@
            re-pin so late style writes can't strand the glyph at top/bottom.
    v0.1.9: stop fighting iOS Safari with absolute/inset; center the ToC glyph in-flow using
            grid centering on the toggle, so no top/bottom math can strand it.
+   v0.1.10: explicitly set ToC glyph edges to auto (left/top/right/bottom) so toc.css can't
+            re-apply 50% offsets when the glyph is relative (prevents left drift + above-tab jump).
 */
 (function () {
   'use strict';
@@ -127,7 +129,7 @@
       toggle.style.setProperty('display', 'grid', 'important');
       toggle.style.setProperty('place-items', 'center', 'important');
 
-      // Kill all absolute/inset anchoring so iOS Safari cannot strand the glyph.
+      // Clear then hard-set edges to auto so stylesheet !important rules can't re-apply 50% offsets.
       glyph.style.removeProperty('inset');
       glyph.style.removeProperty('top');
       glyph.style.removeProperty('bottom');
@@ -136,6 +138,11 @@
 
       glyph.style.setProperty('position', 'relative', 'important');
       glyph.style.setProperty('inset', 'auto', 'important');
+      glyph.style.setProperty('top', 'auto', 'important');
+      glyph.style.setProperty('bottom', 'auto', 'important');
+      glyph.style.setProperty('left', 'auto', 'important');
+      glyph.style.setProperty('right', 'auto', 'important');
+
       glyph.style.setProperty('margin', '0', 'important');
       glyph.style.setProperty('padding', '0', 'important');
       glyph.style.setProperty('line-height', '1', 'important');
