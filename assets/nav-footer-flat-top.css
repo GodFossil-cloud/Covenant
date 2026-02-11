@@ -12,6 +12,9 @@
      (Baseline was 5px in the legacy fallback; this keeps cradle + seal locked.) */
   --seal-cradle-shift-y: calc(-1 * (var(--lexicon-seal-top-align) - 5px));
 
+  /* Fine adjustment: lower the socket/cutout relative to the seal. */
+  --seal-cradle-drop-y: 4px;
+
   --lexicon-seal-w: 66px;
   --lexicon-seal-h: 40px;
 
@@ -69,12 +72,12 @@
     inset 0 1px 0 rgba(255,255,255,0.04),
     inset 0 -10px 18px -16px rgba(0,0,0,0.72);
 
-  /* Punch the cradle void (a circle centered on the top edge becomes a semicircle cutout). */
-  -webkit-mask-image: radial-gradient(circle at 50% 0%,
+  /* Punch the cradle void (a circle centered near the top edge becomes a semicircle cutout). */
+  -webkit-mask-image: radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
     transparent 0 calc(var(--seal-notch-radius) - 0.5px),
     #000 calc(var(--seal-notch-radius) + 0.5px)
   );
-  mask-image: radial-gradient(circle at 50% 0%,
+  mask-image: radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
     transparent 0 calc(var(--seal-notch-radius) - 0.5px),
     #000 calc(var(--seal-notch-radius) + 0.5px)
   );
@@ -90,7 +93,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: var(--seal-cradle-shift-y, 0px);
+  top: calc(var(--seal-cradle-shift-y, 0px) + var(--seal-cradle-drop-y, 0px));
   height: var(--seal-notch-height);
   pointer-events: none;
 
