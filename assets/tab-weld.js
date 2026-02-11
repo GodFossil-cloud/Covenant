@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.5
+/*! Covenant Tab Weld v0.1.6
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -6,6 +6,8 @@
    v0.1.4: seat the top edge of the clickable pill/tab to the panel top edge.
    v0.1.5: ToC glyph must remain centered in the tab face (do not drag-carry it with cap shift);
            reset inline transforms when panels are not active to avoid "stuck" glyphs.
+   v0.1.6: also reset carry vars (--*-toggle-drag-x/y, --mirror-cap-shift-y) when inactive,
+           preventing iOS Safari from leaving dock tabs translated "stuck" after close.
 */
 (function () {
   'use strict';
@@ -110,6 +112,16 @@
         glyph.style.removeProperty('transform');
         glyph.style.removeProperty('transition');
         glyph.style.removeProperty('will-change');
+      }
+
+      // Critical: also reset carry vars so iOS Safari can't strand the tab translated after close.
+      if (toggle.id === 'tocToggle') {
+        toggle.style.setProperty('--toc-toggle-drag-x', '0px');
+        toggle.style.setProperty('--toc-toggle-drag-y', '0px');
+      } else if (toggle.id === 'mirrorToggle') {
+        toggle.style.setProperty('--reliquary-toggle-drag-x', '0px');
+        toggle.style.setProperty('--reliquary-toggle-drag-y', '0px');
+        toggle.style.setProperty('--mirror-cap-shift-y', '0px');
       }
     } catch (err) {}
   }
