@@ -412,7 +412,7 @@ html.toc-closing{
   --dock-window-h:calc(var(--dock-socket-h) + 2px);
 
   /* Reposition: nudge the dock window upward relative to the cradle/socket. */
-  --dock-window-y-shift:-1px;
+  --dock-window-y-shift:-4px;
 
   --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) - (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) - var(--dock-socket-spread, 0px)));
   --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px)));
@@ -431,7 +431,7 @@ html.reliquary-closing{
   --dock-window-h:calc(var(--dock-socket-h) + 2px);
 
   /* Reposition: nudge the dock window upward relative to the cradle/socket. */
-  --dock-window-y-shift:-1px;
+  --dock-window-y-shift:-4px;
 
   --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) + (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) + var(--dock-socket-spread, 0px)));
   --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px)));
