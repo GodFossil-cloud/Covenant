@@ -1,8 +1,7 @@
 /* Dock mask geometry fix (motion states only)
    - Restores a true semicircle cutout (no sharp side vertices) by using a fixed radius.
    - Lowers the cutout slightly (bottom edge was riding too high).
-   - Restores a full-width top hairline during motion (the brass line), without reintroducing the darker border/inset sliver.
-   - Restores the darker border-top during motion too, but leaves a gap over the cutout notch.
+   - Keeps footer chrome visually consistent at drag start (removes the perceived 1px "snap").
 
    Scope: only affects toc-opening/toc-closing and reliquary-opening/reliquary-closing.
 */
@@ -18,45 +17,41 @@ html.reliquary-closing{
   --dock-window-y-shift:-2px;
 }
 
-/* The full-width sliver was coming from the base footer chrome (border-top and/or 1px inset highlight).
-   While the dock window is active, keep the slab's own top edge suppressed. */
+/* While the dock window is active, don't let the *base* footer chrome change (that reads as a 1px snap).
+   Move all top-edge chrome (hairlines/borders/highlights) onto the repainted ::before layer,
+   which is the layer we mask-subtract.
+*/
 html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
 html.reliquary-opening .nav-footer,
 html.reliquary-closing .nav-footer{
-  border-top:0;
+  /* Keep the element's own border from drawing across the notch. */
+  border-top:1px solid transparent;
 
-  /* Keep depth, but drop the top inset that reads like a 1px line. */
-  box-shadow:
-    0 -14px 22px -14px rgba(0,0,0,0.78),
-    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+  /* Suppress element shadows; the repainted ::before carries the slab depth. */
+  box-shadow:none;
 }
 
-/* During motion the footer slab is repainted on ::before so it can be mask-subtracted.
-   - Brass hairline: full width.
-   - Dark border-top: full width EXCEPT over the cutout notch.
-*/
+/* Motion repaint layer: match the normal footer slab (depth + dark top border),
+   then let the notch mask subtract out the window (removes border/hairline over the cutout). */
 html.toc-opening .nav-footer::before,
 html.toc-closing .nav-footer::before,
 html.reliquary-opening .nav-footer::before,
 html.reliquary-closing .nav-footer::before{
+  /* Dark border line (will be cut away at the notch by the mask). */
+  border-top:1px solid rgba(0,0,0,0.70);
+  border-bottom:1px solid rgba(0,0,0,0.92);
+
+  box-shadow:
+    0 -14px 22px -14px rgba(0,0,0,0.78),
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+
   background-image:
-    /* Brass hairline (full width). */
+    /* Brass hairline (full width; will also be cut away at the notch). */
     linear-gradient(to bottom,
       var(--footer-hairline) 0,
       var(--footer-hairline) 1px,
-      rgba(0,0,0,0) 1px),
-
-    /* Dark border-top (left of notch). */
-    linear-gradient(to bottom,
-      rgba(0,0,0,0.70) 0,
-      rgba(0,0,0,0.70) 1px,
-      rgba(0,0,0,0) 1px),
-
-    /* Dark border-top (right of notch). */
-    linear-gradient(to bottom,
-      rgba(0,0,0,0.70) 0,
-      rgba(0,0,0,0.70) 1px,
       rgba(0,0,0,0) 1px),
 
     /* Subtle top glow. */
@@ -67,15 +62,11 @@ html.reliquary-closing .nav-footer::before{
 
   background-size:
     100% 1px,
-    calc(var(--dock-window-left)) 1px,
-    calc(100% - (var(--dock-window-left) + var(--dock-window-w))) 1px,
     100% 100%,
     100% 100%;
 
   background-position:
     0 0,
-    0 0,
-    calc(var(--dock-window-left) + var(--dock-window-w)) 0,
     50% 0,
     0 0;
 
@@ -94,6 +85,14 @@ html.reliquary-closing .nav-footer::before{
     -webkit-mask-image:
       linear-gradient(#000 0 0),
       radial-gradient(circle var(--dock-socket-r) at 50% 0, #000 99%, transparent 100%);
+    -webkit-mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    -webkit-mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-composite:destination-out;
   }
 }
 
@@ -109,5 +108,13 @@ html.reliquary-closing .nav-footer::before{
     mask-image:
       linear-gradient(#000 0 0),
       radial-gradient(circle var(--dock-socket-r) at 50% 0, #000 99%, transparent 100%);
+    mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    mask-repeat:no-repeat;
+    mask-composite:subtract;
   }
 }
