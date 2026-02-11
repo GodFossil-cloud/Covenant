@@ -2,6 +2,7 @@
    - Restores a true semicircle cutout (no sharp side vertices) by using a fixed radius.
    - Lowers the cutout slightly (bottom edge was riding too high).
    - Restricts the footer hairline to only the cradle cutout width (no full-width line while dragging).
+   - Suppresses the footer's full-width top border / inset highlight during motion (removes the lingering sliver).
 
    Scope: only affects toc-opening/toc-closing and reliquary-opening/reliquary-closing.
 */
@@ -15,6 +16,20 @@ html.reliquary-closing{
 
   /* Lower the cutout a touch more. */
   --dock-window-y-shift:-2px;
+}
+
+/* The full-width sliver was coming from the base footer chrome (border-top and/or 1px inset highlight).
+   While the dock window is active, we only want a line over the cutout span, so kill the slab's own top edge. */
+html.toc-opening .nav-footer,
+html.toc-closing .nav-footer,
+html.reliquary-opening .nav-footer,
+html.reliquary-closing .nav-footer{
+  border-top:0;
+
+  /* Keep depth, but drop the top inset that reads like a 1px line. */
+  box-shadow:
+    0 -14px 22px -14px rgba(0,0,0,0.78),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
 }
 
 /* During motion the footer slab is repainted on ::before so it can be mask-subtracted.
