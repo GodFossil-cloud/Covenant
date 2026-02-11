@@ -147,7 +147,7 @@
 /* Mobile: raise only the tab plates (not the sockets) so they don't overlap the socket's bottom line. */
 @media (max-width: 600px) {
   #navFooter {
-    --dock-tab-raise: -20px;
+    --dock-tab-raise: -19px;
     --toc-tab-gap: 8px;
   }
 }
