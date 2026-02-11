@@ -783,3 +783,11 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
   .toc-entry-key{min-width:6.9rem}
   .toc-tab::after{width:min(210px,74vw)}
 }
+
+/* -------------------------------------------------
+   ToC tab glyph centering
+   ------------------------------------------------- */
+
+/* Center the ToC hamburger via layout, not absolute top math (avoids font-metric drift). */
+html #tocToggle.dock-tab{display:grid;place-items:center}
+html #tocToggle.dock-tab>.toc-glyph{position:static !important;display:inline-grid !important;place-items:center;width:1em;height:1em;line-height:1 !important;margin:0 !important;padding:0 !important;transform:translateX(var(--toc-glyph-nudge-x, 0px)) !important}
