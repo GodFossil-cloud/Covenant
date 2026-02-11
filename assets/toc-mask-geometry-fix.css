@@ -1,8 +1,7 @@
 /* Dock mask geometry fix (motion states only)
    - Restores a true semicircle cutout (no sharp side vertices) by using a fixed radius.
    - Lowers the cutout slightly (bottom edge was riding too high).
-   - Restricts the footer hairline to only the cradle cutout width (no full-width line while dragging).
-   - Suppresses the footer's full-width top border / inset highlight during motion (removes the lingering sliver).
+   - Restores a full-width top hairline during motion (the brass line), without reintroducing the darker border/inset sliver.
 
    Scope: only affects toc-opening/toc-closing and reliquary-opening/reliquary-closing.
 */
@@ -19,7 +18,7 @@ html.reliquary-closing{
 }
 
 /* The full-width sliver was coming from the base footer chrome (border-top and/or 1px inset highlight).
-   While the dock window is active, we only want a line over the cutout span, so kill the slab's own top edge. */
+   While the dock window is active, keep the slab's own top edge suppressed. */
 html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
 html.reliquary-opening .nav-footer,
@@ -33,13 +32,13 @@ html.reliquary-closing .nav-footer{
 }
 
 /* During motion the footer slab is repainted on ::before so it can be mask-subtracted.
-   Limit the 1px brass hairline to the cutout span only. */
+   Restore the 1px brass hairline across the full top edge. */
 html.toc-opening .nav-footer::before,
 html.toc-closing .nav-footer::before,
 html.reliquary-opening .nav-footer::before,
 html.reliquary-closing .nav-footer::before{
   background-image:
-    /* Hairline only over the notch/cutout span. */
+    /* Brass hairline (full width). */
     linear-gradient(to bottom,
       var(--footer-hairline) 0,
       var(--footer-hairline) 1px,
@@ -50,12 +49,12 @@ html.reliquary-closing .nav-footer::before{
     linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
 
   background-size:
-    var(--dock-window-w) 1px,
+    100% 1px,
     100% 100%,
     100% 100%;
 
   background-position:
-    var(--dock-window-left) 0,
+    0 0,
     50% 0,
     0 0;
 
