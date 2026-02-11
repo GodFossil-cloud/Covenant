@@ -1,0 +1,34 @@
+/* Footer tone nudges (subtle contrast tuning)
+   - Dock tabs (ToC + Mirror/Reliquary) slightly lighter
+   - Lexicon seal slightly darker
+
+   Scope: footer visuals only (no Covenant text edits).
+*/
+
+:root{
+  /* Dock tab medallion surface (used by ToC + Mirror caps via toc.css). */
+  --dock-tab-face:#0b0c10;
+
+  /* Lexicon seal: closed/base surface tones (keep selection/leaf styling untouched). */
+  --lexicon-seal-face:#08090b;
+  --lexicon-seal-face-hover:#0a0b0e;
+}
+
+/* Darken the Lexicon seal base (closed state). */
+#lexiconToggle.nav-btn.center:not(.has-selection)::after{
+  background-color:var(--lexicon-seal-face);
+}
+
+/* Preserve interaction feedback while staying within the darker scheme. */
+#lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
+#lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{
+  background-color:var(--lexicon-seal-face-hover);
+}
+
+/* Touch/coarse pointer: neutralize any fallback hover tint that would re-lighten the seal. */
+@media (hover: none), (pointer: coarse){
+  #lexiconToggle:not(.has-selection):hover::after,
+  #lexiconToggle:not(.has-selection):focus-visible::after{
+    background-color:var(--lexicon-seal-face);
+  }
+}
