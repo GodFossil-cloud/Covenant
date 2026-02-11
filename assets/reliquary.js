@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.23 (Dock window respects --dock-window-y-shift) */
+/*! Covenant Reliquary UI v0.3.24 (Seat tab + cap to panel top; notch visual only) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.23';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.24';
 
   var doc = document;
   var root = doc.documentElement;
@@ -340,17 +340,17 @@
       if (p > 1) p = 1;
 
       var cap = toggle.querySelector('.dock-cap');
-      var header = panel.querySelector('.reliquary-panel-header');
-      if (!cap || !header || !cap.getBoundingClientRect || !header.getBoundingClientRect) return;
+      if (!cap || !cap.getBoundingClientRect || !panel.getBoundingClientRect) return;
 
       var capRect = cap.getBoundingClientRect();
-      var headerRect = header.getBoundingClientRect();
+      var panelRect = panel.getBoundingClientRect();
 
-      var targetY = headerRect.top + (headerRect.height / 2);
-      var capCenterY = capRect.top + (capRect.height / 2);
+      // Align cap bottom to the panel's top edge (notch is visual only).
+      var targetY = panelRect.top;
+      var capBottomY = capRect.bottom;
 
-      var baseCenterY = capCenterY - mirrorCapShiftY;
-      var shift = (targetY - baseCenterY) * p;
+      var baseBottomY = capBottomY - mirrorCapShiftY;
+      var shift = (targetY - baseBottomY) * p;
 
       if (!isFinite(shift)) shift = 0;
       setMirrorCapShiftPx(shift);
@@ -562,19 +562,13 @@
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    var notchH = getNotchH();
+    // Requirement: tab bottom edge seats to the sheet top edge (notch is visual only).
     var overlapPx = getSeatOverlapPx();
 
-    if (notchH && notchH > 0) {
-      var targetTop = openPanelTop + notchH - baseRect.height;
-      targetTop = targetTop + getSeatDy() + overlapPx;
-      return targetTop - baseRect.top;
-    }
+    var targetTop = openPanelTop - baseRect.height;
+    targetTop = targetTop + getSeatDy() + overlapPx;
 
-    var legacyTop = openPanelTop;
-    if (isMobileSheet()) legacyTop = openPanelTop - baseRect.height;
-    legacyTop = legacyTop + getSeatDy() + overlapPx;
-    return legacyTop - baseRect.top;
+    return targetTop - baseRect.top;
   }
 
   function alignToggleToPanelCornerIfDrift(thresholdPx) {
@@ -780,7 +774,7 @@
     panel.style.opacity = '0';
     overlay.style.opacity = '0';
 
-    // Temporarily place the panel at its open target so we can measure header + corner.
+    // Temporarily place the panel at its open target so we can measure corner.
     setPanelTranslateY(openLift);
 
     try {
@@ -790,20 +784,13 @@
       if (base && rect) {
         dxTarget = computeOpenToggleDxFromPanelRight(rect.right, base);
         dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
-      }
 
-      var cap = toggle.querySelector('.dock-cap');
-      var header = panel.querySelector('.reliquary-panel-header');
-
-      if (cap && header && cap.getBoundingClientRect && header.getBoundingClientRect) {
-        var capRect = cap.getBoundingClientRect();
-        var headerRect = header.getBoundingClientRect();
-
-        var headerCenterY = headerRect.top + (headerRect.height / 2);
-        var capCenterY = capRect.top + (capRect.height / 2);
-
-        // Cap center will move with the tab carry by dyTarget.
-        capShiftTarget = headerCenterY - (capCenterY + dyTarget);
+        // Seat cap bottom to panel top, assuming the cap rides with the same dyTarget carry.
+        var cap = toggle.querySelector('.dock-cap');
+        if (cap && cap.getBoundingClientRect) {
+          var capRect = cap.getBoundingClientRect();
+          capShiftTarget = rect.top - (capRect.bottom + dyTarget);
+        }
       }
     } catch (err) {}
 
