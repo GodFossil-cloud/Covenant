@@ -7,6 +7,10 @@
     --dock-cap-lift: 10px;
     --dock-cap-h: calc(var(--dock-cap-size, 46px) / 2);
     --dock-cap-half: calc(var(--dock-cap-h) / 2);
+
+    /* Lexicon seal geometry (flat-top). */
+    --lexicon-seal-w: 70px;
+    --lexicon-seal-h: 38px;
   }
 
   #navFooter .nav-seals {
@@ -135,6 +139,10 @@
   @media (max-width: 600px) {
     #navFooter {
       --dock-cap-lift: 9px;
+
+      /* Keep the seal proportional on small screens. */
+      --lexicon-seal-w: 68px;
+      --lexicon-seal-h: 36px;
     }
 
     #navFooter #tocToggle,
