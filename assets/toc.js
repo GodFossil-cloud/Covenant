@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.21 (Hash-gated iOS debug badge; restore full file) */
+/*! Covenant ToC v3.2.22 (Hash-gated iOS debug badge; add toggle rect + centering delta) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.21';
+  window.COVENANT_TOC_VERSION = '3.2.22';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -115,8 +115,26 @@
         lines.push('toggle: (missing)');
       }
 
+      var toggleCS = null;
+      try { toggleCS = (tocToggle && window.getComputedStyle) ? getComputedStyle(tocToggle) : null; } catch (errtcs) { toggleCS = null; }
+      if (toggleCS) {
+        lines.push('toggle display: ' + dbgStr(toggleCS.display) + ' ai=' + dbgStr(toggleCS.alignItems) + ' jc=' + dbgStr(toggleCS.justifyContent));
+        lines.push('toggle box: w=' + dbgStr(toggleCS.width) + ' h=' + dbgStr(toggleCS.height) + ' padT=' + dbgStr(toggleCS.paddingTop) + ' padB=' + dbgStr(toggleCS.paddingBottom));
+        lines.push('toggle transform: ' + dbgStr(toggleCS.transform));
+      }
+
+      var toggleRect = null;
+      try {
+        if (tocToggle && tocToggle.getBoundingClientRect) toggleRect = tocToggle.getBoundingClientRect();
+      } catch (errtr) { toggleRect = null; }
+      if (toggleRect) {
+        lines.push('toggle rect: t=' + Math.round(toggleRect.top) + ' l=' + Math.round(toggleRect.left) + ' w=' + Math.round(toggleRect.width) + ' h=' + Math.round(toggleRect.height));
+      }
+
       var glyph = null;
       try { glyph = tocToggle ? tocToggle.querySelector('.toc-glyph') : null; } catch (errg) { glyph = null; }
+
+      var glyphRect = null;
 
       if (!glyph) {
         lines.push('glyph: (missing)');
@@ -135,10 +153,22 @@
 
         try {
           if (glyph.getBoundingClientRect) {
-            var r = glyph.getBoundingClientRect();
-            lines.push('glyph rect: t=' + Math.round(r.top) + ' l=' + Math.round(r.left) + ' w=' + Math.round(r.width) + ' h=' + Math.round(r.height));
+            glyphRect = glyph.getBoundingClientRect();
+            lines.push('glyph rect: t=' + Math.round(glyphRect.top) + ' l=' + Math.round(glyphRect.left) + ' w=' + Math.round(glyphRect.width) + ' h=' + Math.round(glyphRect.height));
           }
         } catch (errr) {}
+      }
+
+      if (toggleRect && glyphRect) {
+        var tcx = toggleRect.left + (toggleRect.width / 2);
+        var tcy = toggleRect.top + (toggleRect.height / 2);
+        var gcx = glyphRect.left + (glyphRect.width / 2);
+        var gcy = glyphRect.top + (glyphRect.height / 2);
+
+        var dx = Math.round((gcx - tcx) * 10) / 10;
+        var dy = Math.round((gcy - tcy) * 10) / 10;
+
+        lines.push('glyph delta: dx=' + dx + ' dy=' + dy + ' (px, glyphCenter - toggleCenter)');
       }
 
       debugBadge.textContent = lines.join('\n');
