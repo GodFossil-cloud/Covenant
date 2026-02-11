@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.13
+/*! Covenant Tab Weld v0.1.14
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -23,6 +23,8 @@
             (CSS bars) so visual centering is true on iOS Safari.
    v0.1.13: fix iOS “bottom-right drift”: when the glyph is absolutely centered with left/top 50%,
             JS must preserve translate(-50%,-50%) when writing transforms.
+   v0.1.14: do not clear ToC glyph centering during inactive resets; ensure force-centering runs
+            after any reset/weld writes each frame.
 */
 (function () {
   'use strict';
@@ -176,10 +178,16 @@
         cap.style.removeProperty('will-change');
       }
       if (glyph) {
-        glyph.style.removeProperty('transform');
-        glyph.style.removeProperty('transition');
-        glyph.style.removeProperty('will-change');
-        glyph.style.removeProperty('inset');
+        // Never clear the ToC glyph centering; it is continuously pinned for iOS Safari.
+        if (toggle.id === 'tocToggle') {
+          glyph.style.removeProperty('transition');
+          glyph.style.removeProperty('will-change');
+        } else {
+          glyph.style.removeProperty('transform');
+          glyph.style.removeProperty('transition');
+          glyph.style.removeProperty('will-change');
+          glyph.style.removeProperty('inset');
+        }
       }
 
       // Critical: also reset carry vars so iOS Safari can't strand the tab translated after close.
@@ -337,9 +345,9 @@
 
       function weldFromPointer() {
         updateDraggingClasses();
-        forceCenterTocGlyph();
         if (isTocActive()) weldToC();
         if (isReliquaryActive()) weldReliquary();
+        forceCenterTocGlyph();
         schedulePostPin();
       }
 
@@ -361,7 +369,6 @@
 
   function tick() {
     try {
-      forceCenterTocGlyph();
       updateDraggingClasses();
 
       if (isTocActive()) weldToC();
@@ -369,6 +376,9 @@
 
       if (isReliquaryActive()) weldReliquary();
       else resetInlineWeld(byId('mirrorToggle'));
+
+      // Final pin: run after any reset/weld writes so iOS Safari can't strand the glyph.
+      forceCenterTocGlyph();
 
       schedulePostPin();
     } catch (err) {}
