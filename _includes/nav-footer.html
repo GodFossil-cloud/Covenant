@@ -61,20 +61,16 @@
       #010103;
   }
 
-  /* NOTE: Do not use :where() for glyph positioning — it has zero specificity, and iOS Safari
-     will happily let later “normal” rules override the absolute centering during drag/open/close.
-     The ToC hamburger must be pinned to the tab face center in all states.
-
-     Also: on iOS Safari we've seen the glyph "stick" to top/bottom when `position:absolute`
-     gets overridden; so we hard-lock the positioning model here. */
-  #navFooter .dock-tab .toc-glyph {
+  /* Mirror: cap geometry is intentional (it is “carried” by the Reliquary). */
+  #navFooter #mirrorToggle .toc-glyph {
     position: absolute !important;
     left: 50% !important;
     right: auto !important;
+    top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
     bottom: auto !important;
+    transform: translate3d(-50%, -50%, 0) translateY(-0.5px);
     z-index: 2;
 
-    /* Keep the glyph on a stable centering box (prevents baseline/line-height drift). */
     display: inline-grid !important;
     place-items: center;
     width: 1em;
@@ -84,17 +80,29 @@
     padding: 0 !important;
   }
 
-  /* Mirror: cap geometry is intentional (it is “carried” by the Reliquary). */
-  #navFooter #mirrorToggle .toc-glyph {
-    top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
-    transform: translate3d(-50%, -50%, 0) translateY(-0.5px);
+  /* ToC: do NOT use absolute centering on iOS; force grid-centered in-flow glyph. */
+  html #navFooter #tocToggle.dock-tab{
+    display: grid !important;
+    place-items: center !important;
   }
 
-  /* ToC: keep hamburger centered in the tab face, independent of the cap seat shift. */
-  #navFooter #tocToggle .toc-glyph {
-    top: 50% !important;
+  html #navFooter #tocToggle.dock-tab .toc-glyph{
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
     bottom: auto !important;
-    transform: translate3d(-50%, -50%, 0) translateY(-0.5px) !important;
+
+    display: inline-grid !important;
+    place-items: center;
+    width: 1em;
+    height: 1em;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    transform: translateY(-0.5px) !important;
   }
 
   #navFooter #lexiconToggle {
@@ -212,38 +220,4 @@
 {% include toc-panel.html %}
 {% include reliquary-panel.html %}
 
-<script>
-// Ultra-last-resort iOS Safari centering pin: if any late CSS/JS clobbers the ToC glyph inset,
-// pin it back to true center immediately (even if external scripts are cached/blocked).
-(function () {
-  try {
-    var t = document.getElementById('tocToggle');
-    if (!t || !t.style) return;
-    var g = t.querySelector('.toc-glyph');
-    if (!g || !g.style) return;
-
-    // Center in-flow (no absolute/inset anchoring).
-    t.style.setProperty('display', 'grid', 'important');
-    t.style.setProperty('place-items', 'center', 'important');
-
-    g.style.removeProperty('inset');
-    g.style.removeProperty('top');
-    g.style.removeProperty('bottom');
-    g.style.removeProperty('left');
-    g.style.removeProperty('right');
-
-    g.style.setProperty('position', 'relative', 'important');
-    g.style.setProperty('inset', 'auto', 'important');
-    g.style.setProperty('margin', '0', 'important');
-    g.style.setProperty('padding', '0', 'important');
-    g.style.setProperty('line-height', '1', 'important');
-    g.style.setProperty('display', 'inline-grid', 'important');
-    g.style.setProperty('place-items', 'center', 'important');
-    g.style.setProperty('width', '1em', 'important');
-    g.style.setProperty('height', '1em', 'important');
-    g.style.setProperty('transform', 'translateY(-0.5px)', 'important');
-  } catch (err) {}
-})();
-</script>
-
-<script src="{{ '/assets/tab-weld.js' | relative_url }}?v=11" defer></script>
+<script src="{{ '/assets/tab-weld.js' | relative_url }}?v=12" defer></script>
