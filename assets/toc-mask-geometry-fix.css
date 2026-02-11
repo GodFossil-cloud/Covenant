@@ -2,6 +2,7 @@
    - Restores a true semicircle cutout (no sharp side vertices) by using a fixed radius.
    - Lowers the cutout slightly (bottom edge was riding too high).
    - Keeps footer chrome visually consistent at drag start (removes the perceived 1px "snap").
+   - Keeps the footer's top-edge shadow present during drag; the panel can slide over it.
 
    Scope: only affects toc-opening/toc-closing and reliquary-opening/reliquary-closing.
 */
@@ -18,8 +19,8 @@ html.reliquary-closing{
 }
 
 /* While the dock window is active, don't let the *base* footer chrome change (that reads as a 1px snap).
-   Move all top-edge chrome (hairlines/borders/highlights) onto the repainted ::before layer,
-   which is the layer we mask-subtract.
+   Keep the slab's *outer* shadow on the base element (unmasked), and keep all linework on the repainted ::before
+   (masked), so the notch cleanly removes lines without clipping the shadow.
 */
 html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
@@ -28,12 +29,13 @@ html.reliquary-closing .nav-footer{
   /* Keep the element's own border from drawing across the notch. */
   border-top:1px solid transparent;
 
-  /* Suppress element shadows; the repainted ::before carries the slab depth. */
-  box-shadow:none;
+  /* Preserve the top-edge outer shadow so it doesn't pop on/off when masking begins. */
+  box-shadow:0 -14px 22px -14px rgba(0,0,0,0.78);
 }
 
-/* Motion repaint layer: match the normal footer slab (depth + dark top border),
-   then let the notch mask subtract out the window (removes border/hairline over the cutout). */
+/* Motion repaint layer: match the normal footer slab surface.
+   The notch mask subtracts this layer, so border/hairline vanish only *over the cutout*.
+   IMPORTANT: do not include the outer shadow here (masked shadows can clip/vanish). */
 html.toc-opening .nav-footer::before,
 html.toc-closing .nav-footer::before,
 html.reliquary-opening .nav-footer::before,
@@ -42,8 +44,8 @@ html.reliquary-closing .nav-footer::before{
   border-top:1px solid rgba(0,0,0,0.70);
   border-bottom:1px solid rgba(0,0,0,0.92);
 
+  /* Inset depth only (outer shadow lives on .nav-footer). */
   box-shadow:
-    0 -14px 22px -14px rgba(0,0,0,0.78),
     inset 0 1px 0 rgba(255,255,255,0.04),
     inset 0 -10px 18px -16px rgba(0,0,0,0.72);
 
