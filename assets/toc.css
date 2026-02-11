@@ -446,12 +446,11 @@ html.toc-closing .nav-seals::before{background:transparent;border:1px solid rgba
 html.reliquary-opening .nav-seals::after,
 html.reliquary-closing .nav-seals::after{background:transparent;border:1px solid rgba(59,54,43,.92);border-top:0;box-shadow:none}
 
-/* During toc-opening/toc-closing and reliquary-opening/reliquary-closing the dock slab must be painted on a maskable layer; the element's own background cannot be punched through.
-   IMPORTANT: hide the physical border-top line, otherwise it will draw across the masked window. */
+/* During toc-opening/toc-closing and reliquary-opening/reliquary-closing the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
 html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
 html.reliquary-opening .nav-footer,
-html.reliquary-closing .nav-footer{background:transparent;border-top-color:transparent}
+html.reliquary-closing .nav-footer{background:transparent}
 
 html.toc-opening .nav-footer::before,
 html.toc-closing .nav-footer::before,
@@ -725,14 +724,6 @@ html.toc-closing .nav-footer,
 html.toc-dock-settling .nav-footer{
   border-top-color:rgba(0,0,0,0.70);
   border-bottom-color:rgba(0,0,0,0.92);
-}
-
-/* Never let the physical footer top border draw across the masked window during drag/open/close. */
-html.toc-opening .nav-footer,
-html.toc-closing .nav-footer,
-html.reliquary-opening .nav-footer,
-html.reliquary-closing .nav-footer{
-  border-top-color:transparent;
 }
 
 html.toc-open #citationLabel,
