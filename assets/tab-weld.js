@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.6
+/*! Covenant Tab Weld v0.1.7
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -8,6 +8,8 @@
            reset inline transforms when panels are not active to avoid "stuck" glyphs.
    v0.1.6: also reset carry vars (--*-toggle-drag-x/y, --mirror-cap-shift-y) when inactive,
            preventing iOS Safari from leaving dock tabs translated "stuck" after close.
+   v0.1.7: brute-force pin the ToC hamburger glyph to the center with inline !important styles
+           every frame (iOS Safari safety net), so it cannot stick to top/bottom in any state.
 */
 (function () {
   'use strict';
@@ -96,6 +98,31 @@
     if (hasState(panel, 'is-open') || hasState(panel, 'is-dragging')) return true;
 
     return false;
+  }
+
+  function forceCenterTocGlyph() {
+    try {
+      var toggle = byId('tocToggle');
+      if (!toggle) return;
+      var glyph = toggle.querySelector('.toc-glyph');
+      if (!glyph || !glyph.style) return;
+
+      glyph.style.setProperty('position', 'absolute', 'important');
+      glyph.style.setProperty('left', '50%', 'important');
+      glyph.style.setProperty('right', 'auto', 'important');
+      glyph.style.setProperty('top', '50%', 'important');
+      glyph.style.setProperty('bottom', 'auto', 'important');
+      glyph.style.setProperty('margin', '0', 'important');
+      glyph.style.setProperty('padding', '0', 'important');
+      glyph.style.setProperty('line-height', '1', 'important');
+      glyph.style.setProperty('display', 'inline-grid', 'important');
+      glyph.style.setProperty('place-items', 'center', 'important');
+      glyph.style.setProperty('width', '1em', 'important');
+      glyph.style.setProperty('height', '1em', 'important');
+
+      // The one true center.
+      glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(-0.5px)', 'important');
+    } catch (err) {}
   }
 
   function resetInlineWeld(toggle) {
@@ -269,6 +296,7 @@
 
       function weldFromPointer() {
         updateDraggingClasses();
+        forceCenterTocGlyph();
         if (isTocActive()) weldToC();
         if (isReliquaryActive()) weldReliquary();
       }
@@ -291,6 +319,7 @@
 
   function tick() {
     try {
+      forceCenterTocGlyph();
       updateDraggingClasses();
 
       if (isTocActive()) weldToC();
