@@ -63,11 +63,25 @@
 
   /* NOTE: Do not use :where() for glyph positioning — it has zero specificity, and iOS Safari
      will happily let later “normal” rules override the absolute centering during drag/open/close.
-     The ToC hamburger must be pinned to the tab face center in all states. */
+     The ToC hamburger must be pinned to the tab face center in all states.
+
+     Also: on iOS Safari we've seen the glyph "stick" to top/bottom when `position:absolute`
+     gets overridden; so we hard-lock the positioning model here. */
   #navFooter .dock-tab .toc-glyph {
-    position: absolute;
-    left: 50%;
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
     z-index: 2;
+
+    /* Keep the glyph on a stable centering box (prevents baseline/line-height drift). */
+    display: inline-grid !important;
+    place-items: center;
+    width: 1em;
+    height: 1em;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* Mirror: cap geometry is intentional (it is “carried” by the Reliquary). */
