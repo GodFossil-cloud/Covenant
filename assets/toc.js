@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.18 (Top-edge weld for dock cap) */
+/*! Covenant ToC v3.2.19 (Lock glyph to tab center during drag) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.18';
+  window.COVENANT_TOC_VERSION = '3.2.19';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -358,10 +358,12 @@
       cap.style.willChange = 'transform';
     }
 
+    // IMPORTANT: The hamburger glyph must stay centered in the tab in all states.
+    // Do not apply cap seat shift to the glyph; leave it to CSS.
     if (glyph) {
-      glyph.style.transform = 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + next) + 'px)';
-      glyph.style.transition = draggingNow ? 'none' : ('transform ' + ms + 'ms ' + ease);
-      glyph.style.willChange = 'transform';
+      glyph.style.transform = '';
+      glyph.style.transition = '';
+      glyph.style.willChange = '';
     }
   }
 
