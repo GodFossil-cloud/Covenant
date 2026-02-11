@@ -1,9 +1,11 @@
-/*! Covenant Tab Weld v0.1.4
+/*! Covenant Tab Weld v0.1.5
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
            force drag-frame welding to run after panel drag handlers on iOS Safari.
    v0.1.4: seat the top edge of the clickable pill/tab to the panel top edge.
+   v0.1.5: ToC glyph must remain centered in the tab face (do not drag-carry it with cap shift);
+           reset inline transforms when panels are not active to avoid "stuck" glyphs.
 */
 (function () {
   'use strict';
@@ -94,6 +96,24 @@
     return false;
   }
 
+  function resetInlineWeld(toggle) {
+    try {
+      if (!toggle) return;
+      var cap = toggle.querySelector('.dock-cap');
+      var glyph = toggle.querySelector('.toc-glyph');
+      if (cap) {
+        cap.style.removeProperty('transform');
+        cap.style.removeProperty('transition');
+        cap.style.removeProperty('will-change');
+      }
+      if (glyph) {
+        glyph.style.removeProperty('transform');
+        glyph.style.removeProperty('transition');
+        glyph.style.removeProperty('will-change');
+      }
+    } catch (err) {}
+  }
+
   function seatCapToPanelTop(toggle, panel, tabTop) {
     try {
       if (!toggle || !panel) return;
@@ -120,7 +140,13 @@
 
       // Important: beat any inline transforms authored by toc.js/reliquary.js during drag (iOS Safari ordering).
       cap.style.setProperty('transform', 'translate3d(-50%,' + ((-1 * lift) + capShift) + 'px,0)', 'important');
-      glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + capShift) + 'px)', 'important');
+
+      // ToC glyph must remain centered in the tab face; do not carry it with capShift.
+      if (toggle.id === 'tocToggle') {
+        glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(-0.5px)', 'important');
+      } else {
+        glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(' + (-0.5 + capShift) + 'px)', 'important');
+      }
 
       cap.style.willChange = 'transform';
       glyph.style.willChange = 'transform';
@@ -256,7 +282,10 @@
       updateDraggingClasses();
 
       if (isTocActive()) weldToC();
+      else resetInlineWeld(byId('tocToggle'));
+
       if (isReliquaryActive()) weldReliquary();
+      else resetInlineWeld(byId('mirrorToggle'));
     } catch (err) {}
 
     requestAnimationFrame(tick);
