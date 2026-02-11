@@ -1482,7 +1482,7 @@ body.is-exiting #blackFadeOverlay {
   --seal-seat-nudge-closed: 0px;
 
   /* How much of the Lexicon sheet is visible above the footer while CLOSED (mobile). */
-  --lexicon-panel-closed-peek: 0px;
+  --lexicon-panel-closed-peek: 4px;
 
   /* Medallion sizing (desktop baseline). */
   --seal-size: 56px;
@@ -1539,7 +1539,8 @@ body.is-exiting #blackFadeOverlay {
 
   /* Notch geometry (engineered "seat" behind the medallion).
      The notch height must be >= radius or you only see side "quarter" accents.
-     Keeping these proportional produces a single continuous semicircle cradle. */
+     Keeping these proportional produces a single continuous semicircle cradle.
+     IMPORTANT: while finger-dragging, keep the nudge so the seal doesn't "snap" downward the instant aria-expanded flips. */
   --seal-notch-radius: calc(var(--seal-size) * 0.52);
   --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
 }
