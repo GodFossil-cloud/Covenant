@@ -6,10 +6,11 @@
 
 #navFooter {
   /* Seal seating: raise the flat-top seal so its top edge aligns with the Lexicon panel lip. */
-  --lexicon-seal-top-align: 13px;
+  --lexicon-seal-top-align: 9px;
 
-  /* Cradle seat: lift the cradle highlight/border to trace the seal underside. */
-  --seal-cradle-shift-y: -4px;
+  /* Cradle seat: lift the cradle highlight/border to trace the seal underside.
+     (Baseline was 5px in the legacy fallback; this keeps cradle + seal locked.) */
+  --seal-cradle-shift-y: calc(-1 * (var(--lexicon-seal-top-align) - 5px));
 
   --lexicon-seal-w: 66px;
   --lexicon-seal-h: 40px;
@@ -34,10 +35,73 @@
   --mirror-glyph-nudge-x: 0px;
 }
 
-/* Cradle highlight is painted on the footer slab pseudo-element (.nav-footer::after).
-   Override its top so the border hugs the seal after we raise it. */
+/* Cutout socket:
+   Paint the slab on ::before, then punch the cradle notch out via a mask.
+   This makes the cradle interior truly transparent (reads as a carved opening). */
+#navFooter {
+  background: transparent !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+#navFooter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  /* Same obsidian slab paint as assets/covenant.css (.nav-footer override block). */
+  background:
+    linear-gradient(to bottom,
+      var(--footer-hairline) 0,
+      var(--footer-hairline) 1px,
+      transparent 1px,
+      transparent 100%
+    ),
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+
+  border-top: 1px solid rgba(0, 0, 0, 0.70);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.92);
+  box-shadow:
+    0 -14px 22px -14px rgba(0, 0, 0, 0.78),
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+
+  /* Punch the cradle void (a circle centered on the top edge becomes a semicircle cutout). */
+  -webkit-mask-image: radial-gradient(circle at 50% 0%,
+    transparent 0 calc(var(--seal-notch-radius) - 0.5px),
+    #000 calc(var(--seal-notch-radius) + 0.5px)
+  );
+  mask-image: radial-gradient(circle at 50% 0%,
+    transparent 0 calc(var(--seal-notch-radius) - 0.5px),
+    #000 calc(var(--seal-notch-radius) + 0.5px)
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Cradle border: keep only the tracing line (no interior shading fill). */
 #navFooter::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
   top: var(--seal-cradle-shift-y, 0px);
+  height: var(--seal-notch-height);
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 50% 0%,
+      transparent 0 calc(var(--seal-notch-radius) - 1px),
+      var(--footer-cradle-line) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 0.75px),
+      transparent calc(var(--seal-notch-radius) + 1.6px)
+    );
+
+  opacity: 0.95;
 }
 
 #navFooter #lexiconToggle,
