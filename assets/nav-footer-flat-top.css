@@ -8,6 +8,9 @@
   /* Seal seating: raise the flat-top seal so its top edge aligns with the Lexicon panel lip. */
   --lexicon-seal-top-align: 13px;
 
+  /* Cradle seat: lift the cradle highlight/border to trace the seal underside. */
+  --seal-cradle-shift-y: -4px;
+
   --lexicon-seal-w: 66px;
   --lexicon-seal-h: 40px;
 
@@ -29,6 +32,12 @@
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x: 0px;
   --mirror-glyph-nudge-x: 0px;
+}
+
+/* Cradle highlight is painted on the footer slab pseudo-element (.nav-footer::after).
+   Override its top so the border hugs the seal after we raise it. */
+#navFooter::after {
+  top: var(--seal-cradle-shift-y, 0px);
 }
 
 #navFooter #lexiconToggle,
