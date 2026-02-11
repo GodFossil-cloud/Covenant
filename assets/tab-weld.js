@@ -1,4 +1,4 @@
-/*! Covenant Tab Weld v0.1.10
+/*! Covenant Tab Weld v0.1.11
    Purpose: keep ToC + Mirror tabs (including the medallion cap) welded to the panel top edge.
 
    v0.1.3: ensure the cap sits on the panel top edge (not centered in the notch) and
@@ -16,6 +16,9 @@
            grid centering on the toggle, so no top/bottom math can strand it.
    v0.1.10: explicitly set ToC glyph edges to auto (left/top/right/bottom) so toc.css can't
             re-apply 50% offsets when the glyph is relative (prevents left drift + above-tab jump).
+   v0.1.11: ToC glyph was still being edge-pinned (top/bottom/left/right = 0) by some global
+            nav button span rule on iOS; force the glyph to position:static + inset:unset and
+            center the toggle via flex. This makes “stick to top/bottom edge” impossible.
 */
 (function () {
   'use strict';
@@ -125,19 +128,21 @@
       var glyph = toggle.querySelector('.toc-glyph');
       if (!glyph || !glyph.style) return;
 
-      // Make the toggle itself a centering instrument (in-flow).
-      toggle.style.setProperty('display', 'grid', 'important');
-      toggle.style.setProperty('place-items', 'center', 'important');
+      // Center the ToC toggle face via flex.
+      toggle.style.setProperty('display', 'flex', 'important');
+      toggle.style.setProperty('align-items', 'center', 'important');
+      toggle.style.setProperty('justify-content', 'center', 'important');
 
-      // Clear then hard-set edges to auto so stylesheet !important rules can't re-apply 50% offsets.
-      glyph.style.removeProperty('inset');
+      // iOS Safari edge-pin killer: make the glyph static so top/bottom/left/right cannot apply.
+      glyph.style.setProperty('position', 'static', 'important');
+      glyph.style.setProperty('inset', 'unset', 'important');
+
+      // Defensive: clear any previously-applied absolute geometry.
       glyph.style.removeProperty('top');
       glyph.style.removeProperty('bottom');
       glyph.style.removeProperty('left');
       glyph.style.removeProperty('right');
 
-      glyph.style.setProperty('position', 'relative', 'important');
-      glyph.style.setProperty('inset', 'auto', 'important');
       glyph.style.setProperty('top', 'auto', 'important');
       glyph.style.setProperty('bottom', 'auto', 'important');
       glyph.style.setProperty('left', 'auto', 'important');
