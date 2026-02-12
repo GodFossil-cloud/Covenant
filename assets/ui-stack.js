@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.8 */
+/*! Covenant UI Stack v0.3.9 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.8';
+  window.COVENANT_UI_STACK_VERSION = '0.3.9';
 
   var registry = Object.create(null);
   var order = [];
@@ -49,6 +49,196 @@
   var IOS_TOUCHMOVE_OPTS = { capture: true, passive: false };
 
   function now() { return Date.now ? Date.now() : +new Date(); }
+
+  // -------------------------------------------------
+  // Hash-gated dock/footer debug badge (iPhone Safari)
+  // Enabled only when URL hash contains "debug-dock".
+  // -------------------------------------------------
+
+  var dockDebugEnabled = false;
+  try {
+    dockDebugEnabled = String(window.location.hash || '').indexOf('debug-dock') !== -1;
+  } catch (err0) {
+    dockDebugEnabled = false;
+  }
+
+  var dockDebugBadge = null;
+  var dockDebugTimer = null;
+  var dockDebugStartedAt = 0;
+  var dockDebugBaselineTop = null;
+
+  function dbgStr(x) {
+    try { return (x == null) ? '' : String(x); } catch (err) { return ''; }
+  }
+
+  function ensureDockDebugBadge() {
+    if (!dockDebugEnabled || dockDebugBadge) return;
+
+    try {
+      var el = document.createElement('pre');
+      el.setAttribute('data-covenant-dock-debug', '1');
+      el.style.position = 'fixed';
+      el.style.left = '8px';
+      el.style.bottom = '8px';
+      el.style.zIndex = '2147483647';
+      el.style.maxWidth = 'min(92vw, 560px)';
+      el.style.maxHeight = 'min(44vh, 360px)';
+      el.style.overflow = 'auto';
+      el.style.padding = '10px 12px';
+      el.style.margin = '0';
+      el.style.borderRadius = '10px';
+      el.style.border = '1px solid rgba(255,255,255,0.18)';
+      el.style.background = 'rgba(0,0,0,0.82)';
+      el.style.color = 'rgba(245,245,240,0.96)';
+      el.style.font = '12px/1.25 -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
+      el.style.letterSpacing = '0.02em';
+      el.style.whiteSpace = 'pre-wrap';
+      el.style.pointerEvents = 'none';
+      el.style.boxShadow = '0 14px 30px rgba(0,0,0,0.32)';
+      el.style.contain = 'content';
+
+      (document.body || document.documentElement).appendChild(el);
+      dockDebugBadge = el;
+    } catch (err1) {
+      dockDebugBadge = null;
+    }
+  }
+
+  function readFooterRect() {
+    try {
+      var footer = document.querySelector('.nav-footer');
+      if (!footer || !footer.getBoundingClientRect) return null;
+      var r = footer.getBoundingClientRect();
+      if (!r) return null;
+      return {
+        top: r.top,
+        bottom: r.bottom,
+        height: r.height,
+        left: r.left,
+        width: r.width
+      };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function readVisualViewport() {
+    try {
+      if (!window.visualViewport) return null;
+      return {
+        height: window.visualViewport.height,
+        width: window.visualViewport.width,
+        offsetTop: window.visualViewport.offsetTop,
+        offsetLeft: window.visualViewport.offsetLeft,
+        pageTop: window.visualViewport.pageTop,
+        pageLeft: window.visualViewport.pageLeft,
+        scale: window.visualViewport.scale
+      };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function readOverflowState() {
+    var out = { html: '', body: '', padR: '' };
+    try {
+      out.html = document.documentElement ? (document.documentElement.style.overflow || '') : '';
+      out.body = document.body ? (document.body.style.overflow || '') : '';
+      out.padR = document.body ? (document.body.style.paddingRight || '') : '';
+    } catch (err) {}
+    return out;
+  }
+
+  function updateDockDebugBadge() {
+    if (!dockDebugEnabled || !dockDebugBadge) return;
+
+    try {
+      var lines = [];
+
+      var path = '';
+      try {
+        path = dbgStr(window.location && window.location.pathname) || '';
+        if (path) {
+          var parts = path.split('/');
+          path = parts[parts.length - 1] || path;
+        }
+      } catch (errp) { path = ''; }
+
+      lines.push('Dock debug (' + dbgStr(window.COVENANT_UI_STACK_VERSION) + ')');
+      if (path) lines.push('Page: ' + path);
+
+      var root = document.documentElement;
+      var rootClass = (root && root.className) ? dbgStr(root.className) : '';
+      if (rootClass) lines.push('html: ' + rootClass);
+
+      lines.push('isIOS: ' + (isIOS ? 'true' : 'false') + ' scrollLocked: ' + (scrollLocked ? 'true' : 'false'));
+
+      var ids = [];
+      try { ids = (typeof getOpenIds === 'function') ? getOpenIds() : []; } catch (errIds) { ids = []; }
+      if (ids && ids.length) lines.push('openStack: ' + ids.join(' > '));
+
+      var footerRect = readFooterRect();
+      if (footerRect) {
+        if (dockDebugBaselineTop == null) dockDebugBaselineTop = footerRect.top;
+        var dTop = (footerRect.top - dockDebugBaselineTop);
+        lines.push('footer rect: top=' + footerRect.top.toFixed(2) + ' (Δ' + dTop.toFixed(2) + ') h=' + footerRect.height.toFixed(2) + ' bottom=' + footerRect.bottom.toFixed(2));
+      } else {
+        lines.push('footer rect: (missing)');
+      }
+
+      var vv = readVisualViewport();
+      if (vv) {
+        lines.push('visualViewport: h=' + dbgStr(vv.height) + ' offTop=' + dbgStr(vv.offsetTop) + ' pageTop=' + dbgStr(vv.pageTop) + ' scale=' + dbgStr(vv.scale));
+      } else {
+        lines.push('visualViewport: (n/a)');
+      }
+
+      lines.push('innerHeight=' + dbgStr(window.innerHeight) + ' docEl.clientHeight=' + dbgStr(document.documentElement ? document.documentElement.clientHeight : ''));
+
+      var overflow = readOverflowState();
+      if (overflow) {
+        lines.push('overflow: html=' + dbgStr(overflow.html) + ' body=' + dbgStr(overflow.body) + ' padR=' + dbgStr(overflow.padR));
+      }
+
+      var since = dockDebugStartedAt ? (now() - dockDebugStartedAt) : 0;
+      lines.push('t=' + since + 'ms');
+
+      dockDebugBadge.textContent = lines.join('\n');
+    } catch (err3) {}
+  }
+
+  function startDockDebugBadgeIfNeeded() {
+    if (!dockDebugEnabled) return;
+
+    ensureDockDebugBadge();
+
+    if (!dockDebugStartedAt) dockDebugStartedAt = now();
+    updateDockDebugBadge();
+
+    if (dockDebugTimer) return;
+
+    try {
+      dockDebugTimer = setInterval(updateDockDebugBadge, 120);
+    } catch (err) {
+      dockDebugTimer = null;
+    }
+
+    // Also refresh on viewport changes.
+    try {
+      if (window.visualViewport && window.visualViewport.addEventListener) {
+        window.visualViewport.addEventListener('resize', updateDockDebugBadge);
+        window.visualViewport.addEventListener('scroll', updateDockDebugBadge);
+      }
+    } catch (err2) {}
+  }
+
+  if (dockDebugEnabled) {
+    if (document && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startDockDebugBadgeIfNeeded);
+    } else {
+      startDockDebugBadgeIfNeeded();
+    }
+  }
 
   function toId(value) {
     return String(value == null ? '' : value).trim();
