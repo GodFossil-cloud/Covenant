@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.7 */
+/*! Covenant UI Stack v0.3.8 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.7';
+  window.COVENANT_UI_STACK_VERSION = '0.3.8';
 
   var registry = Object.create(null);
   var order = [];
@@ -28,6 +28,7 @@
   // If Lexicon is closed and ToC or Reliquary is open, the Lexicon toggle is "locked":
   // interactions trigger a single subtle "breath" animation and do not open Lexicon.
   var lexiconLocked = false;
+  var lexiconStyleLocked = false;
   var lexiconBreathAnimating = false;
   var lexiconBreathAnim = null;
   var lastLexiconBreathAt = 0;
@@ -265,7 +266,20 @@
 
       if (id === 'reliquary') {
         var root = document.documentElement;
-        return !!(root && root.classList && root.classList.contains('reliquary-open'));
+        if (!root || !root.classList || !root.classList.contains('reliquary-open')) return false;
+
+        // Drag-open shells may briefly mark .reliquary-open early; avoid scroll-lock while opening/dragging.
+        if (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing')) return false;
+
+        var rel = document.getElementById('reliquaryPanel');
+        if (rel && rel.classList && rel.classList.contains('is-dragging')) return false;
+
+        // Cancel-open signature: Reliquary can look open for a frame but overlay is already at 0.
+        var ov = document.getElementById('reliquaryOverlay');
+        var op = (ov && ov.style) ? parseFloat(ov.style.opacity) : NaN;
+        if (op === 0) return false;
+
+        return true;
       }
 
       if (id === 'lexicon') {
@@ -333,32 +347,71 @@
     return false;
   }
 
-  function computeLexiconLocked() {
+  function isToCCommittedOpen() {
+    var toc = document.getElementById('tocPanel');
+    return !!(toc && toc.classList && toc.classList.contains('is-open'));
+  }
+
+  function isReliquaryCommittedOpen() {
+    try {
+      var root = document.documentElement;
+      if (!root || !root.classList || !root.classList.contains('reliquary-open')) return false;
+
+      if (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing')) return false;
+
+      var el = document.getElementById('reliquaryPanel');
+      if (el && el.classList && el.classList.contains('is-dragging')) return false;
+
+      var ov = document.getElementById('reliquaryOverlay');
+      var op = (ov && ov.style) ? parseFloat(ov.style.opacity) : NaN;
+      if (op === 0) return false;
+
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function computeLexiconLockedForInterception() {
     var lexOpen = isPanelOpenByDomId('lexiconPanel');
     if (lexOpen) return false;
 
-    // Lexicon is locked if it is closed and either ToC or Reliquary is currently open.
+    // Interception is allowed to engage during drag shells.
     var tocOpen = isPanelOpenByDomId('tocPanel');
     var relOpen = isPanelOpenByDomId('reliquaryPanel');
 
     return !!(tocOpen || relOpen);
   }
 
+  function computeLexiconLockedForStyle() {
+    var lexOpen = isPanelOpenByDomId('lexiconPanel');
+    if (lexOpen) return false;
+
+    // Styling must not cause a footer reflow during drag shells on iOS Safari,
+    // so only apply the "locked" visual state when the other surface is *committed open*.
+    return !!(isToCCommittedOpen() || isReliquaryCommittedOpen());
+  }
+
   function applyLexiconGateState() {
     var toggle = document.getElementById('lexiconToggle');
     if (!toggle) return;
 
-    var locked = computeLexiconLocked();
+    var interceptLocked = computeLexiconLockedForInterception();
+    var styleLocked = computeLexiconLockedForStyle();
 
-    if (locked === lexiconLocked) return;
-    lexiconLocked = locked;
+    // Keep interaction lock accurate (so interceptors work), but defer DOM "locked" visuals
+    // until committed-open to avoid a 1px footer hop on iOS Safari during drag-open.
+    if (interceptLocked === lexiconLocked && styleLocked === lexiconStyleLocked) return;
 
-    toggle.setAttribute('data-lexicon-locked', locked ? 'true' : 'false');
-    // Keep it focusable/clickable, but signal "locked" to AT.
-    toggle.setAttribute('aria-disabled', locked ? 'true' : 'false');
+    lexiconLocked = interceptLocked;
+    lexiconStyleLocked = styleLocked;
+
+    toggle.setAttribute('data-lexicon-locked', styleLocked ? 'true' : 'false');
+    // Keep it focusable/clickable, but signal "locked" to AT (when style lock is active).
+    toggle.setAttribute('aria-disabled', styleLocked ? 'true' : 'false');
 
     if (toggle.classList && toggle.classList.toggle) {
-      toggle.classList.toggle('is-lexicon-locked', locked);
+      toggle.classList.toggle('is-lexicon-locked', styleLocked);
     }
   }
 
