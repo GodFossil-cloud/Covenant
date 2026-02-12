@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.30 (Panel-only motion; dock tab parked) */
+/*! Covenant Reliquary UI v0.3.31 (No local overflow scroll-lock; dock tab parked) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.30';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.31';
 
   var doc = document;
   var root = doc.documentElement;
@@ -107,11 +107,6 @@
     try { stack.bringToFront(UI_STACK_ID); } catch (err) {}
   }
 
-  function shouldUseLocalScrollLock() {
-    var stack = getUIStack();
-    return !uiStackReady(stack);
-  }
-
   function registerWithUIStack() {
     if (uiRegistered) return;
 
@@ -203,8 +198,6 @@
   var focusTrapEnabled = false;
   var focusTrapHandler = null;
 
-  var scrollLockY = 0;
-
   // Tap-open/close animation guard.
   var tapAnimating = false;
 
@@ -243,42 +236,10 @@
     iosTouchMoveBlocker = null;
   }
 
-  function lockBodyScroll() {
-    if (!shouldUseLocalScrollLock()) return;
-
-    if (root.classList.contains('reliquary-scroll-lock') || doc.body.classList.contains('reliquary-scroll-lock')) return;
-
-    scrollLockY = window.scrollY || window.pageYOffset || 0;
-    root.classList.add('reliquary-scroll-lock');
-
-    if (isIOS) {
-      doc.body.style.overflow = 'hidden';
-      enableIOSTouchScrollLock();
-      return;
-    }
-
-    doc.body.classList.add('reliquary-scroll-lock');
-    doc.body.style.top = (-scrollLockY) + 'px';
-  }
-
-  function unlockBodyScroll() {
-    if (!shouldUseLocalScrollLock()) return;
-
-    var wasLocked = root.classList.contains('reliquary-scroll-lock') || doc.body.classList.contains('reliquary-scroll-lock');
-
-    root.classList.remove('reliquary-scroll-lock');
-
-    if (isIOS) {
-      disableIOSTouchScrollLock();
-      doc.body.style.overflow = '';
-      if (wasLocked) window.scrollTo(0, scrollLockY);
-      return;
-    }
-
-    doc.body.classList.remove('reliquary-scroll-lock');
-    doc.body.style.top = '';
-
-    if (wasLocked) window.scrollTo(0, scrollLockY);
+  function clearLegacyLocalScrollLockArtifacts() {
+    // Legacy cleanup only (no overflow / fixed-body lock remains in this build).
+    try { root.classList.remove('reliquary-scroll-lock'); } catch (err1) {}
+    try { if (doc.body) doc.body.classList.remove('reliquary-scroll-lock'); } catch (err2) {}
   }
 
   function getFocusableInPanel() {
@@ -445,7 +406,10 @@
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Close Reliquary');
 
-    lockBodyScroll();
+    // No local overflow/fixed-body scroll lock in this build (ui-stack owns shared lock).
+    // For iOS, we still block stray touch scrolls outside the panel body.
+    if (isIOS) enableIOSTouchScrollLock();
+
     enableFocusTrap();
 
     noteOpen();
@@ -466,7 +430,8 @@
     toggle.setAttribute('aria-expanded', 'false');
     toggle.setAttribute('aria-label', 'Open Reliquary');
 
-    unlockBodyScroll();
+    if (isIOS) disableIOSTouchScrollLock();
+    clearLegacyLocalScrollLockArtifacts();
 
     noteClose();
 
@@ -599,7 +564,9 @@
         toggle.setAttribute('aria-label', 'Open Reliquary');
 
         root.classList.remove('reliquary-open');
-        unlockBodyScroll();
+
+        if (isIOS) disableIOSTouchScrollLock();
+        clearLegacyLocalScrollLockArtifacts();
 
         noteClose();
 
@@ -752,7 +719,8 @@
 
       root.classList.remove('reliquary-open');
 
-      unlockBodyScroll();
+      if (isIOS) disableIOSTouchScrollLock();
+      clearLegacyLocalScrollLockArtifacts();
 
       noteClose();
 
