@@ -822,7 +822,7 @@
     var f = getFooterHeightSafe();
     var n = getSeatNudge();
 
-    var OPEN_DROP_PX = 6;
+    var OPEN_DROP_PX = 0;
 
     if (h > 0) setSealDragOffset(-(h - f) + n + OPEN_DROP_PX, false);
   }
