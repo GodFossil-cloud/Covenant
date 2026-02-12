@@ -20,7 +20,7 @@
     --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
 
     /* If we raise the seal, raise the cradle by the same delta (relative to the 5px baseline). */
-    --seal-cradle-shift-y: calc(-1 * (var(--lexicon-seal-top-align, 5px) - 5px));
+    --seal-cradle-shift-y: calc(0 * (var(--lexicon-seal-top-align, 5px) - 5px));
 
     /* iOS Safari: do not force compositor promotion on the dock.
        It can introduce a ~1px rounding tick while other fixed layers animate. */
@@ -92,7 +92,7 @@
     top: 0;
     width: var(--dock-cap-size, 46px);
     height: var(--dock-cap-h);
-    transform: translate3d(-50%, calc(-1 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h))), 0);
+    transform: translate3d(-50%, calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h))), 0);
     border-radius: 0 0 999px 999px;
     overflow: hidden;
     pointer-events: none;
@@ -101,11 +101,11 @@
 
   /* iOS critical fallback: honor the JS-driven cap seat shift so cap + glyph stay together. */
   #navFooter #tocToggle .dock-cap{
-    transform: translate3d(-50%, calc(-1 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--toc-cap-shift-y, 0px)), 0);
+    transform: translate3d(-50%, calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--toc-cap-shift-y, 0px)), 0);
   }
 
   #navFooter #mirrorToggle .dock-cap{
-    transform: translate3d(-50%, calc(-1 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--mirror-cap-shift-y, 0px)), 0);
+    transform: translate3d(-50%, calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--mirror-cap-shift-y, 0px)), 0);
   }
 
   :where(#navFooter .dock-tab .dock-cap)::before {
@@ -221,7 +221,7 @@
     overflow: hidden;
 
     /* Seat the flat-top seal into the cradle (iPhone Safari baseline). */
-    margin-top: calc(-1 * var(--lexicon-seal-top-align, 5px));
+    margin-top: calc(0 * var(--lexicon-seal-top-align, 5px));
   }
 
   #navFooter .nav-center { padding-top: var(--nav-center-pad-top, 4px); }
