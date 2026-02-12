@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.26 (DPR-aware dock window alignment; avoid iOS/Safari subpixel jump) */
+/*! Covenant Reliquary UI v0.3.27 (Delay scroll-lock until commit-open to avoid iOS fixed dock hop) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.26';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.27';
 
   var doc = document;
   var root = doc.documentElement;
@@ -716,7 +716,10 @@
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Close Reliquary');
 
-    lockBodyScroll();
+    // During drag-open shell, avoid flipping scroll-lock classes/overflow.
+    // On iOS Safari this can manifest as a ~1px fixed dock hop on the first drag frame.
+    // We still prevent stray touch scrolling outside the panel body.
+    if (isIOS) enableIOSTouchScrollLock();
 
     noteOpen();
   }
