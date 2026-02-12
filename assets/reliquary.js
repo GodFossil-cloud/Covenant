@@ -1,11 +1,22 @@
-/*! Covenant Reliquary UI v0.3.25 (Drag shell keeps Lexicon responsive on cancel) */
+/*! Covenant Reliquary UI v0.3.26 (DPR-aware dock window alignment; avoid iOS/Safari subpixel jump) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.25';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.26';
 
   var doc = document;
   var root = doc.documentElement;
+
+  // Dock window position cache (prevents iOS/Safari compositor "jump" from redundant subpixel writes).
+  var lastDockWindowLeft = null;
+  var lastDockWindowTop = null;
+
+  function roundToDPR(px) {
+    var dpr = 1;
+    try { dpr = window.devicePixelRatio || 1; } catch (err) { dpr = 1; }
+    if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
+    return Math.round(px * dpr) / dpr;
+  }
 
   function byId(id) { return doc.getElementById(id); }
 
@@ -141,11 +152,24 @@
       var centerX = sealsRect.left + sealsRect.width - (tabW / 2) + socketSpread;
       var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge + windowYShift;
 
-      var left = Math.round(centerX - footerRect.left - (w / 2));
-      var top = Math.round(centerY - footerRect.top - (h / 2));
+      var left = roundToDPR(centerX - footerRect.left - (w / 2));
+      var top = roundToDPR(centerY - footerRect.top - (h / 2));
 
-      root.style.setProperty('--dock-window-left-px', left + 'px');
-      root.style.setProperty('--dock-window-top-px', top + 'px');
+      // Avoid redundant writes; on iOS Safari, re-setting the same px values can cause a one-frame jump.
+      var dpr = 1;
+      try { dpr = window.devicePixelRatio || 1; } catch (errd) { dpr = 1; }
+      if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
+      var minDelta = 1 / dpr;
+
+      if (lastDockWindowLeft == null || Math.abs(left - lastDockWindowLeft) > minDelta) {
+        root.style.setProperty('--dock-window-left-px', left + 'px');
+        lastDockWindowLeft = left;
+      }
+
+      if (lastDockWindowTop == null || Math.abs(top - lastDockWindowTop) > minDelta) {
+        root.style.setProperty('--dock-window-top-px', top + 'px');
+        lastDockWindowTop = top;
+      }
     } catch (err) {}
   }
 
