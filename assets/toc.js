@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.27 (Panel-only motion; dock tab parked) */
+/*! Covenant ToC v3.2.28 (Panel-only motion; dock tab parked) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.27';
+  window.COVENANT_TOC_VERSION = '3.2.28';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -30,173 +30,6 @@
   var tocProducedTitleEl = document.getElementById('tocProducedTitle');
 
   var root = document.documentElement;
-
-  // -------------------------------------------------
-  // Hash-gated debug badge (iPhone Safari support)
-  // Enabled only when URL hash contains "debug-toc".
-  // -------------------------------------------------
-
-  var debugEnabled = false;
-  try {
-    debugEnabled = String(window.location.hash || '').indexOf('debug-toc') !== -1;
-  } catch (err0) {
-    debugEnabled = false;
-  }
-
-  var debugBadge = null;
-  var debugTimer = null;
-
-  function dbgStr(x) {
-    try { return (x == null) ? '' : String(x); } catch (err) { return ''; }
-  }
-
-  function ensureDebugBadge() {
-    if (!debugEnabled || debugBadge) return;
-
-    try {
-      var el = document.createElement('pre');
-      el.setAttribute('data-covenant-toc-debug', '1');
-      el.style.position = 'fixed';
-      el.style.left = '8px';
-      el.style.top = '8px';
-      el.style.zIndex = '2147483647';
-      el.style.maxWidth = 'min(92vw, 520px)';
-      el.style.maxHeight = 'min(46vh, 360px)';
-      el.style.overflow = 'auto';
-      el.style.padding = '10px 12px';
-      el.style.margin = '0';
-      el.style.borderRadius = '10px';
-      el.style.border = '1px solid rgba(255,255,255,0.18)';
-      el.style.background = 'rgba(0,0,0,0.82)';
-      el.style.color = 'rgba(245,245,240,0.96)';
-      el.style.font = '12px/1.25 -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
-      el.style.letterSpacing = '0.02em';
-      el.style.whiteSpace = 'pre-wrap';
-      el.style.pointerEvents = 'none';
-      el.style.boxShadow = '0 14px 30px rgba(0,0,0,0.32)';
-
-      (document.body || document.documentElement).appendChild(el);
-      debugBadge = el;
-    } catch (err2) {
-      debugBadge = null;
-    }
-  }
-
-  function updateDebugBadge() {
-    if (!debugEnabled || !debugBadge) return;
-
-    try {
-      var lines = [];
-
-      var path = '';
-      try {
-        path = dbgStr(window.location && window.location.pathname) || '';
-        if (path) {
-          var parts = path.split('/');
-          path = parts[parts.length - 1] || path;
-        }
-      } catch (errp) { path = ''; }
-
-      lines.push('ToC debug (' + dbgStr(window.COVENANT_TOC_VERSION) + ')');
-      if (path) lines.push('Page: ' + path);
-
-      var rootClass = (root && root.className) ? dbgStr(root.className) : '';
-      if (rootClass) lines.push('html: ' + rootClass);
-
-      if (tocPanel) {
-        lines.push('panel: ' + (tocPanel.className || '') + ' aria-hidden=' + dbgStr(tocPanel.getAttribute('aria-hidden')));
-      } else {
-        lines.push('panel: (missing)');
-      }
-
-      if (tocToggle) {
-        lines.push('toggle: ' + (tocToggle.className || '') + ' expanded=' + dbgStr(tocToggle.getAttribute('aria-expanded')));
-      } else {
-        lines.push('toggle: (missing)');
-      }
-
-      var toggleCS = null;
-      try { toggleCS = (tocToggle && window.getComputedStyle) ? getComputedStyle(tocToggle) : null; } catch (errtcs) { toggleCS = null; }
-      if (toggleCS) {
-        lines.push('toggle display: ' + dbgStr(toggleCS.display) + ' ai=' + dbgStr(toggleCS.alignItems) + ' jc=' + dbgStr(toggleCS.justifyContent));
-        lines.push('toggle box: w=' + dbgStr(toggleCS.width) + ' h=' + dbgStr(toggleCS.height) + ' padT=' + dbgStr(toggleCS.paddingTop) + ' padB=' + dbgStr(toggleCS.paddingBottom));
-        lines.push('toggle transform: ' + dbgStr(toggleCS.transform));
-      }
-
-      var toggleRect = null;
-      try {
-        if (tocToggle && tocToggle.getBoundingClientRect) toggleRect = tocToggle.getBoundingClientRect();
-      } catch (errtr) { toggleRect = null; }
-      if (toggleRect) {
-        lines.push('toggle rect: t=' + Math.round(toggleRect.top) + ' l=' + Math.round(toggleRect.left) + ' w=' + Math.round(toggleRect.width) + ' h=' + Math.round(toggleRect.height));
-      }
-
-      var glyph = null;
-      try { glyph = tocToggle ? tocToggle.querySelector('.toc-glyph') : null; } catch (errg) { glyph = null; }
-
-      var glyphRect = null;
-
-      if (!glyph) {
-        lines.push('glyph: (missing)');
-      } else {
-        var inline = dbgStr(glyph.getAttribute('style'));
-        if (inline) lines.push('glyph inline: ' + inline);
-
-        var cs = null;
-        try { cs = window.getComputedStyle ? getComputedStyle(glyph) : null; } catch (errcs) { cs = null; }
-
-        if (cs) {
-          lines.push('glyph pos: ' + dbgStr(cs.position) + ' top=' + dbgStr(cs.top) + ' bottom=' + dbgStr(cs.bottom));
-          lines.push('glyph x: left=' + dbgStr(cs.left) + ' right=' + dbgStr(cs.right));
-          lines.push('glyph transform: ' + dbgStr(cs.transform));
-        }
-
-        try {
-          if (glyph.getBoundingClientRect) {
-            glyphRect = glyph.getBoundingClientRect();
-            lines.push('glyph rect: t=' + Math.round(glyphRect.top) + ' l=' + Math.round(glyphRect.left) + ' w=' + Math.round(glyphRect.width) + ' h=' + Math.round(glyphRect.height));
-          }
-        } catch (errr) {}
-      }
-
-      if (toggleRect && glyphRect) {
-        var tcx = toggleRect.left + (toggleRect.width / 2);
-        var tcy = toggleRect.top + (toggleRect.height / 2);
-        var gcx = glyphRect.left + (glyphRect.width / 2);
-        var gcy = glyphRect.top + (glyphRect.height / 2);
-
-        var dx = Math.round((gcx - tcx) * 10) / 10;
-        var dy = Math.round((gcy - tcy) * 10) / 10;
-
-        lines.push('glyph delta: dx=' + dx + ' dy=' + dy + ' (px, glyphCenter - toggleCenter)');
-      }
-
-      debugBadge.textContent = lines.join('\n');
-    } catch (err3) {}
-  }
-
-  function startDebugBadgeIfNeeded() {
-    if (!debugEnabled) return;
-
-    ensureDebugBadge();
-    updateDebugBadge();
-
-    if (debugTimer) return;
-
-    try {
-      debugTimer = setInterval(updateDebugBadge, 220);
-    } catch (err) {
-      debugTimer = null;
-    }
-  }
-
-  if (debugEnabled) {
-    if (document && document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startDebugBadgeIfNeeded);
-    } else {
-      startDebugBadgeIfNeeded();
-    }
-  }
 
   var storageAvailable = false;
   var maxIndexUnlocked = -1;
@@ -1818,6 +1651,4 @@
 
   bindContentClicks();
   wireControls();
-
-  startDebugBadgeIfNeeded();
 })();
