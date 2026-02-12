@@ -1,4 +1,7 @@
-/*! Covenant Panel Coordinator v0.1.0 (Stacking + Shared Scroll Lock + Lexicon Lock Pulse) */
+/*! Covenant Panel Coordinator v0.1.1 (Stacking + Shared Scroll Lock + Lexicon Lock Pulse)
+
+   v0.1.1: replace fixed-body scroll lock with overflow-based lock (prevents footer dock notch micro-jump)
+*/
 (function () {
   'use strict';
 
@@ -54,6 +57,12 @@
   var scrollLockCount = 0;
   var scrollLockY = 0;
 
+  // Preserve prior overflow/padding so we don't clobber page-authored styles.
+  var prevHtmlOverflow = '';
+  var prevBodyOverflow = '';
+  var prevBodyPaddingRight = '';
+  var scrollStylesApplied = false;
+
   var isIOS = (function () {
     try {
       var ua = navigator.userAgent || '';
@@ -94,18 +103,83 @@
     iosTouchMoveBlocker = null;
   }
 
+  function computeScrollbarWidth() {
+    try {
+      var docEl = doc.documentElement;
+      if (!docEl) return 0;
+      var w = (window.innerWidth || 0) - (docEl.clientWidth || 0);
+      if (!w || w < 0) return 0;
+      return Math.round(w);
+    } catch (err) {
+      return 0;
+    }
+  }
+
+  function uiStackAlreadyLocked() {
+    try {
+      return !!(root && root.classList && root.classList.contains('ui-stack-scroll-lock'));
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function applyOverflowLockStyles() {
+    if (scrollStylesApplied) return;
+
+    try {
+      prevHtmlOverflow = root ? (root.style.overflow || '') : '';
+      prevBodyOverflow = doc.body ? (doc.body.style.overflow || '') : '';
+      prevBodyPaddingRight = doc.body ? (doc.body.style.paddingRight || '') : '';
+    } catch (err0) {
+      prevHtmlOverflow = '';
+      prevBodyOverflow = '';
+      prevBodyPaddingRight = '';
+    }
+
+    try {
+      if (root) root.style.overflow = 'hidden';
+      if (doc.body) doc.body.style.overflow = 'hidden';
+
+      // Preserve layout width when hiding the scrollbar (desktop).
+      var sw = computeScrollbarWidth();
+      if (sw && doc.body) {
+        doc.body.style.paddingRight = sw + 'px';
+      }
+    } catch (err1) {}
+
+    scrollStylesApplied = true;
+  }
+
+  function restoreOverflowLockStyles() {
+    if (!scrollStylesApplied) return;
+
+    try {
+      if (root) root.style.overflow = prevHtmlOverflow || '';
+      if (doc.body) {
+        doc.body.style.overflow = prevBodyOverflow || '';
+        doc.body.style.paddingRight = prevBodyPaddingRight || '';
+      }
+    } catch (err1) {}
+
+    prevHtmlOverflow = '';
+    prevBodyOverflow = '';
+    prevBodyPaddingRight = '';
+    scrollStylesApplied = false;
+  }
+
   function lockScroll() {
     if (scrollLockCount === 0) {
-      scrollLockY = window.scrollY || window.pageYOffset || 0;
+      // Round to avoid fractional scrollY being fed back into layout (micro-jump risk).
+      scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
       root.classList.add('covenant-scroll-lock');
 
-      if (isIOS) {
-        doc.body.style.overflow = 'hidden';
-        enableIOSTouchScrollLock();
-      } else {
-        doc.body.classList.add('covenant-scroll-lock');
-        doc.body.style.top = (-scrollLockY) + 'px';
+      // If ui-stack is already handling scroll lock, do not touch overflow/padding.
+      if (!uiStackAlreadyLocked()) {
+        applyOverflowLockStyles();
       }
+
+      // iOS needs the touchmove blocker even when overflow is hidden.
+      if (isIOS) enableIOSTouchScrollLock();
     }
 
     scrollLockCount += 1;
@@ -120,14 +194,16 @@
 
     if (isIOS) {
       disableIOSTouchScrollLock();
-      doc.body.style.overflow = '';
-      window.scrollTo(0, scrollLockY);
-      return;
     }
 
-    doc.body.classList.remove('covenant-scroll-lock');
-    doc.body.style.top = '';
-    window.scrollTo(0, scrollLockY);
+    // Only restore styles if we applied them.
+    // If ui-stack owns the lock, it will restore when the last surface closes.
+    restoreOverflowLockStyles();
+
+    try {
+      // Maintain the pre-lock scroll position (harmless if nothing moved).
+      window.scrollTo(0, scrollLockY);
+    } catch (err3) {}
   }
 
   // ---------------------------
