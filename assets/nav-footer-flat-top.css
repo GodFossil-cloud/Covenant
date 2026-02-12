@@ -79,15 +79,15 @@
     linear-gradient(to bottom,
       transparent 0,
       transparent 2px,
-      var(--footer-hairline) 2px,
-      var(--footer-hairline) 3px,
+      var(--footer-hairline) 0px,
+      var(--footer-hairline) 0px,
       transparent 3px,
       transparent 100%
     ),
     radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
     linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
 
-  background-position: 0 -2px, 0 0, 0 0;
+  background-position: 0 0px, 0 0, 0 0;
 
   border-top: 1px solid rgba(0, 0, 0, 0.70);
   border-bottom: 1px solid rgba(0, 0, 0, 0.92);
@@ -152,7 +152,7 @@
   /* Base seal positioning uses a translateY to "lift" the button.
      In the flat-top footer, we want the seal top edge flush with the slab, so push it down 1px
      while preserving drag math (lexicon.js drives --seal-drag-y). */
-  transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 1px)) !important;
+  transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
 
   /* Wider + shorter medallion (footer-local only). */
   width: var(--lexicon-seal-w);
