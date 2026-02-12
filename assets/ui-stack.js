@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.5 */
+/*! Covenant UI Stack v0.3.6 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.5';
+  window.COVENANT_UI_STACK_VERSION = '0.3.6';
 
   var registry = Object.create(null);
   var order = [];
@@ -181,11 +181,22 @@
     if (scrollLocked) return;
 
     scrollLocked = true;
-    scrollLockY = window.scrollY || window.pageYOffset || 0;
+
+    var y = window.scrollY || window.pageYOffset || 0;
+    scrollLockY = (typeof y === 'number' && isFinite(y)) ? Math.round(y) : 0;
 
     try { document.documentElement.classList.add('ui-stack-scroll-lock'); } catch (err1) {}
+
     try {
       document.body.classList.add('ui-stack-scroll-lock');
+
+      // iOS: prefer overflow+touchmove lock (body fixed can cause layout jitter).
+      if (isIOS) {
+        document.body.style.overflow = 'hidden';
+        enableIOSTouchScrollLock();
+        return;
+      }
+
       document.body.style.position = 'fixed';
       document.body.style.top = (-scrollLockY) + 'px';
       document.body.style.width = '100%';
@@ -203,6 +214,15 @@
 
     try {
       document.body.classList.remove('ui-stack-scroll-lock');
+
+      if (isIOS) {
+        disableIOSTouchScrollLock();
+        document.body.style.overflow = '';
+        try { window.scrollTo(0, scrollLockY || 0); } catch (errIOS) {}
+        scrollLockY = 0;
+        return;
+      }
+
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
@@ -210,7 +230,7 @@
 
     if (isIOS) disableIOSTouchScrollLock();
 
-    try { window.scrollTo(0, scrollLockY); } catch (err3) {}
+    try { window.scrollTo(0, scrollLockY || 0); } catch (err3) {}
     scrollLockY = 0;
   }
 
