@@ -94,6 +94,7 @@ Rules:
 - Note (ui-stack / iOS Safari): Avoid DOM/state changes that reflow the footer during drag-open shells; Lexicon “locked” visuals should apply only when ToC/Reliquary are *committed open* to prevent a ~1px dock hop.
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - `assets/nav-footer-flat-top.css` — footer-only override for flat-top Lexicon seal geometry.
+- `assets/tab-weld.js` — legacy tab/panel welding loop (old system); it must not be included in the shared shell while the project is in panel-only motion mode.
 
 #### Panel-only motion verification
 
