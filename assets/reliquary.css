@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.7 (Tabs parked; remove carry transforms) */
+/*! Covenant Reliquary Panel Styles v0.3.8 (No legacy scroll-lock; tab not promoted) */
 
 /* -------------------------------------------------
    Variables
@@ -53,13 +53,6 @@ html.reliquary-dragging #lexiconToggle{opacity:.28;filter:grayscale(1)}
 html.reliquary-dock-settling #mirrorToggle{pointer-events:none}
 
 /* -------------------------------------------------
-   Scroll lock
-   ------------------------------------------------- */
-
-html.reliquary-scroll-lock{overflow:hidden}
-body.reliquary-scroll-lock{position:fixed;width:100%}
-
-/* -------------------------------------------------
    Dock tab (Mirror button)
    ------------------------------------------------- */
 
@@ -67,7 +60,6 @@ body.reliquary-scroll-lock{position:fixed;width:100%}
 html #mirrorToggle.dock-tab{
   transform:translate3d(0,var(--dock-tab-raise),0);
   transition:transform var(--reliquary-snap-duration) var(--reliquary-snap-ease);
-  will-change:transform;
 
   touch-action:none;
   -webkit-tap-highlight-color:transparent;
