@@ -8,7 +8,7 @@
   --reliquary-snap-duration:420ms;
   --reliquary-snap-ease:cubic-bezier(.22,.61,.36,1);
 
-  --reliquary-open-lift:-1px;
+  --reliquary-open-lift:0px;
   --reliquary-closed-offset:0px;
 
   --reliquary-ink:rgba(245,236,214,.92);
