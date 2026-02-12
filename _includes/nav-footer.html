@@ -21,6 +21,24 @@
 
     /* If we raise the seal, raise the cradle by the same delta (relative to the 5px baseline). */
     --seal-cradle-shift-y: calc(-1 * (var(--lexicon-seal-top-align, 5px) - 5px));
+
+    /* iOS Safari: promote the dock to a stable composited layer (reduces 1px paint hop). */
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  /* iOS Safari: harden the moving parts without overriding their authored transforms. */
+  #navFooter #tocToggle,
+  #navFooter #mirrorToggle,
+  #navFooter #lexiconToggle,
+  #navFooter .dock-cap,
+  #navFooter .toc-glyph {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
   }
 
   #navFooter .nav-seals {
@@ -107,7 +125,7 @@
     right: auto !important;
     top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
     bottom: auto !important;
-    transform: translate3d(-50%, -50%, 0) translateY(calc(-0.5px + var(--mirror-cap-shift-y, 0px)));
+    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--mirror-cap-shift-y, 0px)));
     z-index: 2;
 
     display: inline-grid !important;
@@ -126,7 +144,7 @@
     right: auto !important;
     top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
     bottom: auto !important;
-    transform: translate3d(-50%, -50%, 0) translateY(calc(-0.5px + var(--toc-cap-shift-y, 0px)));
+    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--toc-cap-shift-y, 0px)));
     z-index: 2;
 
     display: inline-grid !important;
