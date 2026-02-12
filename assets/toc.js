@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.25 (Anchor dock tab in cradle; disable carry + cap-seat shift) */
+/*! Covenant ToC v3.2.26 (Panel-only motion; dock window alignment removed) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.25';
+  window.COVENANT_TOC_VERSION = '3.2.26';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -30,10 +30,6 @@
   var tocProducedTitleEl = document.getElementById('tocProducedTitle');
 
   var root = document.documentElement;
-
-  // Dock window position cache (prevents iOS/Safari compositor "jump" from redundant subpixel writes).
-  var lastDockWindowLeft = null;
-  var lastDockWindowTop = null;
 
   function roundToDPR(px) {
     var dpr = 1;
@@ -542,69 +538,6 @@
 
   function updateTocCapShift(progress, draggingNow, snapMs, snapEase) {
     setTocCapShiftPx(0, !!draggingNow, snapMs, snapEase);
-  }
-
-  // Dock window alignment (hole punch): position the cutout using real socket geometry,
-  // and align it to the CSS-authored socket tuning vars.
-  function alignDockWindowToSocket() {
-    try {
-      var footer = document.querySelector('.nav-footer');
-      var seals = document.querySelector('.nav-seals');
-      if (!footer || !seals || !footer.getBoundingClientRect || !seals.getBoundingClientRect) return;
-
-      var footerRect = footer.getBoundingClientRect();
-      var sealsRect = seals.getBoundingClientRect();
-
-      var tabW = resolveCssVarPx('--toc-tab-width');
-      if (!tabW || tabW <= 0) {
-        if (tocToggle && tocToggle.getBoundingClientRect) {
-          tabW = tocToggle.getBoundingClientRect().width || 0;
-        }
-      }
-      if (!tabW || tabW <= 0) return;
-
-      var w = resolveCssVarPx('--dock-window-w');
-      var h = resolveCssVarPx('--dock-window-h');
-
-      if (!w || w <= 0) {
-        var dockTabW = readCssNumberVar('--dock-tab-width');
-        if (dockTabW && dockTabW > 0) w = dockTabW + 2;
-      }
-
-      if (!h || h <= 0) {
-        var dockSocketH = readCssNumberVar('--dock-socket-height');
-        if (dockSocketH && dockSocketH > 0) h = dockSocketH + 2;
-      }
-
-      if (!w || w <= 0) w = tabW;
-      if (!h || h <= 0) h = Math.max(1, readCssNumberVar('--toc-tab-height') - 2);
-
-      var socketRaise = readCssNumberVar('--dock-socket-raise') || 0;
-      var socketSpread = readCssNumberVar('--dock-socket-spread') || 0;
-      var socketYNudge = readCssNumberVar('--dock-socket-y-nudge') || 0;
-      var windowYShift = readCssNumberVar('--dock-window-y-shift') || 0;
-
-      var centerX = sealsRect.left + (tabW / 2) - socketSpread;
-      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge + windowYShift;
-
-      var left = roundToDPR(centerX - footerRect.left - (w / 2));
-      var top = roundToDPR(centerY - footerRect.top - (h / 2));
-
-      var dpr = 1;
-      try { dpr = window.devicePixelRatio || 1; } catch (errd) { dpr = 1; }
-      if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
-      var minDelta = 1 / dpr;
-
-      if (lastDockWindowLeft == null || Math.abs(left - lastDockWindowLeft) > minDelta) {
-        root.style.setProperty('--dock-window-left-px', left + 'px');
-        lastDockWindowLeft = left;
-      }
-
-      if (lastDockWindowTop == null || Math.abs(top - lastDockWindowTop) > minDelta) {
-        root.style.setProperty('--dock-window-top-px', top + 'px');
-        lastDockWindowTop = top;
-      }
-    } catch (err) {}
   }
 
   function getSnapMs() {
@@ -1534,8 +1467,6 @@
       root.classList.remove('toc-opening');
       root.classList.remove('toc-dock-settling');
 
-      alignDockWindowToSocket();
-
       var targetY = closedY + CLOSE_SINK_PX;
       applyDragFrame(targetY, false);
 
@@ -1667,8 +1598,6 @@
         root.classList.add('toc-closing');
         root.classList.remove('toc-opening');
         root.classList.remove('toc-dock-settling');
-
-        alignDockWindowToSocket();
       }
 
       if (!startWasOpen) {
@@ -1676,8 +1605,6 @@
         root.classList.add('toc-opening');
         root.classList.remove('toc-dock-settling');
         renderToC();
-
-        alignDockWindowToSocket();
 
         noteOpenToUIStack();
       }
@@ -1931,8 +1858,6 @@
       tapAnimating = true;
       root.classList.add('toc-opening');
 
-      alignDockWindowToSocket();
-
       var openLift = readCssNumberVar('--toc-open-lift') || 0;
       var closedY = computePanelClosedY();
 
@@ -1996,8 +1921,6 @@
 
     root.classList.add('toc-closing');
     root.classList.remove('toc-opening');
-
-    alignDockWindowToSocket();
 
     tocPanel.classList.add('is-closing');
     tocPanel.classList.add('is-open');
@@ -2133,10 +2056,6 @@
     });
 
     window.addEventListener('resize', function () {
-      if (root && root.classList && (root.classList.contains('toc-opening') || root.classList.contains('toc-closing'))) {
-        alignDockWindowToSocket();
-      }
-
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
         alignToggleToPanelCorner();
@@ -2144,10 +2063,6 @@
     });
 
     window.addEventListener('orientationchange', function () {
-      if (root && root.classList && (root.classList.contains('toc-opening') || root.classList.contains('toc-closing'))) {
-        alignDockWindowToSocket();
-      }
-
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
         alignToggleToPanelCorner();
