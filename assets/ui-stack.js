@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.4 */
+/*! Covenant UI Stack v0.3.5 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.4';
+  window.COVENANT_UI_STACK_VERSION = '0.3.5';
 
   var registry = Object.create(null);
   var order = [];
@@ -214,13 +214,44 @@
     scrollLockY = 0;
   }
 
+  function isCommittedOpenForSharedScrollLock(entry) {
+    // IMPORTANT: Scroll lock causes a reflow (body becomes fixed), which can produce a tiny
+    // dock "snap" on drag-start. We only want to engage the shared lock for *committed open*
+    // states, not for drag-open shells.
+
+    if (!entry || !entry.id) return true;
+
+    var id = String(entry.id);
+
+    try {
+      if (id === 'toc') {
+        var toc = document.getElementById('tocPanel');
+        return !!(toc && toc.classList && toc.classList.contains('is-open'));
+      }
+
+      if (id === 'reliquary') {
+        var root = document.documentElement;
+        return !!(root && root.classList && root.classList.contains('reliquary-open'));
+      }
+
+      if (id === 'lexicon') {
+        var lex = document.getElementById('lexiconPanel');
+        return !!(lex && lex.classList && lex.classList.contains('is-open'));
+      }
+    } catch (err0) {}
+
+    return true;
+  }
+
   function shouldUseSharedScrollLock(ids) {
     if (!ids || !ids.length) return false;
 
     for (var i = 0; i < ids.length; i++) {
       var entry = registry[ids[i]];
       if (!entry) continue;
-      if (entry.useSharedScrollLock) return true;
+      if (!entry.useSharedScrollLock) continue;
+      if (!isCommittedOpenForSharedScrollLock(entry)) continue;
+      return true;
     }
 
     return false;
