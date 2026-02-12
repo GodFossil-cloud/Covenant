@@ -96,12 +96,23 @@
     inset 0 1px 0 rgba(255,255,255,0.04),
     inset 0 -10px 18px -16px rgba(0,0,0,0.72);
 
-  /* TEMP (Test A): disable the mask punch-out to verify iOS Safari compositor jitter cause.
-     This removes the transparent cradle cutout, but should eliminate the dock hop if the mask
-     rasterization is what's snapping by ~1px between frames.
+  /* Punch the cradle void (a circle centered near the top edge becomes a semicircle cutout).
+     Use white (not black) for the "keep" region so both alpha- and luminance-based mask paths behave.
+
+     NOTE (iOS Safari): avoid half-pixel mask stops. They can jitter by ~1px when the compositor re-rasterizes.
   */
-  -webkit-mask-image: none;
-  mask-image: none;
+  -webkit-mask-image: radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
+    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
+    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
+    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
+    rgba(255,255,255,1) 100%
+  );
+  mask-image: radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
+    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
+    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
+    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
+    rgba(255,255,255,1) 100%
+  );
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
