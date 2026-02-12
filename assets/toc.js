@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.28 (Panel-only motion; dock tab parked) */
+/*! Covenant ToC v3.2.29 (Panel-only motion; dock tab parked) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.28';
+  window.COVENANT_TOC_VERSION = '3.2.29';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -985,6 +985,7 @@
         noteOpenToUIStack();
       }
 
+      root.classList.add('toc-open');
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
     }
@@ -1025,6 +1026,8 @@
       }
 
       noteCloseToUIStack();
+
+      root.classList.remove('toc-open');
 
       settleDockAfterSnapClose();
 
@@ -1386,6 +1389,7 @@
 
     focusReturnEl = tocToggle;
 
+    root.classList.add('toc-open');
     root.classList.remove('toc-closing');
     root.classList.remove('toc-dock-settling');
 
@@ -1481,6 +1485,7 @@
       clearPendingSelection();
     }
 
+    root.classList.add('toc-open');
     root.classList.remove('toc-dock-settling');
 
     root.classList.add('toc-closing');
@@ -1535,6 +1540,7 @@
 
         noteCloseToUIStack();
 
+        root.classList.remove('toc-open');
         root.classList.add('toc-dock-settling');
         root.classList.remove('toc-closing');
 
