@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.23 (Seat cap+glyph via --toc-cap-shift-y; avoid inline transforms) */
+/*! Covenant ToC v3.2.24 (DPR-aware dock window positioning; undo iOS/Safari subpixel jitter) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.23';
+  window.COVENANT_TOC_VERSION = '3.2.24';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -30,6 +30,17 @@
   var tocProducedTitleEl = document.getElementById('tocProducedTitle');
 
   var root = document.documentElement;
+
+  // Dock window position cache (prevents iOS/Safari compositor "jump" from redundant subpixel writes).
+  var lastDockWindowLeft = null;
+  var lastDockWindowTop = null;
+
+  function roundToDPR(px) {
+    var dpr = 1;
+    try { dpr = window.devicePixelRatio || 1; } catch (err) { dpr = 1; }
+    if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
+    return Math.round(px * dpr) / dpr;
+  }
 
   // -------------------------------------------------
   // Hash-gated debug badge (iPhone Safari support)
@@ -620,11 +631,24 @@
       var centerX = sealsRect.left + (tabW / 2) - socketSpread;
       var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge + windowYShift;
 
-      var left = Math.round(centerX - footerRect.left - (w / 2));
-      var top = Math.round(centerY - footerRect.top - (h / 2));
+      var left = roundToDPR(centerX - footerRect.left - (w / 2));
+      var top = roundToDPR(centerY - footerRect.top - (h / 2));
 
-      root.style.setProperty('--dock-window-left-px', left + 'px');
-      root.style.setProperty('--dock-window-top-px', top + 'px');
+      // Avoid redundant writes; on iOS Safari, re-setting the same px values can cause a one-frame jump.
+      var dpr = 1;
+      try { dpr = window.devicePixelRatio || 1; } catch (errd) { dpr = 1; }
+      if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
+      var minDelta = 1 / dpr;
+
+      if (lastDockWindowLeft == null || Math.abs(left - lastDockWindowLeft) > minDelta) {
+        root.style.setProperty('--dock-window-left-px', left + 'px');
+        lastDockWindowLeft = left;
+      }
+
+      if (lastDockWindowTop == null || Math.abs(top - lastDockWindowTop) > minDelta) {
+        root.style.setProperty('--dock-window-top-px', top + 'px');
+        lastDockWindowTop = top;
+      }
     } catch (err) {}
   }
 
