@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.35 (dock seam preserved during masked window) */
+/*! Covenant ToC Panel Styles v3.1.36 (dock window mask removed; dock stays sovereign) */
 
 /* -------------------------------------------------
    Variables
@@ -40,7 +40,7 @@
   /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
 
-  /* Temporary window depth during ToC drag/snap-open; lets the sheet underlap the dock so the socket window can reveal motion. */
+  /* Legacy token (dock-window mask choreography removed). */
   --dock-window-depth:calc(var(--dock-socket-height) + 2px);
 
   /* Sharpen the top corners only; keep bottom corners seated and round. */
@@ -400,134 +400,6 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 /* If the Lexicon door is open, keep both sockets quiet but present. */
 html.lexicon-scroll-lock .nav-seals::before,
 html.lexicon-scroll-lock .nav-seals::after{opacity:.45}
-
-/* ToC drag/snap-open and snap-close: create a true "window" in the dock slab under the left socket so the moving sheet reads through. */
-html.toc-opening,
-html.toc-closing{
-  --toc-panel-gap:calc(-1 * var(--dock-window-depth, 0px));
-
-  /* Window geometry aligned to the left dock socket (ToC).
-     Make the window taller and shift its center up (net: top bites higher; bottom stays close to its prior edge). */
-  --dock-window-w:var(--dock-socket-d);
-  --dock-window-h:calc(var(--dock-socket-h) + 6px);
-
-  /* Reposition: nudge the dock window upward relative to the cradle/socket. */
-  --dock-window-y-shift:-7px;
-
-  --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) - (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) - var(--dock-socket-spread, 0px)));
-  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px)));
-  --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
-  --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
-  --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
-  --dock-window-top:var(--dock-window-top-px, var(--dock-window-top-default));
-}
-
-/* Reliquary drag/snap-open and snap-close: create a true "window" in the dock slab under the right socket so the moving sheet reads through. */
-html.reliquary-opening,
-html.reliquary-closing{
-  /* Window geometry aligned to the right dock socket (Mirror).
-     Make the window taller and shift its center up (net: top bites higher; bottom stays close to its prior edge). */
-  --dock-window-w:var(--dock-socket-d);
-  --dock-window-h:calc(var(--dock-socket-h) + 6px);
-
-  /* Reposition: nudge the dock window upward relative to the cradle/socket. */
-  --dock-window-y-shift:-7px;
-
-  --dock-window-center-x:calc(var(--dock-window-origin-x, 50%) + (var(--toc-tab-width) / 2 + (var(--lexicon-seal-w, var(--seal-size, 66px)) / 2) + var(--toc-tab-gap)) + var(--dock-socket-spread, 0px)));
-  --dock-window-center-y:calc(var(--dock-window-origin-y, 50%) + var(--dock-socket-raise) + var(--dock-socket-y-nudge, 0px) + var(--dock-window-y-shift, 0px)));
-  --dock-window-left-default:calc(var(--dock-window-center-x) - (var(--dock-window-w) / 2));
-  --dock-window-top-default:calc(var(--dock-window-center-y) - (var(--dock-window-h) / 2));
-  --dock-window-left:var(--dock-window-left-px, var(--dock-window-left-default));
-  --dock-window-top:var(--dock-window-top-px, var(--dock-window-top-default));
-}
-
-/* Keep only the 1px cut-line on the left socket while the ToC is in motion. */
-html.toc-opening .nav-seals::before,
-html.toc-closing .nav-seals::before{background:transparent;border:1px solid rgba(59,54,43,.92);border-top:0;box-shadow:none}
-
-/* Keep only the 1px cut-line on the right socket while the Reliquary is in motion. */
-html.reliquary-opening .nav-seals::after,
-html.reliquary-closing .nav-seals::after{background:transparent;border:1px solid rgba(59,54,43,.92);border-top:0;box-shadow:none}
-
-/* During toc-opening/toc-closing and reliquary-opening/reliquary-closing the dock slab must be painted on a maskable layer; the element's own background cannot be punched through. */
-html.toc-opening .nav-footer,
-html.toc-closing .nav-footer,
-html.reliquary-opening .nav-footer,
-html.reliquary-closing .nav-footer{background:transparent}
-
-html.toc-opening .nav-footer::before,
-html.toc-closing .nav-footer::before,
-html.reliquary-opening .nav-footer::before,
-html.reliquary-closing .nav-footer::before{
-  content:'';
-  position:absolute;
-  top:1px;
-  left:0;
-  right:0;
-  bottom:0;
-  height:auto;
-  pointer-events:none;
-
-  /* Repaint the obsidian slab + brass hairline as a single layer stack, so the window mask can subtract from it.
-     IMPORTANT: start painting 1px below the top edge so the real dock border-top never disappears. */
-  background:
-    linear-gradient(to bottom,
-      var(--footer-hairline) 0,
-      var(--footer-hairline) 1px,
-      rgba(0,0,0,0) 1px),
-    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
-    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
-
-  opacity:1;
-}
-
-@supports (-webkit-mask-image: linear-gradient(#000 0 0)){
-  html.toc-opening .nav-footer::before,
-  html.toc-opening .nav-footer::after,
-  html.toc-closing .nav-footer::before,
-  html.toc-closing .nav-footer::after,
-  html.reliquary-opening .nav-footer::before,
-  html.reliquary-opening .nav-footer::after,
-  html.reliquary-closing .nav-footer::before,
-  html.reliquary-closing .nav-footer::after{
-    -webkit-mask-image:
-      linear-gradient(#000 0 0),
-      radial-gradient(circle farthest-side at 50% 0, #000 99%, transparent 100%);
-    -webkit-mask-size:
-      100% 100%,
-      var(--dock-window-w) var(--dock-window-h);
-    -webkit-mask-position:
-      0 0,
-      var(--dock-window-left) var(--dock-window-top);
-    -webkit-mask-repeat:no-repeat;
-
-    /* Subtract the window semicircle from the full mask. */
-    -webkit-mask-composite:destination-out;
-  }
-}
-
-@supports (mask-image: linear-gradient(#000 0 0)){
-  html.toc-opening .nav-footer::before,
-  html.toc-opening .nav-footer::after,
-  html.toc-closing .nav-footer::before,
-  html.toc-closing .nav-footer::after,
-  html.reliquary-opening .nav-footer::before,
-  html.reliquary-opening .nav-footer::after,
-  html.reliquary-closing .nav-footer::before,
-  html.reliquary-closing .nav-footer::after{
-    mask-image:
-      linear-gradient(#000 0 0),
-      radial-gradient(circle farthest-side at 50% 0, #000 99%, transparent 100%);
-    mask-size:
-      100% 100%,
-      var(--dock-window-w) var(--dock-window-h);
-    mask-position:
-      0 0,
-      var(--dock-window-left) var(--dock-window-top);
-    mask-repeat:no-repeat;
-    mask-composite:subtract;
-  }
-}
 
 html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{
