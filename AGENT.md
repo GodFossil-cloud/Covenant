@@ -165,6 +165,7 @@ Docs:
 - If you change `assets/covenant.css`:
   - Preserve CSS guard markers (do not truncate or reorder guarded regions).
   - Preserve the footer “Obsidian & Gold Leaf” region per `docs/STYLE-GUARDS.md`.
+  - Note (iOS Safari): keep `.nav-footer` pre-promoted as a stable layer (`translateZ(0)` + `backface-visibility: hidden`) to prevent a ~1px compositor hop when drag-opening panels.
 
 - If you change build/deploy files (`pages.yml`, `_config.yml`, guards):
   - Ensure the site still builds and deploys via the Pages workflow.

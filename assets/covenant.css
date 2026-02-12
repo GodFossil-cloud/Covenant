@@ -1552,6 +1552,12 @@ body {
 
 /* Footer slab: obsidian plate + restrained brass hairline. */
 .nav-footer {
+  /* iOS Safari: stabilize fixed dock during drag-open (prevents ~1px compositor hop). */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+
   background:
     radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
     linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
