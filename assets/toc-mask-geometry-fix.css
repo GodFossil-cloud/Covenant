@@ -16,7 +16,7 @@ html.reliquary-closing{
   --dock-window-h:calc(var(--dock-socket-h) + 2px);
 
   /* Lower the cutout a touch more. */
-  --dock-window-y-shift:-2px;
+  --dock-window-y-shift:0px;
 }
 
 /* While the dock window is active, don't let the *base* footer chrome change (that reads as a 1px snap).
