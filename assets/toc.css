@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.37 (Tabs parked; remove carry + cap-shift scaffolding) */
+/*! Covenant ToC Panel Styles v3.1.38 (Tabs parked; remove carry + cap-shift scaffolding) */
 
 /* -------------------------------------------------
    Variables
@@ -39,9 +39,6 @@
 
   /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
-
-  /* Legacy token (dock-window mask choreography removed). */
-  --dock-window-depth:calc(var(--dock-socket-height) + 2px);
 
   /* Sharpen the top corners only; keep bottom corners seated and round. */
   --dock-tab-radius-top:var(--toc-tab-radius);
