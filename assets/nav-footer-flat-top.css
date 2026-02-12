@@ -37,26 +37,24 @@
   --toc-glyph-nudge-x: 0px;
   --mirror-glyph-nudge-x: 0px;
 
-  /* TEMP (Test B): kill paint containment / forced compositor promotion.
-     If the hop disappears, the jitter is likely coming from layer promotion + re-rasterization,
-     not from the mask punch-out itself. */
-  -webkit-transform: none;
-  transform: none;
-  -webkit-backface-visibility: visible;
-  backface-visibility: visible;
-  will-change: auto;
-  isolation: auto;
-  contain: none;
+  /* iOS Safari: stabilize the fixed dock as a single composited layer.
+     (The hop we've been chasing is not layout; it is a paint/compositor jitter.) */
+  -webkit-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+  isolation: isolate;
+  contain: paint;
 }
 
 #navFooter::before,
 #navFooter::after {
-  /* TEMP (Test B): keep pseudo layers in normal paint flow as well. */
-  -webkit-transform: none;
-  transform: none;
-  -webkit-backface-visibility: visible;
-  backface-visibility: visible;
-  will-change: auto;
+  -webkit-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 /* Cutout socket:
