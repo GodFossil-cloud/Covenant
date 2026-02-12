@@ -1,22 +1,11 @@
-/*! Covenant Reliquary UI v0.3.28 (Anchor Mirror tab in cradle; disable carry + cap-seat shift) */
+/*! Covenant Reliquary UI v0.3.29 (Panel-only motion; remove dock window alignment) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.28';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.29';
 
   var doc = document;
   var root = doc.documentElement;
-
-  // Dock window position cache (prevents iOS/Safari compositor "jump" from redundant subpixel writes).
-  var lastDockWindowLeft = null;
-  var lastDockWindowTop = null;
-
-  function roundToDPR(px) {
-    var dpr = 1;
-    try { dpr = window.devicePixelRatio || 1; } catch (err) { dpr = 1; }
-    if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
-    return Math.round(px * dpr) / dpr;
-  }
 
   function byId(id) { return doc.getElementById(id); }
 
@@ -104,74 +93,6 @@
   function getSeatOverlapPx() { return resolveCssVarPx('--reliquary-seat-overlap') || 0; }
   function getNotchH() { return resolveCssVarPx('--reliquary-notch-h') || 0; }
   function getDockTabRaisePx() { return resolveCssVarPx('--dock-tab-raise') || 0; }
-
-  // Dock window alignment (hole punch): align the cutout to the RIGHT socket (Mirror tab),
-  // using live footer/seals geometry (not idealized 50% assumptions).
-  function alignDockWindowToRightSocket() {
-    try {
-      var footer = doc.querySelector('.nav-footer');
-      var seals = doc.querySelector('.nav-seals');
-      if (!footer || !seals || !footer.getBoundingClientRect || !seals.getBoundingClientRect) return;
-
-      var footerRect = footer.getBoundingClientRect();
-      var sealsRect = seals.getBoundingClientRect();
-
-      // Important: --toc-tab-width is authored as calc()/var() and may not parse via parseFloat.
-      // Resolve to computed px so the JS center matches the CSS cradle geometry.
-      var tabW = resolveCssVarPx('--toc-tab-width');
-      if (!tabW || tabW <= 0) {
-        var mirror = byId('mirrorToggle');
-        if (mirror && mirror.getBoundingClientRect) tabW = mirror.getBoundingClientRect().width || 0;
-      }
-      if (!tabW || tabW <= 0) return;
-
-      // Important: these can be authored as var(...) token streams during open/close.
-      // Use probe resolution to get computed px.
-      var w = resolveCssVarPx('--dock-window-w');
-      var h = resolveCssVarPx('--dock-window-h');
-
-      if (!w || w <= 0) {
-        var dockTabW = readCssNumberVar('--dock-tab-width');
-        if (dockTabW && dockTabW > 0) w = dockTabW + 2;
-      }
-
-      if (!h || h <= 0) {
-        var dockSocketH = readCssNumberVar('--dock-socket-height');
-        if (dockSocketH && dockSocketH > 0) h = dockSocketH + 2;
-      }
-
-      if (!w || w <= 0) w = tabW;
-      if (!h || h <= 0) h = Math.max(1, readCssNumberVar('--toc-tab-height') - 2);
-
-      var socketRaise = readCssNumberVar('--dock-socket-raise') || 0;
-      var socketSpread = readCssNumberVar('--dock-socket-spread') || 0;
-      var socketYNudge = readCssNumberVar('--dock-socket-y-nudge') || 0;
-      var windowYShift = readCssNumberVar('--dock-window-y-shift') || 0;
-
-      // Right socket center is the center of the third grid column inside .nav-seals.
-      var centerX = sealsRect.left + sealsRect.width - (tabW / 2) + socketSpread;
-      var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge + windowYShift;
-
-      var left = roundToDPR(centerX - footerRect.left - (w / 2));
-      var top = roundToDPR(centerY - footerRect.top - (h / 2));
-
-      // Avoid redundant writes; on iOS Safari, re-setting the same px values can cause a one-frame jump.
-      var dpr = 1;
-      try { dpr = window.devicePixelRatio || 1; } catch (errd) { dpr = 1; }
-      if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
-      var minDelta = 1 / dpr;
-
-      if (lastDockWindowLeft == null || Math.abs(left - lastDockWindowLeft) > minDelta) {
-        root.style.setProperty('--dock-window-left-px', left + 'px');
-        lastDockWindowLeft = left;
-      }
-
-      if (lastDockWindowTop == null || Math.abs(top - lastDockWindowTop) > minDelta) {
-        root.style.setProperty('--dock-window-top-px', top + 'px');
-        lastDockWindowTop = top;
-      }
-    } catch (err) {}
-  }
 
   function getSnapMs() {
     var ms = readCssNumberVar('--reliquary-snap-duration');
@@ -623,10 +544,7 @@
     var footerReserved = getFooterReservedPx();
     root.style.setProperty('--reliquary-footer-reserved', footerReserved + 'px');
 
-    var dockDepth = readCssNumberVar('--dock-window-depth') || 0;
-    var gap = (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing')) ? (-dockDepth) : 0;
-
-    var bottom = footerReserved + gap;
+    var bottom = footerReserved;
     var maxH = Math.max(240, Math.floor(window.innerHeight - bottom));
 
     panel.style.bottom = bottom + 'px';
@@ -770,7 +688,6 @@
     root.classList.add('reliquary-opening');
 
     positionPanel();
-    alignDockWindowToRightSocket();
 
     var closedY = computePanelClosedY();
 
@@ -846,7 +763,6 @@
     root.classList.remove('reliquary-dock-settling');
 
     positionPanel();
-    alignDockWindowToRightSocket();
 
     var snapMs = getSnapMs();
     var snapEase = getSnapEase();
@@ -1117,7 +1033,6 @@
       root.classList.remove('reliquary-opening');
       root.classList.remove('reliquary-dock-settling');
 
-      alignDockWindowToRightSocket();
       positionPanel();
 
       var targetY = closedY + CLOSE_SINK_PX;
@@ -1252,8 +1167,6 @@
 
         openReliquaryShellForDrag();
       }
-
-      alignDockWindowToRightSocket();
 
       computeClosedY();
       computeMobileSeatNudge();
@@ -1433,10 +1346,6 @@
   });
 
   function onViewportChange() {
-    if (root && root.classList && (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing'))) {
-      alignDockWindowToRightSocket();
-    }
-
     if (panel && panel.classList.contains('is-open')) {
       positionPanel();
       alignToggleToPanelCorner();
