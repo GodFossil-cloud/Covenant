@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.10 */
+/*! Covenant UI Stack v0.3.11 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.10';
+  window.COVENANT_UI_STACK_VERSION = '0.3.11';
 
   var registry = Object.create(null);
   var order = [];
@@ -389,8 +389,8 @@
 
     scrollLocked = true;
 
-    // Prefer an overflow-based lock. It does not reflow the page like body-position:fixed,
-    // and avoids the tiny dock "jump" caused by fixed-body rounding on some browsers.
+    // iOS Safari: do NOT toggle overflow hidden (it can nudge visualViewport and tick fixed docks by ~1px).
+    // Instead, use only a touchmove blocker (and allow-scroll selectors) to keep the page sovereign.
     try {
       prevHtmlOverflow = document.documentElement ? (document.documentElement.style.overflow || '') : '';
       prevBodyOverflow = document.body ? (document.body.style.overflow || '') : '';
@@ -403,19 +403,21 @@
 
     try { document.documentElement.classList.add('ui-stack-scroll-lock'); } catch (err1) {}
 
+    if (isIOS) {
+      enableIOSTouchScrollLock();
+      return;
+    }
+
+    // Non-iOS: overflow lock + scrollbar width compensation.
     try {
       if (document.documentElement) document.documentElement.style.overflow = 'hidden';
       if (document.body) document.body.style.overflow = 'hidden';
 
-      // Preserve layout width when hiding the scrollbar (desktop).
       var sw = computeScrollbarWidth();
       if (sw && document.body) {
         document.body.style.paddingRight = sw + 'px';
       }
     } catch (err2) {}
-
-    // On iOS, overflow hidden alone is not sufficient; keep the touchmove blocker.
-    if (isIOS) enableIOSTouchScrollLock();
   }
 
   function unlockBodyScroll() {
@@ -425,6 +427,16 @@
 
     try { document.documentElement.classList.remove('ui-stack-scroll-lock'); } catch (err1) {}
 
+    // Always remove iOS touch lock if present.
+    if (isIOS) {
+      disableIOSTouchScrollLock();
+
+      prevHtmlOverflow = '';
+      prevBodyOverflow = '';
+      prevBodyPaddingRight = '';
+      return;
+    }
+
     try {
       if (document.documentElement) document.documentElement.style.overflow = prevHtmlOverflow || '';
       if (document.body) {
@@ -432,8 +444,6 @@
         document.body.style.paddingRight = prevBodyPaddingRight || '';
       }
     } catch (err2) {}
-
-    if (isIOS) disableIOSTouchScrollLock();
 
     prevHtmlOverflow = '';
     prevBodyOverflow = '';
