@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.27 (Delay scroll-lock until commit-open to avoid iOS fixed dock hop) */
+/*! Covenant Reliquary UI v0.3.28 (Anchor Mirror tab in cradle; disable carry + cap-seat shift) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.27';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.28';
 
   var doc = document;
   var root = doc.documentElement;
@@ -333,52 +333,22 @@
 
   var scrollLockY = 0;
 
-  // Mirror tab "carry" offsets.
+  // Anchor policy: Mirror tab stays nested in its footer cradle.
+  // These offsets remain at 0 and are preserved only for backward compatibility with older CSS.
   var reliquaryToggleDx = 0;
   var reliquaryToggleDy = 0;
 
-  // Mirror medallion (cap) shift.
+  // Anchor policy: Mirror medallion (cap) shift remains at 0.
   var mirrorCapShiftY = 0;
 
   function setMirrorCapShiftPx(y) {
+    mirrorCapShiftY = 0;
     if (!toggle) return;
-
-    var v = (typeof y === 'number' && isFinite(y)) ? y : 0;
-
-    // Hard safety clamp: never allow a computed shift to throw the medallion outside the viewport.
-    if (v > 240) v = 240;
-    if (v < -240) v = -240;
-
-    v = Math.round(v);
-
-    mirrorCapShiftY = v;
-    toggle.style.setProperty('--mirror-cap-shift-y', v + 'px');
+    toggle.style.setProperty('--mirror-cap-shift-y', '0px');
   }
 
   function updateMirrorCapShift(progress, draggingNow) {
-    try {
-      if (!toggle || !panel) return;
-
-      var p = (typeof progress === 'number' && isFinite(progress)) ? progress : 0;
-      if (p < 0) p = 0;
-      if (p > 1) p = 1;
-
-      var cap = toggle.querySelector('.dock-cap');
-      if (!cap || !cap.getBoundingClientRect || !panel.getBoundingClientRect) return;
-
-      var capRect = cap.getBoundingClientRect();
-      var panelRect = panel.getBoundingClientRect();
-
-      // Align cap TOP to the panel's top edge (notch is visual only).
-      var targetY = panelRect.top;
-      var capTopY = capRect.top;
-
-      var baseTopY = capTopY - mirrorCapShiftY;
-      var shift = (targetY - baseTopY) * p;
-
-      if (!isFinite(shift)) shift = 0;
-      setMirrorCapShiftPx(shift);
-    } catch (err) {}
+    setMirrorCapShiftPx(0);
   }
 
   // Tap-open/close animation guard.
@@ -533,31 +503,25 @@
   }
 
   function setReliquaryToggleOffset(dx, dy, draggingNow) {
+    reliquaryToggleDx = 0;
+    reliquaryToggleDy = 0;
+
     if (!toggle) return;
 
-    if (!draggingNow) {
-      dx = Math.round(dx || 0);
-      dy = Math.round(dy || 0);
-    }
-
-    reliquaryToggleDx = dx;
-    reliquaryToggleDy = dy;
-
-    toggle.style.setProperty('--reliquary-toggle-drag-x', dx + 'px');
-    toggle.style.setProperty('--reliquary-toggle-drag-y', dy + 'px');
+    toggle.style.setProperty('--reliquary-toggle-drag-x', '0px');
+    toggle.style.setProperty('--reliquary-toggle-drag-y', '0px');
   }
 
   function clearReliquaryToggleOffset() {
-    if (!toggle) return;
-
     reliquaryToggleDx = 0;
     reliquaryToggleDy = 0;
+    mirrorCapShiftY = 0;
+
+    if (!toggle) return;
 
     toggle.style.setProperty('--reliquary-toggle-drag-x', '0px');
     toggle.style.setProperty('--reliquary-toggle-drag-y', '0px');
     toggle.style.setProperty('--mirror-cap-shift-y', '0px');
-
-    mirrorCapShiftY = 0;
 
     toggle.classList.remove('is-reliquary-dragging');
   }
@@ -793,7 +757,6 @@
     overlay.style.opacity = '';
     overlay.style.transition = '';
 
-    // Tap-open carries the Mirror tab upward, but uses measurement (no prediction) to avoid fly-off.
     setReliquaryToggleOffset(0, 0, false);
     setMirrorCapShiftPx(0);
 
@@ -811,7 +774,7 @@
 
     var closedY = computePanelClosedY();
 
-    // Measure the *real* open seat so the tab carry lands cleanly across layouts.
+    // Measurement block preserved for continuity; the tab remains anchored.
     var dxTarget = 0;
     var dyTarget = 0;
     var capShiftTarget = 0;
@@ -819,11 +782,9 @@
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
-    // Hide during measurement to avoid any flash.
     panel.style.opacity = '0';
     overlay.style.opacity = '0';
 
-    // Temporarily place the panel at its open target so we can measure corner.
     setPanelTranslateY(openLift);
 
     try {
@@ -834,7 +795,6 @@
         dxTarget = computeOpenToggleDxFromPanelRight(rect.right, base);
         dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
 
-        // Seat cap TOP to panel top, assuming the cap rides with the same dyTarget carry.
         var cap = toggle.querySelector('.dock-cap');
         if (cap && cap.getBoundingClientRect) {
           var capRect = cap.getBoundingClientRect();
@@ -843,7 +803,6 @@
       }
     } catch (err) {}
 
-    // Restore the start state (closed) for the snap animation.
     panel.style.opacity = '1';
     setPanelTranslateY(closedY);
 
@@ -868,7 +827,6 @@
         root.classList.remove('reliquary-opening');
         tapAnimating = false;
 
-        // Ensure the tab stays snapped to the real panel corner after the open settles.
         alignToggleToPanelCornerIfDrift(1);
 
         setTimeout(focusIntoPanel, 0);
@@ -910,7 +868,6 @@
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
-      // Snap both the sheet and the carried tab back into the dock.
       setReliquaryToggleOffset(0, 0, false);
       setMirrorCapShiftPx(0);
 
@@ -1072,32 +1029,17 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      var dx = reliquaryToggleDx;
+      var dx = 0;
       var dy = openDyWanted * progress;
 
-      // While dragging, weld the tab to the panel's live edge (no gradual easing by progress).
       if (draggingNow) {
         dx = 0;
         dy = 0;
-
-        var base = getToggleBaseRect();
-        if (base && panel && panel.getBoundingClientRect) {
-          var r = panel.getBoundingClientRect();
-          dx = computeOpenToggleDxFromPanelRight(r.right, base);
-          dy = computeOpenToggleDyFromPanelTop(r.top, base);
-        }
-
-        if (!isFinite(dx)) dx = 0;
-        if (!isFinite(dy)) dy = 0;
-
-        dx = Math.round(dx);
-        dy = Math.round(dy);
       }
 
       setReliquaryToggleOffset(dx, dy, !!draggingNow);
 
-      // While dragging, keep the cap fully seated (no progress easing).
-      updateMirrorCapShift(draggingNow ? 1 : progress, !!draggingNow);
+      updateMirrorCapShift(0, !!draggingNow);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
@@ -1213,32 +1155,20 @@
         shouldOpen = (velocity < OPEN_VELOCITY || dragUp > baseH * OPEN_RATIO);
       }
 
-      var yFrom = currentY;
-      var startTop = (panel && panel.getBoundingClientRect) ? panel.getBoundingClientRect().top : 0;
-      var baseRect = isMobileSheet() ? getToggleBaseRect() : null;
-
       panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE + ', opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
       overlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
         applyDragFrame(openLiftPx, false);
 
-        if (baseRect) {
-          var predictedOpenTop = startTop + (openLiftPx - yFrom);
-          var dyOpen = computeOpenToggleDyFromPanelTop(predictedOpenTop, baseRect);
-          setReliquaryToggleOffset(0, dyOpen, false);
-        }
-
         applyOpenStateFromDrag(true);
 
-        // Drag is over; keep Lexicon disabled via committed open state (not via dragging).
         root.classList.remove('reliquary-dragging');
 
         setTimeout(function () {
           alignToggleToPanelCornerIfDrift(1);
         }, SNAP_MS + 30);
       } else {
-        // Drag is over; on cancel-open we want Lexicon to re-enable immediately.
         root.classList.remove('reliquary-dragging');
 
         setReliquaryToggleOffset(0, 0, false);
