@@ -47,16 +47,8 @@ html.reliquary-open #lexiconToggle,
 html.reliquary-closing #lexiconToggle,
 html.reliquary-dragging #lexiconToggle{opacity:.28;filter:grayscale(1)}
 
-/* Lift the dock above the sheet while Reliquary is in motion/open (prevents z-pop). */
-html.reliquary-opening .nav-footer,
-html.reliquary-open .nav-footer,
-html.reliquary-closing .nav-footer,
-html.reliquary-dock-settling .nav-footer{z-index:1600}
-
-html.reliquary-opening #mirrorToggle,
-html.reliquary-open #mirrorToggle,
-html.reliquary-closing #mirrorToggle,
-html.reliquary-dock-settling #mirrorToggle{position:relative;z-index:1602}
+/* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
+   Avoid toggling dock/toggle z-index during reliquary-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
 
 html.reliquary-dock-settling #mirrorToggle{pointer-events:none}
 

@@ -522,17 +522,8 @@ html #tocToggle.dock-tab:active:not(:disabled){
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.88rem;line-height:1;display:inline-block}
 
-/* While the ToC is in motion (dragging or open), lift the whole dock above the sheet. */
-html.toc-opening .nav-footer,
-html.toc-open .nav-footer,
-html.toc-closing .nav-footer,
-html.toc-dock-settling .nav-footer{z-index:1600}
-
-/* Keep the toggle above the footer dim layer and above the ToC sheet itself, including during drag-open. */
-html.toc-opening #tocToggle,
-html.toc-open #tocToggle,
-html.toc-closing #tocToggle,
-html.toc-dock-settling #tocToggle{position:relative;z-index:1602}
+/* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
+   Do not toggle dock/toggle z-index during toc-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
 
 /* During settle, ignore hover/pointer churn while the tab is sliding into place. */
 html.toc-dock-settling #tocToggle{pointer-events:none}
