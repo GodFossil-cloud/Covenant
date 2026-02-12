@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.6 */
+/*! Covenant UI Stack v0.3.7 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.6';
+  window.COVENANT_UI_STACK_VERSION = '0.3.7';
 
   var registry = Object.create(null);
   var order = [];
@@ -18,7 +18,11 @@
 
   // Shared scroll lock (stack-derived) — enabled only for entries that opt in.
   var scrollLocked = false;
-  var scrollLockY = 0;
+
+  // Preserve prior overflow/padding so we don't clobber page-authored styles.
+  var prevHtmlOverflow = '';
+  var prevBodyOverflow = '';
+  var prevBodyPaddingRight = '';
 
   // Lexicon gating: Lexicon may open only if it is opened first.
   // If Lexicon is closed and ToC or Reliquary is open, the Lexicon toggle is "locked":
@@ -177,31 +181,49 @@
     iosTouchMoveBlocker = null;
   }
 
+  function computeScrollbarWidth() {
+    try {
+      var docEl = document.documentElement;
+      if (!docEl) return 0;
+      var w = (window.innerWidth || 0) - (docEl.clientWidth || 0);
+      if (!w || w < 0) return 0;
+      return Math.round(w);
+    } catch (err) {
+      return 0;
+    }
+  }
+
   function lockBodyScroll() {
     if (scrollLocked) return;
 
     scrollLocked = true;
 
-    var y = window.scrollY || window.pageYOffset || 0;
-    scrollLockY = (typeof y === 'number' && isFinite(y)) ? Math.round(y) : 0;
+    // Prefer an overflow-based lock. It does not reflow the page like body-position:fixed,
+    // and avoids the tiny dock "jump" caused by fixed-body rounding on some browsers.
+    try {
+      prevHtmlOverflow = document.documentElement ? (document.documentElement.style.overflow || '') : '';
+      prevBodyOverflow = document.body ? (document.body.style.overflow || '') : '';
+      prevBodyPaddingRight = document.body ? (document.body.style.paddingRight || '') : '';
+    } catch (err0) {
+      prevHtmlOverflow = '';
+      prevBodyOverflow = '';
+      prevBodyPaddingRight = '';
+    }
 
     try { document.documentElement.classList.add('ui-stack-scroll-lock'); } catch (err1) {}
 
     try {
-      document.body.classList.add('ui-stack-scroll-lock');
+      if (document.documentElement) document.documentElement.style.overflow = 'hidden';
+      if (document.body) document.body.style.overflow = 'hidden';
 
-      // iOS: prefer overflow+touchmove lock (body fixed can cause layout jitter).
-      if (isIOS) {
-        document.body.style.overflow = 'hidden';
-        enableIOSTouchScrollLock();
-        return;
+      // Preserve layout width when hiding the scrollbar (desktop).
+      var sw = computeScrollbarWidth();
+      if (sw && document.body) {
+        document.body.style.paddingRight = sw + 'px';
       }
-
-      document.body.style.position = 'fixed';
-      document.body.style.top = (-scrollLockY) + 'px';
-      document.body.style.width = '100%';
     } catch (err2) {}
 
+    // On iOS, overflow hidden alone is not sufficient; keep the touchmove blocker.
     if (isIOS) enableIOSTouchScrollLock();
   }
 
@@ -213,30 +235,22 @@
     try { document.documentElement.classList.remove('ui-stack-scroll-lock'); } catch (err1) {}
 
     try {
-      document.body.classList.remove('ui-stack-scroll-lock');
-
-      if (isIOS) {
-        disableIOSTouchScrollLock();
-        document.body.style.overflow = '';
-        try { window.scrollTo(0, scrollLockY || 0); } catch (errIOS) {}
-        scrollLockY = 0;
-        return;
+      if (document.documentElement) document.documentElement.style.overflow = prevHtmlOverflow || '';
+      if (document.body) {
+        document.body.style.overflow = prevBodyOverflow || '';
+        document.body.style.paddingRight = prevBodyPaddingRight || '';
       }
-
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
     } catch (err2) {}
 
     if (isIOS) disableIOSTouchScrollLock();
 
-    try { window.scrollTo(0, scrollLockY || 0); } catch (err3) {}
-    scrollLockY = 0;
+    prevHtmlOverflow = '';
+    prevBodyOverflow = '';
+    prevBodyPaddingRight = '';
   }
 
   function isCommittedOpenForSharedScrollLock(entry) {
-    // IMPORTANT: Scroll lock causes a reflow (body becomes fixed), which can produce a tiny
-    // dock "snap" on drag-start. We only want to engage the shared lock for *committed open*
+    // IMPORTANT: We only want to engage the shared lock for *committed open*
     // states, not for drag-open shells.
 
     if (!entry || !entry.id) return true;
