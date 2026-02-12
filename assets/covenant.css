@@ -729,7 +729,7 @@ body.is-exiting #blackFadeOverlay {
 
 .nav-next:active .nav-next-frame,
 .nav-prev:active .nav-prev-frame {
-    transform: translateY(1px);
+    transform: translateY(0px);
     filter: brightness(0.96);
 }
 
