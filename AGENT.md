@@ -89,12 +89,23 @@ Rules:
 - Note (Reliquary dock tab): Mirror tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
 - Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
 - Note: If JS needs numeric px from calc()/var()-based CSS custom properties, do not `parseFloat(getComputedStyle(...).getPropertyValue('--x'))` (it returns token strings); resolve via a probe element (e.g., set `margin-top: var(--x)` and read computed px).
-- Note (dock mask window): `--dock-window-w` / `--dock-window-h` are authored as `var(...)` during open/close; align code must resolve them via the probe helper (otherwise the dock cutout can drift vertically while the mask is active).
+- Note (dock mask window): The legacy dock-window mask choreography is being removed in favor of **panel-only** motion. ToC no longer feeds `--dock-window-left-px/--dock-window-top-px` from JS; Reliquary may still until its cleanup pass. Do not reintroduce geometry-driven mask alignment unless explicitly requested.
 - Note (mobile Safari): Reliquary notch is a real `clip-path` cutout; if a see-through seam appears during drag, prefer increasing `--reliquary-seat-overlap` on mobile rather than changing notch geometry.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC Hold-to-Enter). It may also expose optional panel-stack primitives (bring-to-front, inert layering hooks) during stacking migrations.
 - Note (ui-stack / iOS Safari): Avoid DOM/state changes that reflow the footer during drag-open shells; Lexicon “locked” visuals should apply only when ToC/Reliquary are *committed open* to prevent a ~1px dock hop.
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - `assets/nav-footer-flat-top.css` — footer-only override for flat-top Lexicon seal geometry.
+
+#### Active update TODO (dock mask + tab carry deletion)
+
+This is the current in-flight update to make ToC + Reliquary match the Lexicon interaction model: tabs stay parked in the dock sockets; only the panels move.
+
+- Delete dock-window mask CSS choreography: remove `html.toc-opening/toc-closing` and `html.reliquary-opening/reliquary-closing` blocks that set `--dock-window-*`, plus footer “transparent” overrides and any mask pseudo-element repaint rules
+- Delete matching Reliquary JS: remove `alignDockWindowToRightSocket()` + its position cache and all call sites (tap-open, tap-close, drag-begin, resize/orientation handlers)
+- Strip leftover ToC carry scaffolding: remove zero-locked toggle offsets + cap-shift helpers, and any “alignToggleToPanelCorner*” drift-correction code that assumes the tab must meet the sheet corner
+- Strip leftover Reliquary carry scaffolding: same cleanup (toggle offsets, cap-shift, alignToggle helpers, measurement blocks)
+- Remove ToC debug badge after stability: `#debug-toc` badge is temporary; delete once the layout is confirmed stable across iOS Safari + desktop
+- Manual verification (run after each behavioral commit): ToC drag/tap; Reliquary drag/tap; overlay never covers dock; close-panels-before-navigation; ESC + focus return; stacking (ToC above Reliquary during drag); mobile Safari compositor stability (no ~1px dock hop)
 
 Core invariants:
 - ToC and Reliquary are modal veils that do NOT cover the footer dock area.
