@@ -84,9 +84,9 @@ Rules:
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
 - Note (ToC debug): `assets/toc.js` can render an on-screen diagnostic badge when the URL hash contains `#debug-toc` (temporary; remove after the issue is resolved).
-- Note (ToC tab welding): `--toc-seat-dy` + `--toc-seat-overlap` are tuned so the tab box top edge meets the panel top edge; notch/cap remain visual.
-- `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab carry (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
-- Note (Reliquary tab welding): `--reliquary-seat-dy` + `--reliquary-seat-overlap` are tuned so the tab box top edge meets the panel top edge; notch/cap remain visual.
+- Note (ToC dock tab): ToC tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
+- `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
+- Note (Reliquary dock tab): Mirror tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
 - Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
 - Note: If JS needs numeric px from calc()/var()-based CSS custom properties, do not `parseFloat(getComputedStyle(...).getPropertyValue('--x'))` (it returns token strings); resolve via a probe element (e.g., set `margin-top: var(--x)` and read computed px).
 - Note (dock mask window): `--dock-window-w` / `--dock-window-h` are authored as `var(...)` during open/close; align code must resolve them via the probe helper (otherwise the dock cutout can drift vertically while the mask is active).
@@ -196,14 +196,14 @@ Use this when making CSS/JS/include changes.
 - Confirm Hold-to-Enter closes panels before navigation.
 - ESC closes and focus returns to the ToC control.
 - Tab/Shift+Tab keep focus trapped in the panel.
-- Drag-open: confirm the ToC tab stays welded to the panel top edge throughout the gesture.
+- Drag-open: confirm the ToC tab stays parked in the footer cradle while the ToC panel moves.
 - If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).
 
 4) Reliquary modal veil
 - Open Reliquary from Mirror; confirm veil does not cover footer dock.
 - ESC closes and focus returns to the Mirror control.
 - On mobile: drag Mirror tab upward to open; drag down from sheet handle to close.
-- Drag-open: confirm the Mirror tab stays welded to the panel top edge throughout the gesture.
+- Drag-open: confirm the Mirror tab stays parked in the footer cradle while the Reliquary panel moves.
 - If ToC is open, opening Reliquary closes ToC first (no stacked scroll locks).
 - Drag-open cancel (release early): confirm Lexicon seal returns to normal immediately on release.
 
