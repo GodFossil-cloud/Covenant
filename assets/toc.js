@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.24 (DPR-aware dock window positioning; undo iOS/Safari subpixel jitter) */
+/*! Covenant ToC v3.2.25 (Anchor dock tab in cradle; disable carry + cap-seat shift) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.24';
+  window.COVENANT_TOC_VERSION = '3.2.25';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -235,11 +235,12 @@
   var holdStartedAt = 0;
   var holdCompleted = false;
 
-  // ToC toggle "carry" offsets (so the dock tab can ride with the sheet).
+  // Anchor policy: ToC dock tab stays nested in its cradle.
+  // These offsets remain at 0 and are preserved only for backward compatibility with older CSS.
   var tocToggleDx = 0;
   var tocToggleDy = 0;
 
-  // ToC tab medallion seat shift (moves the round cap into the header cutout).
+  // Anchor policy: ToC cap seat shift remains at 0 (cap stays nested in the dock medallion).
   var tocCapShiftY = 0;
 
   // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
@@ -470,14 +471,12 @@
     }
   }
 
-  function getTocNotchH() { return resolveCssVarPx('--toc-notch-h') || 0; }
   function getTocSeatDy() { return resolveCssVarPx('--toc-seat-dy') || 0; }
   function getTocSeatOverlapPx() { return resolveCssVarPx('--toc-seat-overlap') || 0; }
 
   function getDockCapLiftPx() {
     var v = resolveCssVarPx('--dock-cap-lift');
     if (typeof v === 'number' && !isNaN(v) && v !== 0) return v;
-    // Fallback: keep in sync with toc.css default.
     return 10;
   }
 
@@ -485,7 +484,6 @@
     var v = resolveCssVarPx('--dock-cap-size');
     if (typeof v === 'number' && !isNaN(v) && v > 0) return v;
 
-    // Fallback: try measuring the element (safe when not in-flight).
     try {
       if (tocToggle) {
         var cap = tocToggle.querySelector('.dock-cap');
@@ -496,7 +494,6 @@
       }
     } catch (err) {}
 
-    // Final fallback: keep in sync with toc.css default.
     return 45;
   }
 
@@ -507,29 +504,15 @@
 
     var dy = (typeof dyFinal === 'number' && !isNaN(dyFinal)) ? dyFinal : 0;
 
-    // .dock-cap is positioned at toggle top (top: 0) and lifted upward by --dock-cap-lift,
-    // then pushed down by (cap-size - cap-h) == cap-h.
-    // We align CAP TOP to the panel top edge (notch remains visual).
     var capTopAtShift0 = baseToggleTop + dy + (-1 * lift + capH);
 
     return panelTopY - capTopAtShift0;
   }
 
   function setTocCapShiftPx(y, draggingNow, snapMs, snapEase) {
+    tocCapShiftY = 0;
     if (!tocToggle) return;
-
-    var next = (typeof y === 'number' && !isNaN(y)) ? y : 0;
-
-    if (!draggingNow) next = Math.round(next);
-
-    // Clamp: prevents a wild rect measurement from flinging the cap offscreen.
-    if (next > 260) next = 260;
-    if (next < -260) next = -260;
-
-    tocCapShiftY = next;
-
-    // Drive CSS-only seating so cap + glyph ride together.
-    tocToggle.style.setProperty('--toc-cap-shift-y', next + 'px');
+    tocToggle.style.setProperty('--toc-cap-shift-y', '0px');
   }
 
   function clearTocCapShift() {
@@ -539,7 +522,6 @@
 
     tocToggle.style.setProperty('--toc-cap-shift-y', '0px');
 
-    // Safety: clear any stale inline transforms from older cached builds.
     try {
       var cap = tocToggle.querySelector('.dock-cap');
       var glyph = tocToggle.querySelector('.toc-glyph');
@@ -559,27 +541,7 @@
   }
 
   function updateTocCapShift(progress, draggingNow, snapMs, snapEase) {
-    if (!tocToggle || !tocPanel) return;
-
-    var cap = tocToggle.querySelector('.dock-cap');
-    if (!cap || !cap.getBoundingClientRect) return;
-
-    var p = (typeof progress === 'number' && !isNaN(progress)) ? progress : 0;
-    if (p < 0) p = 0;
-    if (p > 1) p = 1;
-
-    var capRect = cap.getBoundingClientRect();
-    var panelRect = tocPanel.getBoundingClientRect();
-
-    // Align cap TOP to panel top (notch is visual only).
-    var capTopY = capRect.top;
-    var baseTopY = capTopY - tocCapShiftY;
-
-    var targetY = panelRect.top;
-
-    var shift = (targetY - baseTopY) * p;
-
-    setTocCapShiftPx(shift, !!draggingNow, snapMs, snapEase);
+    setTocCapShiftPx(0, !!draggingNow, snapMs, snapEase);
   }
 
   // Dock window alignment (hole punch): position the cutout using real socket geometry,
@@ -593,19 +555,14 @@
       var footerRect = footer.getBoundingClientRect();
       var sealsRect = seals.getBoundingClientRect();
 
-      // Important: --toc-tab-width is authored as calc()/var() and may not parse via parseFloat.
-      // Resolve to computed px so the JS center matches the CSS cradle geometry.
       var tabW = resolveCssVarPx('--toc-tab-width');
       if (!tabW || tabW <= 0) {
-        // Fallback: infer from the toggle width (close enough to cover the whole socket).
         if (tocToggle && tocToggle.getBoundingClientRect) {
           tabW = tocToggle.getBoundingClientRect().width || 0;
         }
       }
       if (!tabW || tabW <= 0) return;
 
-      // Important: these can be authored as var(...) token streams during open/close.
-      // Use probe resolution to get computed px.
       var w = resolveCssVarPx('--dock-window-w');
       var h = resolveCssVarPx('--dock-window-h');
 
@@ -627,14 +584,12 @@
       var socketYNudge = readCssNumberVar('--dock-socket-y-nudge') || 0;
       var windowYShift = readCssNumberVar('--dock-window-y-shift') || 0;
 
-      // Left socket center is the center of the first grid column inside .nav-seals.
       var centerX = sealsRect.left + (tabW / 2) - socketSpread;
       var centerY = sealsRect.top + (sealsRect.height / 2) + socketRaise + 1 + socketYNudge + windowYShift;
 
       var left = roundToDPR(centerX - footerRect.left - (w / 2));
       var top = roundToDPR(centerY - footerRect.top - (h / 2));
 
-      // Avoid redundant writes; on iOS Safari, re-setting the same px values can cause a one-frame jump.
       var dpr = 1;
       try { dpr = window.devicePixelRatio || 1; } catch (errd) { dpr = 1; }
       if (!dpr || !isFinite(dpr) || dpr <= 0) dpr = 1;
@@ -669,19 +624,13 @@
   }
 
   function setTocToggleOffset(dx, dy, draggingNow) {
+    tocToggleDx = 0;
+    tocToggleDy = 0;
+
     if (!tocToggle) return;
 
-    // The tab "blink" at settle is often subpixel/compositor churn; keep settled values integer.
-    if (!draggingNow) {
-      dx = Math.round(dx || 0);
-      dy = Math.round(dy || 0);
-    }
-
-    tocToggleDx = dx;
-    tocToggleDy = dy;
-
-    tocToggle.style.setProperty('--toc-toggle-drag-x', dx + 'px');
-    tocToggle.style.setProperty('--toc-toggle-drag-y', dy + 'px');
+    tocToggle.style.setProperty('--toc-toggle-drag-x', '0px');
+    tocToggle.style.setProperty('--toc-toggle-drag-y', '0px');
   }
 
   function clearTocToggleOffset() {
@@ -690,7 +639,6 @@
     tocToggleDx = 0;
     tocToggleDy = 0;
 
-    // Keep custom props defined (at 0) to avoid a one-frame style pop on some browsers.
     tocToggle.style.setProperty('--toc-toggle-drag-x', '0px');
     tocToggle.style.setProperty('--toc-toggle-drag-y', '0px');
     tocToggle.classList.remove('is-toc-dragging');
@@ -703,8 +651,8 @@
 
     var r = tocToggle.getBoundingClientRect();
     return {
-      left: r.left - tocToggleDx,
-      top: r.top - tocToggleDy,
+      left: r.left,
+      top: r.top,
       width: r.width,
       height: r.height
     };
@@ -712,15 +660,12 @@
 
   function computeOpenToggleDxFromPanelLeft(openPanelLeft, baseRect) {
     if (!baseRect) return 0;
-
-    // Requirement: tab left edge flush with sheet left edge.
     return openPanelLeft - baseRect.left;
   }
 
   function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
     if (!baseRect) return 0;
 
-    // Requirement: tab TOP edge meets the sheet TOP edge.
     var seatDy = getTocSeatDy();
     var overlapPx = getTocSeatOverlapPx();
 
@@ -741,10 +686,8 @@
 
       var rect = tocPanel.getBoundingClientRect();
 
-      var targetTop = rect.top;
-
       var dx = computeOpenToggleDxFromPanelLeft(rect.left, base);
-      var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
+      var dy = computeOpenToggleDyFromPanelTop(rect.top, base);
 
       setTocToggleOffset(dx, dy, false);
       updateTocCapShift(1, false);
@@ -764,12 +707,9 @@
 
       var rect = tocPanel.getBoundingClientRect();
 
-      var targetTop = rect.top;
-
       var dx = Math.round(computeOpenToggleDxFromPanelLeft(rect.left, base) || 0);
-      var dy = Math.round(computeOpenToggleDyFromPanelTop(targetTop, base) || 0);
+      var dy = Math.round(computeOpenToggleDyFromPanelTop(rect.top, base) || 0);
 
-      // Even if the carry offsets are already correct, the cap seat can drift on fast drag/snap.
       if (Math.abs(dx - tocToggleDx) <= thr && Math.abs(dy - tocToggleDy) <= thr) {
         updateTocCapShift(1, false);
         return;
@@ -1471,32 +1411,16 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
-      var dx = tocToggleDx;
-      var dy = openDyWanted * progress;
+      var dx = 0;
+      var dy = 0;
 
-      // While dragging, weld the tab to the panel's live edge (no gradual easing by progress).
-      if (draggingNow) {
-        dx = 0;
-        dy = 0;
-
-        var base = getTocToggleBaseRect();
-        if (base && tocPanel && tocPanel.getBoundingClientRect) {
-          var r = tocPanel.getBoundingClientRect();
-          dx = computeOpenToggleDxFromPanelLeft(r.left, base);
-          dy = computeOpenToggleDyFromPanelTop(r.top, base);
-        }
-
-        if (!isFinite(dx)) dx = 0;
-        if (!isFinite(dy)) dy = 0;
-
-        dx = Math.round(dx);
-        dy = Math.round(dy);
+      if (!draggingNow) {
+        dy = openDyWanted * progress;
       }
 
       setTocToggleOffset(dx, dy, !!draggingNow);
 
-      // While dragging, keep the cap fully seated (no progress easing).
-      updateTocCapShift(draggingNow ? 1 : progress, !!draggingNow, SNAP_MS, SNAP_EASE);
+      updateTocCapShift(0, !!draggingNow, SNAP_MS, SNAP_EASE);
     }
 
     function computeOpenDyForCurrentDragState(yNow) {
@@ -1651,38 +1575,14 @@
       if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
-        // Compute final seat targets using the predicted OPEN geometry.
-        var base = getTocToggleBaseRect();
-        var rectNow = tocPanel.getBoundingClientRect();
-        var openDeltaY = openLiftPx - currentY;
-
-        var dxFinal = 0;
-        var dyFinal = 0;
-        var capShiftFinal = 0;
-
-        if (base && rectNow) {
-          var openPanelLeft = rectNow.left;
-          var openPanelTop = rectNow.top + openDeltaY;
-
-          dxFinal = computeOpenToggleDxFromPanelLeft(openPanelLeft, base);
-          dyFinal = computeOpenToggleDyFromPanelTop(openPanelTop, base);
-
-          capShiftFinal = computeCapSeatShiftToPanelTop(openPanelTop, base.top, dyFinal);
-        }
-
-        // Snap the sheet to open while the toggle + cap animate into their final seat.
         tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + openLiftPx + 'px)';
         tocPanel.style.opacity = '1';
         if (tocOverlay) tocOverlay.style.opacity = '1';
 
         applyOpenStateFromDrag();
 
-        setTocToggleOffset(dxFinal, dyFinal, false);
-        setTocCapShiftPx(capShiftFinal, false, SNAP_MS, SNAP_EASE);
-
-        setTimeout(function () {
-          alignToggleToPanelCornerIfDrift(1);
-        }, SNAP_MS + 60);
+        setTocToggleOffset(0, 0, false);
+        setTocCapShiftPx(0, false, SNAP_MS, SNAP_EASE);
 
         setTimeout(function () {
           if (!tocPanel) return;
@@ -1790,26 +1690,6 @@
       if (tocOverlay) tocOverlay.style.transition = 'none';
 
       tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
-
-      if (!startWasOpen && isMobileSheet()) {
-        var base = getTocToggleBaseRect();
-        if (base && tocPanel && tocPanel.getBoundingClientRect) {
-          var r = tocPanel.getBoundingClientRect();
-          var desiredTop = base.top + base.height;
-          var delta = desiredTop - r.top;
-
-          if (delta && Math.abs(delta) > 0.5) {
-            var newClosedY = closedY + delta;
-            if (newClosedY < openLiftPx) newClosedY = openLiftPx;
-
-            delta = newClosedY - closedY;
-            closedY = newClosedY;
-            currentY = currentY + delta;
-
-            tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
-          }
-        }
-      }
 
       openDyWanted = computeOpenDyForCurrentDragState(currentY);
 
@@ -2056,10 +1936,6 @@
       var openLift = readCssNumberVar('--toc-open-lift') || 0;
       var closedY = computePanelClosedY();
 
-      var dxTarget = 0;
-      var dyTarget = 0;
-      var capShiftTarget = 0;
-
       tocPanel.style.transition = 'none';
       tocOverlay.style.transition = 'none';
 
@@ -2068,25 +1944,13 @@
 
       setPanelTranslateY(openLift);
 
-      try {
-        var base = getTocToggleBaseRect();
-        var rect = tocPanel.getBoundingClientRect();
-
-        if (base && rect) {
-          dxTarget = computeOpenToggleDxFromPanelLeft(rect.left, base);
-          dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
-
-          capShiftTarget = computeCapSeatShiftToPanelTop(rect.top, base.top, dyTarget);
-        }
-      } catch (err) {}
-
       tocPanel.style.opacity = '1';
       setPanelTranslateY(closedY);
 
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
-        setTocToggleOffset(dxTarget, dyTarget, false);
-        setTocCapShiftPx(capShiftTarget, false, snapMs, snapEase);
+        setTocToggleOffset(0, 0, false);
+        setTocCapShiftPx(0, false, snapMs, snapEase);
 
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
         tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
@@ -2316,6 +2180,5 @@
   bindContentClicks();
   wireControls();
 
-  // Keep badge fresh even if opened after load.
   startDebugBadgeIfNeeded();
 })();
