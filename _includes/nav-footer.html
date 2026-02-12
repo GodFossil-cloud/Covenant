@@ -22,15 +22,41 @@
     /* If we raise the seal, raise the cradle by the same delta (relative to the 5px baseline). */
     --seal-cradle-shift-y: calc(-1 * (var(--lexicon-seal-top-align, 5px) - 5px));
 
-    /* iOS Safari: promote the dock to a stable composited layer (reduces 1px paint hop). */
-    -webkit-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
+    /* iOS Safari: do not force compositor promotion on the dock.
+       It can introduce a ~1px rounding tick while other fixed layers animate. */
+    -webkit-transform: none;
+    transform: none;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: transform;
   }
 
-  /* iOS Safari: harden the moving parts without overriding their authored transforms. */
+  /* Hard guard: never translate the dock during ToC/Reliquary motion/open states (iOS Safari hop fix). */
+  html.toc-opening #navFooter,
+  html.toc-closing #navFooter,
+  html.reliquary-opening #navFooter,
+  html.reliquary-closing #navFooter,
+  html.reliquary-open #navFooter {
+    -webkit-transform: none !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  html.toc-opening #navFooter .nav-footer-inner,
+  html.toc-closing #navFooter .nav-footer-inner,
+  html.reliquary-opening #navFooter .nav-footer-inner,
+  html.reliquary-closing #navFooter .nav-footer-inner,
+  html.reliquary-open #navFooter .nav-footer-inner,
+  html.toc-opening #navFooter .nav-seals,
+  html.toc-closing #navFooter .nav-seals,
+  html.reliquary-opening #navFooter .nav-seals,
+  html.reliquary-closing #navFooter .nav-seals,
+  html.reliquary-open #navFooter .nav-seals {
+    -webkit-transform: none !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  /* iOS Safari: harden the moving parts without forcing will-change layers. */
   #navFooter #tocToggle,
   #navFooter #mirrorToggle,
   #navFooter #lexiconToggle,
@@ -38,7 +64,7 @@
   #navFooter .toc-glyph {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: transform;
+    will-change: auto;
   }
 
   #navFooter .nav-seals {
