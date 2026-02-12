@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.5 (Lexicon dims only when dragging/committed open) */
+/*! Covenant Reliquary Panel Styles v0.3.6 (Disable header connector when Mirror tab is anchored) */
 
 /* -------------------------------------------------
    Variables
@@ -186,24 +186,11 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   background:linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,0));
 }
 
-/* Connector: replace the Mirror tab's former square base with a clean socket stem,
-   welded to the header divider and reaching to the top edge of the panel. */
+/* Connector strip disabled: Mirror tab stays anchored in the footer cradle now. */
 html.reliquary-opening .reliquary-panel-header::after,
 html.reliquary-open .reliquary-panel-header::after,
 html.reliquary-closing .reliquary-panel-header::after,
-html.reliquary-dock-settling .reliquary-panel-header::after{
-  content:'';
-  position:absolute;
-  right:0;
-  top:0;
-  bottom:0;
-  width:var(--reliquary-notch-w);
-
-  background:linear-gradient(to bottom, rgba(5,5,6,.92), rgba(5,5,6,.62));
-  border-left:1px solid rgba(201,169,97,.14);
-  pointer-events:none;
-  opacity:.95;
-}
+html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 
 .reliquary-produced-title{
   position:relative;
