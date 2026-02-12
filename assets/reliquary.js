@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.29 (Panel-only motion; remove dock window alignment) */
+/*! Covenant Reliquary UI v0.3.30 (Panel-only motion; dock tab parked) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.29';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.30';
 
   var doc = document;
   var root = doc.documentElement;
@@ -44,55 +44,6 @@
   }
 
   var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(function () { cb(Date.now()); }, 16); };
-  var caf = window.cancelAnimationFrame || function (id) { window.clearTimeout(id); };
-
-  // CSS custom properties can contain calc()/var() token streams; getComputedStyle returns the raw tokens.
-  // To get computed px, we resolve via a tiny probe element (computed margin-top is always a resolved length).
-  var cssVarProbeEl = null;
-
-  function getCssVarProbeEl() {
-    if (cssVarProbeEl) return cssVarProbeEl;
-
-    try {
-      var el = doc.createElement('div');
-      el.setAttribute('data-covenant-css-probe', '1');
-      el.style.position = 'fixed';
-      el.style.left = '0';
-      el.style.top = '0';
-      el.style.width = '0';
-      el.style.height = '0';
-      el.style.overflow = 'hidden';
-      el.style.visibility = 'hidden';
-      el.style.pointerEvents = 'none';
-
-      var mount = doc.body || doc.documentElement;
-      if (mount && mount.appendChild) mount.appendChild(el);
-
-      cssVarProbeEl = el;
-      return cssVarProbeEl;
-    } catch (err) {
-      return null;
-    }
-  }
-
-  function resolveCssVarPx(varName) {
-    try {
-      var el = getCssVarProbeEl();
-      if (!el) return 0;
-
-      el.style.marginTop = 'var(' + varName + ')';
-      var raw = getComputedStyle(el).marginTop;
-      var v = parseFloat(String(raw || '').trim());
-      return isNaN(v) ? 0 : v;
-    } catch (err) {
-      return 0;
-    }
-  }
-
-  function getSeatDy() { return resolveCssVarPx('--reliquary-seat-dy') || 0; }
-  function getSeatOverlapPx() { return resolveCssVarPx('--reliquary-seat-overlap') || 0; }
-  function getNotchH() { return resolveCssVarPx('--reliquary-notch-h') || 0; }
-  function getDockTabRaisePx() { return resolveCssVarPx('--dock-tab-raise') || 0; }
 
   function getSnapMs() {
     var ms = readCssNumberVar('--reliquary-snap-duration');
@@ -254,35 +205,8 @@
 
   var scrollLockY = 0;
 
-  // Anchor policy: Mirror tab stays nested in its footer cradle.
-  // These offsets remain at 0 and are preserved only for backward compatibility with older CSS.
-  var reliquaryToggleDx = 0;
-  var reliquaryToggleDy = 0;
-
-  // Anchor policy: Mirror medallion (cap) shift remains at 0.
-  var mirrorCapShiftY = 0;
-
-  function setMirrorCapShiftPx(y) {
-    mirrorCapShiftY = 0;
-    if (!toggle) return;
-    toggle.style.setProperty('--mirror-cap-shift-y', '0px');
-  }
-
-  function updateMirrorCapShift(progress, draggingNow) {
-    setMirrorCapShiftPx(0);
-  }
-
   // Tap-open/close animation guard.
   var tapAnimating = false;
-
-  // Cancel slot kept for API continuity (drag uses none; tap uses none).
-  var capFollowRafId = 0;
-
-  function cancelMirrorCapFollow() {
-    if (!capFollowRafId) return;
-    try { caf(capFollowRafId); } catch (err) {}
-    capFollowRafId = 0;
-  }
 
   var isIOS = (function () {
     try {
@@ -423,106 +347,6 @@
     else if (panel && panel.focus) panel.focus();
   }
 
-  function setReliquaryToggleOffset(dx, dy, draggingNow) {
-    reliquaryToggleDx = 0;
-    reliquaryToggleDy = 0;
-
-    if (!toggle) return;
-
-    toggle.style.setProperty('--reliquary-toggle-drag-x', '0px');
-    toggle.style.setProperty('--reliquary-toggle-drag-y', '0px');
-  }
-
-  function clearReliquaryToggleOffset() {
-    reliquaryToggleDx = 0;
-    reliquaryToggleDy = 0;
-    mirrorCapShiftY = 0;
-
-    if (!toggle) return;
-
-    toggle.style.setProperty('--reliquary-toggle-drag-x', '0px');
-    toggle.style.setProperty('--reliquary-toggle-drag-y', '0px');
-    toggle.style.setProperty('--mirror-cap-shift-y', '0px');
-
-    toggle.classList.remove('is-reliquary-dragging');
-  }
-
-  function getToggleBaseRect() {
-    if (!toggle || !toggle.getBoundingClientRect) return null;
-
-    var dockRaise = getDockTabRaisePx();
-
-    var r = toggle.getBoundingClientRect();
-    return {
-      left: r.left - reliquaryToggleDx,
-      top: r.top - dockRaise - reliquaryToggleDy,
-      width: r.width,
-      height: r.height,
-      right: r.right - reliquaryToggleDx,
-      bottom: r.bottom - dockRaise - reliquaryToggleDy
-    };
-  }
-
-  function computeOpenToggleDxFromPanelRight(openPanelRight, baseRect) {
-    if (!baseRect) return 0;
-    return openPanelRight - baseRect.right;
-  }
-
-  function computeOpenToggleDyFromPanelTop(openPanelTop, baseRect) {
-    if (!baseRect) return 0;
-
-    // Requirement: tab box TOP edge meets the sheet TOP edge (seat vars are tuned accordingly).
-    var overlapPx = getSeatOverlapPx();
-
-    var targetTop = openPanelTop - baseRect.height;
-    targetTop = targetTop + getSeatDy() + overlapPx;
-
-    return targetTop - baseRect.top;
-  }
-
-  function alignToggleToPanelCornerIfDrift(thresholdPx) {
-    if (!panel || !panel.getBoundingClientRect || !toggle) return;
-
-    var thr = (typeof thresholdPx === 'number' && !isNaN(thresholdPx)) ? thresholdPx : 1;
-
-    raf(function () {
-      var base = getToggleBaseRect();
-      if (!base) return;
-
-      var rect = panel.getBoundingClientRect();
-      var targetTop = rect.top;
-
-      var dx = Math.round(computeOpenToggleDxFromPanelRight(rect.right, base) || 0);
-      var dy = Math.round(computeOpenToggleDyFromPanelTop(targetTop, base) || 0);
-
-      if (Math.abs(dx - reliquaryToggleDx) <= thr && Math.abs(dy - reliquaryToggleDy) <= thr) {
-        updateMirrorCapShift(1, false);
-        return;
-      }
-
-      setReliquaryToggleOffset(dx, dy, false);
-      updateMirrorCapShift(1, false);
-    });
-  }
-
-  function alignToggleToPanelCorner() {
-    if (!panel || !panel.getBoundingClientRect || !toggle) return;
-
-    raf(function () {
-      var base = getToggleBaseRect();
-      if (!base) return;
-
-      var rect = panel.getBoundingClientRect();
-      var targetTop = rect.top;
-
-      var dx = computeOpenToggleDxFromPanelRight(rect.right, base);
-      var dy = computeOpenToggleDyFromPanelTop(targetTop, base);
-
-      setReliquaryToggleOffset(dx, dy, false);
-      updateMirrorCapShift(1, false);
-    });
-  }
-
   function getFooterReservedPx() {
     var footer = doc.querySelector('.nav-footer');
     if (footer && footer.getBoundingClientRect) {
@@ -628,8 +452,6 @@
   }
 
   function closeReliquaryImmediately(restoreFocus) {
-    cancelMirrorCapFollow();
-
     disableFocusTrap();
 
     root.classList.remove('reliquary-open');
@@ -648,8 +470,6 @@
 
     noteClose();
 
-    setMirrorCapShiftPx(0);
-
     if (restoreFocus) {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
       if (target && target.focus) target.focus();
@@ -666,17 +486,12 @@
       return;
     }
 
-    cancelMirrorCapFollow();
-
     // Clear any residual inline snap styles.
     panel.style.transform = '';
     panel.style.opacity = '';
     panel.style.transition = '';
     overlay.style.opacity = '';
     overlay.style.transition = '';
-
-    setReliquaryToggleOffset(0, 0, false);
-    setMirrorCapShiftPx(0);
 
     openReliquaryImmediately();
 
@@ -691,11 +506,6 @@
 
     var closedY = computePanelClosedY();
 
-    // Measurement block preserved for continuity; the tab remains anchored.
-    var dxTarget = 0;
-    var dyTarget = 0;
-    var capShiftTarget = 0;
-
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
@@ -703,22 +513,6 @@
     overlay.style.opacity = '0';
 
     setPanelTranslateY(openLift);
-
-    try {
-      var base = getToggleBaseRect();
-      var rect = panel.getBoundingClientRect();
-
-      if (base && rect) {
-        dxTarget = computeOpenToggleDxFromPanelRight(rect.right, base);
-        dyTarget = computeOpenToggleDyFromPanelTop(rect.top, base);
-
-        var cap = toggle.querySelector('.dock-cap');
-        if (cap && cap.getBoundingClientRect) {
-          var capRect = cap.getBoundingClientRect();
-          capShiftTarget = rect.top - (capRect.top + dyTarget);
-        }
-      }
-    } catch (err) {}
 
     panel.style.opacity = '1';
     setPanelTranslateY(closedY);
@@ -729,9 +523,6 @@
 
       setPanelTranslateY(openLift);
       overlay.style.opacity = '1';
-
-      setReliquaryToggleOffset(dxTarget, dyTarget, false);
-      setMirrorCapShiftPx(capShiftTarget);
 
       setTimeout(function () {
         panel.style.transform = '';
@@ -744,8 +535,6 @@
         root.classList.remove('reliquary-opening');
         tapAnimating = false;
 
-        alignToggleToPanelCornerIfDrift(1);
-
         setTimeout(focusIntoPanel, 0);
       }, snapMs + 50);
     });
@@ -753,8 +542,6 @@
 
   function closeReliquaryTap(restoreFocus) {
     if (tapAnimating) return;
-
-    cancelMirrorCapFollow();
 
     disableFocusTrap();
 
@@ -784,9 +571,6 @@
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
-      setReliquaryToggleOffset(0, 0, false);
-      setMirrorCapShiftPx(0);
-
       setPanelTranslateY(closedY);
       overlay.style.opacity = '0';
 
@@ -805,8 +589,6 @@
 
         root.classList.remove('reliquary-closing');
         root.classList.add('reliquary-dock-settling');
-
-        clearReliquaryToggleOffset();
 
         setTimeout(function () {
           root.classList.remove('reliquary-dock-settling');
@@ -877,12 +659,8 @@
     var closedY = 0;
     var currentY = 0;
 
-    var openDyWanted = 0;
-
     var panelHBase = 0;
     var openLiftPx = 0;
-
-    var mobileSeatNudge = 0;
 
     var MOVE_SLOP = 2;
 
@@ -913,21 +691,6 @@
       closedY = Math.max(1, panelHBase + closedOffsetPx);
     }
 
-    function computeMobileSeatNudge() {
-      mobileSeatNudge = 0;
-      if (!isMobileSheet()) return;
-
-      var base = getToggleBaseRect();
-      if (!base) return;
-
-      var dySeatOpen = computeOpenToggleDyFromPanelTop(openLiftPx, base);
-      var dyCarryOpen = openLiftPx - closedY;
-      mobileSeatNudge = dySeatOpen - dyCarryOpen;
-
-      if (!isFinite(mobileSeatNudge)) mobileSeatNudge = 0;
-      mobileSeatNudge = Math.round(mobileSeatNudge);
-    }
-
     function applyDragFrame(y, draggingNow) {
       if (draggingNow) y = Math.round(y);
 
@@ -945,30 +708,12 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      var dx = 0;
-      var dy = openDyWanted * progress;
-
       if (draggingNow) {
-        dx = 0;
-        dy = 0;
+        // No tab carry/seat shift: dock tab remains parked.
       }
-
-      setReliquaryToggleOffset(dx, dy, !!draggingNow);
-
-      updateMirrorCapShift(0, !!draggingNow);
     }
 
-    function computeOpenDyForCurrentDragState(yNow) {
-      var base = getToggleBaseRect();
-      if (!base) return 0;
-
-      var rect = panel.getBoundingClientRect();
-      var openTop = rect.top - (yNow - openLiftPx);
-
-      return computeOpenToggleDyFromPanelTop(openTop, base);
-    }
-
-    function applyOpenStateFromDrag(skipAlign) {
+    function applyOpenStateFromDrag() {
       if (!panel || !overlay) return;
 
       // Commit full open state (including html.reliquary-open + focus trap).
@@ -977,15 +722,12 @@
       root.classList.remove('reliquary-closing');
       root.classList.remove('reliquary-dock-settling');
 
-      if (!skipAlign) alignToggleToPanelCorner();
       setTimeout(focusIntoPanel, 0);
     }
 
     function settleDockAfterSnapClose() {
       root.classList.add('reliquary-dock-settling');
       root.classList.remove('reliquary-closing');
-
-      clearReliquaryToggleOffset();
 
       setTimeout(function () {
         root.classList.remove('reliquary-dock-settling');
@@ -1015,8 +757,6 @@
       noteClose();
 
       settleDockAfterSnapClose();
-
-      setMirrorCapShiftPx(0);
 
       if (restoreFocus) {
         var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : toggle;
@@ -1076,18 +816,11 @@
       if (shouldOpen) {
         applyDragFrame(openLiftPx, false);
 
-        applyOpenStateFromDrag(true);
+        applyOpenStateFromDrag();
 
         root.classList.remove('reliquary-dragging');
-
-        setTimeout(function () {
-          alignToggleToPanelCornerIfDrift(1);
-        }, SNAP_MS + 30);
       } else {
         root.classList.remove('reliquary-dragging');
-
-        setReliquaryToggleOffset(0, 0, false);
-        setMirrorCapShiftPx(0);
 
         if (startWasOpen) {
           snapCloseFromOpen();
@@ -1126,7 +859,6 @@
           }, SNAP_MS + 80);
 
           closeReliquaryImmediately(false);
-          clearReliquaryToggleOffset();
         }
       }, SNAP_MS + 20);
     }
@@ -1134,8 +866,6 @@
     function beginDrag(e, source, forcedStartY) {
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-      cancelMirrorCapFollow();
 
       dragging = true;
       moved = false;
@@ -1169,7 +899,6 @@
       }
 
       computeClosedY();
-      computeMobileSeatNudge();
 
       currentY = startWasOpen ? openLiftPx : closedY;
 
@@ -1180,8 +909,6 @@
       overlay.style.transition = 'none';
 
       panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + currentY + 'px)';
-
-      openDyWanted = computeOpenDyForCurrentDragState(currentY);
 
       applyDragFrame(currentY, true);
 
@@ -1348,7 +1075,6 @@
   function onViewportChange() {
     if (panel && panel.classList.contains('is-open')) {
       positionPanel();
-      alignToggleToPanelCorner();
     }
   }
 
