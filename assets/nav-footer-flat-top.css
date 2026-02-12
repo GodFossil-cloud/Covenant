@@ -36,6 +36,25 @@
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x: 0px;
   --mirror-glyph-nudge-x: 0px;
+
+  /* iOS Safari: stabilize the fixed dock as a single composited layer.
+     (The hop we've been chasing is not layout; it is a paint/compositor jitter.) */
+  -webkit-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+  isolation: isolate;
+  contain: paint;
+}
+
+#navFooter::before,
+#navFooter::after {
+  -webkit-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 /* Cutout socket:
@@ -78,14 +97,21 @@
     inset 0 -10px 18px -16px rgba(0,0,0,0.72);
 
   /* Punch the cradle void (a circle centered near the top edge becomes a semicircle cutout).
-     Use white (not black) for the "keep" region so both alpha- and luminance-based mask paths behave. */
+     Use white (not black) for the "keep" region so both alpha- and luminance-based mask paths behave.
+
+     NOTE (iOS Safari): avoid half-pixel mask stops. They can jitter by ~1px when the compositor re-rasterizes.
+  */
   -webkit-mask-image: radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
-    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 0.5px),
-    rgba(255,255,255,1) calc(var(--seal-notch-radius) + 0.5px)
+    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
+    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
+    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
+    rgba(255,255,255,1) 100%
   );
   mask-image: radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
-    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 0.5px),
-    rgba(255,255,255,1) calc(var(--seal-notch-radius) + 0.5px)
+    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
+    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
+    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
+    rgba(255,255,255,1) 100%
   );
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
