@@ -50,14 +50,14 @@
   --dock-tab-face:#010103;
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
-  --dock-tab-raise:-16px;
+  --dock-tab-raise:-20px;
 
   /* Socket stays closer to the dock baseline so it reads as a true recess. */
-  --dock-socket-raise:-6px;
+  --dock-socket-raise:-2px;
 
   /* Socket tuning: push the two cradles slightly outward from the center seal, and lift them so their top edge meets the footer slab top. */
   --dock-socket-spread:6px;
-  --dock-socket-y-nudge:-5px;
+  --dock-socket-y-nudge:-2px;
 
   /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
@@ -766,10 +766,10 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --toc-rule-x:.75rem;
     --toc-node:10px;
     --toc-node-locked:8px;
-    --dock-tab-raise:-14px;
-    --dock-socket-raise:-6px;
+    --dock-tab-raise:-18px;
+    --dock-socket-raise:-2px;
     --dock-socket-spread:5px;
-    --dock-socket-y-nudge:-4px;
+    --dock-socket-y-nudge:-2px;
     --toc-tab-gap:14px;
     --dock-cap-size:var(--dock-tab-width);
     --dock-cap-lift:9px;
