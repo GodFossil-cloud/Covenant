@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.36 (dock window mask removed; dock stays sovereign) */
+/*! Covenant ToC Panel Styles v3.1.37 (Tabs parked; remove carry + cap-shift scaffolding) */
 
 /* -------------------------------------------------
    Variables
@@ -431,25 +431,10 @@ html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0) translateY(-.5px);z-index:2}
 
-/* Mirror tab can be "carried" upward by the Reliquary sheet (vars remain 0 otherwise). */
-html #mirrorToggle.dock-tab{
-  transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0);
-  transition:transform var(--reliquary-snap-duration, 420ms) var(--reliquary-snap-ease, cubic-bezier(.22,.61,.36,1));
-  will-change:transform;
-
-  touch-action:none;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
-  -webkit-user-select:none;
-
-  cursor:ns-resize;
-}
-
-html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
-
-/* ToC tab can be "drag carried" upward to stay physically attached to the ToC sheet. */
+/* Mirror + ToC tabs stay parked in their cradles (panel-only motion). */
+html #mirrorToggle.dock-tab,
 html #tocToggle.dock-tab{
-  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px)),0);
+  transform:translate3d(0,var(--dock-tab-raise),0);
   transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
   will-change:transform;
 
@@ -461,7 +446,8 @@ html #tocToggle.dock-tab{
   cursor:ns-resize;
 }
 
-html #tocToggle.dock-tab.is-toc-dragging{transition:none !important}
+html #tocToggle.dock-tab.is-toc-dragging,
+html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 
 /* Override the generic "nav-btn:not(.center)" framing (which uses inset:14px). */
 html #tocToggle.dock-tab::before,
@@ -497,42 +483,10 @@ html #mirrorToggle.dock-tab{box-shadow:none;background:transparent}
 html #mirrorToggle.dock-tab::before,
 html #mirrorToggle.dock-tab::after{content:none !important;display:none !important}
 
-/* Mirror tab: allow the medallion to nest into the Reliquary header connector strip (driven by JS). */
-html #mirrorToggle.dock-tab .dock-cap{
-  transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--mirror-cap-shift-y, 0px)),0);
-  transition:transform var(--reliquary-snap-duration, 420ms) var(--reliquary-snap-ease, cubic-bezier(.22,.61,.36,1));
-  will-change:transform;
-}
-
-html #mirrorToggle.dock-tab .toc-glyph{
-  transform:translate3d(-50%,-50%,0) translateY(calc(-.5px + var(--mirror-cap-shift-y, 0px)));
-  transition:transform var(--reliquary-snap-duration, 420ms) var(--reliquary-snap-ease, cubic-bezier(.22,.61,.36,1));
-  will-change:transform;
-}
-
-html #mirrorToggle.dock-tab.is-reliquary-dragging .dock-cap,
-html #mirrorToggle.dock-tab.is-reliquary-dragging .toc-glyph{transition:none !important}
-
 /* ToC tab: medallion-only (remove welded tab box permanently). */
 html #tocToggle.dock-tab{box-shadow:none;background:transparent}
 html #tocToggle.dock-tab::before,
 html #tocToggle.dock-tab::after{content:none !important;display:none !important}
-
-/* ToC tab: allow the medallion to nest into the ToC header connector strip (driven by JS). */
-html #tocToggle.dock-tab .dock-cap{
-  transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--toc-cap-shift-y, 0px)),0);
-  transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
-  will-change:transform;
-}
-
-html #tocToggle.dock-tab .toc-glyph{
-  transform:translate3d(-50%,-50%,0) translateY(calc(-.5px + var(--toc-cap-shift-y, 0px)));
-  transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
-  will-change:transform;
-}
-
-html #tocToggle.dock-tab.is-toc-dragging .dock-cap,
-html #tocToggle.dock-tab.is-toc-dragging .toc-glyph{transition:none !important}
 
 /* ToC tab: sharp bottom-left, slightly rounder bottom-right. */
 html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
@@ -558,14 +512,14 @@ html #mirrorToggle.dock-tab:focus-visible::after{
     linear-gradient(to bottom, rgba(255, 235, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
 }
 
-/* Mechanical press: keep 1px travel relative to the raised position (only when not being dragged). */
-html #mirrorToggle.dock-tab:active:not(:disabled):not(.is-reliquary-dragging){
-  transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px) + 1px),0);
+/* Mechanical press: keep 1px travel relative to the raised position. */
+html #mirrorToggle.dock-tab:active:not(:disabled){
+  transform:translate3d(0,calc(var(--dock-tab-raise) + 1px),0);
 }
 
 /* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
 html #tocToggle.dock-tab:active:not(:disabled){
-  transform:translate3d(var(--toc-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--toc-toggle-drag-y,0px)),0);
+  transform:translate3d(0,var(--dock-tab-raise),0);
 }
 
 html #tocToggle.dock-tab .toc-glyph,

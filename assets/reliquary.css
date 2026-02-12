@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.6 (Disable header connector when Mirror tab is anchored) */
+/*! Covenant Reliquary Panel Styles v0.3.7 (Tabs parked; remove carry transforms) */
 
 /* -------------------------------------------------
    Variables
@@ -68,12 +68,12 @@ html.reliquary-scroll-lock{overflow:hidden}
 body.reliquary-scroll-lock{position:fixed;width:100%}
 
 /* -------------------------------------------------
-   Dock tab carry (Mirror button)
+   Dock tab (Mirror button)
    ------------------------------------------------- */
 
-/* Mirror tab can be "drag carried" upward to stay physically attached to the Reliquary sheet. */
+/* Mirror tab stays parked in the footer cradle; it does not ride with the sheet. */
 html #mirrorToggle.dock-tab{
-  transform:translate3d(var(--reliquary-toggle-drag-x,0px),calc(var(--dock-tab-raise) + var(--reliquary-toggle-drag-y,0px)),0);
+  transform:translate3d(0,var(--dock-tab-raise),0);
   transition:transform var(--reliquary-snap-duration) var(--reliquary-snap-ease);
   will-change:transform;
 
