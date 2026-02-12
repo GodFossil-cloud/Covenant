@@ -14,7 +14,7 @@
   --lexicon-seal-face-hover:#0a0b0e;
 
   /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
-  --lexicon-cradle-h:calc(var(--seal-notch-height) + 1px);
+  --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 }
 
 /* Darken the Lexicon seal base (closed state). */
