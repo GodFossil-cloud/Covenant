@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.9 */
+/*! Covenant UI Stack v0.3.10 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.9';
+  window.COVENANT_UI_STACK_VERSION = '0.3.10';
 
   var registry = Object.create(null);
   var order = [];
@@ -450,16 +450,45 @@
 
     try {
       if (id === 'toc') {
+        var root = document.documentElement;
         var toc = document.getElementById('tocPanel');
-        return !!(toc && toc.classList && toc.classList.contains('is-open'));
+
+        if (!toc || !toc.classList) return false;
+
+        // Must be fully open.
+        if (!toc.classList.contains('is-open')) return false;
+
+        // Not committed while dragging/closing.
+        if (toc.classList.contains('is-dragging') || toc.classList.contains('is-closing')) return false;
+
+        // Not committed while root motion classes are in-flight.
+        // (Support older cached builds that used "toc-dock-setting".)
+        if (root && root.classList) {
+          if (
+            root.classList.contains('toc-opening')
+            || root.classList.contains('toc-closing')
+            || root.classList.contains('toc-dock-settling')
+            || root.classList.contains('toc-dock-setting')
+          ) return false;
+        }
+
+        // iOS/Safari: avoid engaging scroll lock in the micro-window immediately after noteOpen
+        // (before motion classes apply). This prevents a one-frame visual viewport shift.
+        var openedAt = (entry && typeof entry.openedAt === 'number') ? entry.openedAt : 0;
+        if (openedAt) {
+          var age = now() - openedAt;
+          if (age >= 0 && age < 180) return false;
+        }
+
+        return true;
       }
 
       if (id === 'reliquary') {
-        var root = document.documentElement;
-        if (!root || !root.classList || !root.classList.contains('reliquary-open')) return false;
+        var rootR = document.documentElement;
+        if (!rootR || !rootR.classList || !rootR.classList.contains('reliquary-open')) return false;
 
         // Drag-open shells may briefly mark .reliquary-open early; avoid scroll-lock while opening/dragging.
-        if (root.classList.contains('reliquary-opening') || root.classList.contains('reliquary-closing')) return false;
+        if (rootR.classList.contains('reliquary-opening') || rootR.classList.contains('reliquary-closing')) return false;
 
         var rel = document.getElementById('reliquaryPanel');
         if (rel && rel.classList && rel.classList.contains('is-dragging')) return false;
@@ -784,6 +813,70 @@
 
         for (var i = 0; i < targets.length; i++) {
           observer.observe(targets[i], { attributes: true, attributeFilter: ['class', 'style'] });
+        }
+      } catch (err2) {}
+
+      schedule();
+    }
+
+    if (document && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindObserver);
+    } else {
+      bindObserver();
+    }
+
+    // Also resync on bfcache restore.
+    try {
+      window.addEventListener('pageshow', schedule);
+    } catch (err3) {}
+  })();
+
+  // Keep shared scroll lock in sync with DOM motion classes even when no stack event fires.
+  // (Critical for ToC open/close animations where noteOpen/noteClose are not aligned to motion class timing.)
+  (function wireSharedScrollLockAutoSync() {
+    var pending = false;
+    var lastRunAt = 0;
+
+    function schedule() {
+      if (pending) return;
+      pending = true;
+
+      var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
+
+      raf(function () {
+        pending = false;
+
+        // Guard against tight mutation loops.
+        var t = now();
+        if (lastRunAt && (t - lastRunAt) < 12) return;
+        lastRunAt = t;
+
+        try { syncScrollLockFromIds(getOpenIds()); } catch (err) {}
+      });
+    }
+
+    function bindObserver() {
+      if (!window.MutationObserver) {
+        schedule();
+        return;
+      }
+
+      try {
+        var targets = [];
+        targets.push(document.documentElement);
+
+        var tocPanel = document.getElementById('tocPanel');
+        var relPanel = document.getElementById('reliquaryPanel');
+        var lexPanel = document.getElementById('lexiconPanel');
+
+        if (tocPanel) targets.push(tocPanel);
+        if (relPanel) targets.push(relPanel);
+        if (lexPanel) targets.push(lexPanel);
+
+        var observer = new MutationObserver(function () { schedule(); });
+
+        for (var i = 0; i < targets.length; i++) {
+          observer.observe(targets[i], { attributes: true, attributeFilter: ['class'] });
         }
       } catch (err2) {}
 
