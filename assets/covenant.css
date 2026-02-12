@@ -833,7 +833,7 @@ body.is-exiting #blackFadeOverlay {
 }
 
 .nav-btn.center.has-selection::before {
-    transform: translateY(-1px);
+    transform: translateY(0px);
     box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.95),
                 inset 0 0 10px rgba(201, 169, 97, 0.22),
                 inset 0 0 20px 3px rgba(201, 169, 97, 0.22),
@@ -842,7 +842,7 @@ body.is-exiting #blackFadeOverlay {
 
 .nav-btn.center.has-selection::after {
     background-color: #5f1b1b;
-    transform: translateY(-1px);
+    transform: translateY(0px);
 }
 
 /* Focus-visible "inspection ring" */
@@ -870,7 +870,7 @@ body.is-exiting #blackFadeOverlay {
 
 /* Mechanical press: 1px travel + deeper inset shadow */
 .nav-btn:not(.center):active:not(:disabled) {
-    transform: translateY(1px);
+    transform: translateY(0px);
     filter: brightness(0.96);
 }
 
@@ -882,7 +882,7 @@ body.is-exiting #blackFadeOverlay {
 
 .nav-next:active .nav-next-frame,
 .nav-prev:active .nav-prev-frame {
-    transform: translateY(1px);
+    transform: translateY(0px);
     filter: brightness(0.96);
 }
 
@@ -894,7 +894,7 @@ body.is-exiting #blackFadeOverlay {
 }
 
 .nav-btn.center:active:not(:disabled) {
-    transform: translateY(1px);
+    transform: translateY(0px);
     filter: brightness(0.98);
 }
 
@@ -1006,7 +1006,7 @@ body.is-exiting #blackFadeOverlay {
    JS adds .is-nudging for ~120ms on click, so even ultra-fast taps read as a physical press. */
 .nav-next-frame.is-nudging,
 .nav-prev-frame.is-nudging {
-    transform: translateY(1px);
+    transform: translateY(0px);
     filter: brightness(0.96);
 }
 
@@ -1112,7 +1112,7 @@ body.is-exiting #blackFadeOverlay {
     box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.38),
                 0 0 18px rgba(201, 169, 97, 0.22),
                 0 0 22px rgba(0, 0, 0, 0.85);
-    transform: translateY(-2px) scaleX(1.02);
+    transform: translateY(0px) scaleX(1.02);
 }
 
 .lexicon-panel-header {
@@ -1378,7 +1378,7 @@ body.is-exiting #blackFadeOverlay {
         max-height: 100vh;
         border-left: none;
         border-top: 1px solid #3a3a3a;
-        border-radius: 12px 12px 0 0;
+        border-radius: 0 0 0 0;
         transform: translateY(calc(100% - (var(--footer-total-height) + var(--lexicon-panel-closed-peek))));
         transition:
             transform var(--lexicon-snap-duration) var(--lexicon-snap-ease),
@@ -1657,11 +1657,11 @@ body {
   /* Default = closed state: nudge upward slightly so it seats into the cradle. */
   --seal-seat-nudge: var(--seal-seat-nudge-closed);
 
-  --seal-translate: calc(-1 * var(--seal-rise));
+  --seal-translate: calc(0 * var(--seal-rise));
 
   /* Allow JS to add temporary drag without clobbering the base lift.
      NOTE: --seal-drag-y is driven by assets/lexicon.js (single-seal continuous motion). */
-  transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
 
   z-index: 2;
   margin-top: 0;
@@ -1764,7 +1764,7 @@ body {
 /* Seal press: sacred stillness (no tactile travel). */
 .nav-btn.center:active:not(:disabled),
 .nav-btn.center.is-nudging {
-  transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
   filter: brightness(0.98);
 }
 
@@ -1912,7 +1912,7 @@ body {
 /* Seal drag: suppress the 1px :active press snap during the drag-open gesture (mobile). */
 @media (max-width: 600px) {
   #lexiconToggle.is-seal-dragging:active:not(:disabled) {
-    transform: translateY(calc(-1 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+    transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
   }
 }
 
