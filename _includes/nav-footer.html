@@ -22,10 +22,14 @@
     /* If we raise the seal, raise the cradle by the same delta (relative to the 5px baseline). */
     --seal-cradle-shift-y: calc(0 * (var(--lexicon-seal-top-align, 5px) - 5px));
 
+    /* iOS Safari: fixed-position elements can “tick” ~1px when the visual viewport
+       shifts during gesture/drag shells. ui-stack pins --vv-offset-top to cancel it. */
+    --vv-offset-top: 0px;
+
     /* iOS Safari: keep .nav-footer pre-promoted as a stable layer to prevent a ~1px compositor hop
        when drag-opening panels (AGENT.md invariant). */
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
+    -webkit-transform: translate3d(0, var(--vv-offset-top, 0px), 0) translateZ(0);
+    transform: translate3d(0, var(--vv-offset-top, 0px), 0) translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }

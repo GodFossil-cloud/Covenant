@@ -139,6 +139,81 @@
     }
   }
 
+  // -------------------------------------------------
+  // iOS visualViewport pin (dock hop fix)
+  // Writes --vv-offset-top so fixed footer can cancel 1px visual viewport drift.
+  // -------------------------------------------------
+
+  var vvPinEnabled = false;
+  var vvPinRafPending = false;
+  var vvPinLast = null;
+
+  function setVvOffsetTopNow() {
+    if (!isIOS) return;
+
+    var root = document.documentElement;
+    if (!root || !root.style) return;
+
+    var vv = readVisualViewport();
+    var off = (vv && typeof vv.offsetTop === 'number') ? vv.offsetTop : 0;
+
+    // Avoid thrash from tiny float noise.
+    var v = Math.round(off * 100) / 100;
+
+    if (vvPinLast === v) return;
+    vvPinLast = v;
+
+    try {
+      root.style.setProperty('--vv-offset-top', v + 'px');
+    } catch (err) {}
+  }
+
+  function scheduleVvOffsetTop() {
+    if (vvPinRafPending) return;
+    vvPinRafPending = true;
+
+    var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
+
+    raf(function () {
+      vvPinRafPending = false;
+      setVvOffsetTopNow();
+    });
+  }
+
+  function startVisualViewportPin() {
+    if (vvPinEnabled) return;
+    if (!isIOS) return;
+
+    // If visualViewport is unavailable, keep the var at 0 (no-op).
+    if (!window.visualViewport || !window.visualViewport.addEventListener) {
+      setVvOffsetTopNow();
+      return;
+    }
+
+    vvPinEnabled = true;
+
+    setVvOffsetTopNow();
+
+    try {
+      window.visualViewport.addEventListener('scroll', scheduleVvOffsetTop);
+      window.visualViewport.addEventListener('resize', scheduleVvOffsetTop);
+    } catch (err1) {}
+
+    // Extra safety: ensure bfcache restores / orientation shifts keep the var correct.
+    try {
+      window.addEventListener('resize', scheduleVvOffsetTop);
+      window.addEventListener('orientationchange', scheduleVvOffsetTop);
+      window.addEventListener('pageshow', scheduleVvOffsetTop);
+    } catch (err2) {}
+  }
+
+  // Start early (safe even if no panels register).
+  if (document && document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startVisualViewportPin);
+  } else {
+    startVisualViewportPin();
+  }
+
   function readOverflowState() {
     var out = { html: '', body: '', padR: '' };
     try {
