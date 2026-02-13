@@ -82,6 +82,7 @@ Rules:
 - `assets/journey.js` — journey definitions + helpers.
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
+- Note (ToC CSS): Keep all ToC-related styling (including any motion/mask fixes) inside `assets/toc.css`; do not split ToC fixes into extra stylesheets.
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
 - Note (ToC dock tab): ToC tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
