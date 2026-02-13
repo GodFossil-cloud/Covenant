@@ -559,12 +559,6 @@
     // Install immediately (low cost; only blocks when active states are present).
     document.addEventListener('touchmove', blocker, { capture: true, passive: false });
 
-    // PointerEvents hardening (helps some iOS builds, but touchmove is the primary fix).
-    function seedGuard(e) {
-      if (!e) return;
-      if (e.cancelable) e.preventDefault();
-    }
-
     function wireOnElements() {
       var tocToggle = document.getElementById('tocToggle');
       var mirrorToggle = document.getElementById('mirrorToggle');
@@ -578,18 +572,12 @@
           tocToggle.addEventListener('touchstart', beginDockTouchSession, { capture: true, passive: true });
           tocToggle.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
           tocToggle.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
-
-          tocToggle.addEventListener('pointerdown', seedGuard, true);
-          tocToggle.addEventListener('pointermove', seedGuard, true);
         }
 
         if (mirrorToggle) {
           mirrorToggle.addEventListener('touchstart', beginDockTouchSession, { capture: true, passive: true });
           mirrorToggle.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
           mirrorToggle.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
-
-          mirrorToggle.addEventListener('pointerdown', seedGuard, true);
-          mirrorToggle.addEventListener('pointermove', seedGuard, true);
         }
 
         // Safety net: if the touch ends elsewhere, stop the session.
