@@ -251,13 +251,13 @@
       glyph.style.transition = 'none';
 
       // Important: beat any inline transforms authored by toc.js/reliquary.js during drag (iOS Safari ordering).
-      cap.style.setProperty('transform', 'translate3d(-50%,' + snapPx(((-1 * lift) + capShift)) + 'px,0)', 'important');
+      cap.style.setProperty('transform', 'translate3d(-50%,' + snapPx(((lift) + capShift)) + 'px,0)', 'important');
 
       // ToC glyph must remain centered in the tab face; do not carry it with capShift.
       if (toggle.id === 'tocToggle') {
         glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translate3d(var(--toc-glyph-nudge-x, 0px), var(--toc-glyph-nudge-y, 0px), 0)', 'important');
       } else {
-        glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(' + snapPx((-0.5 + capShift)) + 'px)', 'important');
+        glyph.style.setProperty('transform', 'translate3d(-50%,-50%,0) translateY(snapPx((capShift)))', 'important');
       }
 
       cap.style.willChange = 'transform';
