@@ -1,26 +1,25 @@
-<!-- Shared Reliquary panel shell (GitHub Pages / Jekyll include). -->
+<!-- Reliquary panel shell (Jekyll include).
+     IDs and ARIA hooks are referenced by assets/reliquary.js; do not rename. -->
 <div class="reliquary-overlay" id="reliquaryOverlay" aria-hidden="true"></div>
 
 <div class="reliquary-panel" id="reliquaryPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="reliquaryPanelTitle">
   <div class="reliquary-panel-header">
-    <!-- Drag handle region (for sheet-style close gesture when open). -->
+    <!-- Drag handle region (sheet-style gesture). -->
     <div class="reliquary-drag-region" id="reliquaryDragRegion" aria-hidden="true"></div>
 
-    <!-- Accessibility label (kept in DOM). -->
+    <!-- Screen-reader label. -->
     <div class="reliquary-panel-title sr-only" id="reliquaryPanelTitle">Reliquary</div>
 
-    <!-- Visible produced title. -->
+    <!-- Visible title (content may be replaced by JS). -->
     <div class="reliquary-produced" aria-live="polite" aria-atomic="true">
       <div class="reliquary-produced-title" id="reliquaryProducedTitle" role="heading" aria-level="2">Reliquary</div>
     </div>
   </div>
 
   <div class="reliquary-panel-body">
-    <div class="reliquary-placeholder" role="note">
-      The Reliquary is sealed.
-    </div>
+    <div class="reliquary-placeholder" role="note">The Reliquary is sealed.</div>
 
-    <div id="reliquaryLiveRegion" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+    <div id="reliquaryLiveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <noscript>
       <p>JavaScript is required to open the Reliquary.</p>

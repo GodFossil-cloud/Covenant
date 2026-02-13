@@ -1,31 +1,31 @@
-<!-- Shared Lexicon panel shell (GitHub Pages / Jekyll include). -->
+<!-- Lexicon panel shell (Jekyll include).
+     IDs and ARIA hooks are referenced by assets/lexicon.js; do not rename. -->
 <div class="lexicon-overlay" id="lexiconOverlay" aria-hidden="true"></div>
 
 <div class="lexicon-panel" id="lexiconPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="lexiconPanelTitle">
-    <div class="lexicon-drag-region" id="lexiconDragRegion">
-        <div class="lexicon-drag-handle" aria-hidden="true">
-            <span class="lexicon-drag-pill" aria-hidden="true"></span>
-            <span class="lexicon-drag-star" aria-hidden="true">𖤓</span>
-        </div>
+  <div class="lexicon-drag-region" id="lexiconDragRegion">
+    <div class="lexicon-drag-handle" aria-hidden="true">
+      <span class="lexicon-drag-pill" aria-hidden="true"></span>
+      <span class="lexicon-drag-star" aria-hidden="true">𖤓</span>
     </div>
+  </div>
 
-    <div class="lexicon-panel-header">
-        <div>
-            <div class="lexicon-panel-title" id="lexiconPanelTitle">Lexicon</div>
-            <!-- Intentionally left blank; populated by assets/lexicon.js from window.COVENANT_PAGE.modeLabel. -->
-            <div class="lexicon-panel-mode" id="lexiconModeLabel"></div>
-        </div>
-        <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
+  <div class="lexicon-panel-header">
+    <div>
+      <div class="lexicon-panel-title" id="lexiconPanelTitle">Lexicon</div>
+      <!-- Populated by assets/lexicon.js from window.COVENANT_PAGE.modeLabel. -->
+      <div class="lexicon-panel-mode" id="lexiconModeLabel"></div>
     </div>
+    <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
+  </div>
 
-    <div class="lexicon-panel-body">
-        <div id="lexiconDynamicContent"></div>
-        <noscript>
-            <p>JavaScript is required to view lexicon details.</p>
-        </noscript>
+  <div class="lexicon-panel-body">
+    <div id="lexiconDynamicContent"></div>
 
         <a href="{{ '/lexicon.html' | relative_url }}" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
 
-        {{ include.glossary | default: "" }}
-    </div>
+    <a href="{{ '/lexicon.html' | relative_url }}" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
+
+    {{ include.glossary | default: "" }}
+  </div>
 </div>
