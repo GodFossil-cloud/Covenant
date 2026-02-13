@@ -509,9 +509,9 @@ html #mirrorToggle.dock-tab:focus-visible::after{
     linear-gradient(to bottom, rgba(255, 235, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
 }
 
-/* Mechanical press: keep 1px travel relative to the raised position. */
+/* Mechanical press: remove iOS touch-down 1px hop (it reads like a dock glitch). */
 html #mirrorToggle.dock-tab:active:not(:disabled){
-  transform:translate3d(0,calc(var(--dock-tab-raise) + 1px),0);
+  transform:translate3d(0,var(--dock-tab-raise),0);
 }
 
 /* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
