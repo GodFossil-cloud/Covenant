@@ -1,0 +1,9 @@
+/*
+  vv-pin.css
+  Purpose: allow a small, JS-driven dock lift without touching covenant.css.
+  Default is no-op because --vv-offset-top defaults to 0px.
+*/
+
+.nav-footer {
+  bottom: var(--vv-offset-top, 0px) !important;
+}
