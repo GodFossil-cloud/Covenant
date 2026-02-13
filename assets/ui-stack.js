@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.12 */
+/*! Covenant UI Stack v0.3.13 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.12';
+  window.COVENANT_UI_STACK_VERSION = '0.3.13';
 
   var registry = Object.create(null);
   var order = [];
@@ -159,7 +159,11 @@
 
     if (off < 0) off = 0;
 
-    // Quantize to whole CSS pixels to prevent 1px compositor hop from subpixel jitter.
+    // iOS Safari can jitter offsetTop around ~1px during class/transition churn.
+    // Treat micro-offsets as noise (otherwise we "correct" to 1px and the dock visibly hops).
+    if (off < 1.5) off = 0;
+
+    // Quantize to whole CSS pixels to prevent compositor hop from subpixel jitter.
     var v = Math.round(off);
 
     if (vvPinLast === v) return;
