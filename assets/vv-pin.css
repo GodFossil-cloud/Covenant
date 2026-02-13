@@ -1,9 +1,11 @@
 /*
-  vv-pin.css
-  Purpose: allow a small, JS-driven dock lift without touching covenant.css.
-  Default is no-op because --vv-offset-top defaults to 0px.
-*/
+  vv-pin.css (deprecated)
 
-.nav-footer {
-  bottom: var(--vv-offset-top, 0px) !important;
-}
+  This file was an experimental attempt to adjust the fixed footer position via
+  bottom: var(--vv-offset-top). The canonical dock hop fix is:
+
+  - assets/ui-stack.js pins --vv-offset-top on <html> using visualViewport.offsetTop.
+  - _includes/nav-footer.html applies translate3d(0, var(--vv-offset-top), 0) on #navFooter.
+
+  This file is intentionally inert.
+*/
