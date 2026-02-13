@@ -27,8 +27,8 @@
 
     /* iOS Safari: keep .nav-footer pre-promoted as a stable layer to prevent a ~1px compositor hop
        when drag-opening panels (AGENT.md invariant). */
-    -webkit-transform: translate3d(0, var(--vv-offset-top, 0px), 0) translateZ(0);
-    transform: translate3d(0, var(--vv-offset-top, 0px), 0) translateZ(0);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }
