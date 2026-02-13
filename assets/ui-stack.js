@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.13 */
+/*! Covenant UI Stack v0.3.14 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.13';
+  window.COVENANT_UI_STACK_VERSION = '0.3.14';
 
   var registry = Object.create(null);
   var order = [];
@@ -459,6 +459,153 @@
     document.removeEventListener('touchmove', iosTouchMoveBlocker, IOS_TOUCHMOVE_OPTS);
     iosTouchMoveBlocker = null;
   }
+
+  // -------------------------------------------------
+  // iOS dock gesture guard (rubber-band leak fix)
+  // Blocks page scroll initiation during dock drag gestures and ToC/Reliquary motion shells.
+  // Allows normal scrolling inside the panel bodies.
+  // -------------------------------------------------
+
+  (function wireIOSDockGestureGuard() {
+    if (!isIOS) return;
+
+    var root = document.documentElement;
+
+    // Track a "finger is down on a dock drag handle" session.
+    // IMPORTANT: do NOT preventDefault touchstart (it can suppress the click).
+    var dockTouchActive = false;
+    var dockTouchId = null;
+
+    function beginDockTouchSession(e) {
+      try {
+        if (!e || !e.changedTouches || !e.changedTouches.length) return;
+        var t = e.changedTouches[0];
+        if (!t) return;
+        dockTouchActive = true;
+        dockTouchId = t.identifier;
+      } catch (err) {
+        dockTouchActive = true;
+        dockTouchId = null;
+      }
+    }
+
+    function endDockTouchSession(e) {
+      if (!dockTouchActive) return;
+
+      try {
+        if (!e || !e.changedTouches || dockTouchId == null) {
+          dockTouchActive = false;
+          dockTouchId = null;
+          return;
+        }
+
+        for (var i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i] && e.changedTouches[i].identifier === dockTouchId) {
+            dockTouchActive = false;
+            dockTouchId = null;
+            return;
+          }
+        }
+      } catch (err) {
+        dockTouchActive = false;
+        dockTouchId = null;
+      }
+    }
+
+    function isActive() {
+      try {
+        if (dockTouchActive) return true;
+
+        if (root && root.classList) {
+          if (root.classList.contains('toc-opening')) return true;
+          if (root.classList.contains('toc-closing')) return true;
+          if (root.classList.contains('toc-open')) return true;
+          if (root.classList.contains('reliquary-opening')) return true;
+          if (root.classList.contains('reliquary-closing')) return true;
+          if (root.classList.contains('reliquary-open')) return true;
+          if (root.classList.contains('reliquary-dragging')) return true;
+        }
+
+        var tocPanel = document.getElementById('tocPanel');
+        var reliquaryPanel = document.getElementById('reliquaryPanel');
+
+        if (tocPanel && tocPanel.classList) {
+          if (tocPanel.classList.contains('is-dragging')) return true;
+          if (tocPanel.classList.contains('is-open')) return true;
+          if (tocPanel.classList.contains('is-closing')) return true;
+        }
+
+        if (reliquaryPanel && reliquaryPanel.classList) {
+          if (reliquaryPanel.classList.contains('is-dragging')) return true;
+          if (reliquaryPanel.classList.contains('is-open')) return true;
+        }
+
+        return false;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    var blocker = function (e) {
+      if (!isActive()) return;
+
+      // Allow scrolling inside the panel bodies.
+      if (closestSafe(e && e.target, '#tocPanel .toc-panel-body')) return;
+      if (closestSafe(e && e.target, '#reliquaryPanel .reliquary-panel-body')) return;
+
+      if (e && e.cancelable) e.preventDefault();
+    };
+
+    // Install immediately (low cost; only blocks when active states are present).
+    document.addEventListener('touchmove', blocker, { capture: true, passive: false });
+
+    // PointerEvents hardening (helps some iOS builds, but touchmove is the primary fix).
+    function seedGuard(e) {
+      if (!e) return;
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function wireOnElements() {
+      var tocToggle = document.getElementById('tocToggle');
+      var mirrorToggle = document.getElementById('mirrorToggle');
+
+      // Tell the browser: do not treat these as panning surfaces.
+      try { if (tocToggle) tocToggle.style.touchAction = 'none'; } catch (err1) {}
+      try { if (mirrorToggle) mirrorToggle.style.touchAction = 'none'; } catch (err2) {}
+
+      try {
+        if (tocToggle) {
+          tocToggle.addEventListener('touchstart', beginDockTouchSession, { capture: true, passive: true });
+          tocToggle.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
+          tocToggle.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
+
+          tocToggle.addEventListener('pointerdown', seedGuard, true);
+          tocToggle.addEventListener('pointermove', seedGuard, true);
+        }
+
+        if (mirrorToggle) {
+          mirrorToggle.addEventListener('touchstart', beginDockTouchSession, { capture: true, passive: true });
+          mirrorToggle.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
+          mirrorToggle.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
+
+          mirrorToggle.addEventListener('pointerdown', seedGuard, true);
+          mirrorToggle.addEventListener('pointermove', seedGuard, true);
+        }
+
+        // Safety net: if the touch ends elsewhere, stop the session.
+        document.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
+        document.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
+      } catch (err3) {}
+    }
+
+    // ui-stack loads with defer; elements should exist, but keep it safe.
+    if (document && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', wireOnElements);
+    } else {
+      wireOnElements();
+    }
+
+  })();
 
   function computeScrollbarWidth() {
     try {
