@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.1 (True Panel Stack + Shared Scroll Lock Opt-In) */
+/*! Covenant Lexicon UI v0.3.2 (Overflow-only Scroll Lock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.1';
+  window.COVENANT_LEXICON_VERSION = '0.3.2';
 
   var doc = document;
   var root = doc.documentElement;
@@ -316,14 +316,12 @@
 
     root.classList.add('lexicon-scroll-lock');
 
-    if (isIOS) {
-      doc.body.style.overflow = 'hidden';
-      enableIOSTouchScrollLock();
-      return;
-    }
+    // Overflow-only scroll lock.
+    // Avoid fixed-body locking (position: fixed + top offsets) which can cause a ~1px
+    // iOS Safari compositor hop around fixed footers.
+    try { doc.body.style.overflow = 'hidden'; } catch (err) {}
 
-    doc.body.classList.add('lexicon-scroll-lock');
-    doc.body.style.top = (-scrollLockY) + 'px';
+    if (isIOS) enableIOSTouchScrollLock();
   }
 
   function unlockBodyScroll() {
@@ -333,15 +331,9 @@
 
     root.classList.remove('lexicon-scroll-lock');
 
-    if (isIOS) {
-      disableIOSTouchScrollLock();
-      doc.body.style.overflow = '';
-      window.scrollTo(0, scrollLockY);
-      return;
-    }
+    if (isIOS) disableIOSTouchScrollLock();
 
-    doc.body.classList.remove('lexicon-scroll-lock');
-    doc.body.style.top = '';
+    try { doc.body.style.overflow = ''; } catch (err) {}
     window.scrollTo(0, scrollLockY);
   }
 
