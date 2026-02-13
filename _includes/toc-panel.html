@@ -1,21 +1,25 @@
-<!-- Shared ToC (Table of Contents) panel shell (GitHub Pages / Jekyll include). -->
+<!-- ToC panel shell (Jekyll include).
+     IDs and ARIA hooks are referenced by assets/toc.js; do not rename. -->
 <div class="toc-overlay" id="tocOverlay" aria-hidden="true"></div>
 
-<div class="toc-panel" id="tocPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-labelledby="tocPanelTitle" aria-modal="true">
+<div class="toc-panel" id="tocPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="tocPanelTitle">
   <div class="toc-panel-header">
-    <!-- Drag handle region (for sheet-style close gesture when open). -->
+    <!-- Drag handle region (sheet-style gesture). -->
     <div class="toc-drag-region" id="tocDragRegion" aria-hidden="true"></div>
 
-    <!-- Accessibility label (kept in DOM; visual title removed to avoid medallion cutout conflict). -->
+    <!-- Screen-reader label (kept in DOM; visible title removed to avoid footer cutout conflicts). -->
     <div class="toc-panel-title sr-only" id="tocPanelTitle">Contents</div>
   </div>
 
-  <button class="toc-confirm-btn" id="tocConfirm" type="button" hidden disabled aria-label="Enter selected page">Enter</button>
+  <button class="toc-confirm-btn" id="tocConfirm" type="button" hidden disabled aria-label="Enter selected page">
+    Enter
+  </button>
 
   <div class="toc-panel-body">
     <div id="tocDynamicContent"></div>
     <div id="tocToast" class="toc-toast" aria-hidden="true"></div>
-    <div id="tocLiveRegion" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+    <div id="tocLiveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
     <noscript>
       <p>JavaScript is required to view journey progress.</p>
     </noscript>
