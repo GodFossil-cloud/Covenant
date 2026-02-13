@@ -93,18 +93,15 @@ body {
     border: 0;
 }
 
-/* Scroll lock */
-html.lexicon-scroll-lock,
-body.lexicon-scroll-lock {
+/* Scroll lock (overflow-only; avoid fixed-body locking to prevent iOS compositor hop) */
+html.lexicon-scroll-lock {
     overflow: hidden;
     height: 100%;
 }
 
-body.lexicon-scroll-lock {
-    position: fixed;
-    width: 100%;
-    left: 0;
-    right: 0;
+html.lexicon-scroll-lock body {
+    overflow: hidden;
+    height: 100%;
 }
 
 /* Loading Overlay */
