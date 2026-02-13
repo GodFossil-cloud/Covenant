@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.38 (Tabs parked; remove carry + cap-shift scaffolding) */
+/*! Covenant ToC Panel Styles v3.1.39 (Tabs parked; remove carry + cap-shift scaffolding) */
 
 /* -------------------------------------------------
    Variables
@@ -564,6 +564,133 @@ html.toc-closing .nav-footer::after,
 html.toc-dock-settling .nav-footer::after{opacity:.90}
 
 /* -------------------------------------------------
+   Dock window mask (motion-only)
+   ------------------------------------------------- */
+
+/* During drag-open/drag-close shells, the dock uses a temporary mask window.
+   These rules keep the cutout shape stable and keep the footer chrome from "snapping". */
+
+html.toc-opening,
+html.toc-closing,
+html.reliquary-opening,
+html.reliquary-closing{
+  --dock-window-h:calc(var(--dock-socket-h) + 2px);
+  --dock-window-y-shift:0px;
+}
+
+/* While the dock mask window is active, keep the base footer slab stable.
+   Draw the top bar as two segments so it does not cross the cutout notch. */
+html.toc-opening .nav-footer,
+html.toc-closing .nav-footer,
+html.reliquary-opening .nav-footer,
+html.reliquary-closing .nav-footer{
+  border-top:0;
+  border-top-color:transparent !important;
+
+  box-shadow:0 -14px 22px -14px rgba(0,0,0,0.78);
+
+  background-image:
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px),
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px);
+
+  background-size:
+    calc(var(--dock-window-left)) 1px,
+    calc(100% - (var(--dock-window-left) + var(--dock-window-w))) 1px;
+
+  background-position:
+    0 0,
+    calc(var(--dock-window-left) + var(--dock-window-w)) 0;
+
+  background-repeat:no-repeat;
+}
+
+/* Motion repaint layer: match the normal footer slab surface.
+   The notch mask subtracts this layer, so the surface shading disappears only over the cutout. */
+html.toc-opening .nav-footer::before,
+html.toc-closing .nav-footer::before,
+html.reliquary-opening .nav-footer::before,
+html.reliquary-closing .nav-footer::before{
+  border-top:0;
+  border-bottom:1px solid rgba(0,0,0,0.92);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+
+  background-image:
+    linear-gradient(to bottom,
+      var(--footer-hairline) 0,
+      var(--footer-hairline) 1px,
+      rgba(0,0,0,0) 1px),
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+
+  background-size:
+    100% 1px,
+    100% 100%,
+    100% 100%;
+
+  background-position:
+    0 0,
+    50% 0,
+    0 0;
+
+  background-repeat:no-repeat;
+}
+
+@supports (-webkit-mask-image: linear-gradient(#000 0 0)){
+  html.toc-opening .nav-footer::before,
+  html.toc-opening .nav-footer::after,
+  html.toc-closing .nav-footer::before,
+  html.toc-closing .nav-footer::after,
+  html.reliquary-opening .nav-footer::before,
+  html.reliquary-opening .nav-footer::after,
+  html.reliquary-closing .nav-footer::before,
+  html.reliquary-closing .nav-footer::after{
+    -webkit-mask-image:
+      linear-gradient(#000 0 0),
+      radial-gradient(circle var(--dock-socket-r) at 50% 0, #000 99%, transparent 100%);
+    -webkit-mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    -webkit-mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-composite:destination-out;
+  }
+}
+
+@supports (mask-image: linear-gradient(#000 0 0)){
+  html.toc-opening .nav-footer::before,
+  html.toc-opening .nav-footer::after,
+  html.toc-closing .nav-footer::before,
+  html.toc-closing .nav-footer::after,
+  html.reliquary-opening .nav-footer::before,
+  html.reliquary-opening .nav-footer::after,
+  html.reliquary-closing .nav-footer::before,
+  html.reliquary-closing .nav-footer::after{
+    mask-image:
+      linear-gradient(#000 0 0),
+      radial-gradient(circle var(--dock-socket-r) at 50% 0, #000 99%, transparent 100%);
+    mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    mask-repeat:no-repeat;
+    mask-composite:subtract;
+  }
+}
+
+/* -------------------------------------------------
    Reduced motion
    ------------------------------------------------- */
 
@@ -614,4 +741,149 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
   .toc-group-title,.toc-item-btn,.toc-locked-btn,.toc-annex-link{padding-left:1.45rem}
   .toc-entry-key{min-width:6.9rem}
   .toc-tab::after{width:min(210px,74vw)}
+}
+
+/* -------------------------------------------------
+   Motion + mask fixes (consolidated)
+   ------------------------------------------------- */
+
+/* During open/close motion (ToC + Reliquary), keep the footer slab stable and avoid stray 1px hairlines. */
+html.toc-opening .nav-footer,
+html.toc-closing .nav-footer,
+html.reliquary-opening .nav-footer,
+html.reliquary-closing .nav-footer{
+  border-top-color:transparent !important;
+}
+
+/* Dock mask geometry fix (motion states only)
+   Goal: keep the socket cutout a true semicircle and keep the footer chrome stable during drag/open/close.
+*/
+
+html.toc-opening,
+html.toc-closing,
+html.reliquary-opening,
+html.reliquary-closing{
+  /* Keep the window box close to the socket geometry; the circle radius below defines the actual cut. */
+  --dock-window-h:calc(var(--dock-socket-h) + 2px);
+
+  /* Lower the cutout a touch more. */
+  --dock-window-y-shift:0px;
+}
+
+/* While the dock window is active, keep the base footer chrome stable (avoid a perceived 1px snap). */
+html.toc-opening .nav-footer,
+html.toc-closing .nav-footer,
+html.reliquary-opening .nav-footer,
+html.reliquary-closing .nav-footer{
+  border-top:0;
+
+  box-shadow:0 -14px 22px -14px rgba(0,0,0,0.78);
+
+  background-image:
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px),
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.70) 0,
+      rgba(0,0,0,0.70) 1px,
+      rgba(0,0,0,0) 1px);
+
+  background-size:
+    calc(var(--dock-window-left)) 1px,
+    calc(100% - (var(--dock-window-left) + var(--dock-window-w))) 1px;
+
+  background-position:
+    0 0,
+    calc(var(--dock-window-left) + var(--dock-window-w)) 0;
+
+  background-repeat:no-repeat;
+}
+
+/* Motion repaint layer: match the normal footer slab surface.
+   IMPORTANT: do not include the outer shadow here (masked shadows can clip/vanish).
+   IMPORTANT: do not include the dark top border line here (it's handled on the base footer for stability).
+*/
+html.toc-opening .nav-footer::before,
+html.toc-closing .nav-footer::before,
+html.reliquary-opening .nav-footer::before,
+html.reliquary-closing .nav-footer::before{
+  border-top:0;
+  border-bottom:1px solid rgba(0,0,0,0.92);
+
+  /* Inset depth only (outer shadow lives on .nav-footer). */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+
+  background-image:
+    /* Brass hairline (full width; will also be cut away at the notch). */
+    linear-gradient(to bottom,
+      var(--footer-hairline) 0,
+      var(--footer-hairline) 1px,
+      rgba(0,0,0,0) 1px),
+
+    /* Subtle top glow. */
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+
+    /* Obsidian slab. */
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+
+  background-size:
+    100% 1px,
+    100% 100%,
+    100% 100%;
+
+  background-position:
+    0 0,
+    50% 0,
+    0 0;
+
+  background-repeat:no-repeat;
+}
+
+@supports (-webkit-mask-image: linear-gradient(#000 0 0)){
+  html.toc-opening .nav-footer::before,
+  html.toc-opening .nav-footer::after,
+  html.toc-closing .nav-footer::before,
+  html.toc-closing .nav-footer::after,
+  html.reliquary-opening .nav-footer::before,
+  html.reliquary-opening .nav-footer::after,
+  html.reliquary-closing .nav-footer::before,
+  html.reliquary-closing .nav-footer::after{
+    -webkit-mask-image:
+      linear-gradient(#000 0 0),
+      radial-gradient(circle var(--dock-socket-r) at 50% 0, #000 99%, transparent 100%);
+    -webkit-mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    -webkit-mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-composite:destination-out;
+  }
+}
+
+@supports (mask-image: linear-gradient(#000 0 0)){
+  html.toc-opening .nav-footer::before,
+  html.toc-opening .nav-footer::after,
+  html.toc-closing .nav-footer::before,
+  html.toc-closing .nav-footer::after,
+  html.reliquary-opening .nav-footer::before,
+  html.reliquary-opening .nav-footer::after,
+  html.reliquary-closing .nav-footer::before,
+  html.reliquary-closing .nav-footer::after{
+    mask-image:
+      linear-gradient(#000 0 0),
+      radial-gradient(circle var(--dock-socket-r) at 50% 0, #000 99%, transparent 100%);
+    mask-size:
+      100% 100%,
+      var(--dock-window-w) var(--dock-window-h);
+    mask-position:
+      0 0,
+      var(--dock-window-left) var(--dock-window-top);
+    mask-repeat:no-repeat;
+    mask-composite:subtract;
+  }
 }
