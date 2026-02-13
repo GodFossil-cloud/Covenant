@@ -37,24 +37,21 @@
   --toc-glyph-nudge-x: 0px;
   --mirror-glyph-nudge-x: 0px;
 
-  /* iOS Safari: stabilize the fixed dock as a single composited layer.
-     (The hop we've been chasing is not layout; it is a paint/compositor jitter.) */
-  -webkit-transform: translate3d(0,0,0);
-  transform: translate3d(0,0,0);
+  /* iOS Safari: avoid forcing compositor promotion on the fixed dock.
+     (We already hard-guard against dock translation in critical CSS.) */
+  -webkit-transform: none;
+  transform: none;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  will-change: transform;
+  will-change: auto;
   isolation: isolate;
-  contain: paint;
 }
 
 #navFooter::before,
 #navFooter::after {
-  -webkit-transform: translate3d(0,0,0);
-  transform: translate3d(0,0,0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  will-change: transform;
+  will-change: auto;
 }
 
 /* Cutout socket:
