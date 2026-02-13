@@ -30,7 +30,7 @@
   --reliquary-notch-h-clip:calc(var(--reliquary-notch-h) - 1px);
 
   /* Mechanical bite: push the tab into the notch floor to eliminate any true gap (independent of notch depth). */
-  --reliquary-seat-overlap:2px;
+  --reliquary-seat-overlap:0px;
 
   /* Seat welding: JS seats the tab box using (seat-dy + seat-overlap).
      Tune so the tab TOP edge meets the panel TOP edge; notch/cap remain visual. */
@@ -55,19 +55,6 @@ html.reliquary-dock-settling #mirrorToggle{pointer-events:none}
 /* -------------------------------------------------
    Dock tab (Mirror button)
    ------------------------------------------------- */
-
-/* Mirror tab stays parked in the footer cradle; it does not ride with the sheet. */
-html #mirrorToggle.dock-tab{
-  transform:translate3d(0,var(--dock-tab-raise),0);
-  transition:transform var(--reliquary-snap-duration) var(--reliquary-snap-ease);
-
-  touch-action:none;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
-  -webkit-user-select:none;
-
-  cursor:ns-resize;
-}
 
 html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 
@@ -156,7 +143,7 @@ html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
   height:4px;
   border-radius:999px;
   background:rgba(201,169,97,.22);
-  box-shadow:0 1px 0 rgba(0,0,0,.35);
+  box-shadow:0 0px 0 rgba(0,0,0,.35);
 }
 
 /* -------------------------------------------------
