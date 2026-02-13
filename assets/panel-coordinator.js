@@ -171,11 +171,16 @@
     if (scrollLockCount === 0) {
       // Round to avoid fractional scrollY being fed back into layout (micro-jump risk).
       scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
-      root.classList.add('covenant-scroll-lock');
 
-      // If ui-stack is already handling scroll lock, do not touch overflow/padding.
-      if (!uiStackAlreadyLocked()) {
-        applyOverflowLockStyles();
+      // iOS Safari: avoid toggling overflow hidden / height locks on html/body.
+      // We rely on the touchmove blocker while a panel is open.
+      if (!isIOS) {
+        root.classList.add('covenant-scroll-lock');
+
+        // If ui-stack is already handling scroll lock, do not touch overflow/padding.
+        if (!uiStackAlreadyLocked()) {
+          applyOverflowLockStyles();
+        }
       }
 
       // iOS needs the touchmove blocker even when overflow is hidden.
@@ -200,10 +205,13 @@
     // If ui-stack owns the lock, it will restore when the last surface closes.
     restoreOverflowLockStyles();
 
-    try {
-      // Maintain the pre-lock scroll position (harmless if nothing moved).
-      window.scrollTo(0, scrollLockY);
-    } catch (err3) {}
+    // On iOS, avoid scroll restoration (it can trigger a compositor tick around fixed docks).
+    if (!isIOS) {
+      try {
+        // Maintain the pre-lock scroll position (harmless if nothing moved).
+        window.scrollTo(0, scrollLockY);
+      } catch (err3) {}
+    }
   }
 
   // ---------------------------

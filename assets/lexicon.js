@@ -312,16 +312,22 @@
     if (!shouldUseLocalScrollLock()) return;
 
     if (root.classList.contains('lexicon-scroll-lock')) return;
-    scrollLockY = window.scrollY || window.pageYOffset || 0;
 
+    // Round to avoid feeding fractional scroll offsets back into layout.
+    scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
+
+    // Keep footer dock sovereign above the Lexicon overlay/panel.
     root.classList.add('lexicon-scroll-lock');
 
-    // Overflow-only scroll lock.
-    // Avoid fixed-body locking (position: fixed + top offsets) which can cause a ~1px
-    // iOS Safari compositor hop around fixed footers.
-    try { doc.body.style.overflow = 'hidden'; } catch (err) {}
+    // iOS Safari: toggling overflow hidden can nudge visualViewport and tick fixed docks by ~1px.
+    // Local lock on iOS uses only the touchmove blocker.
+    if (isIOS) {
+      enableIOSTouchScrollLock();
+      return;
+    }
 
-    if (isIOS) enableIOSTouchScrollLock();
+    // Overflow-only scroll lock (non-iOS).
+    try { doc.body.style.overflow = 'hidden'; } catch (err) {}
   }
 
   function unlockBodyScroll() {
@@ -331,7 +337,10 @@
 
     root.classList.remove('lexicon-scroll-lock');
 
-    if (isIOS) disableIOSTouchScrollLock();
+    if (isIOS) {
+      disableIOSTouchScrollLock();
+      return;
+    }
 
     try { doc.body.style.overflow = ''; } catch (err) {}
     window.scrollTo(0, scrollLockY);
