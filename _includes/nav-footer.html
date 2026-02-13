@@ -22,41 +22,15 @@
     /* If we raise the seal, raise the cradle by the same delta (relative to the 5px baseline). */
     --seal-cradle-shift-y: calc(0 * (var(--lexicon-seal-top-align, 5px) - 5px));
 
-    /* iOS Safari: do not force compositor promotion on the dock.
-       It can introduce a ~1px rounding tick while other fixed layers animate. */
-    -webkit-transform: none;
-    transform: none;
+    /* iOS Safari: keep .nav-footer pre-promoted as a stable layer to prevent a ~1px compositor hop
+       when drag-opening panels (AGENT.md invariant). */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }
 
-  /* Hard guard: never translate the dock during ToC/Reliquary motion/open states (iOS Safari hop fix). */
-  html.toc-opening #navFooter,
-  html.toc-closing #navFooter,
-  html.reliquary-opening #navFooter,
-  html.reliquary-closing #navFooter,
-  html.reliquary-open #navFooter {
-    -webkit-transform: none !important;
-    transform: none !important;
-    translate: none !important;
-  }
-
-  html.toc-opening #navFooter .nav-footer-inner,
-  html.toc-closing #navFooter .nav-footer-inner,
-  html.reliquary-opening #navFooter .nav-footer-inner,
-  html.reliquary-closing #navFooter .nav-footer-inner,
-  html.reliquary-open #navFooter .nav-footer-inner,
-  html.toc-opening #navFooter .nav-seals,
-  html.toc-closing #navFooter .nav-seals,
-  html.reliquary-opening #navFooter .nav-seals,
-  html.reliquary-closing #navFooter .nav-seals,
-  html.reliquary-open #navFooter .nav-seals {
-    -webkit-transform: none !important;
-    transform: none !important;
-    translate: none !important;
-  }
-
-  /* iOS Safari: harden the moving parts without forcing will-change layers. */
+  /* iOS Safari: harden the moving parts without forcing extra will-change layers. */
   #navFooter #tocToggle,
   #navFooter #mirrorToggle,
   #navFooter #lexiconToggle,
