@@ -54,10 +54,11 @@
 
   #navFooter #tocToggle,
   #navFooter #mirrorToggle {
-    width: var(--nav-pill-width);
-    height: var(--nav-pill-height);
+    /* Critical: provide px fallbacks so the tab hitboxes never collapse if CSS tokens go missing. */
+    width: var(--nav-pill-width, 56px);
+    height: var(--nav-pill-height, 46px);
     padding: 0;
-    flex: 0 0 var(--nav-pill-width);
+    flex: 0 0 var(--nav-pill-width, 56px);
   }
 
   /* -------------------------------------------------
