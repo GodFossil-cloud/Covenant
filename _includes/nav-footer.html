@@ -1,39 +1,38 @@
-<!-- Shared Covenant section footer nav (GitHub Pages / Jekyll include). -->
-<!-- iPhone Safari safety net: keep the flat-top seal + citation label visible even if external CSS fails to load. -->
+<!-- Footer dock + panel shells (Jekyll include).
+     This file is structural (IDs/ARIA are referenced by JS in assets/); do not rename controls. -->
+
+<!-- iPhone Safari safety net: minimal CSS to keep the dock readable even if external CSS loads late. -->
 <style id="navFooterCritical">
-  /* Symmetry hardening: keep the three-seal cluster perfectly centered (iPhone Safari). */
+  /* -------------------------------------------------
+     Fallback tokens (external CSS may override)
+     ------------------------------------------------- */
+
   #navFooter {
-    /* Decorative cap defaults (fallback only; toc.css will override). */
+    /* Dock caps (ToC + Mirror). */
     --dock-cap-lift: 10px;
     --dock-cap-h: calc(var(--dock-cap-size, 46px) / 2);
     --dock-cap-half: calc(var(--dock-cap-h) / 2);
 
-    /* Lexicon seal geometry (flat-top). */
+    /* Lexicon seal geometry (flat-top fallback). */
     --lexicon-seal-w: 70px;
     --lexicon-seal-h: 38px;
-
-    /* Seat the seal 4px higher than the historical fallback baseline (5px -> 9px). */
     --lexicon-seal-top-align: 8px;
 
-    /* Cradle/socket geometry tokens (external CSS may override). */
+    /* Socket geometry tokens (used by footer-overrides.css / toc.css). */
     --seal-notch-radius: calc(var(--lexicon-seal-w) * 0.5);
     --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
 
-    /* If we raise the seal, raise the cradle by the same delta (relative to the 5px baseline). */
+    /* Keep cradle shift disabled in fallback; external CSS owns the real seat model. */
     --seal-cradle-shift-y: calc(0 * (var(--lexicon-seal-top-align, 5px) - 5px));
 
-    /* iOS Safari: fixed-position elements can “tick” ~1px when the visual viewport
-       shifts during gesture/drag shells. ui-stack pins --vv-offset-top on <html>. */
-
-    /* iOS Safari: keep .nav-footer pre-promoted as a stable layer to prevent a ~1px compositor hop
-       when drag-opening panels (AGENT.md invariant). */
+    /* iOS Safari: pre-promote the fixed dock to avoid a ~1px compositor hop during drag shells. */
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }
 
-  /* iOS Safari: harden the moving parts without forcing extra will-change layers. */
+  /* iOS Safari: harden moving parts without forcing extra layers. */
   #navFooter #tocToggle,
   #navFooter #mirrorToggle,
   #navFooter #lexiconToggle,
@@ -44,6 +43,7 @@
     will-change: auto;
   }
 
+  /* Keep the seal cluster centered. */
   #navFooter .nav-seals {
     display: flex;
     align-items: center;
@@ -60,8 +60,14 @@
     flex: 0 0 var(--nav-pill-width);
   }
 
-  /* Decorative: medallion cap on a stem (fallback styling). */
-  :where(#navFooter .dock-tab) { position: relative; overflow: visible; }
+  /* -------------------------------------------------
+     Dock caps (fallback styling)
+     ------------------------------------------------- */
+
+  :where(#navFooter .dock-tab) {
+    position: relative;
+    overflow: visible;
+  }
 
   :where(#navFooter .dock-tab .dock-cap) {
     position: absolute;
@@ -69,20 +75,38 @@
     top: 0;
     width: var(--dock-cap-size, 46px);
     height: var(--dock-cap-h);
-    transform: translate3d(-50%, calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h))), 0);
+    transform: translate3d(
+      -50%,
+      calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h))),
+      0
+    );
     border-radius: 0 0 999px 999px;
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
   }
 
-  /* iOS critical fallback: honor the JS-driven cap seat shift so cap + glyph stay together. */
-  #navFooter #tocToggle .dock-cap{
-    transform: translate3d(-50%, calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--toc-cap-shift-y, 0px)), 0);
+  /* Honor JS-driven seat shifts (cap + glyph move together). */
+  #navFooter #tocToggle .dock-cap {
+    transform: translate3d(
+      -50%,
+      calc(
+        0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) +
+          var(--toc-cap-shift-y, 0px)
+      ),
+      0
+    );
   }
 
-  #navFooter #mirrorToggle .dock-cap{
-    transform: translate3d(-50%, calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--mirror-cap-shift-y, 0px)), 0);
+  #navFooter #mirrorToggle .dock-cap {
+    transform: translate3d(
+      -50%,
+      calc(
+        0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) +
+          var(--mirror-cap-shift-y, 0px)
+      ),
+      0
+    );
   }
 
   :where(#navFooter .dock-tab .dock-cap)::before {
@@ -90,8 +114,8 @@
     position: absolute;
     inset: 0;
     border-radius: 0 0 999px 999px;
-    border: 1px solid rgba(0,0,0,0.72);
-    box-shadow: inset 0 0 18px rgba(0,0,0,0.86), inset 0 1px 0 rgba(255,255,255,0.05);
+    border: 1px solid rgba(0, 0, 0, 0.72);
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.86), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   :where(#navFooter .dock-tab .dock-cap)::after {
@@ -100,14 +124,14 @@
     inset: 0;
     border-radius: 0 0 999px 999px;
     background:
-      radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 45%),
-      linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.40)),
+      radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0) 45%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.40)),
       #010103;
   }
 
-  /* Non-negotiable: dock tabs are medallion-only (no welded box frame ever). */
+  /* Dock tabs are medallion-only (never a welded box frame). */
   #navFooter #tocToggle.dock-tab,
-  #navFooter #mirrorToggle.dock-tab{
+  #navFooter #mirrorToggle.dock-tab {
     background: transparent !important;
     box-shadow: none !important;
     overflow: visible !important;
@@ -116,19 +140,22 @@
   #navFooter #tocToggle.dock-tab::before,
   #navFooter #tocToggle.dock-tab::after,
   #navFooter #mirrorToggle.dock-tab::before,
-  #navFooter #mirrorToggle.dock-tab::after{
+  #navFooter #mirrorToggle.dock-tab::after {
     content: none !important;
     display: none !important;
   }
 
-  /* Mirror: cap geometry is intentional (it is “carried” by the Reliquary). */
-  #navFooter #mirrorToggle .toc-glyph {
+  /* Glyph centering (cap seat model). */
+  #navFooter #mirrorToggle .toc-glyph,
+  #navFooter #tocToggle .toc-glyph {
     position: absolute !important;
     left: 50% !important;
     right: auto !important;
-    top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
+    top: calc(
+      0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) +
+        var(--dock-cap-half)
+    );
     bottom: auto !important;
-    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--mirror-cap-shift-y, 0px)));
     z-index: 2;
 
     display: inline-grid !important;
@@ -140,50 +167,29 @@
     padding: 0 !important;
   }
 
-  /* ToC: Unicode hamburger centered in the same seat model as Mirror. */
-  #navFooter #tocToggle .toc-glyph{
-    position: absolute !important;
-    left: 50% !important;
-    right: auto !important;
-    top: calc(0px - var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h)) + var(--dock-cap-half));
-    bottom: auto !important;
-    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--toc-cap-shift-y, 0px)));
-    z-index: 2;
+  #navFooter #mirrorToggle .toc-glyph {
+    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--mirror-cap-shift-y, 0px)));
+  }
 
-    display: inline-grid !important;
-    place-items: center;
-    width: 1em;
-    height: 1em;
-    line-height: 1 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  #navFooter #tocToggle .toc-glyph {
+    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--toc-cap-shift-y, 0px)));
 
     /* If a glyph font fails, keep the fallback readable. */
     font-size: 0.88rem !important;
   }
 
+  /* -------------------------------------------------
+     Lexicon seal fallback geometry
+     ------------------------------------------------- */
+
   #navFooter #lexiconToggle {
     flex: 0 0 var(--lexicon-seal-w, 66px);
-  }
+    width: var(--lexicon-seal-w, 66px) !important;
+    height: var(--lexicon-seal-h, 40px) !important;
+    overflow: hidden;
 
-  /* Mobile: seat the tabs outward into their sockets. */
-  @media (max-width: 600px) {
-    #navFooter {
-      --dock-cap-lift: 9px;
-
-      /* Keep the seal proportional on small screens. */
-      --lexicon-seal-w: 68px;
-      --lexicon-seal-h: 36px;
-    }
-
-    #navFooter #tocToggle,
-    #navFooter #mirrorToggle { position: relative; }
-
-    /* Outward nudge: ToC left, Mirror right. */
-    #navFooter #tocToggle { left: -3px; }
-    #navFooter #mirrorToggle { left: 3px; }
-
-    #navFooter .citation-label { min-height: 16px !important; }
+    /* Baseline seat (external CSS may override). */
+    margin-top: calc(0 * var(--lexicon-seal-top-align, 5px));
   }
 
   #navFooter #lexiconToggle,
@@ -192,90 +198,118 @@
     border-radius: 0 0 999px 999px !important;
   }
 
-  #navFooter #lexiconToggle {
-    width: var(--lexicon-seal-w, 66px) !important;
-    height: var(--lexicon-seal-h, 40px) !important;
-    overflow: hidden;
+  /* -------------------------------------------------
+     Mobile nudges
+     ------------------------------------------------- */
 
-    /* Seat the flat-top seal into the cradle (iPhone Safari baseline). */
-    margin-top: calc(0 * var(--lexicon-seal-top-align, 5px));
+  @media (max-width: 600px) {
+    #navFooter {
+      --dock-cap-lift: 9px;
+      --lexicon-seal-w: 68px;
+      --lexicon-seal-h: 36px;
+    }
+
+    #navFooter #tocToggle,
+    #navFooter #mirrorToggle {
+      position: relative;
+    }
+
+    /* Seat the bookends outward into their sockets. */
+    #navFooter #tocToggle {
+      left: -3px;
+    }
+
+    #navFooter #mirrorToggle {
+      left: 3px;
+    }
+
+    #navFooter .citation-label {
+      min-height: 16px !important;
+    }
   }
 
-  #navFooter .nav-center { padding-top: var(--nav-center-pad-top, 4px); }
-
-  #navFooter .citation-label {
+  /* Citation label must remain visible even when empty (JS populates it). */
+  #navFooter .citation-label,
+  #navFooter .citation-label:empty {
     display: flex !important;
     min-height: 18px !important;
     visibility: visible !important;
   }
 
-  #navFooter .citation-label:empty {
-    display: flex !important;
-    visibility: visible !important;
+  #navFooter .nav-center {
+    padding-top: var(--nav-center-pad-top, 4px);
   }
 </style>
 
 <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
-    <div class="nav-footer-inner">
-        <div class="nav-left" aria-label="Previous">
-            {% if include.prev_href and include.prev_href != "" %}
-                <a href="{{ include.prev_href }}" class="nav-prev" aria-label="{{ include.prev_aria | default: "Previous" }}">
-                    <span class="nav-prev-frame" aria-hidden="true">
-                        <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮘</span>
-                    </span>
-                    <span class="nav-prev-label" aria-hidden="true">{{ include.prev_label | default: "Previous" }}</span>
-                </a>
-            {% else %}
-                <button class="nav-prev nav-prev--disabled" type="button" disabled aria-label="{{ include.prev_aria | default: "Previous section" }}">
-                    <span class="nav-prev-frame" aria-hidden="true">
-                        <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮘</span>
-                    </span>
-                    <span class="nav-prev-label" aria-hidden="true">{{ include.prev_label | default: "Previous" }}</span>
-                </button>
-            {% endif %}
-        </div>
-
-        <div class="nav-center">
-            <span class="sr-only">{{ include.current_label | default: "" }}</span>
-
-            <div class="nav-seals" aria-label="Panels">
-                <!-- Strategy B: one centered cluster governs symmetry. -->
-                <button class="nav-btn dock-tab" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
-                    <span class="dock-cap" aria-hidden="true"></span>
-                    <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">☰</span>
-                </button>
-
-                <button class="nav-btn center" id="lexiconToggle" type="button" aria-label="{{ include.center_aria_label | default: "Open Lexicon" }}" aria-expanded="false" aria-controls="lexiconPanel"><span class="lexicon-glyph" aria-hidden="true">𖤓</span></button>
-
-                <button class="nav-btn dock-tab" id="mirrorToggle" type="button" aria-label="Open Reliquary" aria-expanded="false" aria-controls="reliquaryPanel">
-                    <span class="dock-cap" aria-hidden="true"></span>
-                    <span class="toc-glyph" aria-hidden="true">⌘</span>
-                </button>
-            </div>
-
-            <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true">
-                <span class="citation-text" id="citationText"></span>
-            </div>
-        </div>
-
-        <div class="nav-right" aria-label="Next">
-            {% if include.next_href and include.next_href != "" %}
-                <a href="{{ include.next_href }}" class="nav-next" aria-label="{{ include.next_aria | default: "Next" }}">
-                    <span class="nav-next-frame" aria-hidden="true">
-                        <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
-                    </span>
-                    <span class="nav-next-label" aria-hidden="true">{{ include.next_label | default: "Next" }}</span>
-                </a>
-            {% else %}
-                <button class="nav-next nav-next--disabled" type="button" disabled aria-label="{{ include.next_aria | default: "Next section" }}">
-                    <span class="nav-next-frame" aria-hidden="true">
-                        <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
-                    </span>
-                    <span class="nav-next-label" aria-hidden="true">{{ include.next_label | default: "Next" }}</span>
-                </button>
-            {% endif %}
-        </div>
+  <div class="nav-footer-inner">
+    <div class="nav-left" aria-label="Previous">
+      {% if include.prev_href and include.prev_href != "" %}
+        <a href="{{ include.prev_href }}" class="nav-prev" aria-label="{{ include.prev_aria | default: "Previous" }}">
+          <span class="nav-prev-frame" aria-hidden="true">
+            <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮘</span>
+          </span>
+          <span class="nav-prev-label" aria-hidden="true">{{ include.prev_label | default: "Previous" }}</span>
+        </a>
+      {% else %}
+        <button class="nav-prev nav-prev--disabled" type="button" disabled aria-label="{{ include.prev_aria | default: "Previous section" }}">
+          <span class="nav-prev-frame" aria-hidden="true">
+            <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮘</span>
+          </span>
+          <span class="nav-prev-label" aria-hidden="true">{{ include.prev_label | default: "Previous" }}</span>
+        </button>
+      {% endif %}
     </div>
+
+    <div class="nav-center">
+      <span class="sr-only">{{ include.current_label | default: "" }}</span>
+
+      <div class="nav-seals" aria-label="Panels">
+        <button class="nav-btn dock-tab" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
+          <span class="dock-cap" aria-hidden="true"></span>
+          <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">☰</span>
+        </button>
+
+        <button
+          class="nav-btn center"
+          id="lexiconToggle"
+          type="button"
+          aria-label="{{ include.center_aria_label | default: "Open Lexicon" }}"
+          aria-expanded="false"
+          aria-controls="lexiconPanel"
+        >
+          <span class="lexicon-glyph" aria-hidden="true">𖤓</span>
+        </button>
+
+        <button class="nav-btn dock-tab" id="mirrorToggle" type="button" aria-label="Open Reliquary" aria-expanded="false" aria-controls="reliquaryPanel">
+          <span class="dock-cap" aria-hidden="true"></span>
+          <span class="toc-glyph" aria-hidden="true">⌘</span>
+        </button>
+      </div>
+
+      <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true">
+        <span class="citation-text" id="citationText"></span>
+      </div>
+    </div>
+
+    <div class="nav-right" aria-label="Next">
+      {% if include.next_href and include.next_href != "" %}
+        <a href="{{ include.next_href }}" class="nav-next" aria-label="{{ include.next_aria | default: "Next" }}">
+          <span class="nav-next-frame" aria-hidden="true">
+            <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
+          </span>
+          <span class="nav-next-label" aria-hidden="true">{{ include.next_label | default: "Next" }}</span>
+        </a>
+      {% else %}
+        <button class="nav-next nav-next--disabled" type="button" disabled aria-label="{{ include.next_aria | default: "Next section" }}">
+          <span class="nav-next-frame" aria-hidden="true">
+            <span class="nav-btn-icon nav-btn-icon--arrow" aria-hidden="true">⮚</span>
+          </span>
+          <span class="nav-next-label" aria-hidden="true">{{ include.next_label | default: "Next" }}</span>
+        </button>
+      {% endif %}
+    </div>
+  </div>
 </nav>
 
 {% include toc-panel.html %}
