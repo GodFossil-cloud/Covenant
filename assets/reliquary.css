@@ -42,10 +42,13 @@
    ------------------------------------------------- */
 
 /* When Reliquary is committed open (or closing), keep the Lexicon gate closed.
-   During drag-open we dim via html.reliquary-dragging so a cancelled drag re-enables immediately on release. */
+   During drag-open we dim via html.reliquary-dragging so a cancelled drag re-enables immediately on release.
+
+   NOTE (iOS Safari): avoid `filter` on footer elements during panel drag/open/close.
+   Filters often trigger compositor re-rasterization and can manifest as a ~1px fixed dock hop. */
 html.reliquary-open #lexiconToggle,
 html.reliquary-closing #lexiconToggle,
-html.reliquary-dragging #lexiconToggle{opacity:.28;filter:grayscale(1)}
+html.reliquary-dragging #lexiconToggle{opacity:.28}
 
 /* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
    Avoid toggling dock/toggle z-index during reliquary-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
