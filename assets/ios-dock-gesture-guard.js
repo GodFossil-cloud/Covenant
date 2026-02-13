@@ -1,4 +1,4 @@
-/*! Covenant iOS Dock Gesture Guard v0.1.0
+/*! Covenant iOS Dock Gesture Guard v0.1.1
    Purpose: prevent iOS Safari from initiating page scroll/rubber-band during footer dock gestures,
    which can present as a ~1px vertical tick in fixed UI while dragging ToC/Reliquary panels.
 
@@ -37,16 +37,62 @@
   var reliquaryPanel = doc.getElementById('reliquaryPanel');
 
   // Tell the browser: do not treat these as panning surfaces.
+  // (iOS PointerEvents support is imperfect; we still also guard touchmove below.)
   try { if (tocToggle) tocToggle.style.touchAction = 'none'; } catch (err1) {}
   try { if (mirrorToggle) mirrorToggle.style.touchAction = 'none'; } catch (err2) {}
 
+  // Track a "finger is down on a dock drag handle" session.
+  // IMPORTANT: do NOT preventDefault touchstart (it can suppress the click).
+  var dockTouchActive = false;
+  var dockTouchId = null;
+
+  function beginDockTouchSession(e) {
+    try {
+      if (!e || !e.changedTouches || !e.changedTouches.length) return;
+      var t = e.changedTouches[0];
+      if (!t) return;
+      dockTouchActive = true;
+      dockTouchId = t.identifier;
+    } catch (err) {
+      dockTouchActive = true;
+      dockTouchId = null;
+    }
+  }
+
+  function endDockTouchSession(e) {
+    if (!dockTouchActive) return;
+
+    try {
+      if (!e || !e.changedTouches || dockTouchId == null) {
+        dockTouchActive = false;
+        dockTouchId = null;
+        return;
+      }
+
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i] && e.changedTouches[i].identifier === dockTouchId) {
+          dockTouchActive = false;
+          dockTouchId = null;
+          return;
+        }
+      }
+    } catch (err) {
+      dockTouchActive = false;
+      dockTouchId = null;
+    }
+  }
+
   // On iOS Safari, the 1px tick is often visual viewport movement (rubber-band/scroll leakage).
-  // Block touchmove outside the panel body during active motion/drag states.
+  // Block touchmove outside the panel body during:
+  // - active ToC/Reliquary motion states, OR
+  // - an active dock touch session (finger down on ToC/Mirror).
   var blocker = null;
   var OPTS = { capture: true, passive: false };
 
   function isActive() {
     try {
+      if (dockTouchActive) return true;
+
       if (root.classList.contains('toc-opening')) return true;
       if (root.classList.contains('toc-closing')) return true;
       if (root.classList.contains('toc-open')) return true;
@@ -91,8 +137,7 @@
   // Install immediately (low cost; only blocks when active states are present).
   ensureBlockerInstalled();
 
-  // Extra hardening: prevent default on the initial gesture seed so Safari doesn't begin a pan
-  // before PointerEvents drag logic takes over.
+  // PointerEvents hardening (helps some iOS builds, but touchmove is the primary fix).
   function seedGuard(e) {
     if (!e) return;
     if (e.cancelable) e.preventDefault();
@@ -100,12 +145,25 @@
 
   try {
     if (tocToggle) {
+      tocToggle.addEventListener('touchstart', beginDockTouchSession, { capture: true, passive: true });
+      tocToggle.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
+      tocToggle.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
+
       tocToggle.addEventListener('pointerdown', seedGuard, true);
       tocToggle.addEventListener('pointermove', seedGuard, true);
     }
+
     if (mirrorToggle) {
+      mirrorToggle.addEventListener('touchstart', beginDockTouchSession, { capture: true, passive: true });
+      mirrorToggle.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
+      mirrorToggle.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
+
       mirrorToggle.addEventListener('pointerdown', seedGuard, true);
       mirrorToggle.addEventListener('pointermove', seedGuard, true);
     }
+
+    // Safety net: if the touch ends elsewhere, stop the session.
+    doc.addEventListener('touchend', endDockTouchSession, { capture: true, passive: true });
+    doc.addEventListener('touchcancel', endDockTouchSession, { capture: true, passive: true });
   } catch (err3) {}
 })();
