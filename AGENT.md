@@ -142,6 +142,7 @@ Docs:
 - If you change `_includes/nav-footer.html`:
   - Verify dock layout on desktop + mobile.
   - Verify the control IDs remain present: `tocToggle`, `lexiconToggle`, `mirrorToggle`.
+  - iOS Safari: do not shadow `--vv-offset-top` inside `#navFooter`; it must inherit from `<html>` where `assets/ui-stack.js` pins `visualViewport.offsetTop`.
 
 - If you change `_includes/reliquary-panel.html`:
   - Verify the required anchors remain present: `reliquaryPanel`, `reliquaryOverlay`, `reliquaryDragRegion`.

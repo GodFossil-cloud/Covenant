@@ -23,8 +23,7 @@
     --seal-cradle-shift-y: calc(0 * (var(--lexicon-seal-top-align, 5px) - 5px));
 
     /* iOS Safari: fixed-position elements can “tick” ~1px when the visual viewport
-       shifts during gesture/drag shells. ui-stack pins --vv-offset-top to cancel it. */
-    --vv-offset-top: 0px;
+       shifts during gesture/drag shells. ui-stack pins --vv-offset-top on <html>. */
 
     /* iOS Safari: keep .nav-footer pre-promoted as a stable layer to prevent a ~1px compositor hop
        when drag-opening panels (AGENT.md invariant). */
