@@ -102,8 +102,8 @@
    Scroll lock
    ------------------------------------------------- */
 
-html.toc-scroll-lock{overflow:hidden}
-body.toc-scroll-lock{position:fixed;width:100%}
+html.toc-scroll-lock{overflow:hidden;height:100%}
+html.toc-scroll-lock body{overflow:hidden;height:100%}
 
 /* -------------------------------------------------
    Modal veil

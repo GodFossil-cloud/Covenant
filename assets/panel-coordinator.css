@@ -9,8 +9,8 @@
 }
 
 /* Shared scroll lock used by panel coordinator (prevents multi-panel scroll-lock corruption). */
-html.covenant-scroll-lock{overflow:hidden}
-body.covenant-scroll-lock{position:fixed;width:100%}
+html.covenant-scroll-lock{overflow:hidden;height:100%}
+html.covenant-scroll-lock body{overflow:hidden;height:100%}
 
 /* Keep the footer dock sovereign above the Lexicon overlay/panel. */
 html.lexicon-scroll-lock .nav-footer{z-index:1600}
