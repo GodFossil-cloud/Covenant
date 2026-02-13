@@ -1,0 +1,228 @@
+/* Footer overrides (head-loaded)
+   Purpose: keep footer geometry + tones stable on first paint (especially iPhone Safari).
+
+   This file consolidates:
+   - nav-footer-flat-top.css (Lexicon seal flat-top geometry + socket/cradle shaping)
+   - footer-tones.css (small contrast/ink nudges for dock tabs + Lexicon seal)
+
+   Scope:
+   - Geometry rules target #navFooter to avoid bleed.
+   - Tone variables are global (as before) because toc.css consumes them.
+*/
+
+/* -------------------------------------------------
+   Tone nudges (subtle contrast tuning)
+   ------------------------------------------------- */
+
+:root{
+  /* Dock tab medallion surface (used by ToC + Mirror caps via toc.css). */
+  --dock-tab-face:#0b0c10;
+
+  /* Lexicon seal: closed/base surface tones (keep selection/leaf styling untouched). */
+  --lexicon-seal-face:#08090b;
+  --lexicon-seal-face-hover:#0a0b0e;
+
+  /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
+  --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
+}
+
+/* Darken the Lexicon seal base (closed state). */
+#lexiconToggle.nav-btn.center:not(.has-selection)::after{background-color:var(--lexicon-seal-face)}
+
+/* Preserve interaction feedback while staying within the darker scheme. */
+#lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
+#lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face-hover)}
+
+/* Make the Lexicon seal cradle border/field 1px taller without touching socket geometry tokens. */
+.nav-footer::after{height:var(--lexicon-cradle-h, var(--seal-notch-height))}
+
+/* Touch/coarse pointer: neutralize any fallback hover tint that would re-lighten the seal. */
+@media (hover: none), (pointer: coarse){
+  #lexiconToggle:not(.has-selection):hover::after,
+  #lexiconToggle:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face)}
+}
+
+/* -------------------------------------------------
+   Flat-top Lexicon seal geometry (footer-only)
+   ------------------------------------------------- */
+
+#navFooter{
+  /* Seal seating: raise the flat-top seal so its top edge aligns with the Lexicon panel lip. */
+  --lexicon-seal-top-align:9px;
+
+  /* Cradle seat: lift the cradle highlight/border to trace the seal underside.
+     (Baseline was 5px in the legacy fallback; this keeps cradle + seal locked.) */
+  --seal-cradle-shift-y:calc(-1 * (var(--lexicon-seal-top-align) - 5px));
+
+  /* Fine adjustment: lower the socket/cutout relative to the seal. */
+  --seal-cradle-drop-y:8px;
+
+  --lexicon-seal-w:66px;
+  --lexicon-seal-h:40px;
+
+  /* Keep dock window mask math aligned with the actual footer seal cluster spacing.
+     (toc.css uses --toc-tab-gap when positioning the animated dock “window” mask.) */
+  --toc-tab-gap:10px;
+
+  /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep the cradle + window math in sync. */
+  --toc-tab-width:var(--nav-pill-width);
+
+  /* Dock window mask origin: the center seal is seated higher by --lexicon-seal-top-align, so shift the mask origin to match. */
+  --dock-window-origin-x:50%;
+  --dock-window-origin-y:calc(50% - (var(--lexicon-seal-top-align) / 2));
+
+  /* Socket geometry: match the cradle line to the flat-top seal's new width. */
+  --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5);
+  --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
+
+  /* Micro-nudges for glyph optical centering (mobile Safari). */
+  --toc-glyph-nudge-x:0px;
+  --mirror-glyph-nudge-x:0px;
+
+  /* iOS Safari: avoid forcing compositor promotion on the fixed dock.
+     (We already hard-guard against dock translation in critical CSS.) */
+  -webkit-transform:none;
+  transform:none;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  will-change:auto;
+  isolation:isolate;
+}
+
+#navFooter::before,
+#navFooter::after{-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto}
+
+/* Cutout socket:
+   Paint the slab on ::before, then punch the cradle notch out via a mask.
+   This makes the cradle interior transparent (reads as a carved opening).
+*/
+#navFooter{background:transparent !important;border-top:none !important;border-bottom:none !important;box-shadow:none !important}
+
+#navFooter::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+
+  /* Same obsidian slab paint as assets/covenant.css (.nav-footer override block). */
+  background:
+    /* Hairline: shift up by 2px so it sits exactly on the seam above the footer. */
+    linear-gradient(to bottom,
+      transparent 0,
+      transparent 2px,
+      var(--footer-hairline) 0px,
+      var(--footer-hairline) 0px,
+      transparent 3px,
+      transparent 100%
+    ),
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+
+  background-position:0 0px,0 0,0 0;
+
+  border-top:1px solid rgba(0,0,0,0.70);
+  border-bottom:1px solid rgba(0,0,0,0.92);
+  box-shadow:
+    0 -14px 22px -14px rgba(0,0,0,0.78),
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+
+  /* Punch the cradle void (a circle centered near the top edge becomes a semicircle cutout).
+     NOTE (iOS Safari): avoid half-pixel mask stops (can jitter by ~1px on reraster).
+  */
+  -webkit-mask-image:radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
+    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
+    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
+    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
+    rgba(255,255,255,1) 100%
+  );
+  mask-image:radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
+    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
+    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
+    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
+    rgba(255,255,255,1) 100%
+  );
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+}
+
+/* Cradle border: tracing line only (no interior fill). */
+#navFooter::after{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(var(--seal-cradle-shift-y, 0px) + var(--seal-cradle-drop-y, 0px));
+  height:var(--seal-notch-height);
+  pointer-events:none;
+
+  background:
+    radial-gradient(circle at 50% 0%,
+      transparent 0 calc(var(--seal-notch-radius) - 1px),
+      var(--footer-cradle-line) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 1px),
+      transparent calc(var(--seal-notch-radius) + 2px)
+    );
+
+  opacity:0.95;
+}
+
+#navFooter #lexiconToggle,
+#navFooter #lexiconToggle::before,
+#navFooter #lexiconToggle::after{border-radius:0 0 999px 999px !important}
+
+#navFooter #lexiconToggle{
+  overflow:hidden;
+  margin-top:calc(-1 * var(--lexicon-seal-top-align) + 4px);
+
+  /* Preserve drag math (lexicon.js drives --seal-drag-y). */
+  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
+
+  width:var(--lexicon-seal-w);
+  height:var(--lexicon-seal-h);
+}
+
+/* Mobile Safari: keep the three-seal cluster symmetric so the Lexicon seal reads centered. */
+#navFooter .nav-seals{display:flex;align-items:center;justify-content:center;gap:var(--toc-tab-gap);flex-wrap:nowrap}
+
+/* Make ToC and Mirror identical bookends (prevents subtle off-center drift). */
+#navFooter #tocToggle,
+#navFooter #mirrorToggle{width:var(--nav-pill-width);height:var(--nav-pill-height);padding:0;flex:0 0 var(--nav-pill-width);margin-top:0}
+
+@media (max-width: 600px){
+  #navFooter{--dock-tab-raise:-18px;--toc-tab-gap:8px}
+}
+
+#navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
+
+#navFooter #tocToggle .toc-glyph,
+#navFooter #mirrorToggle .toc-glyph{display:inline-grid;place-items:center;width:1em;height:1em;line-height:1}
+
+/* Use margins for small optical nudges; do not set transforms here. */
+#navFooter #tocToggle .toc-glyph{margin-left:var(--toc-glyph-nudge-x)}
+#navFooter #mirrorToggle .toc-glyph{margin-left:var(--mirror-glyph-nudge-x)}
+
+@media (max-width: 600px){
+  #navFooter #tocToggle,
+  #navFooter #mirrorToggle{position:relative}
+
+  #navFooter #tocToggle{left:-3px}
+  #navFooter #mirrorToggle{left:3px}
+}
+
+/* Citation label: keep it present even when empty (altar-leading emphasis). */
+#navFooter .citation-label{margin-top:4px;min-height:18px;display:block !important;visibility:visible !important}
+#navFooter .citation-label:empty{display:block !important;visibility:visible !important}
+
+@media (max-width: 600px){
+  #navFooter .citation-label{margin-top:2px;min-height:16px}
+
+  #navFooter .nav-next-label,
+  #navFooter .nav-prev-label{font-size:0.78rem;letter-spacing:0.10em;opacity:0.86}
+}
+
+@media (max-width: 480px){
+  #navFooter .nav-next-label,
+  #navFooter .nav-prev-label{font-size:0.76rem;opacity:0.8}
+}
