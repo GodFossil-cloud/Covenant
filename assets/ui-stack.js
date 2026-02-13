@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.11 */
+/*! Covenant UI Stack v0.3.12 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.11';
+  window.COVENANT_UI_STACK_VERSION = '0.3.12';
 
   var registry = Object.create(null);
   var order = [];
@@ -155,16 +155,18 @@
     if (!root || !root.style) return;
 
     var vv = readVisualViewport();
-    var off = (vv && typeof vv.offsetTop === 'number') ? vv.offsetTop : 0;
+    var off = (vv && typeof vv.offsetTop === 'number' && isFinite(vv.offsetTop)) ? vv.offsetTop : 0;
 
-    // Avoid thrash from tiny float noise.
-    var v = Math.round(off * 100) / 100;
+    if (off < 0) off = 0;
+
+    // Quantize to whole CSS pixels to prevent 1px compositor hop from subpixel jitter.
+    var v = Math.round(off);
 
     if (vvPinLast === v) return;
     vvPinLast = v;
 
     try {
-      root.style.setProperty('--vv-offset-top', v + 'px');
+      root.style.setProperty('--vv-offset-top', v ? (v + 'px') : '0px');
     } catch (err) {}
   }
 
@@ -198,6 +200,13 @@
       window.visualViewport.addEventListener('scroll', scheduleVvOffsetTop);
       window.visualViewport.addEventListener('resize', scheduleVvOffsetTop);
     } catch (err1) {}
+
+    // Extra safety: some iOS builds don't reliably fire vv events during UI chrome transitions.
+    try {
+      window.addEventListener('scroll', scheduleVvOffsetTop, { passive: true });
+    } catch (errS) {
+      try { window.addEventListener('scroll', scheduleVvOffsetTop); } catch (errS2) {}
+    }
 
     // Extra safety: ensure bfcache restores / orientation shifts keep the var correct.
     try {
