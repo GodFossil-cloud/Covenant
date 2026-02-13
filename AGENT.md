@@ -82,6 +82,7 @@ Rules:
 - `assets/journey.js` — journey definitions + helpers.
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
+- Note (ToC CSS): Keep all ToC-related styling (including any motion/mask fixes) inside `assets/toc.css`; do not split ToC fixes into extra stylesheets.
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
 - Note (ToC dock tab): ToC tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab). Reliquary also measures the live footer height and sets `--reliquary-footer-reserved` so the veil and sheet never overlap the dock.
@@ -96,7 +97,7 @@ Rules:
 - Note (iOS dock tabs): Avoid 1px `:active` press-jumps on `#tocToggle`/`#mirrorToggle`; it reads like the iOS Safari dock hop.
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
-- `assets/nav-footer-flat-top.css` — footer-only override for flat-top Lexicon seal geometry.
+- `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges).
 - `assets/tab-weld.js` — legacy tab/panel welding loop (old system); it must not be included in the shared shell while the project is in panel-only motion mode.
 
 #### Panel-only motion verification
