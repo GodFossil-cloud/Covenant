@@ -1,20 +1,27 @@
-<!-- Shared font loading for Covenant pages (GitHub Pages / Jekyll include). -->
+<!-- Shared <head> fonts + theme (Jekyll include). -->
 
-<!-- Theme color: tint browser UI (iOS Safari/Chrome etc.) to match Covenant palette. -->
+<!-- Theme color: tint browser UI to match Covenant palette. -->
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050506">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#23160f">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Preload the font stylesheets early to reduce first-render delay on slow connections. -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<!-- Preload font stylesheets to reduce first-render delay on slow connections. -->
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+>
 
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap">
 
-<!-- Footer-only override: flat-top Lexicon seal geometry (head-loaded for iPhone Safari reliability). -->
-<link rel="stylesheet" href="{{ '/assets/nav-footer-flat-top.css' | relative_url }}?v=6">
+<!-- Footer overrides: keep the dock geometry stable on first paint (iPhone Safari). -->
+<link rel="stylesheet" href="{{ '/assets/footer-overrides.css' | relative_url }}?v=1">
 
 {% include covenant-config.html %}

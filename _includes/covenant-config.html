@@ -1,25 +1,17 @@
-<!-- Shared Covenant runtime flags (GitHub Pages / Jekyll include). -->
+<!-- Shared Covenant runtime flags + core asset loads (Jekyll include). -->
+
 <script>
-    // Global default for the intro/loading "seal" glyph.
-    // Note: this can be overridden per page with: window.COVENANT_PAGE.loadingGlyph = '✦'
-    window.COVENANT_LOADING_GLYPH = '֎';
+  // Default intro/loading glyph.
+  // Per-page override: window.COVENANT_PAGE.loadingGlyph = '✦'
+  window.COVENANT_LOADING_GLYPH = '֎';
 </script>
 
-<!-- Table of Contents (progress journal) styles + logic. -->
-<link rel="stylesheet" href="assets/toc.css?v=41">
+<link rel="stylesheet" href="{{ '/assets/toc.css' | relative_url }}?v=41">
+<link rel="stylesheet" href="{{ '/assets/reliquary.css' | relative_url }}">
 
-<!-- Footer micro-tuning (dock tabs + lexicon seal tones). -->
-<link rel="stylesheet" href="assets/footer-tones.css?v=2">
+<script src="{{ '/assets/ui-stack.js' | relative_url }}" defer></script>
+<script src="{{ '/assets/journey.js' | relative_url }}" defer></script>
+<script src="{{ '/assets/toc.js' | relative_url }}" defer></script>
+<script src="{{ '/assets/reliquary.js' | relative_url }}" defer></script>
 
-<!-- Reliquary (Mirror) panel styles + logic. -->
-<link rel="stylesheet" href="assets/reliquary.css">
-
-<!-- Shared UI coordination layer (non-invasive). -->
-<script src="assets/ui-stack.js" defer></script>
-
-<script src="assets/journey.js" defer></script>
-<script src="assets/toc.js" defer></script>
-<script src="assets/reliquary.js" defer></script>
-
-<!-- iOS Safari: prevent rubber-band scroll leakage during dock drag gestures (fixes ~1px vertical tick). -->
-<script src="assets/ios-dock-gesture-guard.js" defer></script>
+<!-- iOS dock-gesture guard was merged into assets/ui-stack.js (no separate include). -->
