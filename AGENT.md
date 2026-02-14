@@ -99,7 +99,7 @@ Rules:
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges).
 - Note (dock tab face): `--dock-tab-face` is defined only in `assets/footer-overrides.css`; do not redeclare it in `toc.css`/`reliquary.css`.
-- `assets/tab-weld.js` — legacy tab/panel welding loop (old system); it must not be included in the shared shell while the project is in panel-only motion mode.
+- (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
 
 #### Panel-only motion verification
 
