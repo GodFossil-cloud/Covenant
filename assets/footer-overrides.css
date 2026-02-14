@@ -71,6 +71,9 @@
   --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5);
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
 
+  /* Void depth only: keep horizontal radius the same, but extend the carved void downward ~2px. */
+  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 2px);
+
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x:0px;
   --mirror-glyph-nudge-x:0px;
@@ -115,20 +118,16 @@
     0 -14px 22px -14px rgba(0,0,0,0.78),
     inset 0 -10px 18px -16px rgba(0,0,0,0.72);
 
-  /* Punch the cradle void (a circle centered near the top edge becomes a semicircle cutout).
+  /* Punch the cradle void (ellipse: same width, deeper downward).
      NOTE (iOS Safari): avoid half-pixel mask stops (can jitter by ~1px on reraster).
   */
-  -webkit-mask-image:radial-gradient(circle at 50% var(--seal-cradle-center-y, 0px),
-    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
-    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
-    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
-    rgba(255,255,255,1) 100%
+  -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% var(--seal-cradle-center-y, 0px),
+    rgba(0,0,0,0) 0 98%,
+    rgba(255,255,255,1) 99% 100%
   );
-  mask-image:radial-gradient(circle at 50% var(--seal-cradle-center-y, 0px),
-    rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
-    rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
-    rgba(255,255,255,1) calc(var(--seal-notch-radius)),
-    rgba(255,255,255,1) 100%
+  mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% var(--seal-cradle-center-y, 0px),
+    rgba(0,0,0,0) 0 98%,
+    rgba(255,255,255,1) 99% 100%
   );
   -webkit-mask-repeat:no-repeat;
   mask-repeat:no-repeat;
@@ -147,10 +146,10 @@
   pointer-events:none;
 
   background:
-    radial-gradient(circle at 50% 0%,
-      transparent 0 calc(var(--seal-notch-radius) - 1px),
-      var(--footer-cradle-line) calc(var(--seal-notch-radius)) calc(var(--seal-notch-radius) + 1px),
-      transparent calc(var(--seal-notch-radius) + 2px)
+    radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
+      transparent 0 97.8%,
+      var(--footer-cradle-line) 98% 99%,
+      transparent 99.4% 100%
     );
 
   opacity:0.95;
