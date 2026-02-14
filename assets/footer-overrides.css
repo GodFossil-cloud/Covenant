@@ -49,15 +49,14 @@
 
 #navFooter{
   /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top. */
-  --lexicon-seal-top-align:16px;
+  --lexicon-seal-top-align:14px;
 
-  /* Cradle seat: lift the cradle highlight/border to trace the seal underside.
-     (Baseline was 5px in the legacy fallback; this keeps cradle + seal locked.) */
-  --seal-cradle-shift-y:calc(-1 * (var(--lexicon-seal-top-align) - 5px));
+  /* Cradle seat (circle center y, relative to footer top): decouple from seal top-align so the notch tracks the seal. */
+  --seal-cradle-center-y:6px;
 
-  /* Fine adjustment: lower the socket/cutout relative to the seal.
-     (Tied to the seal align so the cradle top can sit flush to the footer slab top.) */
-  --seal-cradle-drop-y:calc(var(--lexicon-seal-top-align) - 5px);
+  /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
+  --seal-cradle-shift-y:0px;
+  --seal-cradle-drop-y:var(--seal-cradle-center-y);
 
   --lexicon-seal-w:66px;
   --lexicon-seal-h:40px;
@@ -119,13 +118,13 @@
   /* Punch the cradle void (a circle centered near the top edge becomes a semicircle cutout).
      NOTE (iOS Safari): avoid half-pixel mask stops (can jitter by ~1px on reraster).
   */
-  -webkit-mask-image:radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
+  -webkit-mask-image:radial-gradient(circle at 50% var(--seal-cradle-center-y, 0px),
     rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
     rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
     rgba(255,255,255,1) calc(var(--seal-notch-radius)),
     rgba(255,255,255,1) 100%
   );
-  mask-image:radial-gradient(circle at 50% calc(0px + var(--seal-cradle-drop-y, 0px)),
+  mask-image:radial-gradient(circle at 50% var(--seal-cradle-center-y, 0px),
     rgba(0,0,0,0) 0 calc(var(--seal-notch-radius) - 1px),
     rgba(0,0,0,0) calc(var(--seal-notch-radius) - 1px),
     rgba(255,255,255,1) calc(var(--seal-notch-radius)),
@@ -143,7 +142,7 @@
   position:absolute;
   left:0;
   right:0;
-  top:calc(var(--seal-cradle-shift-y, 0px) + var(--seal-cradle-drop-y, 0px));
+  top:var(--seal-cradle-center-y, 0px);
   height:var(--seal-notch-height);
   pointer-events:none;
 
