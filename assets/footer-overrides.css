@@ -61,16 +61,11 @@
   --lexicon-seal-w:66px;
   --lexicon-seal-h:40px;
 
-  /* Keep dock window mask math aligned with the actual footer seal cluster spacing.
-     (toc.css uses --toc-tab-gap when positioning the animated dock “window” mask.) */
+  /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout. */
   --toc-tab-gap:10px;
 
-  /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep the cradle + window math in sync. */
+  /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep shared geometry consistent. */
   --toc-tab-width:var(--nav-pill-width);
-
-  /* Dock window mask origin: the center seal is seated higher by --lexicon-seal-top-align, so shift the mask origin to match. */
-  --dock-window-origin-x:50%;
-  --dock-window-origin-y:calc(50% - (var(--lexicon-seal-top-align) / 2));
 
   /* Socket geometry: match the cradle line to the flat-top seal's new width. */
   --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5);
