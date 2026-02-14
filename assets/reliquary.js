@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.32 (No local overflow scroll-lock; dock tab rides with panel) */
+/*! Covenant Reliquary UI v0.3.33 (No local overflow scroll-lock; dock tab rides with panel; no sink overshoot) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.32';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.33';
 
   var doc = document;
   var root = doc.documentElement;
@@ -701,7 +701,9 @@
       overlay.style.opacity = String(progress);
 
       // Lexicon-style carry: the dock tab rides with the sheet.
+      // IMPORTANT: do not carry below the dock seat during sink/settle frames.
       var tabOffset = (y - closedY);
+      if (tabOffset > 0) tabOffset = 0;
       setMirrorTabDragOffset(tabOffset);
     }
 
