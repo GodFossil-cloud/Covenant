@@ -43,8 +43,7 @@
   /* Sharpen the top corners only; keep bottom corners seated and round. */
   --dock-tab-radius-top:var(--toc-tab-radius);
 
-  /* Dock tab face base tone (also used to "erase" the top border line). */
-  --dock-tab-face:#010103;
+  /* Dock tab face base tone is defined in assets/footer-overrides.css; toc.css only consumes it. */
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
   --dock-tab-raise:-22px;
@@ -469,7 +468,7 @@ html #mirrorToggle.dock-tab::after{
   z-index:-1;
   pointer-events:none;
 
-  background-color:var(--dock-tab-face);
+  background-color:var(--dock-tab-face, #010103);
   background-image:
     linear-gradient(to bottom, rgba(255, 242, 210, 0.10) 0%, rgba(255, 242, 210, 0) 14px),
     linear-gradient(to bottom, rgba(255, 232, 180, 0.06) 0%, rgba(0, 0, 0, 0.40) 100%);

@@ -98,6 +98,7 @@ Rules:
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges).
+- Note (dock tab face): `--dock-tab-face` is defined only in `assets/footer-overrides.css`; do not redeclare it in `toc.css`/`reliquary.css`.
 - `assets/tab-weld.js` — legacy tab/panel welding loop (old system); it must not be included in the shared shell while the project is in panel-only motion mode.
 
 #### Panel-only motion verification

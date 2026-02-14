@@ -16,7 +16,7 @@
 
 :root{
   /* Dock tab medallion surface (used by ToC + Mirror caps via toc.css).
-     Keep aligned with assets/toc.css so load order cannot shift tab tone. */
+     Single source of truth: toc.css must not redeclare this token. */
   --dock-tab-face:#010103;
 
   /* Lexicon seal: closed/base surface tones (keep selection/leaf styling untouched). */
