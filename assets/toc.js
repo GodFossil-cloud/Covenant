@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.30 (Dock tab rides with panel) */
+/*! Covenant ToC v3.2.31 (Dock tab rides with panel; no sink overshoot) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.30';
+  window.COVENANT_TOC_VERSION = '3.2.31';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -958,7 +958,9 @@
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
       // Lexicon-style carry: the dock tab rides with the sheet.
+      // IMPORTANT: do not carry below the dock seat during sink/settle frames.
       var tabOffset = (y - closedY);
+      if (tabOffset > 0) tabOffset = 0;
       setToCTabDragOffset(tabOffset, !!draggingNow);
     }
 
