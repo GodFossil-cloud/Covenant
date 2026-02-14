@@ -80,10 +80,8 @@
   --toc-glyph-nudge-x:0px;
   --mirror-glyph-nudge-x:0px;
 
-  /* iOS Safari: avoid forcing compositor promotion on the fixed dock.
-     (We already hard-guard against dock translation in critical CSS.) */
-  -webkit-transform:none;
-  transform:none;
+  /* iOS Safari: keep the dock pre-promoted as a stable layer (see assets/covenant.css + AGENT.md).
+     Do not override transform here; only guard against "will-change" churn. */
   -webkit-backface-visibility:hidden;
   backface-visibility:hidden;
   will-change:auto;
