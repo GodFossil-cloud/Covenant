@@ -100,21 +100,13 @@
 
   /* Same obsidian slab paint as assets/covenant.css (.nav-footer override block). */
   background:
-    /* Hairline: shift up by 2px so it sits exactly on the seam above the footer. */
-    linear-gradient(to bottom,
-      transparent 0,
-      transparent 2px,
-      var(--footer-hairline) 0px,
-      var(--footer-hairline) 0px,
-      transparent 3px,
-      transparent 100%
-    ),
     radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
     linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
 
-  background-position:0 0px,0 0,0 0;
+  background-position:0 0,0 0;
 
-  border-top:1px solid rgba(0,0,0,0.70);
+  /* Single crisp brass seam line (no stacked hairline). */
+  border-top:1px solid var(--footer-frame);
   border-bottom:1px solid rgba(0,0,0,0.92);
   box-shadow:
     0 -14px 22px -14px rgba(0,0,0,0.78),
