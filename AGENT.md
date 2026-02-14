@@ -131,6 +131,10 @@ If include structure changes, verify every journey page that uses the shell.
 - `.github/workflows/agent-guard.yml` — requires `AGENT.md` update when core files change.
 - `_config.yml` — Jekyll behavior (include/exclude).
 
+Deployment notes:
+- This is a GitHub Pages *project site* served at `/Covenant/`.
+- `_includes/covenant-config.html` uses relative `assets/...` URLs (not `relative_url`) so the runtime loads correctly both under `/Covenant/` and under custom domains.
+
 Docs:
 - `docs/STYLE-GUARDS.md` — `covenant.css` integrity requirements and architectural markers.
 

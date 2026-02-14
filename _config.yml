@@ -1,8 +1,8 @@
 # Covenant Jekyll build config
 # Source of truth for build/deploy is: .github/workflows/pages.yml
 
-# Keep URLs relative (site uses relative links throughout).
-baseurl: ""
+# GitHub Pages project site base path.
+baseurl: "/Covenant"
 
 # Include files that would normally be ignored by Jekyll.
 include:
