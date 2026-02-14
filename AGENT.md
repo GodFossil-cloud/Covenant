@@ -91,8 +91,8 @@ Core runtime files:
 Notes:
 - Note (ToC CSS): Keep all ToC-related styling (including any motion/mask fixes) inside `assets/toc.css`; do not split ToC fixes into extra stylesheets.
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
-- Note (ToC dock tab): ToC tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
-- Note (Reliquary dock tab): Mirror tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
+- Note (ToC dock tab): ToC tab rides with the ToC sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
+- Note (Reliquary dock tab): Mirror tab rides with the Reliquary sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (footer bookends spacing): `--toc-tab-gap` in `assets/footer-overrides.css` controls ToC/Mirror distance from the center; mobile bookend nudges live in `assets/footer-overrides.css` and the `navFooterCritical` fallback in `_includes/nav-footer.html`.
 - Note (footer bookends vertical seat): `--dock-tab-raise` is defined in `assets/toc.css`; the mobile first-paint fallback may override it on `#navFooter` in `assets/footer-overrides.css`.
 - Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
@@ -106,11 +106,11 @@ Notes:
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
 
-#### Panel-only motion verification
+#### Dock-tab carry verification
 
-ToC + Reliquary tabs stay parked in the dock sockets; only the panels move.
+ToC + Reliquary tabs ride with their panels during drag/tap/snap; the dock sockets remain visible beneath.
 
-- Manual verification (run after each behavioral commit): ToC drag/tap; Reliquary drag/tap; overlay never covers dock; close-panels-before-navigation; ESC + focus return; stacking (ToC above Reliquary during drag); mobile Safari compositor stability (no ~1px dock hop)
+- Manual verification (run after each behavioral commit): ToC drag/tap (tab rides, returns cleanly); Reliquary drag/tap (tab rides, returns cleanly); overlay never covers dock; close-panels-before-navigation; ESC + focus return; stacking (ToC above Reliquary during drag); mobile Safari compositor stability (no ~1px dock hop)
 
 Core invariants:
 - ToC and Reliquary are modal veils that do NOT cover the footer dock area.
@@ -218,14 +218,14 @@ Use this when making CSS/JS/include changes.
 - Confirm Hold-to-Enter closes panels before navigation.
 - ESC closes and focus returns to the ToC control.
 - Tab/Shift+Tab keep focus trapped in the panel.
-- Drag-open: confirm the ToC tab stays parked in the footer cradle while the ToC panel moves.
+- Drag-open: confirm the ToC tab rides with the ToC panel, and returns cleanly on close/cancel.
 - If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).
 
 4) Reliquary modal veil
 - Open Reliquary from Mirror; confirm veil does not cover footer dock.
 - ESC closes and focus returns to the Mirror control.
 - On mobile: drag Mirror tab upward to open; drag down from sheet handle to close.
-- Drag-open: confirm the Mirror tab stays parked in the footer cradle while the Reliquary panel moves.
+- Drag-open: confirm the Mirror tab rides with the Reliquary panel, and returns cleanly on close/cancel.
 - If ToC is open, opening Reliquary closes ToC first (no stacked scroll locks).
 - Drag-open cancel (release early): confirm Lexicon seal returns to normal immediately on release.
 
