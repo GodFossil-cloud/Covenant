@@ -67,8 +67,8 @@
   /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep shared geometry consistent. */
   --toc-tab-width:var(--nav-pill-width);
 
-  /* Socket geometry: match the cradle line to the flat-top seal's new width. */
-  --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5);
+  /* Socket geometry: increase cradle depth by ~2px without moving the seal or side tabs. */
+  --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5 + 2px);
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
 
   /* Micro-nudges for glyph optical centering (mobile Safari). */
