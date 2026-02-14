@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.31 (No local overflow scroll-lock; dock tab parked) */
+/*! Covenant Reliquary UI v0.3.32 (No local overflow scroll-lock; dock tab rides with panel) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.31';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.32';
 
   var doc = document;
   var root = doc.documentElement;
@@ -193,6 +193,16 @@
   }
 
   registerWithUIStack();
+
+  function setMirrorTabDragOffset(px) {
+    if (!toggle) return;
+    toggle.style.setProperty('--mirror-tab-drag-y', px + 'px');
+  }
+
+  function clearMirrorTabDragOffset() {
+    if (!toggle) return;
+    toggle.style.removeProperty('--mirror-tab-drag-y');
+  }
 
   var focusReturnEl = null;
   var focusTrapEnabled = false;
@@ -430,6 +440,8 @@
     toggle.setAttribute('aria-expanded', 'false');
     toggle.setAttribute('aria-label', 'Open Reliquary');
 
+    clearMirrorTabDragOffset();
+
     if (isIOS) disableIOSTouchScrollLock();
     clearLegacyLocalScrollLockArtifacts();
 
@@ -482,12 +494,17 @@
     panel.style.opacity = '1';
     setPanelTranslateY(closedY);
 
+    // Seed tab at closed, then weld it upward with the same snap timing.
+    setMirrorTabDragOffset(0);
+
     raf(function () {
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
       setPanelTranslateY(openLift);
       overlay.style.opacity = '1';
+
+      setMirrorTabDragOffset(openLift - closedY);
 
       setTimeout(function () {
         panel.style.transform = '';
@@ -532,12 +549,18 @@
 
     setPanelTranslateY(openLift);
 
+    // Ensure the tab begins in its open welded position.
+    setMirrorTabDragOffset(openLift - closedY);
+
     raf(function () {
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
       setPanelTranslateY(closedY);
       overlay.style.opacity = '0';
+
+      // Tab returns to its dock seat.
+      setMirrorTabDragOffset(0);
 
       setTimeout(function () {
         panel.style.transition = '';
@@ -564,6 +587,8 @@
         toggle.setAttribute('aria-label', 'Open Reliquary');
 
         root.classList.remove('reliquary-open');
+
+        clearMirrorTabDragOffset();
 
         if (isIOS) disableIOSTouchScrollLock();
         clearLegacyLocalScrollLockArtifacts();
@@ -675,9 +700,9 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      if (draggingNow) {
-        // No tab carry/seat shift: dock tab remains parked.
-      }
+      // Lexicon-style carry: the dock tab rides with the sheet.
+      var tabOffset = (y - closedY);
+      setMirrorTabDragOffset(tabOffset);
     }
 
     function applyOpenStateFromDrag() {
@@ -688,6 +713,9 @@
 
       root.classList.remove('reliquary-closing');
       root.classList.remove('reliquary-dock-settling');
+
+      // Keep tab welded in the committed-open position.
+      setMirrorTabDragOffset(openLiftPx - closedY);
 
       setTimeout(focusIntoPanel, 0);
     }
@@ -718,6 +746,8 @@
       toggle.setAttribute('aria-label', 'Open Reliquary');
 
       root.classList.remove('reliquary-open');
+
+      clearMirrorTabDragOffset();
 
       if (isIOS) disableIOSTouchScrollLock();
       clearLegacyLocalScrollLockArtifacts();
@@ -929,6 +959,7 @@
         root.classList.remove('reliquary-dragging');
         if (startWasOpen) root.classList.remove('reliquary-closing');
         else root.classList.remove('reliquary-opening');
+        clearMirrorTabDragOffset();
       }
 
       if (e) {

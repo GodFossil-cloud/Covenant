@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.29 (Panel-only motion; dock tab parked) */
+/*! Covenant ToC v3.2.30 (Dock tab rides with panel) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.29';
+  window.COVENANT_TOC_VERSION = '3.2.30';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -187,6 +187,18 @@
     if (!uiStackReady(stack)) return;
 
     try { stack.noteClose(UI_STACK_ID); } catch (err) {}
+  }
+
+  function setToCTabDragOffset(px, draggingNow) {
+    if (!tocToggle) return;
+    tocToggle.style.setProperty('--toc-tab-drag-y', px + 'px');
+    tocToggle.classList.toggle('is-toc-dragging', !!draggingNow);
+  }
+
+  function clearToCTabDragOffset() {
+    if (!tocToggle) return;
+    tocToggle.style.removeProperty('--toc-tab-drag-y');
+    tocToggle.classList.remove('is-toc-dragging');
   }
 
   function isMobileSheet() {
@@ -945,9 +957,9 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
-      if (draggingNow) {
-        // No tab carry/seat shift: dock tab remains parked.
-      }
+      // Lexicon-style carry: the dock tab rides with the sheet.
+      var tabOffset = (y - closedY);
+      setToCTabDragOffset(tabOffset, !!draggingNow);
     }
 
     function applyOpenStateFromDrag() {
@@ -988,6 +1000,9 @@
       root.classList.add('toc-open');
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
+
+      // Keep tab welded in the committed-open position.
+      setToCTabDragOffset(openLiftPx - closedY, false);
     }
 
     function settleDockAfterSnapClose() {
@@ -1030,6 +1045,8 @@
       root.classList.remove('toc-open');
 
       settleDockAfterSnapClose();
+
+      clearToCTabDragOffset();
 
       var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
       if (target && target.focus) target.focus();
@@ -1132,9 +1149,9 @@
 
           root.classList.add('toc-dock-settling');
 
-          var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-          raf(function () {
-            raf(function () {
+          var raf2 = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+          raf2(function () {
+            raf2(function () {
               root.classList.remove('toc-opening');
             });
           });
@@ -1142,6 +1159,8 @@
           setTimeout(function () {
             root.classList.remove('toc-dock-settling');
           }, SNAP_MS + 80);
+
+          clearToCTabDragOffset();
         }
       }, SNAP_MS + 20);
     }
@@ -1166,7 +1185,6 @@
       computeOpenLift();
 
       tocPanel.classList.add('is-dragging');
-      if (tocToggle) tocToggle.classList.add('is-toc-dragging');
 
       if (startWasOpen) {
         root.classList.add('toc-closing');
@@ -1233,7 +1251,6 @@
 
       dragging = false;
       tocPanel.classList.remove('is-dragging');
-      if (tocToggle) tocToggle.classList.remove('is-toc-dragging');
 
       if (moved) {
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
@@ -1242,6 +1259,7 @@
       } else {
         if (startWasOpen) root.classList.remove('toc-closing');
         else root.classList.remove('toc-opening');
+        clearToCTabDragOffset();
       }
 
       if (e) {
@@ -1445,6 +1463,9 @@
       tocPanel.style.opacity = '1';
       setPanelTranslateY(closedY);
 
+      // Seed tab at closed, then weld it upward with the same snap timing.
+      setToCTabDragOffset(0, false);
+
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -1452,6 +1473,8 @@
 
         setPanelTranslateY(openLift);
         tocOverlay.style.opacity = '1';
+
+        setToCTabDragOffset(openLift - closedY, false);
 
         setTimeout(function () {
           tocPanel.style.transform = '';
@@ -1517,6 +1540,9 @@
 
     setPanelTranslateY(openLift);
 
+    // Ensure the tab begins in its open welded position.
+    setToCTabDragOffset(openLift - closedY, false);
+
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
       tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -1524,6 +1550,9 @@
 
       setPanelTranslateY(closedY);
       tocOverlay.style.opacity = '0';
+
+      // Tab returns to its dock seat.
+      setToCTabDragOffset(0, false);
 
       setTimeout(function () {
         tocPanel.style.transition = '';
@@ -1547,6 +1576,8 @@
         setTimeout(function () {
           root.classList.remove('toc-dock-settling');
         }, snapMs + 30);
+
+        clearToCTabDragOffset();
 
         if (restoreFocus) {
           var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
