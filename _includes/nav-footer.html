@@ -172,11 +172,11 @@
   }
 
   #navFooter #mirrorToggle .toc-glyph {
-    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--mirror-cap-shift-y, 0px)));
+    transform: translate3d(-50%, -50%, 0) translateY(calc(var(--mirror-cap-shift-y, 0px) + var(--mirror-glyph-nudge-y, 0px)));
   }
 
   #navFooter #tocToggle .toc-glyph {
-    transform: translate3d(-50%, -50%, 0) translateY(calc(0px + var(--toc-cap-shift-y, 0px)));
+    transform: translate3d(-50%, -50%, 0) translateY(calc(var(--toc-cap-shift-y, 0px) + var(--toc-glyph-nudge-y, 0px)));
 
     /* If a glyph font fails, keep the fallback readable. */
     font-size: 0.88rem !important;
