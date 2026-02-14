@@ -16,7 +16,7 @@
     /* Lexicon seal geometry (flat-top fallback). */
     --lexicon-seal-w: 70px;
     --lexicon-seal-h: 38px;
-    --lexicon-seal-top-align: 8px;
+    --lexicon-seal-top-align: 16px;
 
     /* Socket geometry tokens (used by footer-overrides.css / toc.css). */
     --seal-notch-radius: calc(var(--lexicon-seal-w) * 0.5);
@@ -193,7 +193,7 @@
     overflow: hidden;
 
     /* Baseline seat (external CSS may override). */
-    margin-top: calc(0 * var(--lexicon-seal-top-align, 5px));
+    margin-top: calc(-1 * var(--lexicon-seal-top-align, 5px) + 4px);
   }
 
   #navFooter #lexiconToggle,
