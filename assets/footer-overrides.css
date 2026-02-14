@@ -74,6 +74,8 @@
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x:0px;
   --mirror-glyph-nudge-x:0px;
+  --toc-glyph-nudge-y:2px;
+  --mirror-glyph-nudge-y:2px;
 
   /* iOS Safari: keep the dock pre-promoted as a stable layer (see assets/covenant.css + AGENT.md).
      Do not override transform here; only guard against "will-change" churn. */
@@ -186,8 +188,8 @@
 #navFooter #mirrorToggle .toc-glyph{display:inline-grid;place-items:center;width:1em;height:1em;line-height:1}
 
 /* Use margins for small optical nudges; do not set transforms here. */
-#navFooter #tocToggle .toc-glyph{margin-left:var(--toc-glyph-nudge-x)}
-#navFooter #mirrorToggle .toc-glyph{margin-left:var(--mirror-glyph-nudge-x)}
+#navFooter #tocToggle .toc-glyph{margin-left:var(--toc-glyph-nudge-x);margin-top:var(--toc-glyph-nudge-y)}
+#navFooter #mirrorToggle .toc-glyph{margin-left:var(--mirror-glyph-nudge-x);margin-top:var(--mirror-glyph-nudge-y)}
 
 @media (max-width: 600px){
   #navFooter #tocToggle,
