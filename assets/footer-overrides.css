@@ -90,7 +90,7 @@
    Paint the slab on ::before, then punch the cradle notch out via a mask.
    This makes the cradle interior transparent (reads as a carved opening).
 */
-#navFooter{background:transparent !important;border-top:none !important;border-bottom:none !important;box-shadow:none !important}
+#navFooter{background:radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%) !important;border-top:none !important;border-bottom:none !important;box-shadow:none !important}
 
 #navFooter::before{
   content:'';
