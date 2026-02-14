@@ -85,7 +85,7 @@
 
   /* Cradle border only: make the permanent socket cradle 2px taller than the window mask.
      (Lets the top edge fully cover the footer slab hairline in the closed state.) */
-  --dock-cradle-h:calc(var(--dock-socket-h) - 1px);
+  --dock-cradle-h:calc(var(--dock-socket-h) + 0px);
 
   /* ToC header connector geometry. */
   --toc-notch-w:calc(var(--dock-tab-width, 52px) + 0px);
