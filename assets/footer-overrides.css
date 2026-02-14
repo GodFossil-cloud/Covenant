@@ -108,7 +108,7 @@
   background-position:0 0,0 0;
 
   /* Single top seam only (no second line beneath). */
-  border-top:1px solid rgba(96,74,26,0.84);
+  border-top:1px solid rgba(44,34,14,0.92);
   border-bottom:0;
 
   box-shadow:
