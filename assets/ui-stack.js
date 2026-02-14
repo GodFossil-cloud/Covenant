@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.14 */
+/*! Covenant UI Stack v0.3.15 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.14';
+  window.COVENANT_UI_STACK_VERSION = '0.3.15';
 
   var registry = Object.create(null);
   var order = [];
@@ -137,94 +137,6 @@
     } catch (err) {
       return null;
     }
-  }
-
-  // -------------------------------------------------
-  // iOS visualViewport pin (dock hop fix)
-  // Writes --vv-offset-top so fixed footer can cancel 1px visual viewport drift.
-  // -------------------------------------------------
-
-  var vvPinEnabled = false;
-  var vvPinRafPending = false;
-  var vvPinLast = null;
-
-  function setVvOffsetTopNow() {
-    if (!isIOS) return;
-
-    var root = document.documentElement;
-    if (!root || !root.style) return;
-
-    var vv = readVisualViewport();
-    var off = (vv && typeof vv.offsetTop === 'number' && isFinite(vv.offsetTop)) ? vv.offsetTop : 0;
-
-    if (off < 0) off = 0;
-
-    // iOS Safari can jitter offsetTop around ~1px during class/transition churn.
-    // Treat micro-offsets as noise (otherwise we "correct" to 1px and the dock visibly hops).
-    if (off < 1.5) off = 0;
-
-    // Quantize to whole CSS pixels to prevent compositor hop from subpixel jitter.
-    var v = Math.round(off);
-
-    if (vvPinLast === v) return;
-    vvPinLast = v;
-
-    try {
-      root.style.setProperty('--vv-offset-top', v ? (v + 'px') : '0px');
-    } catch (err) {}
-  }
-
-  function scheduleVvOffsetTop() {
-    if (vvPinRafPending) return;
-    vvPinRafPending = true;
-
-    var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
-
-    raf(function () {
-      vvPinRafPending = false;
-      setVvOffsetTopNow();
-    });
-  }
-
-  function startVisualViewportPin() {
-    if (vvPinEnabled) return;
-    if (!isIOS) return;
-
-    // If visualViewport is unavailable, keep the var at 0 (no-op).
-    if (!window.visualViewport || !window.visualViewport.addEventListener) {
-      setVvOffsetTopNow();
-      return;
-    }
-
-    vvPinEnabled = true;
-
-    setVvOffsetTopNow();
-
-    try {
-      window.visualViewport.addEventListener('scroll', scheduleVvOffsetTop);
-      window.visualViewport.addEventListener('resize', scheduleVvOffsetTop);
-    } catch (err1) {}
-
-    // Extra safety: some iOS builds don't reliably fire vv events during UI chrome transitions.
-    try {
-      window.addEventListener('scroll', scheduleVvOffsetTop, { passive: true });
-    } catch (errS) {
-      try { window.addEventListener('scroll', scheduleVvOffsetTop); } catch (errS2) {}
-    }
-
-    // Extra safety: ensure bfcache restores / orientation shifts keep the var correct.
-    try {
-      window.addEventListener('resize', scheduleVvOffsetTop);
-      window.addEventListener('orientationchange', scheduleVvOffsetTop);
-      window.addEventListener('pageshow', scheduleVvOffsetTop);
-    } catch (err2) {}
-  }
-
-  // Start early (safe even if no panels register).
-  if (document && document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startVisualViewportPin);
-  } else {
-    startVisualViewportPin();
   }
 
   function readOverflowState() {

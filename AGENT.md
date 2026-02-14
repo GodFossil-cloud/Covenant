@@ -119,6 +119,7 @@ Key includes:
 - `_includes/nav-footer.html` (dock: Prev/Next + ToC + Lexicon + Mirror)
 - `_includes/toc-panel.html`
 - `_includes/lexicon-panel.html`
+- `_includes/lexicon-panel.html`
 - `_includes/reliquary-panel.html`
 
 If include structure changes, verify every journey page that uses the shell.
@@ -144,7 +145,6 @@ Docs:
 - If you change `_includes/nav-footer.html`:
   - Verify dock layout on desktop + mobile.
   - Verify the control IDs remain present: `tocToggle`, `lexiconToggle`, `mirrorToggle`.
-  - iOS Safari: do not shadow `--vv-offset-top` inside `#navFooter`; it must inherit from `<html>` where `assets/ui-stack.js` pins `visualViewport.offsetTop`.
 
 - If you change `_includes/reliquary-panel.html`:
   - Verify the required anchors remain present: `reliquaryPanel`, `reliquaryOverlay`, `reliquaryDragRegion`.
