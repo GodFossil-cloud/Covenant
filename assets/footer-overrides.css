@@ -48,15 +48,16 @@
    ------------------------------------------------- */
 
 #navFooter{
-  /* Seal seating: raise the flat-top seal so its top edge aligns with the Lexicon panel lip. */
-  --lexicon-seal-top-align:9px;
+  /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top. */
+  --lexicon-seal-top-align:12px;
 
   /* Cradle seat: lift the cradle highlight/border to trace the seal underside.
      (Baseline was 5px in the legacy fallback; this keeps cradle + seal locked.) */
   --seal-cradle-shift-y:calc(-1 * (var(--lexicon-seal-top-align) - 5px));
 
-  /* Fine adjustment: lower the socket/cutout relative to the seal. */
-  --seal-cradle-drop-y:8px;
+  /* Fine adjustment: lower the socket/cutout relative to the seal.
+     (Tied to the seal align so the cradle top can sit flush to the footer slab top.) */
+  --seal-cradle-drop-y:calc(var(--lexicon-seal-top-align) - 5px);
 
   --lexicon-seal-w:66px;
   --lexicon-seal-h:40px;
