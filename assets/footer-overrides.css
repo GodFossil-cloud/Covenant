@@ -75,8 +75,8 @@
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x:0px;
   --mirror-glyph-nudge-x:0px;
-  --toc-glyph-nudge-y:7px;
-  --mirror-glyph-nudge-y:7px;
+  --toc-glyph-nudge-y:8px;
+  --mirror-glyph-nudge-y:8px;
 
   /* iOS Safari: keep the dock pre-promoted as a stable layer (see assets/covenant.css + AGENT.md).
      Do not override transform here; only guard against "will-change" churn. */
