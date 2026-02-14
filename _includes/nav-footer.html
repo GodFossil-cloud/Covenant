@@ -242,6 +242,65 @@
   }
 </style>
 
+<!-- Hotfix: ensure dock runtime assets exist even if page head was merged wrong.
+     We inject into <head> once, preserving canonical IDs and keeping the dock sovereign. -->
+<script id="covenantDockHotfix">
+(function () {
+  'use strict';
+
+  try {
+    var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+    if (!head) return;
+
+    function hasLink(href) {
+      try { return !!document.querySelector('link[rel="stylesheet"][href="' + href + '"]'); } catch (e) { return false; }
+    }
+
+    function addCss(href) {
+      if (!href || hasLink(href)) return;
+      var l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = href;
+      head.appendChild(l);
+    }
+
+    // Styling for sockets/cradles + veils.
+    addCss('assets/footer-overrides.css');
+    addCss('assets/toc.css');
+    addCss('assets/reliquary.css');
+
+    function hasScript(src) {
+      try { return !!document.querySelector('script[src="' + src + '"]'); } catch (e) { return false; }
+    }
+
+    function loadScriptsSequential(sources, i) {
+      if (!sources || i >= sources.length) return;
+
+      var src = sources[i];
+      if (!src) return loadScriptsSequential(sources, i + 1);
+      if (hasScript(src)) return loadScriptsSequential(sources, i + 1);
+
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = false;
+      s.onload = function () { loadScriptsSequential(sources, i + 1); };
+      s.onerror = function () { loadScriptsSequential(sources, i + 1); };
+      head.appendChild(s);
+    }
+
+    // Journey must exist before ToC; ui-stack before ToC/Reliquary coordination.
+    loadScriptsSequential([
+      'assets/journey.js',
+      'assets/ui-stack.js',
+      'assets/toc.js',
+      'assets/reliquary.js'
+    ], 0);
+  } catch (err) {
+    // Silent: footer must never throw.
+  }
+})();
+</script>
+
 <nav class="nav-footer" id="navFooter" aria-label="Covenant navigation">
   <div class="nav-footer-inner">
     <div class="nav-left" aria-label="Previous">
