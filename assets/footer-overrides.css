@@ -49,10 +49,10 @@
 
 #navFooter{
   /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top. */
-  --lexicon-seal-top-align:14px;
+  --lexicon-seal-top-align:12px;
 
   /* Cradle seat (circle center y, relative to footer top): decouple from seal top-align so the notch tracks the seal. */
-  --seal-cradle-center-y:6px;
+  --seal-cradle-center-y:4px;
 
   /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
   --seal-cradle-shift-y:0px;
@@ -171,33 +171,11 @@
   height:var(--lexicon-seal-h);
 }
 
-/* Mobile Safari: keep the three-seal cluster symmetric so the Lexicon seal reads centered. */
-#navFooter .nav-seals{display:flex;align-items:center;justify-content:center;gap:var(--toc-tab-gap);flex-wrap:nowrap}
-
-/* Make ToC and Mirror identical bookends (prevents subtle off-center drift). */
-#navFooter #tocToggle,
-#navFooter #mirrorToggle{width:var(--nav-pill-width);height:var(--nav-pill-height);padding:0;flex:0 0 var(--nav-pill-width);margin-top:0}
-
 @media (max-width: 600px){
-  #navFooter{--dock-tab-raise:-30px;--toc-tab-gap:8px}
+  #navFooter{--toc-tab-gap:8px}
 }
 
 #navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
-
-#navFooter #tocToggle .toc-glyph,
-#navFooter #mirrorToggle .toc-glyph{display:inline-grid;place-items:center;width:1em;height:1em;line-height:1}
-
-/* Use margins for small optical nudges; do not set transforms here. */
-#navFooter #tocToggle .toc-glyph{margin-left:var(--toc-glyph-nudge-x)}
-#navFooter #mirrorToggle .toc-glyph{margin-left:var(--mirror-glyph-nudge-x)}
-
-@media (max-width: 600px){
-  #navFooter #tocToggle,
-  #navFooter #mirrorToggle{position:relative}
-
-  #navFooter #tocToggle{left:-5px}
-  #navFooter #mirrorToggle{left:5px}
-}
 
 /* Citation label: keep it present even when empty (altar-leading emphasis). */
 #navFooter .citation-label{margin-top:4px;min-height:18px;display:block !important;visibility:visible !important}
