@@ -74,6 +74,9 @@
   /* Void depth only: keep horizontal radius the same, but extend the carved void downward ~2px. */
   --seal-notch-radius-y:calc(var(--seal-notch-radius) + 2px);
 
+  /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
+  --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px);
+
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x:0px;
   --mirror-glyph-nudge-x:0px;
@@ -142,7 +145,7 @@
   left:0;
   right:0;
   top:var(--seal-cradle-center-y, 0px);
-  height:var(--seal-notch-height);
+  height:var(--seal-notch-height-y, var(--seal-notch-height));
   pointer-events:none;
 
   background:
