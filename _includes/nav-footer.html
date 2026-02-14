@@ -22,6 +22,9 @@
     --seal-notch-radius: calc(var(--lexicon-seal-w) * 0.5);
     --seal-notch-height: calc(var(--seal-notch-radius) + 6px);
 
+    /* ToC/Mirror spacing (matches assets/footer-overrides.css). */
+    --toc-tab-gap: 14px;
+
     /* Keep cradle shift disabled in fallback; external CSS owns the real seat model. */
     --seal-cradle-shift-y: calc(0 * (var(--lexicon-seal-top-align, 5px) - 5px));
 
@@ -208,6 +211,7 @@
       --dock-cap-lift: 9px;
       --lexicon-seal-w: 68px;
       --lexicon-seal-h: 36px;
+      --toc-tab-gap: 8px;
     }
 
     #navFooter #tocToggle,
@@ -217,11 +221,11 @@
 
     /* Seat the bookends outward into their sockets. */
     #navFooter #tocToggle {
-      left: -3px;
+      left: -5px;
     }
 
     #navFooter #mirrorToggle {
-      left: 3px;
+      left: 5px;
     }
 
     #navFooter .citation-label {

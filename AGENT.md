@@ -93,6 +93,7 @@ Notes:
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
 - Note (ToC dock tab): ToC tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
 - Note (Reliquary dock tab): Mirror tab stays anchored in the footer cradle (no carry offsets; cap/medallion seat-shift is disabled). The panel itself moves on drag/tap.
+- Note (footer bookends spacing): `--toc-tab-gap` in `assets/footer-overrides.css` controls ToC/Mirror distance from the center; mobile bookend nudges live in `assets/footer-overrides.css` and the `navFooterCritical` fallback in `_includes/nav-footer.html`.
 - Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
 - Note: If JS needs numeric px from calc()/var()-based CSS custom properties, do not `parseFloat(getComputedStyle(...).getPropertyValue('--x'))` (it returns token strings); resolve via a probe element (e.g., set `margin-top: var(--x)` and read computed px).
 - Note (dock mask window): Dock-window mask choreography is removed in favor of **panel-only** motion. `dock-window` / `--dock-window-*` tokens should not exist in runtime CSS unless explicitly requested.

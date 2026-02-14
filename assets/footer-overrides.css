@@ -62,7 +62,7 @@
   --lexicon-seal-h:40px;
 
   /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout. */
-  --toc-tab-gap:10px;
+  --toc-tab-gap:14px;
 
   /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep shared geometry consistent. */
   --toc-tab-width:var(--nav-pill-width);
@@ -201,8 +201,8 @@
   #navFooter #tocToggle,
   #navFooter #mirrorToggle{position:relative}
 
-  #navFooter #tocToggle{left:-3px}
-  #navFooter #mirrorToggle{left:3px}
+  #navFooter #tocToggle{left:-5px}
+  #navFooter #mirrorToggle{left:5px}
 }
 
 /* Citation label: keep it present even when empty (altar-leading emphasis). */
