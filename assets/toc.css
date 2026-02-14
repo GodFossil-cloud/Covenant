@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.40 (Dock-window mask hooks removed; panel-only motion) */
+/*! Covenant ToC Panel Styles v3.1.41 (Dock tabs ride with panels) */
 
 /* -------------------------------------------------
    Variables
@@ -430,11 +430,23 @@ html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px -
 html #tocToggle.dock-tab .toc-glyph{transform:translate3d(-50%,-50%,0) translateY(var(--toc-glyph-nudge-y, 0px))}
 html #mirrorToggle.dock-tab .toc-glyph{transform:translate3d(-50%,-50%,0) translateY(var(--mirror-glyph-nudge-y, 0px))}
 
-/* Mirror + ToC tabs stay parked in their cradles (panel-only motion). */
-html #mirrorToggle.dock-tab,
+/* ToC + Mirror tabs ride with their panels (Lexicon-style). */
 html #tocToggle.dock-tab{
-  transform:translate3d(0,var(--dock-tab-raise),0);
+  transform:translate3d(0,calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px)),0);
   transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
+  will-change:transform;
+
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+
+  cursor:ns-resize;
+}
+
+html #mirrorToggle.dock-tab{
+  transform:translate3d(0,calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px)),0);
+  transition:transform var(--reliquary-snap-duration, var(--toc-snap-duration)) var(--reliquary-snap-ease, var(--toc-snap-ease));
   will-change:transform;
 
   touch-action:none;
@@ -513,12 +525,12 @@ html #mirrorToggle.dock-tab:focus-visible::after{
 
 /* Mechanical press: remove iOS touch-down 1px hop (it reads like a dock glitch). */
 html #mirrorToggle.dock-tab:active:not(:disabled){
-  transform:translate3d(0,var(--dock-tab-raise),0);
+  transform:translate3d(0,calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px)),0);
 }
 
 /* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
 html #tocToggle.dock-tab:active:not(:disabled){
-  transform:translate3d(0,var(--dock-tab-raise),0);
+  transform:translate3d(0,calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px)),0);
 }
 
 html #tocToggle.dock-tab .toc-glyph,
