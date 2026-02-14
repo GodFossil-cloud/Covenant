@@ -46,7 +46,7 @@
   /* Dock tab face base tone is defined in assets/footer-overrides.css; toc.css only consumes it. */
 
   /* Vertical lift so dock tabs rise noticeably above the dock slab. */
-  --dock-tab-raise:-26px;
+  --dock-tab-raise:-28px;
 
   /* Socket stays closer to the dock baseline so it reads as a true recess. */
   --dock-socket-raise:-2px;
@@ -583,7 +583,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --toc-rule-x:.75rem;
     --toc-node:10px;
     --toc-node-locked:8px;
-    --dock-tab-raise:-24px;
+    --dock-tab-raise:-26px;
     --dock-socket-raise:-2px;
     --dock-socket-spread:5px;
     --dock-socket-y-nudge:-6px;

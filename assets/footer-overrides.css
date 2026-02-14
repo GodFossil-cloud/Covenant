@@ -177,7 +177,7 @@
 #navFooter #mirrorToggle{width:var(--nav-pill-width);height:var(--nav-pill-height);padding:0;flex:0 0 var(--nav-pill-width);margin-top:0}
 
 @media (max-width: 600px){
-  #navFooter{--dock-tab-raise:-24px;--toc-tab-gap:8px}
+  #navFooter{--dock-tab-raise:-26px;--toc-tab-gap:8px}
 }
 
 #navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
