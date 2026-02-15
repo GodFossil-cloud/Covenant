@@ -70,14 +70,14 @@
   --toc-tab-width:var(--nav-pill-width);
 
   /* Socket geometry: cradle dock size (independent of seal). */
-  --lexicon-cradle-w:86px;
+  --lexicon-cradle-w:92px;
 
   --seal-notch-grow:4px;
   --seal-notch-radius:calc(var(--lexicon-cradle-w) * 0.5 + var(--seal-notch-grow));
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
 
   /* Cradle depth: explicitly deeper on iPhone so the seal sits "in" the socket. */
-  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 4px);
+  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 5px);
 
   /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
   --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px);
