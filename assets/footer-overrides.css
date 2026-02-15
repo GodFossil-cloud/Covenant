@@ -60,7 +60,7 @@
 
   /* Lexicon SEAL size.
      IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM). */
-  --lexicon-seal-w:56px !important;
+  --lexicon-seal-w:60px !important;
   --lexicon-seal-h:30px !important;
 
   /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout.
