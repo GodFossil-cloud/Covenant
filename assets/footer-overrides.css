@@ -67,11 +67,12 @@
   /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep shared geometry consistent. */
   --toc-tab-width:var(--nav-pill-width);
 
-  /* Socket geometry: match the cradle line to the flat-top seal's new width. */
-  --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5);
+  /* Socket geometry: enlarge the cradle cutout (horiz + vert) while keeping its top alignment stable. */
+  --seal-notch-grow:2px;
+  --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5 + var(--seal-notch-grow));
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
 
-  /* Void depth only: keep horizontal radius the same, but extend the carved void downward ~2px. */
+  /* Void depth only: keep the ellipse a touch taller than it is wide (reads more "cradle" than circle). */
   --seal-notch-radius-y:calc(var(--seal-notch-radius) + 2px);
 
   /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
@@ -121,7 +122,7 @@
     0 -14px 22px -14px rgba(0,0,0,0.78),
     inset 0 -10px 18px -16px rgba(0,0,0,0.72);
 
-  /* Punch the cradle void (ellipse: same width, deeper downward).
+  /* Punch the cradle void (ellipse: wider + deeper).
      NOTE (iOS Safari): avoid half-pixel mask stops (can jitter by ~1px on reraster).
   */
   -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% var(--seal-cradle-center-y, 0px),
