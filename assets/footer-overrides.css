@@ -70,7 +70,7 @@
   --toc-tab-width:var(--nav-pill-width);
 
   /* Socket geometry: cradle dock size (independent of seal). */
-  --lexicon-cradle-w:80px;
+  --lexicon-cradle-w:82px;
 
   --seal-notch-grow:4px;
   --seal-notch-radius:calc(var(--lexicon-cradle-w) * 0.5 + var(--seal-notch-grow));
