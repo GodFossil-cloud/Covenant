@@ -70,10 +70,10 @@
   --toc-tab-width:var(--nav-pill-width);
 
   /* Socket geometry: cradle dock size (independent of seal). */
-  --lexicon-cradle-w:64px;
+  --lexicon-cradle-w:60px;
 
   /* Tighten the void a touch more (so "smaller" reads even with antialias). */
-  --seal-notch-grow:2px;
+  --seal-notch-grow:1px;
 
   /* IMPORTANT (iPhone Safari): navFooterCritical defines these same tokens later in the DOM.
      Use !important so cradle geometry stays authoritative and responds to --lexicon-cradle-w changes. */
