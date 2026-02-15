@@ -60,7 +60,7 @@
 
   /* Lexicon SEAL size.
      IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM). */
-  --lexicon-seal-w:54px !important;
+  --lexicon-seal-w:52px !important;
   --lexicon-seal-h:30px !important;
 
   /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout. */
@@ -77,7 +77,7 @@
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
 
   /* Cradle depth: explicitly deeper on iPhone so the seal sits "in" the socket. */
-  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 5px);
+  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 4px);
 
   /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
   --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px);
