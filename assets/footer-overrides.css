@@ -52,7 +52,7 @@
   --lexicon-seal-top-align:10px;
 
   /* Cradle seat (circle center y, relative to footer top): decouple from seal top-align so the notch tracks the seal. */
-  --seal-cradle-center-y:1px;
+  --seal-cradle-center-y:0px;
 
   /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
   --seal-cradle-shift-y:0px;
