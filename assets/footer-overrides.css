@@ -60,11 +60,11 @@
 
   /* Lexicon SEAL size.
      IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM). */
-  --lexicon-seal-w:52px !important;
+  --lexicon-seal-w:56px !important;
   --lexicon-seal-h:30px !important;
 
   /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout. */
-  --toc-tab-gap:14px;
+  --toc-tab-gap:20px;
 
   /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep shared geometry consistent. */
   --toc-tab-width:var(--nav-pill-width);
@@ -183,7 +183,7 @@
 }
 
 @media (max-width: 600px){
-  #navFooter{--toc-tab-gap:8px}
+  #navFooter{--toc-tab-gap:12px}
 }
 
 #navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
