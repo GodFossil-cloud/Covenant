@@ -73,14 +73,17 @@
   --lexicon-cradle-w:96px;
 
   --seal-notch-grow:4px;
-  --seal-notch-radius:calc(var(--lexicon-cradle-w) * 0.5 + var(--seal-notch-grow));
-  --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
+
+  /* IMPORTANT (iPhone Safari): navFooterCritical defines these same tokens later in the DOM.
+     Use !important so cradle geometry stays authoritative and responds to --lexicon-cradle-w changes. */
+  --seal-notch-radius:calc(var(--lexicon-cradle-w) * 0.5 + var(--seal-notch-grow)) !important;
+  --seal-notch-height:calc(var(--seal-notch-radius) + 6px) !important;
 
   /* Cradle depth: explicitly deeper on iPhone so the seal sits "in" the socket. */
-  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 5px);
+  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 5px) !important;
 
   /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
-  --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px);
+  --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px) !important;
 
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x:0px;
