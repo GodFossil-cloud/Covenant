@@ -58,9 +58,10 @@
   --seal-cradle-shift-y:0px;
   --seal-cradle-drop-y:var(--seal-cradle-center-y);
 
-  /* Lexicon SEAL size. */
-  --lexicon-seal-w:60px;
-  --lexicon-seal-h:34px;
+  /* Lexicon SEAL size.
+     IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM). */
+  --lexicon-seal-w:56px !important;
+  --lexicon-seal-h:32px !important;
 
   /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout. */
   --toc-tab-gap:14px;
@@ -70,7 +71,7 @@
 
   /* Socket geometry: enlarge the cradle cutout (horiz + vert) while keeping its top alignment stable.
      NOTE: This grows ONLY the cradle (mask + trace). It is intentionally decoupled from the seal size above. */
-  --lexicon-cradle-w:calc(var(--lexicon-seal-w) + 8px);
+  --lexicon-cradle-w:calc(var(--lexicon-seal-w) + 16px);
 
   --seal-notch-grow:4px;
   --seal-notch-radius:calc(var(--lexicon-cradle-w) * 0.5 + var(--seal-notch-grow));
