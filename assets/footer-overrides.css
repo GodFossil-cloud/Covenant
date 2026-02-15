@@ -58,6 +58,7 @@
   --seal-cradle-shift-y:0px;
   --seal-cradle-drop-y:var(--seal-cradle-center-y);
 
+  /* Lexicon SEAL size (do not change when tuning cradle). */
   --lexicon-seal-w:66px;
   --lexicon-seal-h:40px;
 
@@ -67,8 +68,9 @@
   /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep shared geometry consistent. */
   --toc-tab-width:var(--nav-pill-width);
 
-  /* Socket geometry: enlarge the cradle cutout (horiz + vert) while keeping its top alignment stable. */
-  --seal-notch-grow:2px;
+  /* Socket geometry: enlarge the cradle cutout (horiz + vert) while keeping its top alignment stable.
+     NOTE: This grows ONLY the cradle (mask + trace). The seal itself remains --lexicon-seal-w/--lexicon-seal-h above. */
+  --seal-notch-grow:3px;
   --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5 + var(--seal-notch-grow));
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
 
