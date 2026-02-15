@@ -58,9 +58,9 @@
   --seal-cradle-shift-y:0px;
   --seal-cradle-drop-y:var(--seal-cradle-center-y);
 
-  /* Lexicon SEAL size (do not change when tuning cradle). */
-  --lexicon-seal-w:66px;
-  --lexicon-seal-h:40px;
+  /* Lexicon SEAL size. */
+  --lexicon-seal-w:64px;
+  --lexicon-seal-h:38px;
 
   /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout. */
   --toc-tab-gap:14px;
@@ -69,9 +69,11 @@
   --toc-tab-width:var(--nav-pill-width);
 
   /* Socket geometry: enlarge the cradle cutout (horiz + vert) while keeping its top alignment stable.
-     NOTE: This grows ONLY the cradle (mask + trace). The seal itself remains --lexicon-seal-w/--lexicon-seal-h above. */
-  --seal-notch-grow:3px;
-  --seal-notch-radius:calc(var(--lexicon-seal-w) * 0.5 + var(--seal-notch-grow));
+     NOTE: This grows ONLY the cradle (mask + trace). It is intentionally decoupled from the seal size above. */
+  --lexicon-cradle-w:calc(var(--lexicon-seal-w) + 4px);
+
+  --seal-notch-grow:4px;
+  --seal-notch-radius:calc(var(--lexicon-cradle-w) * 0.5 + var(--seal-notch-grow));
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px);
 
   /* Void depth only: keep the ellipse a touch taller than it is wide (reads more "cradle" than circle). */
