@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.37 (Tap anim weld: freeze tab during class flip to prevent 1px divergence) */
+/*! Covenant ToC v3.2.38 (Tap-close weld: remove sink phase so tab never outruns panel) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.37';
+  window.COVENANT_TOC_VERSION = '3.2.38';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1560,8 +1560,12 @@
     tapAnimating = true;
 
     var openLift = readCssNumberVar('--toc-open-lift') || 0;
-    var closedY = computePanelClosedY(true);
-    var closedYForTab = computePanelClosedY(false);
+
+    // IMPORTANT: for tap-to-close, do NOT use the "sink" closedY.
+    // The tab cannot travel below its dock seat; if the panel sinks those last pixels,
+    // it will briefly look like the tab splits away right before seating.
+    var closedY = computePanelClosedY(false);
+    var closedYForTab = closedY;
 
     tocPanel.style.transition = 'none';
     tocOverlay.style.transition = 'none';
