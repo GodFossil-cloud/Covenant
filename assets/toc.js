@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.34 (Tab weld: eliminate 1px protrusion vs panel) */
+/*! Covenant ToC v3.2.35 (Mobile top flush: anchor sheet with top+bottom to eliminate 1px gap) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.34';
+  window.COVENANT_TOC_VERSION = '3.2.35';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -327,13 +327,18 @@
 
     var maxH = Math.max(240, available);
 
-    tocPanel.style.bottom = bottom + 'px';
-    tocPanel.style.maxHeight = maxH + 'px';
-
     if (mobile) {
-      tocPanel.style.height = maxH + 'px';
+      // Anchor with top+bottom so the top edge is truly flush (or safe-area flush) with the viewport.
+      // This avoids fractional height rounding leaving a hairline gap at the very top.
+      tocPanel.style.top = topPad + 'px';
+      tocPanel.style.bottom = bottom + 'px';
+      tocPanel.style.height = 'auto';
+      tocPanel.style.maxHeight = 'none';
     } else {
+      tocPanel.style.bottom = bottom + 'px';
+      tocPanel.style.maxHeight = maxH + 'px';
       tocPanel.style.height = '';
+      tocPanel.style.removeProperty('top');
     }
 
     if (tocToggle && mobile) {
