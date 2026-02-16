@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.44 (Solid tab + header face: remove gradients) */
+/*! Covenant ToC Panel Styles v3.1.45 (Dock settle: tab weld nudge only during motion) */
 
 /* -------------------------------------------------
    Variables
@@ -100,12 +100,11 @@
   --toc-tab-weld-nudge:0px;
 }
 
-/* Nudge the ToC tab down by 1px whenever the ToC is opening/open/closing/settling.
-   This applies during drag as well because the drag offset is additive. */
+/* Nudge the ToC tab down by 1px whenever the ToC is opening/open/closing.
+   (But NOT during dock-settling; that was causing a visible “wait then seat” at the very end.) */
 html.toc-opening,
 html.toc-open,
-html.toc-closing,
-html.toc-dock-settling{--toc-tab-weld-nudge:1px}
+html.toc-closing{--toc-tab-weld-nudge:1px}
 
 /* -------------------------------------------------
    Scroll lock
