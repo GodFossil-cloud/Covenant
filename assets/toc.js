@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.33 (Panel max-height rounding: eliminate 1px top gap on mobile) */
+/*! Covenant ToC v3.2.34 (Tab weld: eliminate 1px protrusion vs panel) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.33';
+  window.COVENANT_TOC_VERSION = '3.2.34';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -338,7 +338,7 @@
 
     if (tocToggle && mobile) {
       var rect = tocToggle.getBoundingClientRect();
-      var left = Math.max(0, Math.round(rect.left));
+      var left = Math.max(0, rect.left);
       tocPanel.style.setProperty('--toc-panel-left', left + 'px');
       tocPanel.style.setProperty('--toc-panel-x', '0px');
     } else {
@@ -352,14 +352,14 @@
     tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
   }
 
-  function computePanelClosedY() {
+  function computePanelClosedY(includeSink) {
     if (!tocPanel || !tocPanel.getBoundingClientRect) return 1;
 
     var rect = tocPanel.getBoundingClientRect();
     var h = (rect && rect.height) ? rect.height : 1;
     var closedOffsetPx = readCssNumberVar('--toc-closed-offset') || 0;
 
-    var SINK_PX = 4;
+    var SINK_PX = includeSink ? 4 : 0;
 
     return Math.max(1, h + closedOffsetPx + SINK_PX);
   }
@@ -1466,7 +1466,8 @@
       root.classList.add('toc-opening');
 
       var openLift = readCssNumberVar('--toc-open-lift') || 0;
-      var closedY = computePanelClosedY();
+      var closedY = computePanelClosedY(true);
+      var closedYForTab = computePanelClosedY(false);
 
       tocPanel.style.transition = 'none';
       tocOverlay.style.transition = 'none';
@@ -1490,7 +1491,8 @@
         setPanelTranslateY(openLift);
         tocOverlay.style.opacity = '1';
 
-        setToCTabDragOffset(openLift - closedY, false);
+        // Tab weld uses a no-sink closedY so it lands flush with the open panel.
+        setToCTabDragOffset(openLift - closedYForTab, false);
 
         setTimeout(function () {
           tocPanel.style.transform = '';
@@ -1546,7 +1548,8 @@
     tapAnimating = true;
 
     var openLift = readCssNumberVar('--toc-open-lift') || 0;
-    var closedY = computePanelClosedY();
+    var closedY = computePanelClosedY(true);
+    var closedYForTab = computePanelClosedY(false);
 
     tocPanel.style.transition = 'none';
     tocOverlay.style.transition = 'none';
@@ -1557,7 +1560,7 @@
     setPanelTranslateY(openLift);
 
     // Ensure the tab begins in its open welded position.
-    setToCTabDragOffset(openLift - closedY, false);
+    setToCTabDragOffset(openLift - closedYForTab, false);
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
