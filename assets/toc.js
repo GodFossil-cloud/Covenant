@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.44 (Drag seat: cancel weld only while pointer is down; avoid late snap-close split) */
+/*! Covenant ToC v3.2.45 (Drag close: prevent 1px dip/rebound by canceling weld during snap-close) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.44';
+  window.COVENANT_TOC_VERSION = '3.2.45';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1158,6 +1158,10 @@
       // so the last pixels read as a split right before seating on iOS Safari.
       var targetY = closedY;
       applyDragFrame(targetY, false);
+
+      // Critical: cancel the close weld with a matching -1px carry during the snap-close.
+      // Without this, releasing a drag at the seat makes the tab dip ~1px (weld applies) then rebound.
+      setToCTabDragOffset(-CLOSE_WELD_PX, false);
 
       var onEnd = function (e) {
         if (!e) return;
