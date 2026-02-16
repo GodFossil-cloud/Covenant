@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.40 (Close weld: remove timed weld-drop to eliminate end-seat bounce) */
+/*! Covenant ToC v3.2.41 (Tab drag: pin --toc-tab-drag-y to 0px to avoid end-seat snap) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.40';
+  window.COVENANT_TOC_VERSION = '3.2.41';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -236,7 +236,10 @@
 
   function clearToCTabDragOffset() {
     if (!tocToggle) return;
-    tocToggle.style.removeProperty('--toc-tab-drag-y');
+
+    // Pin rather than remove: removing the CSS variable at the end of a close/settle can cause
+    // a one-frame compositor re-evaluation that reads as a 1px snap on iOS Safari.
+    tocToggle.style.setProperty('--toc-tab-drag-y', '0px');
     tocToggle.classList.remove('is-toc-dragging');
   }
 
