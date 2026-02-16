@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.41 (Tab drag: pin --toc-tab-drag-y to 0px to avoid end-seat snap) */
+/*! Covenant ToC v3.2.42 (Drag-close: remove sink so tab never splits from panel at final dock seat) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.41';
+  window.COVENANT_TOC_VERSION = '3.2.42';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1142,7 +1142,9 @@
       root.classList.remove('toc-opening');
       root.classList.remove('toc-dock-settling');
 
-      var targetY = closedY + CLOSE_SINK_PX;
+      // IMPORTANT: do NOT sink below the dock seat on drag-close; the tab cannot follow below-seat,
+      // so the last pixels read as a split right before seating on iOS Safari.
+      var targetY = closedY;
       applyDragFrame(targetY, false);
 
       var onEnd = function (e) {
