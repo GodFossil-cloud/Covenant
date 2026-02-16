@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.47 (Dock seat: prevent 1px snap by zeroing weld-nudge during closing) */
+/*! Covenant ToC Panel Styles v3.1.48 (Close weld: JS overrides during descent) */
 
 /* -------------------------------------------------
    Variables
@@ -96,13 +96,14 @@
      Tune so the tab TOP edge meets the panel TOP edge; notch/cap remain visual. */
   --toc-seat-dy:calc(var(--dock-tab-height) - var(--toc-seat-overlap));
 
-  /* Tab weld micro-nudge to eliminate hairline seams from fractional pixel rounding during motion. */
+  /* Tab weld micro-nudge to eliminate hairline seams from fractional pixel rounding during motion.
+     NOTE: JS may temporarily override this root variable during close motion. */
   --toc-tab-weld-nudge:0px;
 }
 
 /* Nudge the ToC tab down by 1px while opening/open.
-   IMPORTANT: the root keeps `toc-open` during tap-close, so explicitly zero this during `toc-closing`
-   to prevent a 1px “overshoot then snap back” when `toc-open` is removed at the end. */
+   IMPORTANT: the root keeps `toc-open` during tap-close, so default to zero during `toc-closing`
+   to prevent an end snap; toc.js now overrides this during descent, and drops early. */
 html.toc-opening,
 html.toc-open{--toc-tab-weld-nudge:1px}
 html.toc-closing{--toc-tab-weld-nudge:0px}
