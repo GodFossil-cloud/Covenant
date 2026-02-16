@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.49 (Weld nudge stabilized: avoid drag end-seat snap) */
+/*! Covenant ToC Panel Styles v3.1.50 (Allow JS-controlled weld nudge during motion; fix iOS tab/panel seam) */
 
 /* -------------------------------------------------
    Variables
@@ -100,12 +100,6 @@
      NOTE: JS may temporarily override this root variable during close motion. */
   --toc-tab-weld-nudge:0px;
 }
-
-/* Keep weld nudge stable across ToC motion states.
-   Changing it near the end of drag-close / cancel-open can read as a 1px snap. */
-html.toc-opening,
-html.toc-open,
-html.toc-closing{--toc-tab-weld-nudge:0px}
 
 /* -------------------------------------------------
    Scroll lock
