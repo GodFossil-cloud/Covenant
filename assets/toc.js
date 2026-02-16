@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.31 (Dock tab rides with panel; no sink overshoot) */
+/*! Covenant ToC v3.2.32 (Progress unlock hardened against direct-URL probing) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.31';
+  window.COVENANT_TOC_VERSION = '3.2.32';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -426,20 +426,29 @@
 
   function unlockCurrentPage() {
     if (!currentPageId) return;
-    unlock(currentPageId);
-  }
-
-  function enforceSoftGate() {
-    if (!currentPageId) return;
-    if (!storageAvailable) return;
 
     var currentIdx = window.getJourneyIndex(currentPageId);
     if (currentIdx < 0) return;
 
-    if (currentIdx <= maxIndexUnlocked + 1) return;
+    // Harden linearity: do not allow a direct-URL visit of a future page to advance unlock state.
+    // Only unlock when arriving in order (or revisiting earlier pages).
+    if (currentIdx <= maxIndexUnlocked + 1) {
+      unlock(currentPageId);
+    }
+  }
+
+  function enforceSoftGate() {
+    if (!currentPageId) return true;
+    if (!storageAvailable) return true;
+
+    var currentIdx = window.getJourneyIndex(currentPageId);
+    if (currentIdx < 0) return true;
+
+    if (currentIdx <= maxIndexUnlocked + 1) return true;
 
     console.warn('[Covenant ToC] Access denied to locked page:', currentPageId);
     window.location.href = 'invocation.html';
+    return false;
   }
 
   function isUnlockedJourneyIndex(i) {
@@ -1679,7 +1688,8 @@
   // ---------------------------
 
   loadProgress();
-  enforceSoftGate();
+  var allowed = enforceSoftGate();
+  if (!allowed) return;
   unlockCurrentPage();
 
   if (!tocPanel || !tocOverlay || !tocToggle) {

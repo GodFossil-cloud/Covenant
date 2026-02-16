@@ -184,6 +184,7 @@ Docs:
   - Verify veil does not cover footer dock.
   - Verify staged selection + deliberate confirm.
   - Verify progress gating still blocks locked direct-access.
+  - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening ToC entries.
   - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
 
 - If you change `assets/covenant.css`:
@@ -220,6 +221,7 @@ Use this when making CSS/JS/include changes.
 - Tab/Shift+Tab keep focus trapped in the panel.
 - Drag-open: confirm the ToC tab rides with the ToC panel, and returns cleanly on close/cancel.
 - If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).
+- Attempt to visit a locked later journey page by URL; confirm redirect occurs and ToC progress does not unlock intervening pages.
 
 4) Reliquary modal veil
 - Open Reliquary from Mirror; confirm veil does not cover footer dock.
