@@ -460,6 +460,10 @@ html #mirrorToggle.dock-tab{
 html #tocToggle.dock-tab.is-toc-dragging,
 html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 
+/* When ToC + Reliquary are both open, ui-stack hides the background tab so it reads as covered. */
+html #tocToggle.dock-tab.is-ui-stack-covered,
+html #mirrorToggle.dock-tab.is-ui-stack-covered{opacity:0;visibility:hidden;pointer-events:none}
+
 /* Override the generic "nav-btn:not(.center)" framing (which uses inset:14px). */
 html #tocToggle.dock-tab::before,
 html #mirrorToggle.dock-tab::before{

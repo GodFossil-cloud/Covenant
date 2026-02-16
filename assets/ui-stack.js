@@ -1081,6 +1081,33 @@
 
     applyLexiconGateState();
     syncScrollLockFromIds(ids);
+
+    // Dock tabs: if ToC and Reliquary are both open, hide the background tab so it cannot
+    // visually "cut through" the topmost veil. (The dock remains sovereign; we do not
+    // attempt to overlay the dock with panel z-index.)
+    try {
+      var tocToggle = document.getElementById('tocToggle');
+      var mirrorToggle = document.getElementById('mirrorToggle');
+
+      var tocOpen = isPanelOpenByDomId('tocPanel');
+      var relOpen = isPanelOpenByDomId('reliquaryPanel');
+      var bothOpen = !!(tocOpen && relOpen);
+
+      var coverToc = bothOpen && (topId === 'reliquary');
+      var coverMirror = bothOpen && (topId === 'toc');
+
+      if (tocToggle && tocToggle.classList) {
+        tocToggle.classList.toggle('is-ui-stack-covered', !!coverToc);
+        if (coverToc) tocToggle.setAttribute('aria-hidden', 'true');
+        else tocToggle.removeAttribute('aria-hidden');
+      }
+
+      if (mirrorToggle && mirrorToggle.classList) {
+        mirrorToggle.classList.toggle('is-ui-stack-covered', !!coverMirror);
+        if (coverMirror) mirrorToggle.setAttribute('aria-hidden', 'true');
+        else mirrorToggle.removeAttribute('aria-hidden');
+      }
+    } catch (errTabs) {}
   }
 
   function requestClose(entry) {
