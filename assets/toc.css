@@ -639,3 +639,16 @@ html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
 html.reliquary-opening .nav-footer,
 html.reliquary-closing .nav-footer{border-top-color:transparent !important}
+
+/* -------------------------------------------------
+   ToC header connector strip override
+   ------------------------------------------------- */
+
+/* Remove the top-left rectangular connector/notch block. */
+.toc-panel-header::after{content:none !important}
+
+/* If a visible title exists, do not reserve space for the removed connector strip. */
+html.toc-opening .toc-produced-title,
+html.toc-open .toc-produced-title,
+html.toc-closing .toc-produced-title,
+html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
