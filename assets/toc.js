@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.36 (Mobile top flush + left weld: eliminate 1px x seam) */
+/*! Covenant ToC v3.2.37 (Tap anim weld: freeze tab during class flip to prevent 1px divergence) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.36';
+  window.COVENANT_TOC_VERSION = '3.2.37';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1470,6 +1470,11 @@
       var snapEase = getSnapEase();
 
       tapAnimating = true;
+
+      // Freeze tab transform while root classes flip (prevents 1px divergence from transform-transition
+      // reacting to --toc-tab-weld-nudge changes before the main snap begins).
+      setToCTabDragOffset(0, true);
+
       root.classList.add('toc-opening');
 
       var openLift = readCssNumberVar('--toc-open-lift') || 0;
@@ -1487,11 +1492,11 @@
       tocPanel.style.opacity = '1';
       setPanelTranslateY(closedY);
 
-      // Seed tab at closed, then weld it upward with the same snap timing.
-      setToCTabDragOffset(0, false);
-
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
+        // Re-enable tab transitions for the actual snap.
+        setToCTabDragOffset(0, false);
+
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
         tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
@@ -1566,11 +1571,14 @@
 
     setPanelTranslateY(openLift);
 
-    // Ensure the tab begins in its open welded position.
-    setToCTabDragOffset(openLift - closedYForTab, false);
+    // Freeze tab transform while classes flip (keeps weld constant from frame 0).
+    setToCTabDragOffset(openLift - closedYForTab, true);
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
+      // Re-enable transitions for the actual snap.
+      setToCTabDragOffset(openLift - closedYForTab, false);
+
       tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       tocOverlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
