@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.39 (Close weld: keep tab flush during descent without end snap) */
+/*! Covenant ToC v3.2.40 (Close weld: remove timed weld-drop to eliminate end-seat bounce) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.39';
+  window.COVENANT_TOC_VERSION = '3.2.40';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -60,8 +60,8 @@
   var uiRegistered = false;
   var UI_STACK_ID = 'toc';
 
-  // While closing, keep the tab welded (1px) during descent, then drop weld before the last frame.
-  // This avoids the "tab proud" seam during motion without reintroducing the end snap.
+  // While closing, keep the tab welded (1px) during descent.
+  // NOTE: Do not change the weld mid-transition (it can re-target transform and look like a bounce).
   var CLOSE_WELD_PX = 1;
   var CLOSE_WELD_DROP_MS = 120;
   var closeWeldTimer = null;
@@ -1000,13 +1000,6 @@
       closedY = Math.max(1, panelHBase + closedOffsetPx);
     }
 
-    function updateWeldForCloseMotion(y) {
-      // While descending, keep weld; once we're within ~1px of the dock seat, drop weld early.
-      var delta = closedY - y;
-      if (delta <= 1.2) setRootWeldNudge(0);
-      else setRootWeldNudge(CLOSE_WELD_PX);
-    }
-
     function applyDragFrame(y, draggingNow) {
       if (!tocPanel) return;
       currentY = y;
@@ -1023,8 +1016,6 @@
       tocPanel.style.opacity = '1';
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
-
-      if (startWasOpen) updateWeldForCloseMotion(y);
 
       // Lexicon-style carry: the dock tab rides with the sheet.
       // IMPORTANT: do not carry below the dock seat during sink/settle frames.
@@ -1094,6 +1085,9 @@
     function finalizeCloseAfterSnap() {
       if (!tocPanel || !tocOverlay) return;
 
+      // Cleanly zero weld without a late-transition re-target.
+      setToCTabDragOffset(-CLOSE_WELD_PX, true);
+
       cancelCloseWeldDrop();
       clearRootWeldNudge();
 
@@ -1140,7 +1134,6 @@
 
       cancelCloseWeldDrop();
       setRootWeldNudge(CLOSE_WELD_PX);
-      scheduleCloseWeldDrop(SNAP_MS);
 
       root.classList.add('toc-closing');
       root.classList.remove('toc-opening');
@@ -1631,9 +1624,6 @@
     var snapMs = getSnapMs();
     var snapEase = getSnapEase();
 
-    // Drop weld before the final frame so the close settles into the true resting Y with no snap.
-    scheduleCloseWeldDrop(snapMs);
-
     tapAnimating = true;
 
     var openLift = readCssNumberVar('--toc-open-lift') || 0;
@@ -1666,8 +1656,8 @@
       setPanelTranslateY(closedY);
       tocOverlay.style.opacity = '0';
 
-      // Tab returns to its dock seat.
-      setToCTabDragOffset(0, false);
+      // Tab returns to its dock seat (cancel weld with -1px carry so no mid-flight re-target is needed).
+      setToCTabDragOffset(-CLOSE_WELD_PX, false);
 
       setTimeout(function () {
         cancelCloseWeldDrop();
