@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.50 (Allow JS-controlled weld nudge during motion; fix iOS tab/panel seam) */
+/*! Covenant ToC Panel Styles v3.1.51 (iOS: open-state weld nudge +1px to stop tab sitting proud) */
 
 /* -------------------------------------------------
    Variables
@@ -100,6 +100,12 @@
      NOTE: JS may temporarily override this root variable during close motion. */
   --toc-tab-weld-nudge:0px;
 }
+
+/* iOS Safari: when the sheet is committed open (or opening), a +1px weld keeps the tab from
+   reading "proud" (slightly higher) than the panel edge due to subpixel rounding.
+   IMPORTANT: Do not set this for toc-closing; JS controls the weld during close motion. */
+html.toc-opening,
+html.toc-open{--toc-tab-weld-nudge:1px}
 
 /* -------------------------------------------------
    Scroll lock
