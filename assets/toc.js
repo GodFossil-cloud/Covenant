@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.35 (Mobile top flush: anchor sheet with top+bottom to eliminate 1px gap) */
+/*! Covenant ToC v3.2.36 (Mobile top flush + left weld: eliminate 1px x seam) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.35';
+  window.COVENANT_TOC_VERSION = '3.2.36';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -343,7 +343,9 @@
 
     if (tocToggle && mobile) {
       var rect = tocToggle.getBoundingClientRect();
-      var left = Math.max(0, rect.left);
+      // Micro-weld: if the tab reads ~1px left of the sheet edge (subpixel rounding / border antialias),
+      // bias the sheet left by 1px so the seam disappears.
+      var left = Math.max(0, rect.left - 1);
       tocPanel.style.setProperty('--toc-panel-left', left + 'px');
       tocPanel.style.setProperty('--toc-panel-x', '0px');
     } else {
