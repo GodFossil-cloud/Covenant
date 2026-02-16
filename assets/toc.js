@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.32 (Progress unlock hardened against direct-URL probing) */
+/*! Covenant ToC v3.2.33 (Panel max-height rounding: eliminate 1px top gap on mobile) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.32';
+  window.COVENANT_TOC_VERSION = '3.2.33';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -320,7 +320,12 @@
     var mobile = isMobileSheet();
     var topPad = mobile ? topSafe : (topSafe > 0 ? topSafe : 12);
 
-    var maxH = Math.max(240, Math.floor(viewportH - bottom - topPad));
+    // Avoid flooring here: visualViewport height can be fractional on mobile Safari, and flooring
+    // can leave a 1px top gap that makes the dock tab appear "higher" than the panel.
+    var available = viewportH - bottom - topPad;
+    if (!isFinite(available)) available = 240;
+
+    var maxH = Math.max(240, available);
 
     tocPanel.style.bottom = bottom + 'px';
     tocPanel.style.maxHeight = maxH + 'px';

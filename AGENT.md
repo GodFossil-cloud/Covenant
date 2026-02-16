@@ -93,6 +93,7 @@ Notes:
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
 - Note (ToC dock tab): ToC tab rides with the ToC sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (Reliquary dock tab): Mirror tab rides with the Reliquary sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
+- Note (ToC positioning): Avoid `Math.floor()` when computing the mobile sheet height from `visualViewport.height`; it can create a 1px top gap.
 - Note (footer bookends spacing): `--toc-tab-gap` in `assets/footer-overrides.css` controls ToC/Mirror distance from the center; mobile bookend nudges live in `assets/footer-overrides.css` and the `navFooterCritical` fallback in `_includes/nav-footer.html`.
 - Note (footer bookends vertical seat): `--dock-tab-raise` is defined in `assets/toc.css`; the mobile first-paint fallback may override it on `#navFooter` in `assets/footer-overrides.css`.
 - Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
@@ -184,8 +185,9 @@ Docs:
   - Verify veil does not cover footer dock.
   - Verify staged selection + deliberate confirm.
   - Verify progress gating still blocks locked direct-access.
-  - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening ToC entries.
+  - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening pages.
   - Verify ToC header band visually blends with the ToC tab face (no jarring seam).
+  - Verify ToC panel reaches the top cleanly on mobile (no ~1px gap).
   - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
 
 - If you change `assets/covenant.css`:
@@ -216,6 +218,7 @@ Use this when making CSS/JS/include changes.
 3) ToC modal veil
 - Open ToC from footer; confirm veil does not cover dock.
 - Confirm ToC header band visually blends with the ToC tab face.
+- Confirm ToC sheet reaches the top cleanly on mobile (no 1px gap).
 - Select an unlocked entry; confirm it stages.
 - Hold confirm to enter; release early cancels.
 - Confirm Hold-to-Enter closes panels before navigation.
