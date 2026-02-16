@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.48 (Close weld: JS overrides during descent) */
+/*! Covenant ToC Panel Styles v3.1.49 (Weld nudge stabilized: avoid drag end-seat snap) */
 
 /* -------------------------------------------------
    Variables
@@ -101,11 +101,10 @@
   --toc-tab-weld-nudge:0px;
 }
 
-/* Nudge the ToC tab down by 1px while opening/open.
-   IMPORTANT: the root keeps `toc-open` during tap-close, so default to zero during `toc-closing`
-   to prevent an end snap; toc.js now overrides this during descent, and drops early. */
+/* Keep weld nudge stable across ToC motion states.
+   Changing it near the end of drag-close / cancel-open can read as a 1px snap. */
 html.toc-opening,
-html.toc-open{--toc-tab-weld-nudge:1px}
+html.toc-open,
 html.toc-closing{--toc-tab-weld-nudge:0px}
 
 /* -------------------------------------------------
