@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.52 (Close: disable weld nudge during toc-closing to prevent late split) */
+/*! Covenant ToC Panel Styles v3.1.53 (Close: remove end snap by restoring weld cancellation + freezing dock-settle transition) */
 
 /* -------------------------------------------------
    Variables
@@ -103,13 +103,10 @@
 
 /* iOS Safari: when the sheet is committed open (or opening), a +1px weld keeps the tab from
    reading "proud" (slightly higher) than the panel edge due to subpixel rounding.
-   IMPORTANT: Do not set this for toc-closing; we force weld nudge off during close to avoid a
-   visible late-frame split. */
+   IMPORTANT: During close motion, JS cancels this weld with a matching -1px carry so the tab
+   does not visibly re-target transform mid-flight. */
 html.toc-opening,
-html.toc-open:not(.toc-closing){--toc-tab-weld-nudge:1px}
-
-/* Force weld off while closing, even if JS sets an inline weld nudge. */
-html.toc-closing{--toc-tab-weld-nudge:0px !important}
+html.toc-open{--toc-tab-weld-nudge:1px}
 
 /* -------------------------------------------------
    Scroll lock
@@ -473,6 +470,11 @@ html #mirrorToggle.dock-tab{
 
 html #tocToggle.dock-tab.is-toc-dragging,
 html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
+
+/* During dock settling, keep the dock tabs transitionless so the final variable cleanup
+   (clearing carry offsets) cannot read as a last-frame "snap". */
+html.toc-dock-settling #tocToggle.dock-tab,
+html.toc-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 
 /* When ToC + Reliquary are both open, ui-stack hides the background tab so it reads as covered. */
 html #tocToggle.dock-tab.is-ui-stack-covered,
