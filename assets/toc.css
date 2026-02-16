@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.46 (Dock seat: remove 1px end-of-close correction) */
+/*! Covenant ToC Panel Styles v3.1.47 (Dock seat: prevent 1px snap by zeroing weld-nudge during closing) */
 
 /* -------------------------------------------------
    Variables
@@ -101,9 +101,11 @@
 }
 
 /* Nudge the ToC tab down by 1px while opening/open.
-   Do NOT apply this during closing, otherwise the tab will overshoot by 1px then “correct” when toc-closing is removed. */
+   IMPORTANT: the root keeps `toc-open` during tap-close, so explicitly zero this during `toc-closing`
+   to prevent a 1px “overshoot then snap back” when `toc-open` is removed at the end. */
 html.toc-opening,
 html.toc-open{--toc-tab-weld-nudge:1px}
+html.toc-closing{--toc-tab-weld-nudge:0px}
 
 /* -------------------------------------------------
    Scroll lock
