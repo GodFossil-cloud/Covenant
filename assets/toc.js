@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.42 (Drag-close: remove sink so tab never splits from panel at final dock seat) */
+/*! Covenant ToC v3.2.43 (Drag seat: cancel weld nudge so tab stops exactly in cradle while held) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.42';
+  window.COVENANT_TOC_VERSION = '3.2.43';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1022,8 +1022,16 @@
 
       // Lexicon-style carry: the dock tab rides with the sheet.
       // IMPORTANT: do not carry below the dock seat during sink/settle frames.
+      // Also: if a weld nudge is active (e.g. +1px), cancel it at the fully-seated cradle so the tab
+      // cannot be pushed "below" its physical resting position while the pointer is still down.
       var tabOffset = (y - closedY);
       if (tabOffset > 0) tabOffset = 0;
+
+      var weldPx = readCssNumberVar('--toc-tab-weld-nudge') || 0;
+      if (weldPx > 0 && tabOffset > -(weldPx + 0.25)) {
+        tabOffset = -weldPx;
+      }
+
       setToCTabDragOffset(tabOffset, !!draggingNow);
     }
 
