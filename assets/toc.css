@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.45 (Dock settle: tab weld nudge only during motion) */
+/*! Covenant ToC Panel Styles v3.1.46 (Dock seat: remove 1px end-of-close correction) */
 
 /* -------------------------------------------------
    Variables
@@ -100,11 +100,10 @@
   --toc-tab-weld-nudge:0px;
 }
 
-/* Nudge the ToC tab down by 1px whenever the ToC is opening/open/closing.
-   (But NOT during dock-settling; that was causing a visible “wait then seat” at the very end.) */
+/* Nudge the ToC tab down by 1px while opening/open.
+   Do NOT apply this during closing, otherwise the tab will overshoot by 1px then “correct” when toc-closing is removed. */
 html.toc-opening,
-html.toc-open,
-html.toc-closing{--toc-tab-weld-nudge:1px}
+html.toc-open{--toc-tab-weld-nudge:1px}
 
 /* -------------------------------------------------
    Scroll lock
