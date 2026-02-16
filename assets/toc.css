@@ -539,8 +539,8 @@ html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto S
 /* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
    Do not toggle dock/toggle z-index during toc-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
 
-/* During settle, ignore hover/pointer churn while the tab is sliding into place. */
-html.toc-dock-settling #tocToggle{pointer-events:none}
+/* During settle, ignore hover/pointer churn while the tab is sliding into place (desktop fine pointers only). */
+@media (hover: hover) and (pointer: fine){html.toc-dock-settling #tocToggle{pointer-events:none}}
 
 /* -------------------------------------------------
    Footer fade choreography

@@ -53,7 +53,8 @@ html.reliquary-dragging #lexiconToggle{opacity:.28}
 /* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
    Avoid toggling dock/toggle z-index during reliquary-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
 
-html.reliquary-dock-settling #mirrorToggle{pointer-events:none}
+/* During settle, ignore hover/pointer churn while the tab is sliding into place (desktop fine pointers only). */
+@media (hover: hover) and (pointer: fine){html.reliquary-dock-settling #mirrorToggle{pointer-events:none}}
 
 /* -------------------------------------------------
    Dock tab (Mirror button)
