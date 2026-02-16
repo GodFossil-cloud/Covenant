@@ -34,6 +34,9 @@
 #lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
 #lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face-hover)}
 
+/* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
+#navFooter #lexiconToggle .lexicon-glyph{font-size:0.90em !important}
+
 /* Make the Lexicon seal cradle border/field 1px taller without touching socket geometry tokens. */
 .nav-footer::after{height:var(--lexicon-cradle-h, var(--seal-notch-height))}
 
