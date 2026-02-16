@@ -185,6 +185,7 @@ Docs:
   - Verify staged selection + deliberate confirm.
   - Verify progress gating still blocks locked direct-access.
   - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening ToC entries.
+  - Verify ToC header band visually blends with the ToC tab face (no jarring seam).
   - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
 
 - If you change `assets/covenant.css`:
@@ -214,6 +215,7 @@ Use this when making CSS/JS/include changes.
 
 3) ToC modal veil
 - Open ToC from footer; confirm veil does not cover dock.
+- Confirm ToC header band visually blends with the ToC tab face.
 - Select an unlocked entry; confirm it stages.
 - Hold confirm to enter; release early cancels.
 - Confirm Hold-to-Enter closes panels before navigation.

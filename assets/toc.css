@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.41 (Dock tabs ride with panels) */
+/*! Covenant ToC Panel Styles v3.1.42 (Header blends with ToC tab face) */
 
 /* -------------------------------------------------
    Variables
@@ -174,8 +174,8 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   width:48px;
   height:4px;
   border-radius:999px;
-  background:rgba(44,62,80,.20);
-  box-shadow:0 1px 0 rgba(255,255,255,.26);
+  background:rgba(255,255,255,.22);
+  box-shadow:0 1px 0 rgba(0,0,0,.55);
 }
 
 /* -------------------------------------------------
@@ -183,7 +183,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
    ------------------------------------------------- */
 
 /* Match Reliquary header sizing so both veils feel like the same instrument family. */
-.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(44,62,80,.12);background:linear-gradient(to bottom,rgba(255,255,255,.52),rgba(255,255,255,.16))}
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(0,0,0,.62);background:linear-gradient(to bottom,rgba(255, 242, 210, 0.10) 0%,rgba(255, 242, 210, 0) 18px),linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.38)),var(--dock-tab-face,#010103)}
 
 /* Persistent connector strip: visible regardless of root motion classes. */
 .toc-panel-header::after{
