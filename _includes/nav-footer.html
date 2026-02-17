@@ -332,12 +332,33 @@
     if (!label || !btn || !textEl) return;
 
     var clearTimer = null;
+    var latestCitation = '';
+
+    function readText() {
+      return String(textEl.textContent || '').trim();
+    }
+
+    function syncLatestCitation() {
+      var v = readText();
+      if (!v) return;
+      if (v.toLowerCase() === 'copied') return;
+      latestCitation = v;
+    }
+
+    syncLatestCitation();
+
+    try {
+      var obs = new MutationObserver(function () {
+        syncLatestCitation();
+      });
+      obs.observe(textEl, { childList: true, characterData: true, subtree: true });
+    } catch (err) {}
 
     function setCopied(on) {
       try {
         if (on) label.classList.add('is-copied');
         else label.classList.remove('is-copied');
-      } catch (err) {}
+      } catch (err2) {}
 
       if (clearTimer) {
         window.clearTimeout(clearTimer);
@@ -345,8 +366,15 @@
       }
 
       if (on) {
+        try { btn.disabled = true; } catch (e1) {}
+        try { btn.setAttribute('aria-label', 'Copied'); } catch (e2) {}
+        try { textEl.textContent = 'Copied'; } catch (e3) {}
+
         clearTimer = window.setTimeout(function () {
-          try { label.classList.remove('is-copied'); } catch (err2) {}
+          try { label.classList.remove('is-copied'); } catch (err3) {}
+          try { btn.disabled = false; } catch (e4) {}
+          try { btn.setAttribute('aria-label', 'Copy citation'); } catch (e5) {}
+          try { textEl.textContent = latestCitation || ''; } catch (e6) {}
           clearTimer = null;
         }, 900);
       }
@@ -377,14 +405,17 @@
           document.body.removeChild(ta);
           if (ok) resolve();
           else reject(new Error('copy_failed'));
-        } catch (err2) {
-          reject(err2);
+        } catch (err4) {
+          reject(err4);
         }
       });
     }
 
     function copyCitation() {
-      var value = String(textEl.textContent || '').trim();
+      if (label.classList.contains('is-copied')) return;
+
+      syncLatestCitation();
+      var value = String(latestCitation || '').trim();
       if (!value) return;
 
       var promise = copyWithClipboardAPI(value);

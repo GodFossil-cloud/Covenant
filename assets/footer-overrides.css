@@ -232,17 +232,10 @@
   border-radius:6px;
 }
 
-#navFooter .citation-label.is-copied #citationText{opacity:0.20}
-
-#navFooter .citation-label.is-copied::after{
-  content:'Copied';
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%, -50%);
-
-  /* Legibility: leaf-toned ink + dark veil + tight shadow.
-     (This must read against both the citation label and the footer gradient.) */
+/* "Copied" momentarily replaces the citation text (JS swaps #citationText content).
+   Style it as a faint pill so it reads cleanly against the dock gradient. */
+#navFooter .citation-label.is-copied #citationText{
+  display:inline-block;
   color:var(--citation-color, rgba(242, 220, 154, 0.96));
   text-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
@@ -253,13 +246,6 @@
   border-radius:999px;
   padding:2px 9px 3px;
 
-  width:auto;
-  max-width:calc(100% - 8px);
-  text-align:center;
-  pointer-events:none;
-
-  opacity:0.96;
-  font-size:0.78rem;
   letter-spacing:0.14em;
   line-height:1.08;
 }
