@@ -196,8 +196,52 @@
 #navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
 
 /* Citation label: keep it present even when empty (altar-leading emphasis). */
-#navFooter .citation-label{margin-top:4px;min-height:18px;display:block !important;visibility:visible !important}
-#navFooter .citation-label:empty{display:block !important;visibility:visible !important}
+#navFooter .citation-label{
+  margin-top:4px;
+  min-height:18px;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  visibility:visible !important;
+}
+#navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
+
+#navFooter .citation-copy{
+  display:inline-block;
+  border:0;
+  background:transparent;
+  padding:0;
+  margin:0;
+  font:inherit;
+  color:inherit;
+  letter-spacing:inherit;
+  text-transform:inherit;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+#navFooter .citation-copy:focus-visible{
+  outline:1px solid rgba(212, 170, 78, 0.65);
+  outline-offset:4px;
+  border-radius:6px;
+}
+
+#navFooter .citation-label.is-copied #citationText{opacity:0.22}
+
+#navFooter .citation-label.is-copied::after{
+  content:'Copied';
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:100%;
+  text-align:center;
+  pointer-events:none;
+  opacity:0.88;
+  font-size:0.74rem;
+  letter-spacing:0.18em;
+}
 
 @media (max-width: 600px){
   #navFooter .citation-label{margin-top:2px;min-height:16px}

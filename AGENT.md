@@ -242,6 +242,7 @@ Use this when making CSS/JS/include changes.
 6) Footer system
 - Confirm footer colors/frames/seals render correctly.
 - Confirm mobile behavior does not trap scroll or hide the dock.
+- Click the citation label beneath the Lexicon seal; confirm it copies the citation text and briefly whispers “Copied”.
 
 7) Rituals exclusion
 - Open `rituals.html` and confirm compact-header exclusion still applies.

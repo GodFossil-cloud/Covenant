@@ -293,7 +293,9 @@
       </div>
 
       <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true">
-        <span class="citation-text" id="citationText"></span>
+        <button class="citation-copy" id="citationCopy" type="button" aria-label="Copy citation">
+          <span class="citation-text" id="citationText"></span>
+        </button>
       </div>
     </div>
 
@@ -316,6 +318,107 @@
     </div>
   </div>
 </nav>
+
+<script>
+  (function () {
+    'use strict';
+
+    function byId(id) { return document.getElementById(id); }
+
+    var label = byId('citationLabel');
+    var btn = byId('citationCopy');
+    var textEl = byId('citationText');
+
+    if (!label || !btn || !textEl) return;
+
+    var clearTimer = null;
+
+    function setCopied(on) {
+      try {
+        if (on) label.classList.add('is-copied');
+        else label.classList.remove('is-copied');
+      } catch (err) {}
+
+      if (clearTimer) {
+        window.clearTimeout(clearTimer);
+        clearTimer = null;
+      }
+
+      if (on) {
+        clearTimer = window.setTimeout(function () {
+          try { label.classList.remove('is-copied'); } catch (err2) {}
+          clearTimer = null;
+        }, 900);
+      }
+    }
+
+    function copyWithClipboardAPI(value) {
+      if (!navigator.clipboard || !window.isSecureContext) return null;
+      return navigator.clipboard.writeText(value);
+    }
+
+    function copyWithFallback(value) {
+      return new Promise(function (resolve, reject) {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = value;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '-1000px';
+          ta.style.left = '-1000px';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+
+          var ok = false;
+          try { ok = document.execCommand && document.execCommand('copy'); } catch (err) {}
+
+          document.body.removeChild(ta);
+          if (ok) resolve();
+          else reject(new Error('copy_failed'));
+        } catch (err2) {
+          reject(err2);
+        }
+      });
+    }
+
+    function copyCitation() {
+      var value = String(textEl.textContent || '').trim();
+      if (!value) return;
+
+      var promise = copyWithClipboardAPI(value);
+      if (!promise) promise = copyWithFallback(value);
+
+      promise.then(function () {
+        setCopied(true);
+      }).catch(function () {
+        setCopied(false);
+      });
+    }
+
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      copyCitation();
+    });
+
+    btn.addEventListener('keydown', function (e) {
+      if (!e) return;
+      var k = e.key;
+
+      if (k === ' ' || k === 'Spacebar') {
+        e.preventDefault();
+      }
+
+      if (k === 'Enter' || k === ' ' || k === 'Spacebar') {
+        e.preventDefault();
+        e.stopPropagation();
+        copyCitation();
+      }
+    });
+  })();
+</script>
 
 {% include toc-panel.html %}
 {% include reliquary-panel.html %}
