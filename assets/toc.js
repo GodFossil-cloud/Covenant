@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.45 (Drag close: prevent 1px dip/rebound by canceling weld during snap-close) */
+/*! Covenant ToC v3.2.46 (Drag close/cancel-open: prevent 1px dip/rebound by canceling weld during snap paths) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.45';
+  window.COVENANT_TOC_VERSION = '3.2.46';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1220,6 +1220,9 @@
         if (startWasOpen) {
           snapCloseFromOpen();
         } else {
+          // Cancel-open snap-back: force weld to 0 for the duration of the return,
+          // otherwise html.toc-opening (+1px weld) can push the tab 1px below its cradle.
+          setRootWeldNudge(0);
           applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
         }
       }
@@ -1251,6 +1254,9 @@
           raf2(function () {
             raf2(function () {
               root.classList.remove('toc-opening');
+              // Only clear the inline weld override after toc-opening is removed;
+              // otherwise CSS would re-apply +1px weld mid-snap.
+              clearRootWeldNudge();
             });
           });
 
