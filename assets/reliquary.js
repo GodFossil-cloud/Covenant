@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.33 (No local overflow scroll-lock; dock tab rides with panel; no sink overshoot) */
+/*! Covenant Reliquary UI v0.3.34 (ToC parity: no-sink snap-close; pin tab carry to 0px) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.33';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.34';
 
   var doc = document;
   var root = doc.documentElement;
@@ -201,7 +201,10 @@
 
   function clearMirrorTabDragOffset() {
     if (!toggle) return;
-    toggle.style.removeProperty('--mirror-tab-drag-y');
+
+    // Pin carry to 0px (do not remove). Removing the property can cause a last-frame
+    // compositor re-evaluation where the tab briefly re-targets its transform.
+    toggle.style.setProperty('--mirror-tab-drag-y', '0px');
   }
 
   var focusReturnEl = null;
@@ -364,14 +367,14 @@
     panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + y + 'px)';
   }
 
-  function computePanelClosedY() {
+  function computePanelClosedY(includeSink) {
     if (!panel || !panel.getBoundingClientRect) return 1;
 
     var rect = panel.getBoundingClientRect();
     var h = (rect && rect.height) ? rect.height : 1;
     var closedOffsetPx = readCssNumberVar('--reliquary-closed-offset') || 0;
 
-    var SINK_PX = 4;
+    var SINK_PX = includeSink ? 4 : 0;
 
     return Math.max(1, h + closedOffsetPx + SINK_PX);
   }
@@ -481,7 +484,10 @@
 
     positionPanel();
 
-    var closedY = computePanelClosedY();
+    // Tap-open can start from a slightly sunk closed position for the sheet, but the dock tab should
+    // remain seated and never carry below its true rest position.
+    var closedY = computePanelClosedY(true);
+    var closedYForTab = computePanelClosedY(false);
 
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
@@ -504,7 +510,7 @@
       setPanelTranslateY(openLift);
       overlay.style.opacity = '1';
 
-      setMirrorTabDragOffset(openLift - closedY);
+      setMirrorTabDragOffset(openLift - closedYForTab);
 
       setTimeout(function () {
         panel.style.transform = '';
@@ -539,7 +545,9 @@
 
     tapAnimating = true;
 
-    var closedY = computePanelClosedY();
+    // Tap-close should return to the true seated closed position (no sink below seat).
+    var closedY = computePanelClosedY(false);
+    var closedYForTab = closedY;
 
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
@@ -550,7 +558,7 @@
     setPanelTranslateY(openLift);
 
     // Ensure the tab begins in its open welded position.
-    setMirrorTabDragOffset(openLift - closedY);
+    setMirrorTabDragOffset(openLift - closedYForTab);
 
     raf(function () {
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -665,7 +673,6 @@
     var SNAP_MS = getSnapMs();
     var SNAP_EASE = getSnapEase();
 
-    var CLOSE_SINK_PX = 4;
     var CANCEL_OPEN_SINK_PX = 12;
 
     function computeOpenLift() {
@@ -775,7 +782,8 @@
 
       positionPanel();
 
-      var targetY = closedY + CLOSE_SINK_PX;
+      // ToC parity: snap closed to the true seat (no sink below dock).
+      var targetY = closedY;
       applyDragFrame(targetY, false);
 
       var done = false;
