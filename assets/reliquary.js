@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.34 (ToC parity: no-sink snap-close; pin tab carry to 0px) */
+/*! Covenant Reliquary UI v0.3.35 (iOS dock-settle: force Mirror tab transform transition during tap-open) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.34';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.35';
 
   var doc = document;
   var root = doc.documentElement;
@@ -205,6 +205,42 @@
     // Pin carry to 0px (do not remove). Removing the property can cause a last-frame
     // compositor re-evaluation where the tab briefly re-targets its transform.
     toggle.style.setProperty('--mirror-tab-drag-y', '0px');
+  }
+
+  // iOS Safari: the dock settling window disables transitions on the Mirror tab (toc.css + reliquary.css).
+  // If the user taps Mirror during that window, the welded carry offset can apply with no transition,
+  // which reads as a "teleport". Force an inline transition (with !important) for the tap-open snap.
+  var mirrorTransitionRestore = null;
+
+  function forceMirrorTabTransitionForTapOpen(ms, ease) {
+    if (!toggle) return;
+    if (mirrorTransitionRestore) return;
+
+    mirrorTransitionRestore = {
+      value: toggle.style.getPropertyValue('transition') || '',
+      priority: toggle.style.getPropertyPriority('transition') || ''
+    };
+
+    toggle.style.setProperty('transition', 'transform ' + ms + 'ms ' + ease, 'important');
+    toggle.setAttribute('data-mirror-transition-override', '1');
+  }
+
+  function clearMirrorTabTransitionOverride() {
+    if (!toggle) return;
+    if (toggle.getAttribute('data-mirror-transition-override') !== '1') {
+      mirrorTransitionRestore = null;
+      return;
+    }
+
+    toggle.removeAttribute('data-mirror-transition-override');
+
+    if (mirrorTransitionRestore && mirrorTransitionRestore.value) {
+      toggle.style.setProperty('transition', mirrorTransitionRestore.value, mirrorTransitionRestore.priority || '');
+    } else {
+      toggle.style.removeProperty('transition');
+    }
+
+    mirrorTransitionRestore = null;
   }
 
   var focusReturnEl = null;
@@ -444,6 +480,7 @@
     toggle.setAttribute('aria-label', 'Open Reliquary');
 
     clearMirrorTabDragOffset();
+    clearMirrorTabTransitionOverride();
 
     if (isIOS) disableIOSTouchScrollLock();
     clearLegacyLocalScrollLockArtifacts();
@@ -473,6 +510,9 @@
     overlay.style.opacity = '';
     overlay.style.transition = '';
 
+    // Defensive cleanup: if a pointer-cancel left the drag class behind, it can suppress transitions.
+    try { toggle.classList.remove('is-reliquary-dragging'); } catch (err0) {}
+
     openReliquaryImmediately();
 
     var snapMs = getSnapMs();
@@ -483,6 +523,19 @@
     root.classList.add('reliquary-opening');
 
     positionPanel();
+
+    // If the user taps Mirror during ToC/Reliquary dock settling, CSS will disable transitions.
+    // Force transition for this snap so the Mirror tab rides instead of teleporting.
+    var isSettling = false;
+    try {
+      isSettling = !!(root && root.classList && (root.classList.contains('toc-dock-settling') || root.classList.contains('reliquary-dock-settling')));
+    } catch (errS) {
+      isSettling = false;
+    }
+
+    if (isSettling) {
+      forceMirrorTabTransitionForTapOpen(snapMs, snapEase);
+    }
 
     // Tap-open can start from a slightly sunk closed position for the sheet, but the dock tab should
     // remain seated and never carry below its true rest position.
@@ -522,6 +575,8 @@
 
         root.classList.remove('reliquary-opening');
         tapAnimating = false;
+
+        clearMirrorTabTransitionOverride();
 
         setTimeout(focusIntoPanel, 0);
       }, snapMs + 50);
@@ -597,6 +652,7 @@
         root.classList.remove('reliquary-open');
 
         clearMirrorTabDragOffset();
+        clearMirrorTabTransitionOverride();
 
         if (isIOS) disableIOSTouchScrollLock();
         clearLegacyLocalScrollLockArtifacts();
@@ -757,6 +813,7 @@
       root.classList.remove('reliquary-open');
 
       clearMirrorTabDragOffset();
+      clearMirrorTabTransitionOverride();
 
       if (isIOS) disableIOSTouchScrollLock();
       clearLegacyLocalScrollLockArtifacts();
@@ -1095,7 +1152,7 @@
     if (panel.classList.contains('is-open')) closeReliquaryImmediately(false);
   });
 
-  doc.addEventListener('visibilitychange', function () {
+  doc.addEventListener('visibilitychange', function (e) {
     if (!doc.hidden) return;
     if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryImmediately(false);
