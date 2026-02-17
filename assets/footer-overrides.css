@@ -195,7 +195,9 @@
 
 #navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
 
-/* Citation label: keep it present even when empty (altar-leading emphasis). */
+/* Citation label: keep it present even when empty (altar-leading emphasis).
+   NOTE: covenant.css intentionally sets .citation-label { pointer-events: none; }.
+   Here we override that so the label can be tapped to copy. */
 #navFooter .citation-label{
   margin-top:4px;
   min-height:18px;
@@ -204,6 +206,7 @@
   justify-content:center;
   position:relative;
   visibility:visible !important;
+  pointer-events:auto;
 }
 #navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
 
@@ -219,6 +222,8 @@
   text-transform:inherit;
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  pointer-events:auto;
 }
 
 #navFooter .citation-copy:focus-visible{
