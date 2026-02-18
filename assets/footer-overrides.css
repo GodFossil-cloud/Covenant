@@ -99,6 +99,10 @@
   --toc-glyph-nudge-y:8px;
   --mirror-glyph-nudge-y:8px;
 
+  /* Prev/Next frames: slightly larger than the ToC/Mirror pill size (all breakpoints). */
+  --nav-wing-pill-w:calc(var(--nav-pill-width) + 10px);
+  --nav-wing-pill-h:calc(var(--nav-pill-height) + 8px);
+
   /* iOS Safari: keep the dock pre-promoted as a stable layer (see assets/covenant.css + AGENT.md).
      Do not override transform here; only guard against "will-change" churn. */
   -webkit-backface-visibility:hidden;
@@ -194,6 +198,27 @@
 }
 
 #navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
+
+/* Prev/Next: larger frames, remove brass border outline. */
+#navFooter .nav-next-frame,
+#navFooter .nav-prev-frame{
+  width:var(--nav-wing-pill-w);
+  height:var(--nav-wing-pill-h);
+}
+
+#navFooter .nav-next-frame::before,
+#navFooter .nav-prev-frame::before{
+  border:0 !important;
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.92),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.72);
+}
+
+#navFooter .nav-next-frame .nav-btn-icon,
+#navFooter .nav-prev-frame .nav-btn-icon{
+  font-size:1.55rem;
+}
 
 /* Citation label: keep it present even when empty (altar-leading emphasis).
    NOTE: covenant.css intentionally sets .citation-label { pointer-events: none; }.
