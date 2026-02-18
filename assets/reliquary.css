@@ -161,7 +161,7 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
   position:relative;
   padding:.95rem 1.25rem .78rem;
   border-bottom:1px solid rgba(201,169,97,.14);
-  background:linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,0));
+  background:var(--dock-tab-face,#010103);
 }
 
 /* Connector strip disabled: Mirror tab stays anchored in the footer cradle now. */
