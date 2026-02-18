@@ -111,6 +111,12 @@
   isolation:isolate;
 }
 
+/* Widen the footer dock slightly so Prev/Next sit further from the center (all breakpoints). */
+#navFooter .nav-footer-inner{
+  max-width:980px;
+  padding:0 4px;
+}
+
 #navFooter::before,
 #navFooter::after{-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto}
 
