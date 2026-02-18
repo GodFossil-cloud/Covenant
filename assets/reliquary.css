@@ -97,8 +97,8 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
     radial-gradient(900px 520px at 50% 0%, rgba(201,169,97,.08), rgba(201,169,97,0) 55%),
     linear-gradient(to bottom, var(--reliquary-obsidian-2) 0%, var(--reliquary-obsidian-1) 55%, var(--reliquary-obsidian-0) 100%);
 
-  border:1px solid rgba(201,169,97,.16);
-  border-top-color:rgba(201,169,97,.20);
+  border:1px solid var(--dock-tab-face,#010103);
+  border-top-color:var(--dock-tab-face,#010103);
   box-shadow:0 26px 70px rgba(0,0,0,.40),0 10px 26px rgba(0,0,0,.22),inset 0 18px 22px -22px rgba(255,255,255,.08);
 
   /* Sharp 90° corner (upper-right) */
@@ -115,7 +115,14 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
   display:flex;
   flex-direction:column;
   overflow:hidden;
+
+  /* iOS/Safari: prevent first-open focus ring from painting a blue trace around the panel. */
+  -webkit-tap-highlight-color:transparent;
+  outline:none;
 }
+
+.reliquary-panel:focus,
+.reliquary-panel:focus-visible{outline:none !important}
 
 .reliquary-panel.is-open{opacity:1;transform:translateX(var(--reliquary-panel-x)) translateY(var(--reliquary-open-lift, 0px))}
 .reliquary-panel.is-dragging{transition:none !important}
