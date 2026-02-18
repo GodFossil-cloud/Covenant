@@ -91,7 +91,7 @@
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px) !important;
 
   /* Cradle depth: deepen the ellipse so the trace hugs the underside of the seal. */
-  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 2px) !important;
+  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 1px) !important;
 
   /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
   --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px) !important;
