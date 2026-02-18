@@ -54,7 +54,7 @@
   /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top.
      IMPORTANT (iPhone Safari): navFooterCritical defines this token later in the DOM.
      Use !important so vertical positioning changes actually take effect. */
-  --lexicon-seal-top-align:16px !important;
+  --lexicon-seal-top-align:14px !important;
 
   /* Cradle seat (circle center y, relative to footer top): decouple from seal top-align so the notch tracks the seal. */
   --seal-cradle-center-y:0px;
