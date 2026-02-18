@@ -65,19 +65,16 @@
 
   /* Lexicon SEAL size.
      IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM). */
-  --lexicon-seal-w:60px !important;
-  --lexicon-seal-h:30px !important;
+  --lexicon-seal-w:66px !important;
+  --lexicon-seal-h:34px !important;
 
-  /* ToC/Mirror tab spacing: toc.css consumes these tokens for the nav-seals cluster layout.
-     IMPORTANT (iPhone Safari): navFooterCritical defines this token later in the DOM.
-     Use !important so gap changes actually take effect. */
-  --toc-tab-gap:20px !important;
-
-  /* Footer override forces ToC/Mirror plates to --nav-pill-width; keep shared geometry consistent. */
-  --toc-tab-width:var(--nav-pill-width);
+  /* ToC/Mirror: slightly larger + slightly more spread, without touching Prev/Next. */
+  --toc-tab-gap:26px !important;
+  --toc-tab-width:calc(var(--nav-pill-width) + 8px);
+  --dock-socket-spread:8px;
 
   /* Socket geometry: cradle dock size (independent of seal). */
-  --lexicon-cradle-w:60px;
+  --lexicon-cradle-w:66px;
 
   /* Tighten the void a touch more (so "smaller" reads even with antialias). */
   --seal-notch-grow:1px;
@@ -113,7 +110,7 @@
 
 /* Widen the footer dock more so Prev/Next sit further from the center (all breakpoints). */
 #navFooter .nav-footer-inner{
-  max-width:1040px;
+  max-width:1120px;
   padding:0 2px;
 }
 
