@@ -823,7 +823,7 @@
     var f = getFooterHeightSafe();
     var n = getSeatNudge();
 
-    var OPEN_DROP_PX = 0;
+    var OPEN_DROP_PX = isIOS ? 1 : 0;
 
     if (h > 0) setSealDragOffset(-(h - f) + n + OPEN_DROP_PX, false);
   }
@@ -1201,7 +1201,8 @@
       if (progress > 1) progress = 1;
 
       var seatNudge = getSeatNudge();
-      var sealOffset = (y - closedY) + (seatNudge * progress);
+      var openDrop = (isIOS ? 1 : 0) * progress;
+      var sealOffset = (y - closedY) + (seatNudge * progress) + openDrop;
 
       setSealDragOffset(sealOffset, sealDragging);
 
