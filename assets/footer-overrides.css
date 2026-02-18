@@ -76,6 +76,9 @@
   /* Side sockets: nudge outward so the cradles sit directly beneath the medallions. */
   --dock-socket-spread:10px;
 
+  /* Side sockets: widen the cradle so the medallions sit more comfortably inside. */
+  --dock-socket-d:calc(var(--dock-tab-width) + 6px);
+
   /* Socket geometry: cradle dock size (independent of seal). */
   --lexicon-cradle-w:66px;
 
@@ -88,7 +91,7 @@
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px) !important;
 
   /* Cradle depth: deepen the ellipse so the trace hugs the underside of the seal. */
-  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 8px) !important;
+  --seal-notch-radius-y:calc(var(--seal-notch-radius) + 4px) !important;
 
   /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
   --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px) !important;
