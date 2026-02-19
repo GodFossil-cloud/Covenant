@@ -278,6 +278,13 @@
     0 0 22px rgba(218, 184, 86, 0.18);
 }
 
+/* Glyph seat: lower the Prev/Next arrow glyph by ~1px without moving the frames. */
+#navFooter .nav-next .nav-btn-icon--arrow,
+#navFooter .nav-prev .nav-btn-icon--arrow{
+  position:relative;
+  top:2px;
+}
+
 /* Two-tap navigation arming glow (label beneath the button). */
 #navFooter .nav-next-label,
 #navFooter .nav-prev-label{
