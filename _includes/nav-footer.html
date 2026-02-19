@@ -448,5 +448,73 @@
   })();
 </script>
 
+<script>
+  (function () {
+    'use strict';
+
+    var footer = document.getElementById('navFooter');
+    if (!footer) return;
+
+    var ticking = false;
+    var lastState = null;
+
+    function hasEnabledNextLink() {
+      return !!footer.querySelector('a.nav-next');
+    }
+
+    function getScrollHeight() {
+      var doc = document.documentElement;
+      var body = document.body;
+      return Math.max(
+        doc ? doc.scrollHeight : 0,
+        body ? body.scrollHeight : 0,
+        doc ? doc.offsetHeight : 0,
+        body ? body.offsetHeight : 0
+      );
+    }
+
+    function isAtBottom() {
+      var doc = document.documentElement;
+      var y = window.scrollY;
+      if (typeof y !== 'number') y = (doc && doc.scrollTop) || 0;
+
+      var threshold = 8; /* px: absorb iOS bounce + subpixel rounding. */
+      var h = window.innerHeight || 0;
+      var sh = getScrollHeight();
+
+      return (h + y) >= (sh - threshold);
+    }
+
+    function sync() {
+      ticking = false;
+
+      if (!hasEnabledNextLink()) {
+        footer.classList.remove('is-at-bottom');
+        lastState = false;
+        return;
+      }
+
+      var atBottom = isAtBottom();
+      if (atBottom === lastState) return;
+      lastState = atBottom;
+
+      if (atBottom) footer.classList.add('is-at-bottom');
+      else footer.classList.remove('is-at-bottom');
+    }
+
+    function requestSync() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(sync);
+    }
+
+    window.addEventListener('scroll', requestSync, { passive: true });
+    window.addEventListener('resize', requestSync);
+    window.addEventListener('orientationchange', requestSync);
+
+    requestSync();
+  })();
+</script>
+
 {% include toc-panel.html %}
 {% include reliquary-panel.html %}
