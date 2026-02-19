@@ -456,7 +456,7 @@
     if (!footer) return;
 
     var ticking = false;
-    var lastState = null;
+    var latched = false;
 
     function hasEnabledNextLink() {
       return !!footer.querySelector('a.nav-next');
@@ -490,16 +490,19 @@
 
       if (!hasEnabledNextLink()) {
         footer.classList.remove('is-at-bottom');
-        lastState = false;
+        latched = false;
         return;
       }
 
-      var atBottom = isAtBottom();
-      if (atBottom === lastState) return;
-      lastState = atBottom;
+      if (latched) {
+        footer.classList.add('is-at-bottom');
+        return;
+      }
 
-      if (atBottom) footer.classList.add('is-at-bottom');
-      else footer.classList.remove('is-at-bottom');
+      if (isAtBottom()) {
+        latched = true;
+        footer.classList.add('is-at-bottom');
+      }
     }
 
     function requestSync() {
