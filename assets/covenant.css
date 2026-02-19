@@ -1118,7 +1118,7 @@ body.is-exiting #blackFadeOverlay {
     align-items: center;
 
     /* Opaque header (not glass) */
-    background: #1a1a1a;
+    background: var(--lexicon-seal-face, #08090b);
     border-bottom: 1px solid rgba(242, 220, 154, 0.10);
 
     padding: 22px 20px 14px;

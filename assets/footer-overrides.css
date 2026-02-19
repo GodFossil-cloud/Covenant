@@ -27,12 +27,12 @@
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 }
 
-/* Darken the Lexicon seal base (closed state). */
-#lexiconToggle.nav-btn.center:not(.has-selection)::after{background-color:var(--lexicon-seal-face)}
+/* Darken the Lexicon seal base (closed state) + make it a flat single tone (no gradient stack). */
+#lexiconToggle.nav-btn.center:not(.has-selection)::after{background-color:var(--lexicon-seal-face);background-image:none !important}
 
 /* Preserve interaction feedback while staying within the darker scheme. */
 #lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
-#lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face-hover)}
+#lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face-hover);background-image:none !important}
 
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.90em !important}
@@ -43,7 +43,7 @@
 /* Touch/coarse pointer: neutralize any fallback hover tint that would re-lighten the seal. */
 @media (hover: none), (pointer: coarse){
   #lexiconToggle:not(.has-selection):hover::after,
-  #lexiconToggle:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face)}
+  #lexiconToggle:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face);background-image:none !important}
 }
 
 /* -------------------------------------------------
@@ -219,9 +219,17 @@
 #navFooter .nav-prev-frame::before{
   border:0 !important;
   box-shadow:
-    inset 0 0 18px rgba(0, 0, 0, 0.92),
+    inset 0 0 26px rgba(0, 0, 0, 0.96),
+    inset 0 2px 12px rgba(0, 0, 0, 0.62),
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 0 1px rgba(0, 0, 0, 0.72);
+    0 0 0 1px rgba(0, 0, 0, 0.74);
+}
+
+#navFooter .nav-next-frame::after,
+#navFooter .nav-prev-frame::after{
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 16px),
+    linear-gradient(to bottom, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.90) 100%);
 }
 
 #navFooter .nav-next-frame .nav-btn-icon,
