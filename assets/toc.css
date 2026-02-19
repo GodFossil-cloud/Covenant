@@ -672,3 +672,19 @@ html.toc-opening .toc-produced-title,
 html.toc-open .toc-produced-title,
 html.toc-closing .toc-produced-title,
 html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
+
+/* -------------------------------------------------
+   Touch highlight suppression
+   ------------------------------------------------- */
+
+.toc-item-btn,
+.toc-locked-btn,
+.toc-annex-link,
+.toc-confirm-btn{-webkit-tap-highlight-color:transparent}
+
+@media (hover: none), (pointer: coarse){
+  .toc-item-btn:focus-visible,
+  .toc-locked-btn:focus-visible,
+  .toc-annex-link:focus-visible,
+  .toc-confirm-btn:focus-visible{outline:none}
+}
