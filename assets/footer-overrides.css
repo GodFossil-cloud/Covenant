@@ -278,6 +278,29 @@
     0 0 22px rgba(218, 184, 86, 0.18);
 }
 
+/* Two-tap navigation arming glow (label beneath the button). */
+#navFooter .nav-next-label,
+#navFooter .nav-prev-label{
+  transition:
+    color 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    text-shadow 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+#navFooter a.nav-prev.is-armed .nav-prev-label,
+#navFooter a.nav-next.is-armed .nav-next-label{
+  opacity:1;
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.96),
+    0 0 14px rgba(255, 255, 255, 0.18);
+}
+
+#navFooter.is-at-bottom a.nav-next.is-armed .nav-next-label{
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.96),
+    0 0 16px rgba(242, 220, 154, 0.22);
+}
+
 #navFooter .nav-next-frame .nav-btn-icon,
 #navFooter .nav-prev-frame .nav-btn-icon{
   font-size:1.55rem;
