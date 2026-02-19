@@ -334,12 +334,6 @@
     return openStack.slice();
   }
 
-  function getOpenIds() {
-    cleanOpenStack();
-    syncOpenStackForMissingOpenEntries();
-    return openStack.slice();
-  }
-
   function getTopOpenId() {
     var ids = getOpenIds();
     return ids.length ? ids[ids.length - 1] : '';
@@ -1261,13 +1255,6 @@
         if (armed.contains && armed.contains(t)) return;
       } catch (err2) {}
       clearArmed();
-    }, true);
-
-    // ESC disarms.
-    document.addEventListener('keydown', function (e) {
-      if (!armed) return;
-      var k = e && e.key;
-      if (k === 'Escape' || k === 'Esc') clearArmed();
     }, true);
 
     // bfcache restore: never keep a stale armed glow.
