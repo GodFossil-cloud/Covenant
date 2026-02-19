@@ -34,6 +34,13 @@
 #lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
 #lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face-hover);background-image:none !important}
 
+/* Lexicon OPEN: seal must be frameless so it welds into the Lexicon header. */
+html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center::before,
+#navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]::before{border:0 !important;box-shadow:none !important}
+
+html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
+#navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]{box-shadow:none !important}
+
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.90em !important}
 
