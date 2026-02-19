@@ -334,6 +334,12 @@
     return openStack.slice();
   }
 
+  function getOpenIds() {
+    cleanOpenStack();
+    syncOpenStackForMissingOpenEntries();
+    return openStack.slice();
+  }
+
   function getTopOpenId() {
     var ids = getOpenIds();
     return ids.length ? ids[ids.length - 1] : '';
@@ -1230,23 +1236,87 @@
   }
 
   (function wireDockNavCloseAll() {
+    var armed = null;
+
+    function clearArmed() {
+      if (!armed) return;
+      try { if (armed.classList) armed.classList.remove('is-armed'); } catch (err1) {}
+      armed = null;
+    }
+
+    function getNavLinkFromTarget(t) {
+      try {
+        return (t && t.closest) ? t.closest('a.nav-prev, a.nav-next') : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    // Any touch/click elsewhere disarms.
+    document.addEventListener('pointerdown', function (e) {
+      if (!armed) return;
+      var t = e && e.target;
+      if (!t) return;
+      try {
+        if (armed.contains && armed.contains(t)) return;
+      } catch (err2) {}
+      clearArmed();
+    }, true);
+
+    // ESC disarms.
+    document.addEventListener('keydown', function (e) {
+      if (!armed) return;
+      var k = e && e.key;
+      if (k === 'Escape' || k === 'Esc') clearArmed();
+    }, true);
+
+    // bfcache restore: never keep a stale armed glow.
+    try {
+      window.addEventListener('pageshow', clearArmed);
+    } catch (err3) {}
+
     document.addEventListener('click', function (e) {
       if (!isPlainLeftClick(e)) return;
 
       var t = e.target;
-      if (!t) return;
+      if (!t) {
+        clearArmed();
+        return;
+      }
 
       // Support click on inner spans/icons.
-      var link = (t.closest && t.closest('a.nav-prev, a.nav-next')) ? t.closest('a.nav-prev, a.nav-next') : null;
-      if (!link) return;
+      var link = getNavLinkFromTarget(t);
+
+      // Click outside nav links: disarm.
+      if (!link) {
+        clearArmed();
+        return;
+      }
 
       var href = link.getAttribute('href');
       if (!href) return;
 
-      if (!isPanelOpenByDom()) return;
+      // First click arms. Second click commits.
+      if (armed !== link) {
+        e.preventDefault();
+        e.stopPropagation();
 
+        clearArmed();
+        armed = link;
+        try { if (armed.classList) armed.classList.add('is-armed'); } catch (err4) {}
+        return;
+      }
+
+      // Second click: navigate (close panels first if needed).
       e.preventDefault();
       e.stopPropagation();
+
+      clearArmed();
+
+      if (!isPanelOpenByDom()) {
+        window.location.href = href;
+        return;
+      }
 
       requestCloseAll();
 
