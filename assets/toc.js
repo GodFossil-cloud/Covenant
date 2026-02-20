@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.3 (Staging suppresses current node indicator) */
+/*! Covenant ToC v3.3.4 (Staging suppresses current node indicator; commit flash) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.3';
+  window.COVENANT_TOC_VERSION = '3.3.4';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -254,6 +254,46 @@
     } catch (err) {
       return false;
     }
+  }
+
+  function prefersReducedMotion() {
+    try {
+      return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function getCommitFlashTarget() {
+    if (pendingHoldEl) return pendingHoldEl;
+    if (pendingItemEl && pendingItemEl.querySelector) {
+      return pendingItemEl.querySelector('.toc-item-btn');
+    }
+    return null;
+  }
+
+  function playCommitFlash(el) {
+    if (!el) return;
+    if (prefersReducedMotion()) return;
+    if (typeof el.animate !== 'function') return;
+
+    try {
+      if (el.__covenantCommitFlash && typeof el.__covenantCommitFlash.cancel === 'function') {
+        el.__covenantCommitFlash.cancel();
+      }
+    } catch (err0) {}
+
+    try {
+      el.__covenantCommitFlash = el.animate([
+        { transform: 'translateY(0px)', filter: 'brightness(1)', boxShadow: '0 0 0 rgba(201, 169, 97, 0)' },
+        { transform: 'translateY(-1px)', filter: 'brightness(1.06)', boxShadow: '0 0 0 1px rgba(201, 169, 97, 0.18), 0 0 18px rgba(201, 169, 97, 0.14)' },
+        { transform: 'translateY(0px)', filter: 'brightness(1)', boxShadow: '0 0 0 rgba(201, 169, 97, 0)' }
+      ], {
+        duration: 320,
+        easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)',
+        iterations: 1
+      });
+    } catch (err1) {}
   }
 
   function closestSafe(target, selector) {
@@ -1016,6 +1056,8 @@
     }
 
     confirmNavigating = true;
+
+    playCommitFlash(getCommitFlashTarget());
 
     var surface = pendingHoldEl;
     if (surface) surface.disabled = true;
