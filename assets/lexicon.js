@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.6 (Overflow-only Scroll Lock) */
+/*! Covenant Lexicon UI v0.3.7 (Overflow-only Scroll Lock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.6';
+  window.COVENANT_LEXICON_VERSION = '0.3.7';
 
   var doc = document;
   var root = doc.documentElement;
@@ -414,9 +414,49 @@
   var sealPulseTimer = null;
   var sealNudgeTimer = null;
 
+  // Tap/open glow management (distinct from drag).
+  var sealTapClassTimer = null;
+
   function getNavPulseDurationMs() {
     // CSS var is typically like "520ms"; parseFloat yields 520.
     return getCssVarNumber('--nav-pulse-duration', 520);
+  }
+
+  function getLexiconTapMotionMs() {
+    // Align tap open/close class lifetime to the same snap timing used by the bottom sheet.
+    // (Keeps intent glow present through the open/close transition even after aria flips.)
+    return getCssVarNumber('--lexicon-snap-duration', 420);
+  }
+
+  function clearSealTapClasses() {
+    if (!lexiconToggle || !lexiconToggle.classList) return;
+    lexiconToggle.classList.remove('is-tap-opening', 'is-tap-closing');
+  }
+
+  function scheduleSealTapClassClear(ms) {
+    if (sealTapClassTimer) {
+      window.clearTimeout(sealTapClassTimer);
+      sealTapClassTimer = null;
+    }
+
+    sealTapClassTimer = window.setTimeout(function () {
+      try { clearSealTapClasses(); } catch (err) {}
+      sealTapClassTimer = null;
+    }, Math.max(0, ms || 0) + 60);
+  }
+
+  function markSealTapOpening() {
+    if (!lexiconToggle || !lexiconToggle.classList) return;
+    clearSealTapClasses();
+    lexiconToggle.classList.add('is-tap-opening');
+    scheduleSealTapClassClear(getLexiconTapMotionMs());
+  }
+
+  function markSealTapClosing() {
+    if (!lexiconToggle || !lexiconToggle.classList) return;
+    clearSealTapClasses();
+    lexiconToggle.classList.add('is-tap-closing');
+    scheduleSealTapClassClear(getLexiconTapMotionMs());
   }
 
   function triggerSealPulse() {
@@ -1053,6 +1093,8 @@
           return;
         }
 
+        // Keep the bright halo present through the close transition (tap path only).
+        markSealTapClosing();
         closePanel();
         return;
       }
@@ -1060,11 +1102,15 @@
       // iOS Safari: avoid running the heavy filter-based pulse at the same moment as the
       // bottom-sheet transform transition; it can cause the seal layer to lag behind.
       if (!(isIOS && isBottomSheetMode())) triggerSealPulse();
+
+      // Tap-to-open flash (distinct from drag).
+      markSealTapOpening();
       openFromToggleIntent(e);
     });
 
     bindActivate(lexOverlay, function () {
       if (!isTopmostForDismiss()) return;
+      markSealTapClosing();
       closePanel();
     });
 
@@ -1073,6 +1119,7 @@
       applyPressFeedback(closeBtns[i]);
       bindActivate(closeBtns[i], function (e) {
         stopEvent(e);
+        markSealTapClosing();
         closePanel();
       });
     }
@@ -1080,19 +1127,26 @@
     doc.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && panel.classList.contains('is-open')) {
         if (!isTopmostForDismiss()) return;
+        markSealTapClosing();
         closePanel();
       }
     });
 
     window.addEventListener('blur', function () {
       if (!isTopmostForDismiss()) return;
-      if (panel.classList.contains('is-open')) closePanel();
+      if (panel.classList.contains('is-open')) {
+        markSealTapClosing();
+        closePanel();
+      }
     });
 
     doc.addEventListener('visibilitychange', function () {
       if (!doc.hidden) return;
       if (!isTopmostForDismiss()) return;
-      if (panel.classList.contains('is-open')) closePanel();
+      if (panel.classList.contains('is-open')) {
+        markSealTapClosing();
+        closePanel();
+      }
     });
   }
 
@@ -1317,6 +1371,8 @@
     }
 
     function applyOpenStateFromDrag() {
+      clearSealTapClasses();
+
       if (!panel.classList.contains('is-open')) {
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
@@ -1336,6 +1392,8 @@
     }
 
     function applyClosedStateFromDrag() {
+      clearSealTapClasses();
+
       if (panel.classList.contains('is-open')) {
         panel.classList.remove('is-open');
         lexOverlay.classList.remove('is-open');

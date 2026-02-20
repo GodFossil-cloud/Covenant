@@ -23,6 +23,20 @@
   --lexicon-seal-face:#08090b;
   --lexicon-seal-face-hover:#0a0b0e;
 
+  /* Lexicon glyph (open state): keep the symbol itself brass-gold, but let the halo go bright. */
+  --lexicon-glyph-open-color:var(--gold-1, rgba(242,220,154,0.98));
+  --lexicon-glyph-open-shadow:
+    0 0 10px rgba(255,255,255,0.62),
+    0 0 22px rgba(255,255,255,0.26),
+    0 0 40px rgba(242,220,154,0.16);
+
+  /* Tap-open flash (bigger initial bloom). */
+  --lexicon-glyph-tap-flash-shadow:
+    0 0 12px rgba(255,255,255,0.92),
+    0 0 28px rgba(255,255,255,0.55),
+    0 0 54px rgba(255,255,255,0.22),
+    0 0 70px rgba(242,220,154,0.14);
+
   /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 }
@@ -45,18 +59,46 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.90em !important}
 
 /* Lexicon tab: "earned" radiance on the glyph itself.
-   Default at-rest remains quiet; glow shows mainly when open/selected and on intent feedback.
+   Default at-rest remains quiet; open state stays luminous.
    (Keeps iOS Safari stable: no rim/border glow, only text-shadow on the glyph.) */
 #navFooter #lexiconToggle .lexicon-glyph,
 #navFooter #lexiconToggle .lexicon-glyph-mid-inner{text-shadow:none}
 
-#navFooter #lexiconToggle.has-selection .lexicon-glyph,
-#navFooter #lexiconToggle.has-selection .lexicon-glyph-mid-inner,
+/* OPEN (and selection): brass-gold glyph with bright halo that persists while open. */
 #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
-#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner{
-  text-shadow:
-    0 0 8px rgba(242,220,154,0.22),
-    0 0 18px rgba(242,220,154,0.12);
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.has-selection .lexicon-glyph,
+#navFooter #lexiconToggle.has-selection .lexicon-glyph-mid-inner{
+  color:var(--lexicon-glyph-open-color);
+  text-shadow:var(--lexicon-glyph-open-shadow);
+}
+
+/* Tap-to-close: keep the same halo through the closing transition even after aria-expanded flips. */
+#navFooter #lexiconToggle.is-tap-closing .lexicon-glyph,
+#navFooter #lexiconToggle.is-tap-closing .lexicon-glyph-mid-inner{
+  color:var(--lexicon-glyph-open-color);
+  text-shadow:var(--lexicon-glyph-open-shadow);
+}
+
+@keyframes lexiconTapOpenFlash{
+  0%{color:rgba(255,255,255,0.98);text-shadow:var(--lexicon-glyph-tap-flash-shadow)}
+  65%{color:rgba(255,255,255,0.94);text-shadow:
+    0 0 12px rgba(255,255,255,0.78),
+    0 0 26px rgba(255,255,255,0.40),
+    0 0 48px rgba(242,220,154,0.18)}
+  100%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-open-shadow)}
+}
+
+/* Tap-to-open: bigger first flash, then settle into the persistent open halo.
+   (This class is set by lexicon.js only for tap/click, not for drag.) */
+#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
+#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner{
+  animation:lexiconTapOpenFlash calc(var(--lexicon-snap-duration, 420ms) * 0.92) ease-out 1;
+}
+
+@media (prefers-reduced-motion: reduce){
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner{animation:none}
 }
 
 /* Intent flash: make the glyph bloom toward near-white during touch feedback.
