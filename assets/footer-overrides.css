@@ -30,16 +30,17 @@
     0 0 22px rgba(255,255,255,0.26),
     0 0 40px rgba(242,220,154,0.16);
 
-  /* Tap accent flash (instant pulse): a soft aura field *behind* the glyph.
-     (Keeps the symbol itself steady; the radiance blooms around it.) */
-  --lexicon-glyph-tap-aura-size:2.8em;
-  --lexicon-glyph-tap-aura-blur:7px;
+  /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
+     (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
+  --lexicon-glyph-tap-aura-size:3.7em;
+  --lexicon-glyph-tap-aura-blur:11px;
   --lexicon-glyph-tap-aura:
     radial-gradient(circle at 50% 50%,
-      rgba(255,255,255,0.62) 0%,
-      rgba(255,255,255,0.28) 26%,
-      rgba(242,220,154,0.16) 44%,
-      rgba(0,0,0,0) 72%
+      rgba(255,255,255,0.86) 0%,
+      rgba(255,255,255,0.50) 18%,
+      rgba(242,220,154,0.34) 36%,
+      rgba(242,220,154,0.16) 52%,
+      rgba(0,0,0,0) 80%
     );
 
   /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
@@ -47,11 +48,18 @@
 }
 
 /* Darken the Lexicon seal base (closed state) + make it a flat single tone (no gradient stack). */
-#lexiconToggle.nav-btn.center:not(.has-selection)::after{background-color:var(--lexicon-seal-face);background-image:none !important}
+#lexiconToggle.nav-btn.center:not(.has-selection)::after{
+  background-color:var(--lexicon-seal-face);
+  background-image:none !important;
+  transition:background-color 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
 
 /* Preserve interaction feedback while staying within the darker scheme. */
 #lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
-#lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face-hover);background-image:none !important}
+#lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{
+  background-color:var(--lexicon-seal-face-hover);
+  background-image:none !important;
+}
 
 /* Lexicon OPEN: seal must be frameless so it welds into the Lexicon header. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center::before,
@@ -69,22 +77,30 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   position:absolute;
   left:50%;
   top:50%;
-  width:var(--lexicon-glyph-tap-aura-size, 2.8em);
-  height:var(--lexicon-glyph-tap-aura-size, 2.8em);
+  width:var(--lexicon-glyph-tap-aura-size, 3.7em);
+  height:var(--lexicon-glyph-tap-aura-size, 3.7em);
   border-radius:999px;
   background:var(--lexicon-glyph-tap-aura);
-  filter:blur(var(--lexicon-glyph-tap-aura-blur, 7px));
+  filter:blur(var(--lexicon-glyph-tap-aura-blur, 11px));
   opacity:0;
   pointer-events:none;
   transform:translate(-50%, -50%) scale(0.70);
   z-index:-1;
+  transition:
+    opacity 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* Lexicon tab: "earned" radiance on the glyph itself.
    Default at-rest remains quiet; open + intent states stay luminous.
    (Keeps iOS Safari stable: no rim/border glow, only text-shadow on the glyph.) */
 #navFooter #lexiconToggle .lexicon-glyph,
-#navFooter #lexiconToggle .lexicon-glyph-mid-inner{text-shadow:none}
+#navFooter #lexiconToggle .lexicon-glyph-mid-inner{
+  text-shadow:none;
+  transition:
+    color 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    text-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
 
 /* OPEN (and selection): brass-gold glyph with bright halo that persists while open. */
 #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
@@ -103,9 +119,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 }
 
 @keyframes lexiconTapAuraPulse{
-  0%{opacity:0;transform:translate(-50%, -50%) scale(0.60)}
-  18%{opacity:1;transform:translate(-50%, -50%) scale(1.00)}
-  100%{opacity:0;transform:translate(-50%, -50%) scale(0.96)}
+  0%{opacity:0;transform:translate(-50%, -50%) scale(0.55)}
+  12%{opacity:1;transform:translate(-50%, -50%) scale(1.03)}
+  52%{opacity:0.72;transform:translate(-50%, -50%) scale(1.08)}
+  100%{opacity:0;transform:translate(-50%, -50%) scale(1.10)}
 }
 
 @keyframes lexiconTapGlyphInkBlink{
@@ -114,9 +131,9 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   100%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-open-shadow)}
 }
 
-/* Tap-to-open: instant aura pulse + micro "ink blink" on the glyph itself (tap-only). */
+/* Tap-to-open: aura pulse + micro "ink blink" on the glyph itself (tap-only). */
 #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph::before{
-  animation:lexiconTapAuraPulse 180ms ease-out 1;
+  animation:lexiconTapAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
 }
 
 #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
@@ -126,7 +143,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 
 /* Tap-to-close: aura only (no glyph blink). */
 #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{
-  animation:lexiconTapAuraPulse 180ms ease-out 1;
+  animation:lexiconTapAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
 }
 
 @media (prefers-reduced-motion: reduce){
