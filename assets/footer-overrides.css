@@ -174,7 +174,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   mask-size:100% 100%;
 }
 
-/* Cradle border: tracing line only (no interior fill). */
+/* Cradle border + shaded recess (match ToC/Mirror socket family). */
 #navFooter::after{
   content:'';
   position:absolute;
@@ -184,14 +184,40 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   height:var(--seal-notch-height-y, var(--seal-notch-height));
   pointer-events:none;
 
+  /* Clip the shading to the cradle ellipse only (so no rectangular wash). */
+  -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
+    rgba(255,255,255,1) 0 98%,
+    rgba(0,0,0,0) 99% 100%
+  );
+  mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
+    rgba(255,255,255,1) 0 98%,
+    rgba(0,0,0,0) 99% 100%
+  );
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+
   background:
+    /* Sidewall bevels (machining reads at the sides, not the top rim). */
+    linear-gradient(to right,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,0) 18%,
+      rgba(255,255,255,0) 82%,
+      rgba(0,0,0,.55) 100%),
+    /* Depth body (darker toward the arc floor). */
+    radial-gradient(circle farthest-side at 50% 0,
+      rgba(0,0,0,.92) 0%,
+      rgba(16,16,20,.96) 46%,
+      rgba(0,0,0,.985) 100%),
+    /* Border trace (U-shape). */
     radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
       transparent 0 96.9%,
       var(--footer-cradle-line) 97.15% 99.35%,
       transparent 99.6% 100%
     );
 
-  opacity:0.95;
+  opacity:0.96;
 }
 
 #navFooter #lexiconToggle,
