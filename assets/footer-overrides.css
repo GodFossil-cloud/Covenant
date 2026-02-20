@@ -59,16 +59,19 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
     0 0 18px rgba(242,220,154,0.12);
 }
 
-#navFooter #lexiconToggle.has-selection.is-nudging .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle.has-selection.is-pulsing .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle.has-selection.is-seal-dragging .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[aria-expanded="true"].is-nudging .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[aria-expanded="true"].is-pulsing .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[aria-expanded="true"].is-seal-dragging .lexicon-glyph-mid-inner{
+/* Intent flash: make the glyph bloom toward near-white during touch feedback.
+   (Only glyph glow; does not add rim/border effects.) */
+#navFooter #lexiconToggle.is-nudging .lexicon-glyph,
+#navFooter #lexiconToggle.is-pulsing .lexicon-glyph,
+#navFooter #lexiconToggle.is-seal-dragging .lexicon-glyph,
+#navFooter #lexiconToggle.is-nudging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.is-pulsing .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.is-seal-dragging .lexicon-glyph-mid-inner{
+  color:rgba(255,255,255,0.98);
   text-shadow:
-    0 0 10px rgba(255,215,122,0.42),
-    0 0 22px rgba(242,220,154,0.22),
-    0 0 34px rgba(242,220,154,0.14);
+    0 0 8px rgba(255,255,255,0.85),
+    0 0 18px rgba(255,255,255,0.45),
+    0 0 34px rgba(242,220,154,0.22);
 }
 
 /* Make the Lexicon seal cradle border/field 1px taller without touching socket geometry tokens. */
