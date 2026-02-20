@@ -1031,8 +1031,6 @@
         return;
       }
 
-      triggerSealPulse();
-
       if (panel.classList.contains('is-open')) {
         if (!isTopmostForDismiss()) {
           bringSelfToFront();
@@ -1043,6 +1041,7 @@
         return;
       }
 
+      triggerSealPulse();
       openFromToggleIntent(e);
     });
 
