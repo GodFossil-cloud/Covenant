@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.53 (Close: remove end snap by restoring weld cancellation + freezing dock-settle transition) */
+/*! Covenant ToC Panel Styles v3.1.54 (Pending hold underline fill) */
 
 /* -------------------------------------------------
    Variables
@@ -236,7 +236,7 @@ html.toc-closing .toc-produced-title,
 html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) + .9rem)}
 
 /* -------------------------------------------------
-   Hold-to-enter button
+   Hold-to-enter button (legacy: removed from DOM; styling retained for backwards compatibility)
    ------------------------------------------------- */
 
 .toc-confirm-btn{
@@ -320,8 +320,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-entry-title{flex:1 1 auto;min-width:0;color:var(--toc-ink)}
 
 .toc-item-btn{cursor:pointer;transition:color 200ms ease}
-.toc-item-btn:hover .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
-.toc-item-btn:focus-visible .toc-entry-title{color:#111;text-decoration:none}
+.toc-item-btn:hover .toc-entry-title,.toc-item-btn:focus-visible .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
 .toc-item-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:3px}
 
 .toc-item--current .toc-entry-title{font-weight:600;color:#111}
@@ -688,4 +687,36 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   .toc-locked-btn:focus-visible,
   .toc-annex-link:focus-visible,
   .toc-confirm-btn:focus-visible{outline:none}
+}
+
+/* -------------------------------------------------
+   Pending hold underline fill
+   ------------------------------------------------- */
+
+/* The staged (pending) entry keeps its red underline, but gains a brass "fill" that grows
+   left→right while the user holds it (JS updates --toc-hold-p from 0..1). */
+.toc-item--pending .toc-entry-title{
+  position:relative;
+  display:inline-block;
+  max-width:100%;
+}
+
+.toc-item--pending .toc-entry-title::after{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+
+  /* Align the fill close to the existing underline offset (text-underline-offset: 3px). */
+  bottom:-3px;
+  height:2px;
+
+  background:rgba(201,169,97,.88);
+  border-radius:999px;
+
+  transform:scaleX(var(--toc-hold-p, 0));
+  transform-origin:0 50%;
+
+  pointer-events:none;
+  opacity:.92;
 }
