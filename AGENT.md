@@ -106,7 +106,7 @@ Notes:
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
-- Note (ToC deliberate confirm): Prefer attaching “Hold to Enter” to the staged/pending ToC entry itself (underline/progress), not a dedicated header button.
+- Note (ToC deliberate confirm): Deliberate confirm lives on the staged/pending ToC entry itself (press-and-hold on the pending item). There is no dedicated header confirm button.
 
 #### Dock-tab carry verification
 
@@ -221,6 +221,7 @@ Use this when making CSS/JS/include changes.
 - Confirm ToC header band visually blends with the ToC tab face.
 - Confirm ToC sheet reaches the top cleanly on mobile (no 1px gap).
 - Select an unlocked entry; confirm it stages.
+- Confirm deliberate confirm surface is the staged entry itself (there is no header confirm button).
 - Hold confirm to enter; release early cancels.
 - Confirm Hold-to-Enter closes panels before navigation.
 - ESC closes and focus returns to the ToC control.
