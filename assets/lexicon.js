@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.5 (Overflow-only Scroll Lock) */
+/*! Covenant Lexicon UI v0.3.6 (Overflow-only Scroll Lock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.5';
+  window.COVENANT_LEXICON_VERSION = '0.3.6';
 
   var doc = document;
   var root = doc.documentElement;
@@ -286,6 +286,14 @@
       return false;
     }
   })();
+
+  function supportsDVH() {
+    try {
+      return !!(window.CSS && typeof window.CSS.supports === 'function' && window.CSS.supports('height', '100dvh'));
+    } catch (err) {
+      return false;
+    }
+  }
 
   var iosTouchMoveBlocker = null;
   var IOS_TOUCHMOVE_OPTS = { capture: true, passive: false };
@@ -819,30 +827,9 @@
     }
   }
 
-  function getPanelHeightSafe() {
-    if (!panel) return 0;
-    var rect = panel.getBoundingClientRect();
-    return (rect && rect.height) ? rect.height : 0;
-  }
-
-  function getFooterHeightSafe() {
-    if (navFooter) {
-      var r = navFooter.getBoundingClientRect();
-      if (r && r.height) return r.height;
-    }
-
-    var val = getCssVar('--footer-total-height');
-    var n = parseFloat(val);
-    return isFinite(n) ? n : 0;
-  }
-
   function getSeatNudge() {
     if (!lexiconToggle) return 0;
     return getCssVarNumber('--seal-seat-nudge-closed', 0);
-  }
-
-  function getClosedPeek() {
-    return getCssVarNumber('--lexicon-panel-closed-peek', 0);
   }
 
   function setSealDragOffset(px, draggingNow) {
@@ -870,16 +857,27 @@
   }
 
   function setSealToOpenPosition() {
-    var h = getPanelHeightSafe();
-    var f = getFooterHeightSafe();
-    var p = getClosedPeek();
-    var n = getSeatNudge();
+    if (!lexiconToggle) return;
 
+    // iOS Safari: when the seal's travel is computed in JS px, it can desync slightly from
+    // the panel's own viewport-based transition (reads like the seal is being "dragged").
+    // Use a viewport-unit expression so seal + sheet resolve in the same coordinate space.
+    // The transform subtracts --seal-seat-nudge, so we add it here to keep the open position
+    // independent of the seating nudge.
     var OPEN_DROP_PX = isIOS ? 1 : 0;
+    var unit = supportsDVH() ? '100dvh' : '100vh';
 
-    // Important: include closed peek so tap-open matches drag-open kinematics.
-    // Without the peek, the seal travels a shorter distance than the sheet.
-    if (h > 0) setSealDragOffset(-(h - (f + p)) + n + OPEN_DROP_PX, false);
+    if (sealClearTimer) {
+      window.clearTimeout(sealClearTimer);
+      sealClearTimer = null;
+    }
+
+    lexiconToggle.style.setProperty(
+      '--seal-drag-y',
+      'calc(-' + unit + ' + (var(--footer-total-height) + var(--lexicon-panel-closed-peek)) + var(--seal-seat-nudge) + ' + OPEN_DROP_PX + 'px)'
+    );
+
+    lexiconToggle.classList.remove('is-seal-dragging');
   }
 
   function setSealToClosedPosition() {
@@ -947,7 +945,6 @@
 
     if (bottomSheet) {
       // iOS Safari: commit the seal transform BEFORE the sheet transition begins.
-      // Otherwise, Safari can start the panel transition first and the seal "catches up" late.
       setSealToOpenPosition();
 
       try { if (lexiconToggle) void lexiconToggle.offsetWidth; } catch (err0) {}
@@ -966,7 +963,7 @@
     noteOpen();
 
     if (bottomSheet) {
-      // Correct next frame in case any layout-driven height changed.
+      // Correct next frame in case any layout-driven values changed.
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () { setSealToOpenPosition(); });
     }
@@ -1060,7 +1057,9 @@
         return;
       }
 
-      triggerSealPulse();
+      // iOS Safari: avoid running the heavy filter-based pulse at the same moment as the
+      // bottom-sheet transform transition; it can cause the seal layer to lag behind.
+      if (!(isIOS && isBottomSheetMode())) triggerSealPulse();
       openFromToggleIntent(e);
     });
 
@@ -1276,6 +1275,17 @@
 
     function getClosedPeek() {
       return getCssVarNumber('--lexicon-panel-closed-peek', 0);
+    }
+
+    function getFooterHeightSafe() {
+      if (navFooter) {
+        var r = navFooter.getBoundingClientRect();
+        if (r && r.height) return r.height;
+      }
+
+      var val = getCssVar('--footer-total-height');
+      var n = parseFloat(val);
+      return isFinite(n) ? n : 0;
     }
 
     function computeClosedY() {
