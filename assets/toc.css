@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.59 (Fix: no default underline on open; restore staged underline) */
+/*! Covenant ToC Panel Styles v3.1.60 (Pending: replace staged underline with lantern wash) */
 
 /* -------------------------------------------------
    Variables
@@ -295,10 +295,10 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--current .toc-entry-title{font-weight:600;color:#111}
 .toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
 
-/* Pending state underline is drawn via pseudo-elements below (baseline + progress fill). */
+/* Pending entries: keep the node red (left dot) and use a lantern wash (no underline). */
 .toc-item--pending .toc-entry-title{color:#111}
 
-/* Pending entries already render a deliberate underline (baseline + progress).
+/* Pending entries already render a deliberate lantern wash.
    Suppress the generic hover/focus underline so it does not double up. */
 .toc-item--pending .toc-item-btn:hover .toc-entry-title,
 .toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
@@ -582,6 +582,8 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
   .toc-panel{transition:opacity 160ms ease !important;transform:translateX(var(--toc-panel-x)) !important}
   .toc-toast{transition:none;transform:none}
   .toc-toast.is-visible{transform:none}
+
+  .toc-item--pending .toc-item-btn::after{animation:none}
 }
 
 /* -------------------------------------------------
@@ -662,51 +664,49 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 }
 
 /* -------------------------------------------------
-   Pending hold underline fill
+   Pending lantern wash
    ------------------------------------------------- */
 
-/* Two-layer indicator:
-   - baseline: faint full-width red underline (staging indicator, visible at rest)
-   - fill: brass bar that grows left→right while holding (JS updates --toc-hold-p from 0..1) */
-.toc-item--pending .toc-entry-title{
+@keyframes tocLanternWash{
+  0%{opacity:.72}
+  100%{opacity:.94}
+}
+
+/* Wash lives on the whole button surface (behind text).
+   Keep the staged node red via .toc-item--pending::before above. */
+.toc-item--pending .toc-item-btn{
   position:relative;
-  display:inline-block;
-  max-width:100%;
+  isolation:isolate;
 }
 
-.toc-item--pending .toc-entry-title::before{
+.toc-item--pending .toc-item-btn::after{
   content:'';
   position:absolute;
-  left:0;
-  right:0;
-
-  /* Align to the hover underline offset (text-underline-offset: 3px). */
+  top:-3px;
   bottom:-3px;
-  height:1px;
+  left:1.25rem;
+  right:.25rem;
 
-  background:rgba(139,0,0,.40);
-  border-radius:999px;
+  border-radius:10px;
+
+  background:
+    radial-gradient(120% 220% at 22% 55%, rgba(201,169,97,.16) 0%, rgba(201,169,97,0) 62%),
+    radial-gradient(120% 240% at 78% 55%, rgba(139,0,0,.10) 0%, rgba(139,0,0,0) 66%),
+    linear-gradient(to right, rgba(255,255,255,.06) 0%, rgba(255,255,255,0) 70%);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(139,0,0,.10),
+    inset 0 -14px 18px -20px rgba(0,0,0,.55);
+
+  opacity:.86;
+  animation:tocLanternWash 2600ms ease-in-out infinite alternate;
 
   pointer-events:none;
-  opacity:1;
+  z-index:0;
 }
 
-.toc-item--pending .toc-entry-title::after{
-  content:'';
-  position:absolute;
-  left:0;
-  right:0;
+.toc-item--pending .toc-item-btn > *{position:relative;z-index:1}
 
-  /* Seat the fill on the same baseline. */
-  bottom:-3px;
-  height:2px;
-
-  background:rgba(201,169,97,.88);
-  border-radius:999px;
-
-  transform:scaleX(var(--toc-hold-p, 0));
-  transform-origin:0 50%;
-
-  pointer-events:none;
-  opacity:.92;
-}
+/* Kill the old underline indicator (baseline + fill). */
+.toc-item--pending .toc-entry-title::before,
+.toc-item--pending .toc-entry-title::after{content:none !important;display:none !important}
