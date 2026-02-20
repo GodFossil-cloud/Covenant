@@ -243,6 +243,7 @@ Use this when making CSS/JS/include changes.
 
 6) Footer system
 - Confirm footer colors/frames/seals render correctly.
+- On touch devices: press the Lexicon seal and confirm the quiet ring appears briefly around the glyph.
 - Confirm mobile behavior does not trap scroll or hide the dock.
 - Click the citation label beneath the Lexicon seal; confirm it copies the citation text and briefly whispers “Copied”.
 
