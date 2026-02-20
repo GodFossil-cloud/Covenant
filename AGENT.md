@@ -85,7 +85,7 @@ Core runtime files:
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab).
-- `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC Hold-to-Enter).
+- `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC staged navigation).
 - `assets/textures/` — static texture assets.
 
 Notes:
@@ -106,7 +106,7 @@ Notes:
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
-- Note (ToC deliberate confirm): Deliberate confirm lives on the staged/pending ToC entry itself (press-and-hold on the pending item). There is no dedicated header confirm button.
+- Note (ToC deliberate confirm): Deliberate confirm lives on the staged/pending ToC entry itself (click again on the pending item). There is no dedicated header confirm button.
 
 #### Dock-tab carry verification
 
@@ -166,7 +166,7 @@ Docs:
   - iOS Safari: re-test drag-open/drag-close ToC + Reliquary for compositor stability (no ~1px dock tick); confirm panel bodies still scroll.
 
 - If you change `assets/toc.js`:
-  - Verify: Hold-to-Enter closes any open panels before navigation.
+  - Verify: staged navigation closes any open panels before navigation.
   - Verify on mobile Safari: with Reliquary open, drag the ToC tab to open and confirm the ToC layers above the Reliquary throughout the gesture.
   - Note: ToC UI-stack `isOpen()` should be derived from panel state (`.is-open`/`.is-dragging`/`.is-closing`) rather than root motion classes (e.g. `toc-opening`/`toc-closing`), to avoid leaving other panels inert.
   - Note: During drag-open, set `.is-dragging` before calling `noteOpenToUIStack()` so z-index assignment is correct from frame 0.
@@ -222,9 +222,9 @@ Use this when making CSS/JS/include changes.
 - Confirm ToC sheet reaches the top cleanly on mobile (no 1px gap).
 - Select an unlocked entry; confirm it stages.
 - Confirm deliberate confirm surface is the staged entry itself (there is no header confirm button).
-- Hold confirm to enter; release early cancels.
-- Confirm Hold-to-Enter closes panels before navigation.
-- ESC closes and focus returns to the ToC control.
+- Click the staged entry again to enter; confirm panels close before navigation.
+- Click anywhere else in the ToC body to clear staging.
+- ESC clears staging first; ESC again closes and focus returns to the ToC control.
 - Tab/Shift+Tab keep focus trapped in the panel.
 - Drag-open: confirm the ToC tab rides with the ToC panel, and returns cleanly on close/cancel.
 - If Reliquary is open, opening ToC closes Reliquary first (no stacked scroll locks).

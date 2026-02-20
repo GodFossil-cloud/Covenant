@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.1 (A11y cleanup: staged entry is the only confirm surface; legacy confirm button paths removed) */
+/*! Covenant ToC v3.3.2 (Selection reset: click to stage, click again to enter; ESC/blank click clears) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.1';
+  window.COVENANT_TOC_VERSION = '3.3.2';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -816,9 +816,9 @@
 
     if (pendingTitle) setProducedTitle(pendingTitle);
 
-    // Make the staged entry itself the hold surface.
+    // Deliberate confirm lives on the staged entry itself: click again to enter.
     if (pendingHoldEl) {
-      pendingHoldEl.setAttribute('aria-label', 'Hold to enter selected page');
+      pendingHoldEl.setAttribute('aria-label', 'Click again to enter selected page');
       pendingHoldEl.disabled = false;
     }
 
@@ -828,7 +828,7 @@
   }
 
   // ---------------------------
-  // Hold-to-enter
+  // Hold-to-enter (legacy)
   // ---------------------------
 
   function setHoldProgress(p) {
@@ -1257,7 +1257,7 @@
           snapCloseFromOpen();
         } else {
           setRootWeldNudge(0);
-          applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
+          applyDragFrame(closedY + 12, false);
         }
       }
 
@@ -1507,7 +1507,13 @@
       }
 
       var itemBtn = closestSafe(e.target, '.toc-item-btn');
-      if (!itemBtn) return;
+      if (!itemBtn) {
+        // Any click elsewhere inside the ToC clears staging.
+        // (Do not interfere with annex link navigation.)
+        var annexLink = closestSafe(e.target, '.toc-annex-link');
+        if (!annexLink && pendingPageId) clearPendingSelection();
+        return;
+      }
 
       var itemEl = closestSafe(itemBtn, '.toc-item');
       var pageId = itemEl ? itemEl.getAttribute('data-page-id') : '';
@@ -1518,9 +1524,10 @@
         return;
       }
 
+      // Second click on the staged entry commits navigation.
       if (pageId && pendingPageId && pageId === pendingPageId) {
         stopEvent(e);
-        clearPendingSelection();
+        commitNavigation();
         return;
       }
 
@@ -1531,31 +1538,6 @@
 
       var title = String(itemBtn.textContent || '').trim();
       stageSelection(pageId, href, title, itemEl, itemBtn);
-    });
-
-    // Hold-to-enter on the staged entry itself.
-    tocDynamicContent.addEventListener('pointerdown', function (e) {
-      var btn = closestSafe(e.target, '.toc-item--pending .toc-item-btn');
-      if (!btn) return;
-      beginHold(e);
-    });
-
-    tocDynamicContent.addEventListener('pointerup', function (e) {
-      endHold(e);
-    });
-
-    tocDynamicContent.addEventListener('pointercancel', function (e) {
-      endHold(e);
-    });
-
-    tocDynamicContent.addEventListener('keydown', function (e) {
-      if (!e) return;
-      if (e.key === ' ' || e.key === 'Enter') beginHold(e);
-    });
-
-    tocDynamicContent.addEventListener('keyup', function (e) {
-      if (!e) return;
-      if (e.key === ' ' || e.key === 'Enter') endHold(e);
     });
   }
 
@@ -1815,6 +1797,14 @@
       if (!e || e.key !== 'Escape') return;
       if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
       if (!isTopmost()) return;
+
+      // ESC clears staging first; ESC again closes.
+      if (pendingPageId && !confirmNavigating) {
+        stopEvent(e);
+        clearPendingSelection();
+        return;
+      }
+
       closeToC(true);
     });
 
