@@ -108,9 +108,23 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   100%{opacity:0;transform:translate(-50%, -50%) scale(0.96)}
 }
 
-/* Tap-to-open / Tap-to-close: instant pulse that radiates *around* the glyph.
-   (Classes are set by lexicon.js only for tap/click, not for drag.) */
-#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph::before,
+@keyframes lexiconTapGlyphInkBlink{
+  0%{color:#000;text-shadow:none}
+  34%{color:#000;text-shadow:none}
+  100%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-open-shadow)}
+}
+
+/* Tap-to-open: instant aura pulse + micro "ink blink" on the glyph itself (tap-only). */
+#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph::before{
+  animation:lexiconTapAuraPulse 180ms ease-out 1;
+}
+
+#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
+#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner{
+  animation:lexiconTapGlyphInkBlink 140ms ease-out 1;
+}
+
+/* Tap-to-close: aura only (no glyph blink). */
 #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{
   animation:lexiconTapAuraPulse 180ms ease-out 1;
 }
@@ -118,6 +132,9 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 @media (prefers-reduced-motion: reduce){
   #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph::before,
   #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{animation:none}
+
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner{animation:none}
 }
 
 /* Intent + drag feedback: match the same brass-gold + bright halo used in the fully-open state.
