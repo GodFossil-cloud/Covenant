@@ -187,14 +187,15 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   height:var(--seal-notch-height-y, var(--seal-notch-height));
   pointer-events:none;
 
-  /* Clip the shading to the cradle ellipse only (so no rectangular wash). */
+  /* Clip the shading to the cradle ellipse only (so no rectangular wash).
+     IMPORTANT: keep the mask opaque far enough out that the border trace isn't clipped. */
   -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
-    rgba(255,255,255,1) 0 98%,
-    rgba(0,0,0,0) 99% 100%
+    rgba(255,255,255,1) 0 99.7%,
+    rgba(0,0,0,0) 99.85% 100%
   );
   mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
-    rgba(255,255,255,1) 0 98%,
-    rgba(0,0,0,0) 99% 100%
+    rgba(255,255,255,1) 0 99.7%,
+    rgba(0,0,0,0) 99.85% 100%
   );
   -webkit-mask-repeat:no-repeat;
   mask-repeat:no-repeat;
@@ -213,11 +214,11 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
       rgba(0,0,0,.92) 0%,
       rgba(16,16,20,.96) 46%,
       rgba(0,0,0,.985) 100%),
-    /* Border trace (U-shape). */
+    /* Border trace (U-shape): use px stops so the brass ring survives antialiasing. */
     radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
-      transparent 0 96.9%,
-      var(--footer-cradle-line) 97.15% 99.35%,
-      transparent 99.6% 100%
+      transparent 0 calc(var(--seal-notch-radius) - 1px),
+      var(--footer-cradle-line) calc(var(--seal-notch-radius) - 0px) calc(var(--seal-notch-radius) + 1px),
+      transparent calc(var(--seal-notch-radius) + 2px) 100%
     );
 
   opacity:0.96;
