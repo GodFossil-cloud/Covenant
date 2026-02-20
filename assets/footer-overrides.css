@@ -205,8 +205,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   background:
     /* Border trace (U-shape): MUST be topmost or the depth layers will cover it. */
     radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
-      transparent 0 calc(var(--seal-notch-radius) - 1px),
-      var(--footer-cradle-line) calc(var(--seal-notch-radius) - 0px) calc(var(--seal-notch-radius) + 1px),
+      transparent 0 calc(var(--seal-notch-radius) - 2px),
+      var(--footer-cradle-line) calc(var(--seal-notch-radius) - 1px) calc(var(--seal-notch-radius) + 1px),
       transparent calc(var(--seal-notch-radius) + 2px) 100%
     ),
     /* Sidewall bevels (machining reads at the sides, not the top rim). */
