@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.4 (Overflow-only Scroll Lock) */
+/*! Covenant Lexicon UI v0.3.5 (Overflow-only Scroll Lock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.4';
+  window.COVENANT_LEXICON_VERSION = '0.3.5';
 
   var doc = document;
   var root = doc.documentElement;
@@ -943,6 +943,17 @@
 
     focusReturnEl = lexiconToggle;
 
+    var bottomSheet = isBottomSheetMode();
+
+    if (bottomSheet) {
+      // iOS Safari: commit the seal transform BEFORE the sheet transition begins.
+      // Otherwise, Safari can start the panel transition first and the seal "catches up" late.
+      setSealToOpenPosition();
+
+      try { if (lexiconToggle) void lexiconToggle.offsetWidth; } catch (err0) {}
+      try { if (panel) void panel.offsetWidth; } catch (err1) {}
+    }
+
     panel.classList.add('is-open');
     lexOverlay.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -954,11 +965,8 @@
 
     noteOpen();
 
-    if (isBottomSheetMode()) {
-      // Start the seal move immediately (same tick as class changes) so it rides with the sheet.
-      setSealToOpenPosition();
-
-      // Then correct next frame in case any layout-driven height changed.
+    if (bottomSheet) {
+      // Correct next frame in case any layout-driven height changed.
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () { setSealToOpenPosition(); });
     }
