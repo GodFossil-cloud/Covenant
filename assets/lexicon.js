@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.3 (Overflow-only Scroll Lock) */
+/*! Covenant Lexicon UI v0.3.4 (Overflow-only Scroll Lock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.3';
+  window.COVENANT_LEXICON_VERSION = '0.3.4';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1395,7 +1395,7 @@
 
         if (!dragIntentPulsed) {
           dragIntentPulsed = true;
-          triggerSealPulse();
+          triggerSealNudge();
         }
       }
       if (!moved) return;
