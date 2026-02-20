@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.56 (Remove legacy confirm button + has-pending padding) */
+/*! Covenant ToC Panel Styles v3.1.57 (Pending underline: suppress generic hover underline) */
 
 /* -------------------------------------------------
    Variables
@@ -292,6 +292,11 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 /* Pending state underline is drawn via pseudo-elements below (baseline + progress fill). */
 .toc-item--pending .toc-entry-title{color:#111}
+
+/* Pending entries already render a deliberate underline (baseline + progress).
+   Suppress the generic hover/focus underline so it does not double up. */
+.toc-item--pending .toc-item-btn:hover .toc-entry-title,
+.toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
 
 .toc-locked-btn{color:rgba(120,120,120,.94);opacity:.80;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
