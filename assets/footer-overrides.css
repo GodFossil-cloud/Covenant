@@ -30,7 +30,7 @@
     0 0 22px rgba(255,255,255,0.26),
     0 0 40px rgba(242,220,154,0.16);
 
-  /* Tap-open flash (bigger initial bloom) — keep glyph brass; expand the halo only. */
+  /* Tap accent flash (instant pulse) — keep glyph brass; expand the halo only. */
   --lexicon-glyph-tap-flash-shadow:
     0 0 12px rgba(255,255,255,0.92),
     0 0 28px rgba(255,255,255,0.55),
@@ -80,25 +80,25 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   text-shadow:var(--lexicon-glyph-open-shadow);
 }
 
-@keyframes lexiconTapOpenFlash{
+@keyframes lexiconTapAccentFlash{
   0%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-tap-flash-shadow)}
-  65%{color:var(--lexicon-glyph-open-color);text-shadow:
-    0 0 12px rgba(255,255,255,0.78),
-    0 0 26px rgba(255,255,255,0.40),
-    0 0 48px rgba(242,220,154,0.18)}
   100%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-open-shadow)}
 }
 
-/* Tap-to-open: bigger first flash, then settle into the persistent open halo.
-   (This class is set by lexicon.js only for tap/click, not for drag.) */
+/* Tap-to-open / Tap-to-close: instant pulse flash at the start of the animation.
+   (These classes are set by lexicon.js only for tap/click, not for drag.) */
 #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
-#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner{
-  animation:lexiconTapOpenFlash calc(var(--lexicon-snap-duration, 420ms) * 0.92) ease-out 1;
+#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.is-tap-closing .lexicon-glyph,
+#navFooter #lexiconToggle.is-tap-closing .lexicon-glyph-mid-inner{
+  animation:lexiconTapAccentFlash 160ms ease-out 1;
 }
 
 @media (prefers-reduced-motion: reduce){
   #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
-  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner{animation:none}
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner,
+  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph,
+  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph-mid-inner{animation:none}
 }
 
 /* Intent + drag feedback: match the same brass-gold + bright halo used in the fully-open state.
