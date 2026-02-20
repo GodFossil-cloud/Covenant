@@ -67,8 +67,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
      (If the seal drops, the cradle should follow so the geometry still reads welded.) */
   --seal-cradle-center-y:1px;
 
-  /* Brass-gold border trace; keep the void fill dark. */
-  --footer-cradle-line:rgba(201,169,97,0.96);
+  /* Border trace (cradle dock rim). */
+  --footer-cradle-line:#2A210F;
 
   /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
   --seal-cradle-shift-y:0px;
