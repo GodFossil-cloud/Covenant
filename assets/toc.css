@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.57 (Pending underline: suppress generic hover underline) */
+/*! Covenant ToC Panel Styles v3.1.58 (Pending underline: show only during hold) */
 
 /* -------------------------------------------------
    Variables
@@ -290,10 +290,10 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--current .toc-entry-title{font-weight:600;color:#111}
 .toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
 
-/* Pending state underline is drawn via pseudo-elements below (baseline + progress fill). */
+/* Pending state underline is drawn via pseudo-elements below (hold-only). */
 .toc-item--pending .toc-entry-title{color:#111}
 
-/* Pending entries already render a deliberate underline (baseline + progress).
+/* Pending entries already render a deliberate underline during hold.
    Suppress the generic hover/focus underline so it does not double up. */
 .toc-item--pending .toc-item-btn:hover .toc-entry-title,
 .toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
@@ -660,30 +660,13 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    Pending hold underline fill
    ------------------------------------------------- */
 
-/* Two-layer indicator:
-   - baseline: faint full-width red underline (staging indicator, visible at rest)
-   - fill: brass bar that grows left→right while holding (JS updates --toc-hold-p from 0..1) */
+/* Hold indicator:
+   - fill: brass bar that grows left→right while holding (JS updates --toc-hold-p from 0..1)
+   - no baseline: staged entries should not auto-underline on open */
 .toc-item--pending .toc-entry-title{
   position:relative;
   display:inline-block;
   max-width:100%;
-}
-
-.toc-item--pending .toc-entry-title::before{
-  content:'';
-  position:absolute;
-  left:0;
-  right:0;
-
-  /* Align to the hover underline offset (text-underline-offset: 3px). */
-  bottom:-3px;
-  height:1px;
-
-  background:rgba(139,0,0,.40);
-  border-radius:999px;
-
-  pointer-events:none;
-  opacity:1;
 }
 
 .toc-item--pending .toc-entry-title::after{
@@ -692,7 +675,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   left:0;
   right:0;
 
-  /* Seat the fill on the same baseline. */
+  /* Align to the hover underline offset (text-underline-offset: 3px). */
   bottom:-3px;
   height:2px;
 
@@ -703,5 +686,5 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   transform-origin:0 50%;
 
   pointer-events:none;
-  opacity:.92;
+  opacity:calc(var(--toc-hold-p, 0) * .92);
 }
