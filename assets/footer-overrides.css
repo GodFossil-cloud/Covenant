@@ -232,8 +232,15 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   overflow:hidden;
   margin-top:calc(-1 * var(--lexicon-seal-top-align) + 4px) !important;
 
+  /* iPhone Safari: keep the seal on its own stable layer so the cradle border
+     doesn't hitch a ride on first drag frame reraster. */
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  will-change:transform;
+
   /* Preserve drag math (lexicon.js drives --seal-drag-y). */
-  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
+  -webkit-transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;
+  transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;
 
   width:var(--lexicon-seal-w);
   height:var(--lexicon-seal-h);
