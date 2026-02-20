@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.2.46 (Drag close/cancel-open: prevent 1px dip/rebound by canceling weld during snap paths) */
+/*! Covenant ToC v3.3.0 (Hold-to-enter: use staged entry as the confirm surface; remove header Enter button) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.2.46';
+  window.COVENANT_TOC_VERSION = '3.3.0';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -46,6 +46,8 @@
   var pendingPageId = '';
   var pendingTitle = '';
   var pendingItemEl = null;
+  var pendingHoldEl = null;
+  var pendingHoldTitleEl = null;
   var confirmNavigating = false;
 
   var holdTimer = null;
@@ -754,16 +756,16 @@
   // ---------------------------
 
   function setConfirmVisible(isVisible) {
-    if (!tocConfirmBtn) return;
-
-    if (isVisible) {
-      tocConfirmBtn.hidden = false;
-      tocConfirmBtn.disabled = false;
-      tocConfirmBtn.setAttribute('aria-hidden', 'false');
-    } else {
-      tocConfirmBtn.disabled = true;
-      tocConfirmBtn.hidden = true;
-      tocConfirmBtn.setAttribute('aria-hidden', 'true');
+    if (tocConfirmBtn) {
+      if (isVisible) {
+        tocConfirmBtn.hidden = false;
+        tocConfirmBtn.disabled = false;
+        tocConfirmBtn.setAttribute('aria-hidden', 'false');
+      } else {
+        tocConfirmBtn.disabled = true;
+        tocConfirmBtn.hidden = true;
+        tocConfirmBtn.setAttribute('aria-hidden', 'true');
+      }
     }
 
     if (tocPanel) tocPanel.classList.toggle('has-pending', !!isVisible);
@@ -776,9 +778,23 @@
 
     if (pendingItemEl && pendingItemEl.classList) {
       pendingItemEl.classList.remove('toc-item--pending');
+      pendingItemEl.classList.remove('is-holding');
+    }
+
+    if (pendingHoldEl && pendingHoldEl.classList) {
+      pendingHoldEl.classList.remove('is-holding');
+      pendingHoldEl.disabled = false;
+      pendingHoldEl.removeAttribute('aria-label');
+    }
+
+    if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
+      pendingHoldTitleEl.style.removeProperty('--toc-hold-p');
     }
 
     pendingItemEl = null;
+    pendingHoldEl = null;
+    pendingHoldTitleEl = null;
+
     setConfirmVisible(false);
 
     if (currentPageId) {
@@ -793,18 +809,25 @@
     }
   }
 
-  function stageSelection(pageId, href, title, itemEl) {
+  function stageSelection(pageId, href, title, itemEl, itemBtnEl) {
     if (!pageId || !href) return;
     if (pageId === currentPageId) return;
 
     if (pendingItemEl && pendingItemEl !== itemEl && pendingItemEl.classList) {
       pendingItemEl.classList.remove('toc-item--pending');
+      pendingItemEl.classList.remove('is-holding');
     }
 
     pendingHref = href;
     pendingPageId = pageId;
     pendingTitle = title || '';
     pendingItemEl = itemEl;
+    pendingHoldEl = itemBtnEl || null;
+    pendingHoldTitleEl = null;
+
+    if (pendingHoldEl && pendingHoldEl.querySelector) {
+      pendingHoldTitleEl = pendingHoldEl.querySelector('.toc-entry-title');
+    }
 
     if (pendingItemEl && pendingItemEl.classList) {
       pendingItemEl.classList.add('toc-item--pending');
@@ -813,6 +836,16 @@
     if (pendingTitle) setProducedTitle(pendingTitle);
 
     setConfirmVisible(true);
+
+    // Make the staged entry itself the hold surface.
+    if (pendingHoldEl) {
+      pendingHoldEl.setAttribute('aria-label', 'Hold to enter selected page');
+      pendingHoldEl.disabled = false;
+    }
+
+    if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
+      pendingHoldTitleEl.style.setProperty('--toc-hold-p', '0');
+    }
 
     if (tocConfirmBtn) {
       tocConfirmBtn.textContent = 'Hold to Enter';
@@ -824,10 +857,26 @@
   // Hold-to-enter
   // ---------------------------
 
+  function holdSurfaceEl() {
+    return tocConfirmBtn || pendingHoldEl;
+  }
+
   function setHoldProgress(p) {
-    if (!tocConfirmBtn) return;
     var clamped = Math.max(0, Math.min(1, p));
-    tocConfirmBtn.style.setProperty('--toc-hold-p', String(clamped));
+
+    if (tocConfirmBtn) {
+      tocConfirmBtn.style.setProperty('--toc-hold-p', String(clamped));
+      return;
+    }
+
+    if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
+      pendingHoldTitleEl.style.setProperty('--toc-hold-p', String(clamped));
+      return;
+    }
+
+    if (pendingHoldEl && pendingHoldEl.style) {
+      pendingHoldEl.style.setProperty('--toc-hold-p', String(clamped));
+    }
   }
 
   function cancelHold() {
@@ -848,6 +897,14 @@
       tocConfirmBtn.classList.remove('is-holding');
     }
 
+    if (pendingHoldEl && pendingHoldEl.classList) {
+      pendingHoldEl.classList.remove('is-holding');
+    }
+
+    if (pendingItemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.remove('is-holding');
+    }
+
     setHoldProgress(0);
   }
 
@@ -862,8 +919,32 @@
     holdRaf = requestAnimationFrame(tickHold);
   }
 
+  function shouldBeginHoldForEvent(e) {
+    if (!e) return false;
+
+    if (tocConfirmBtn && e.target && (e.target === tocConfirmBtn || (tocConfirmBtn.contains && tocConfirmBtn.contains(e.target)))) {
+      return true;
+    }
+
+    if (pendingHoldEl && e.target && (e.target === pendingHoldEl || (pendingHoldEl.contains && pendingHoldEl.contains(e.target)))) {
+      return true;
+    }
+
+    // Keyboard path: focused element is the pending hold surface.
+    try {
+      if ((e.type === 'keydown' || e.type === 'keyup') && pendingHoldEl && document.activeElement === pendingHoldEl) return true;
+    } catch (err) {}
+
+    return false;
+  }
+
   function beginHold(e) {
-    if (!pendingHref || !tocConfirmBtn || tocConfirmBtn.disabled) return;
+    if (!pendingHref) return;
+
+    var surface = holdSurfaceEl();
+    if (!surface || surface.disabled) return;
+
+    if (!shouldBeginHoldForEvent(e)) return;
 
     stopEvent(e);
 
@@ -872,8 +953,14 @@
     holdStartedAt = Date.now();
     holdCompleted = false;
 
-    tocConfirmBtn.classList.add('is-holding');
+    if (surface.classList) surface.classList.add('is-holding');
+    if (pendingItemEl && pendingItemEl.classList) pendingItemEl.classList.add('is-holding');
+
     setHoldProgress(0);
+
+    if (pendingHoldEl && pendingHoldEl.setPointerCapture && e && typeof e.pointerId === 'number') {
+      try { pendingHoldEl.setPointerCapture(e.pointerId); } catch (err0) {}
+    }
 
     holdRaf = requestAnimationFrame(tickHold);
 
@@ -886,6 +973,10 @@
 
   function endHold(e) {
     if (!holdStartedAt) return;
+
+    if (pendingHoldEl && pendingHoldEl.releasePointerCapture && e && typeof e.pointerId === 'number') {
+      try { pendingHoldEl.releasePointerCapture(e.pointerId); } catch (err0) {}
+    }
 
     stopEvent(e);
 
@@ -922,7 +1013,8 @@
 
     confirmNavigating = true;
 
-    if (tocConfirmBtn) tocConfirmBtn.disabled = true;
+    var surface = holdSurfaceEl();
+    if (surface) surface.disabled = true;
 
     cancelHold();
 
@@ -982,7 +1074,6 @@
 
     var SNAP_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
-    var CLOSE_SINK_PX = 4;
     var CANCEL_OPEN_SINK_PX = 12;
 
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
@@ -1020,12 +1111,6 @@
 
       if (tocOverlay) tocOverlay.style.opacity = String(progress);
 
-      // Lexicon-style carry: the dock tab rides with the sheet.
-      // IMPORTANT: do not carry below the dock seat during sink/settle frames.
-      // Also: if a weld nudge is active (e.g. +1px), cancel it at the fully-seated cradle so the tab
-      // cannot be pushed "below" its physical resting position while the pointer is still down.
-      // NOTE: this cancellation must only occur during active drag; during snap-close animation it can
-      // force the tab to "seat" early and briefly show a split.
       var tabOffset = (y - closedY);
       if (tabOffset > 0) tabOffset = 0;
 
@@ -1081,7 +1166,6 @@
       root.classList.remove('toc-closing');
       root.classList.remove('toc-dock-settling');
 
-      // Keep tab welded in the committed-open position.
       setToCTabDragOffset(openLiftPx - closedY, false);
     }
 
@@ -1100,7 +1184,6 @@
     function finalizeCloseAfterSnap() {
       if (!tocPanel || !tocOverlay) return;
 
-      // Cleanly zero weld without a late-transition re-target.
       setToCTabDragOffset(-CLOSE_WELD_PX, true);
 
       cancelCloseWeldDrop();
@@ -1154,13 +1237,9 @@
       root.classList.remove('toc-opening');
       root.classList.remove('toc-dock-settling');
 
-      // IMPORTANT: do NOT sink below the dock seat on drag-close; the tab cannot follow below-seat,
-      // so the last pixels read as a split right before seating on iOS Safari.
       var targetY = closedY;
       applyDragFrame(targetY, false);
 
-      // Critical: cancel the close weld with a matching -1px carry during the snap-close.
-      // Without this, releasing a drag at the seat makes the tab dip ~1px (weld applies) then rebound.
       setToCTabDragOffset(-CLOSE_WELD_PX, false);
 
       var onEnd = function (e) {
@@ -1189,7 +1268,7 @@
 
       if (startWasOpen) {
         var dragDown = currentY - openLiftPx;
-        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > baseH * CLOSE_RATIO);
+        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > baseH * 0.28);
       } else {
         var dragUp = closedY - currentY;
         shouldOpen = (velocity < OPEN_VELOCITY || dragUp > baseH * OPEN_RATIO);
@@ -1220,8 +1299,6 @@
         if (startWasOpen) {
           snapCloseFromOpen();
         } else {
-          // Cancel-open snap-back: force weld to 0 for the duration of the return,
-          // otherwise html.toc-opening (+1px weld) can push the tab 1px below its cradle.
           setRootWeldNudge(0);
           applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
         }
@@ -1254,8 +1331,6 @@
           raf2(function () {
             raf2(function () {
               root.classList.remove('toc-opening');
-              // Only clear the inline weld override after toc-opening is removed;
-              // otherwise CSS would re-apply +1px weld mid-snap.
               clearRootWeldNudge();
             });
           });
@@ -1332,7 +1407,7 @@
       if (!dragging || e.pointerId !== pointerId) return;
 
       var deltaY = e.clientY - startY;
-      if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
+      if (!moved && Math.abs(deltaY) > 2) {
         moved = true;
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
       }
@@ -1408,7 +1483,7 @@
       if (!sealPrimed || e.pointerId !== sealPointerId) return;
 
       var dy = e.clientY - sealStartY;
-      if (Math.abs(dy) <= MOVE_SLOP) return;
+      if (Math.abs(dy) <= 2) return;
 
       sealPrimed = false;
       beginDrag(e, 'seal', sealStartY);
@@ -1486,13 +1561,44 @@
         return;
       }
 
+      if (pageId && pendingPageId && pageId === pendingPageId) {
+        stopEvent(e);
+        clearPendingSelection();
+        return;
+      }
+
       var href = itemBtn.getAttribute('data-href');
       if (!href || !pageId) return;
 
       stopEvent(e);
 
       var title = String(itemBtn.textContent || '').trim();
-      stageSelection(pageId, href, title, itemEl);
+      stageSelection(pageId, href, title, itemEl, itemBtn);
+    });
+
+    // Hold-to-enter on the staged entry itself.
+    tocDynamicContent.addEventListener('pointerdown', function (e) {
+      var btn = closestSafe(e.target, '.toc-item--pending .toc-item-btn');
+      if (!btn) return;
+      beginHold(e);
+    });
+
+    tocDynamicContent.addEventListener('pointerup', function (e) {
+      endHold(e);
+    });
+
+    tocDynamicContent.addEventListener('pointercancel', function (e) {
+      endHold(e);
+    });
+
+    tocDynamicContent.addEventListener('keydown', function (e) {
+      if (!e) return;
+      if (e.key === ' ' || e.key === 'Enter') beginHold(e);
+    });
+
+    tocDynamicContent.addEventListener('keyup', function (e) {
+      if (!e) return;
+      if (e.key === ' ' || e.key === 'Enter') endHold(e);
     });
   }
 
@@ -1561,8 +1667,6 @@
 
       tapAnimating = true;
 
-      // Freeze tab transform while root classes flip (prevents 1px divergence from transform-transition
-      // reacting to --toc-tab-weld-nudge changes before the main snap begins).
       setToCTabDragOffset(0, true);
 
       root.classList.add('toc-opening');
@@ -1584,7 +1688,6 @@
 
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
-        // Re-enable tab transitions for the actual snap.
         setToCTabDragOffset(0, false);
 
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -1593,7 +1696,6 @@
         setPanelTranslateY(openLift);
         tocOverlay.style.opacity = '1';
 
-        // Tab weld uses a no-sink closedY so it lands flush with the open panel.
         setToCTabDragOffset(openLift - closedYForTab, false);
 
         setTimeout(function () {
@@ -1628,7 +1730,6 @@
       clearPendingSelection();
     }
 
-    // Ensure weld stays engaged at close-start (before toc-closing can zero it via CSS).
     cancelCloseWeldDrop();
     setRootWeldNudge(CLOSE_WELD_PX);
 
@@ -1655,9 +1756,6 @@
 
     var openLift = readCssNumberVar('--toc-open-lift') || 0;
 
-    // IMPORTANT: for tap-to-close, do NOT use the "sink" closedY.
-    // The tab cannot travel below its dock seat; if the panel sinks those last pixels,
-    // it will briefly look like the tab splits away right before seating.
     var closedY = computePanelClosedY(false);
     var closedYForTab = closedY;
 
@@ -1669,12 +1767,10 @@
 
     setPanelTranslateY(openLift);
 
-    // Freeze tab transform while classes flip (keeps weld constant from frame 0).
     setToCTabDragOffset(openLift - closedYForTab, true);
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
-      // Re-enable transitions for the actual snap.
       setToCTabDragOffset(openLift - closedYForTab, false);
 
       tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -1683,7 +1779,6 @@
       setPanelTranslateY(closedY);
       tocOverlay.style.opacity = '0';
 
-      // Tab returns to its dock seat (cancel weld with -1px carry so no mid-flight re-target is needed).
       setToCTabDragOffset(-CLOSE_WELD_PX, false);
 
       setTimeout(function () {

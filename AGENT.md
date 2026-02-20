@@ -91,6 +91,7 @@ Core runtime files:
 Notes:
 - Note (ToC CSS): Keep all ToC-related styling (including any motion/mask fixes) inside `assets/toc.css`; do not split ToC fixes into extra stylesheets.
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
+- Note (ToC deliberate confirm): The ToC uses staged selection + deliberate confirm; the confirm surface is the staged entry itself (hold-to-enter), not a separate header button.
 - Note (ToC dock tab): ToC tab rides with the ToC sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (Reliquary dock tab): Mirror tab rides with the Reliquary sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (ToC positioning): Avoid `Math.floor()` when computing the mobile sheet height from `visualViewport.height`; it can create a 1px top gap.
@@ -220,7 +221,7 @@ Use this when making CSS/JS/include changes.
 - Confirm ToC header band visually blends with the ToC tab face.
 - Confirm ToC sheet reaches the top cleanly on mobile (no 1px gap).
 - Select an unlocked entry; confirm it stages.
-- Hold confirm to enter; release early cancels.
+- Hold the staged entry to enter; release early cancels.
 - Confirm Hold-to-Enter closes panels before navigation.
 - ESC closes and focus returns to the ToC control.
 - Tab/Shift+Tab keep focus trapped in the panel.
