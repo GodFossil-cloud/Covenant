@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.62 (Pending: dreamy lantern wash edges) */
+/*! Covenant ToC Panel Styles v3.1.63 (Pending: stronger staged indicator pulse + ember flicker) */
 
 /* -------------------------------------------------
    Variables
@@ -583,7 +583,9 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
   .toc-toast{transition:none;transform:none}
   .toc-toast.is-visible{transform:none}
 
-  .toc-item--pending .toc-item-btn::after{animation:none}
+  .toc-item--pending .toc-item-btn::after,
+  .toc-item--pending .toc-item-btn::before,
+  .toc-item--pending::before{animation:none !important}
 }
 
 /* -------------------------------------------------
@@ -667,9 +669,28 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    Pending lantern wash
    ------------------------------------------------- */
 
+@keyframes tocPendingNodePulse{
+  0%{
+    border-color:rgba(139,0,0,.58);
+    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04);
+  }
+  100%{
+    border-color:rgba(139,0,0,.90);
+    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 28px rgba(139,0,0,.24),0 0 22px rgba(201,169,97,.16),0 10px 14px rgba(0,0,0,.04);
+  }
+}
+
 @keyframes tocLanternWash{
-  0%{opacity:.42}
-  100%{opacity:.70}
+  0%{opacity:.36}
+  100%{opacity:.84}
+}
+
+@keyframes tocLanternFlicker{
+  0%,72%,100%{opacity:.18;transform:translate3d(0,0,0) scale(1)}
+  76%{opacity:.34;transform:translate3d(1px,0,0) scale(1.02)}
+  79%{opacity:.14;transform:translate3d(0,0,0) scale(.99)}
+  82%{opacity:.40;transform:translate3d(1px,0,0) scale(1.01)}
+  86%{opacity:.20;transform:translate3d(0,0,0) scale(1)}
 }
 
 /* Wash lives on the whole button surface (behind text).
@@ -677,6 +698,32 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 .toc-item--pending .toc-item-btn{
   position:relative;
   isolation:isolate;
+}
+
+/* Pending node pulse (the left dot becomes unmistakably "armed"). */
+.toc-item--pending::before{animation:tocPendingNodePulse 980ms ease-in-out infinite alternate}
+
+/* Ember flicker layer (brief, occasional flare) beneath the main wash. */
+.toc-item--pending .toc-item-btn::before{
+  content:'';
+  position:absolute;
+  top:-10px;
+  bottom:-10px;
+  left:.92rem;
+  right:46%;
+
+  border-radius:999px;
+
+  background:
+    radial-gradient(closest-side at 0% 56%, rgba(139,0,0,.42) 0%, rgba(139,0,0,0) 74%),
+    radial-gradient(closest-side at 12% 56%, rgba(201,169,97,.34) 0%, rgba(201,169,97,0) 78%);
+
+  filter:blur(5px);
+  opacity:.18;
+  animation:tocLanternFlicker 5200ms linear infinite;
+
+  pointer-events:none;
+  z-index:0;
 }
 
 .toc-item--pending .toc-item-btn::after{
@@ -705,14 +752,14 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
   box-shadow:
     /* Soft outer haze (avoid reading as a rectangle). */
-    0 0 22px rgba(201,169,97,.14),
-    0 0 16px rgba(139,0,0,.12),
+    0 0 28px rgba(201,169,97,.18),
+    0 0 24px rgba(139,0,0,.16),
     /* Micro-gutter warmth (a tiny left-sided catch). */
     inset 12px 0 18px -22px rgba(139,0,0,.42),
     /* Depth tint. */
     inset 0 -14px 18px -26px rgba(0,0,0,.58);
 
-  animation:tocLanternWash 3200ms ease-in-out infinite alternate;
+  animation:tocLanternWash 2500ms ease-in-out infinite alternate;
 
   pointer-events:none;
   z-index:0;
