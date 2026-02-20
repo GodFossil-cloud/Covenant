@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.55 (Pending hold underline fill: two-layer baseline + progress) */
+/*! Covenant ToC Panel Styles v3.1.56 (Remove legacy confirm button + has-pending padding) */
 
 /* -------------------------------------------------
    Variables
@@ -223,7 +223,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 }
 
 .toc-produced{min-height:1.15rem}
-.toc-produced-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;line-height:1.25;color:rgba(44,62,80,.88);text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:7.2rem}
+.toc-produced-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps;line-height:1.25;color:rgba(44,62,80,.88);text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 html.toc-opening .toc-produced,
 html.toc-open .toc-produced,
@@ -236,46 +236,10 @@ html.toc-closing .toc-produced-title,
 html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) + .9rem)}
 
 /* -------------------------------------------------
-   Hold-to-enter button (legacy: removed from DOM; styling retained for backwards compatibility)
-   ------------------------------------------------- */
-
-.toc-confirm-btn{
-  position:absolute;
-  top:12px;
-  right:12px;
-  z-index:5;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:.42rem .82rem;
-  border-radius:999px;
-  border:1px solid rgba(44,62,80,.16);
-  border-bottom-color:rgba(44,62,80,.24);
-  background:
-    conic-gradient(from 270deg, rgba(201,169,97,.92) calc(var(--toc-hold-p, 0) * 360deg), rgba(201,169,97,0) 0),
-    linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.18));
-  font-family:'Cormorant Garamond',serif;
-  font-size:.90rem;
-  font-weight:650;
-  letter-spacing:.14em;
-  font-variant-caps:all-small-caps;
-  color:var(--toc-ink-soft);
-  box-shadow:0 1px 0 rgba(255,255,255,.35),0 10px 20px rgba(0,0,0,.06);
-  cursor:pointer;
-  user-select:none;
-  -webkit-user-select:none;
-}
-
-.toc-confirm-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:4px}
-.toc-confirm-btn:disabled{opacity:.52;cursor:default}
-.toc-confirm-btn.is-holding{color:rgba(44,62,80,.92)}
-
-/* -------------------------------------------------
    Body
    ------------------------------------------------- */
 
 .toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
-.toc-panel.has-pending .toc-panel-body{padding-top:2.65rem}
 
 .toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),linear-gradient(to bottom,var(--toc-parchment-hi),rgba(255,255,255,0));pointer-events:none}
 @supports (-webkit-touch-callout: none){.toc-panel-body::before{display:none}}
@@ -645,7 +609,6 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
   .toc-panel-header{padding:.95rem 1.25rem .78rem;min-height:3.05rem}
   .toc-produced-title{font-size:1.0rem}
   .toc-panel-body{padding:1.0rem 1.1rem 1.05rem}
-  .toc-panel.has-pending .toc-panel-body{padding-top:2.45rem}
   .toc-group-title,.toc-item-btn,.toc-locked-btn,.toc-annex-link{padding-left:1.45rem}
   .toc-entry-key{min-width:6.9rem}
   .toc-tab::after{width:min(210px,74vw)}
@@ -680,14 +643,12 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
 .toc-item-btn,
 .toc-locked-btn,
-.toc-annex-link,
-.toc-confirm-btn{-webkit-tap-highlight-color:transparent}
+.toc-annex-link{-webkit-tap-highlight-color:transparent}
 
 @media (hover: none), (pointer: coarse){
   .toc-item-btn:focus-visible,
   .toc-locked-btn:focus-visible,
-  .toc-annex-link:focus-visible,
-  .toc-confirm-btn:focus-visible{outline:none}
+  .toc-annex-link:focus-visible{outline:none}
 }
 
 /* -------------------------------------------------
