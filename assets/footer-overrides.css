@@ -44,6 +44,33 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.90em !important}
 
+/* Lexicon tab: "earned" radiance on the glyph itself.
+   Default at-rest remains quiet; glow shows mainly when open/selected and on intent feedback.
+   (Keeps iOS Safari stable: no rim/border glow, only text-shadow on the glyph.) */
+#navFooter #lexiconToggle .lexicon-glyph,
+#navFooter #lexiconToggle .lexicon-glyph-mid-inner{text-shadow:none}
+
+#navFooter #lexiconToggle.has-selection .lexicon-glyph,
+#navFooter #lexiconToggle.has-selection .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner{
+  text-shadow:
+    0 0 8px rgba(242,220,154,0.22),
+    0 0 18px rgba(242,220,154,0.12);
+}
+
+#navFooter #lexiconToggle.has-selection.is-nudging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.has-selection.is-pulsing .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.has-selection.is-seal-dragging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-expanded="true"].is-nudging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-expanded="true"].is-pulsing .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-expanded="true"].is-seal-dragging .lexicon-glyph-mid-inner{
+  text-shadow:
+    0 0 10px rgba(255,215,122,0.42),
+    0 0 22px rgba(242,220,154,0.22),
+    0 0 34px rgba(242,220,154,0.14);
+}
+
 /* Make the Lexicon seal cradle border/field 1px taller without touching socket geometry tokens. */
 .nav-footer::after{height:var(--lexicon-cradle-h, var(--seal-notch-height))}
 
