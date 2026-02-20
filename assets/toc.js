@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.2 (Selection reset: click to stage, click again to enter; ESC/blank click clears) */
+/*! Covenant ToC v3.3.3 (Staging suppresses current node indicator) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.2';
+  window.COVENANT_TOC_VERSION = '3.3.3';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -66,6 +66,10 @@
   var CLOSE_WELD_PX = 1;
   var CLOSE_WELD_DROP_MS = 120;
   var closeWeldTimer = null;
+
+  // When a different entry is staged, suppress the "current page" visual node indicator.
+  // (We keep aria-current semantics; we only toggle the CSS class that drives the node styling.)
+  var suppressedCurrentItemEl = null;
 
   function setRootWeldNudge(px) {
     try {
@@ -754,7 +758,48 @@
   // Pending selection
   // ---------------------------
 
+  function findCurrentItemElement() {
+    if (!currentPageId || !tocDynamicContent || !tocDynamicContent.querySelector) return null;
+
+    try {
+      return tocDynamicContent.querySelector('.toc-item[data-page-id="' + CSS.escape(currentPageId) + '"]');
+    } catch (err) {
+      // CSS.escape not supported? Fall back to current class.
+      return tocDynamicContent.querySelector('.toc-item--current');
+    }
+  }
+
+  function suppressCurrentIndicator() {
+    if (!currentPageId) return;
+
+    var el = findCurrentItemElement();
+    if (!el || !el.classList) return;
+
+    if (el.classList.contains('toc-item--current')) {
+      el.classList.remove('toc-item--current');
+      el.classList.add('toc-item--current-suppressed');
+      suppressedCurrentItemEl = el;
+    }
+  }
+
+  function restoreCurrentIndicator() {
+    var el = (suppressedCurrentItemEl && suppressedCurrentItemEl.classList) ? suppressedCurrentItemEl : findCurrentItemElement();
+    if (!el || !el.classList) {
+      suppressedCurrentItemEl = null;
+      return;
+    }
+
+    if (el.classList.contains('toc-item--current-suppressed')) {
+      el.classList.remove('toc-item--current-suppressed');
+      el.classList.add('toc-item--current');
+    }
+
+    suppressedCurrentItemEl = null;
+  }
+
   function clearPendingSelection() {
+    restoreCurrentIndicator();
+
     pendingHref = '';
     pendingPageId = '';
     pendingTitle = '';
@@ -813,6 +858,8 @@
     if (pendingItemEl && pendingItemEl.classList) {
       pendingItemEl.classList.add('toc-item--pending');
     }
+
+    suppressCurrentIndicator();
 
     if (pendingTitle) setProducedTitle(pendingTitle);
 
