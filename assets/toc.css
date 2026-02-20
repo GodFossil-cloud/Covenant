@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.63 (Pending: stronger staged indicator pulse + ember flicker) */
+/*! Covenant ToC Panel Styles v3.1.64 (Remove hover underline to prevent staged flash) */
 
 /* -------------------------------------------------
    Variables
@@ -285,9 +285,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-item-btn{cursor:pointer;transition:color 200ms ease}
 
-/* Hover underline is fine; focus-visible already has an outline on the button.
-   IMPORTANT: JS focuses the first item on open, so do not underline on focus-visible. */
-.toc-item-btn:hover .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
+/* IMPORTANT: JS focuses the first item on open, so do not underline on focus-visible. */
+.toc-item-btn:hover .toc-entry-title{color:#111;text-decoration:none}
 .toc-item-btn:focus-visible .toc-entry-title{color:#111;text-decoration:none}
 
 .toc-item-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:3px}
