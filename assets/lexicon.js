@@ -832,8 +832,22 @@
     clearSealDragOffset();
   }
 
-  function focusIntoPanel() {
+  function isKeyboardIntentEvent(e) {
+    // In most browsers, keyboard activation of a button produces a click with detail === 0.
+    try {
+      if (!e) return false;
+      if (e.type === 'click' && typeof e.detail === 'number' && e.detail === 0) return true;
+      if (e.type === 'keydown') return true;
+    } catch (err) {}
+    return false;
+  }
+
+  function focusIntoPanel(preferCloseFocus) {
     if (!panel) return;
+
+    // Avoid the “yellow box” focus ring on pointer-open; keep keyboard access intact.
+    if (!preferCloseFocus) return;
+
     var closeBtn = qs('.lexicon-panel-close', panel);
     if (closeBtn && closeBtn.focus) closeBtn.focus();
     else if (panel.focus) panel.focus();
@@ -867,7 +881,7 @@
     }, 150);
   }
 
-  function openPanel() {
+  function openPanel(openEvent) {
     if (!panel || !lexOverlay) return;
 
     clearActiveTooltip();
@@ -891,7 +905,8 @@
       raf(function () { setSealToOpenPosition(); });
     }
 
-    setTimeout(focusIntoPanel, 0);
+    var preferCloseFocus = isKeyboardIntentEvent(openEvent);
+    setTimeout(function () { focusIntoPanel(preferCloseFocus); }, 0);
   }
 
   function closePanel() {
@@ -921,11 +936,11 @@
     }, 0);
   }
 
-  function openFromToggleIntent() {
+  function openFromToggleIntent(e) {
     if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
     else renderOverview();
 
-    openPanel();
+    openPanel(e);
   }
 
   // ========================================
@@ -950,7 +965,7 @@
 
     applyPressFeedback(lexiconToggle);
 
-    bindActivate(lexiconToggle, function () {
+    bindActivate(lexiconToggle, function (e) {
       if (window.__COVENANT_SEAL_DRAG_JUST_HAPPENED) {
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
         return;
@@ -966,7 +981,7 @@
         return;
       }
 
-      openFromToggleIntent();
+      openFromToggleIntent(e);
     });
 
     bindActivate(lexOverlay, function () {
