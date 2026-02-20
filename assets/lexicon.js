@@ -955,6 +955,10 @@
     noteOpen();
 
     if (isBottomSheetMode()) {
+      // Start the seal move immediately (same tick as class changes) so it rides with the sheet.
+      setSealToOpenPosition();
+
+      // Then correct next frame in case any layout-driven height changed.
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () { setSealToOpenPosition(); });
     }
