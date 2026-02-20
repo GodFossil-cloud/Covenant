@@ -30,12 +30,17 @@
     0 0 22px rgba(255,255,255,0.26),
     0 0 40px rgba(242,220,154,0.16);
 
-  /* Tap accent flash (instant pulse) — keep glyph brass; expand the halo only. */
-  --lexicon-glyph-tap-flash-shadow:
-    0 0 12px rgba(255,255,255,0.92),
-    0 0 28px rgba(255,255,255,0.55),
-    0 0 54px rgba(255,255,255,0.22),
-    0 0 70px rgba(242,220,154,0.14);
+  /* Tap accent flash (instant pulse): a soft aura field *behind* the glyph.
+     (Keeps the symbol itself steady; the radiance blooms around it.) */
+  --lexicon-glyph-tap-aura-size:2.8em;
+  --lexicon-glyph-tap-aura-blur:7px;
+  --lexicon-glyph-tap-aura:
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,0.62) 0%,
+      rgba(255,255,255,0.28) 26%,
+      rgba(242,220,154,0.16) 44%,
+      rgba(0,0,0,0) 72%
+    );
 
   /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
@@ -56,7 +61,24 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]{box-shadow:none !important}
 
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
-#navFooter #lexiconToggle .lexicon-glyph{font-size:0.90em !important}
+#navFooter #lexiconToggle .lexicon-glyph{font-size:0.90em !important;position:relative;display:inline-block;z-index:0}
+
+/* Tap aura (behind the glyph group). */
+#navFooter #lexiconToggle .lexicon-glyph::before{
+  content:'';
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:var(--lexicon-glyph-tap-aura-size, 2.8em);
+  height:var(--lexicon-glyph-tap-aura-size, 2.8em);
+  border-radius:999px;
+  background:var(--lexicon-glyph-tap-aura);
+  filter:blur(var(--lexicon-glyph-tap-aura-blur, 7px));
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%, -50%) scale(0.70);
+  z-index:-1;
+}
 
 /* Lexicon tab: "earned" radiance on the glyph itself.
    Default at-rest remains quiet; open + intent states stay luminous.
@@ -80,25 +102,22 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   text-shadow:var(--lexicon-glyph-open-shadow);
 }
 
-@keyframes lexiconTapAccentFlash{
-  0%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-tap-flash-shadow)}
-  100%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-open-shadow)}
+@keyframes lexiconTapAuraPulse{
+  0%{opacity:0;transform:translate(-50%, -50%) scale(0.60)}
+  18%{opacity:1;transform:translate(-50%, -50%) scale(1.00)}
+  100%{opacity:0;transform:translate(-50%, -50%) scale(0.96)}
 }
 
-/* Tap-to-open / Tap-to-close: instant pulse flash at the start of the animation.
-   (These classes are set by lexicon.js only for tap/click, not for drag.) */
-#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
-#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle.is-tap-closing .lexicon-glyph,
-#navFooter #lexiconToggle.is-tap-closing .lexicon-glyph-mid-inner{
-  animation:lexiconTapAccentFlash 160ms ease-out 1;
+/* Tap-to-open / Tap-to-close: instant pulse that radiates *around* the glyph.
+   (Classes are set by lexicon.js only for tap/click, not for drag.) */
+#navFooter #lexiconToggle.is-tap-opening .lexicon-glyph::before,
+#navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{
+  animation:lexiconTapAuraPulse 180ms ease-out 1;
 }
 
 @media (prefers-reduced-motion: reduce){
-  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
-  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner,
-  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph,
-  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph-mid-inner{animation:none}
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph::before,
+  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{animation:none}
 }
 
 /* Intent + drag feedback: match the same brass-gold + bright halo used in the fully-open state.
