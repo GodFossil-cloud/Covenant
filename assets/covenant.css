@@ -1658,7 +1658,8 @@ body {
 
 .nav-next:hover .nav-next-frame::before,
 .nav-next:focus-visible .nav-next-frame::before,
-.nav-prev:hover .nav-prev-frame::before {
+.nav-prev:hover .nav-prev-frame::before,
+.nav-prev:focus-visible .nav-prev-frame::before {
   border-color: rgba(192,154,63,0.62);
 }
 
@@ -1677,7 +1678,7 @@ body {
 
   /* Allow JS to add temporary drag without clobbering the base lift.
      NOTE: --seal-drag-y is driven by assets/lexicon.js (single-seal continuous motion). */
-  transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  transform: translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)), 0);
 
   z-index: 2;
   margin-top: 0;
@@ -1780,7 +1781,7 @@ body {
 /* Seal press: sacred stillness (no tactile travel). */
 .nav-btn.center:active:not(:disabled),
 .nav-btn.center.is-nudging {
-  transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+  transform: translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)), 0);
   filter: brightness(0.98);
 }
 
@@ -1895,6 +1896,10 @@ body {
     user-select: none;
     -webkit-user-select: none;
 
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
     /* Smooth travel when snapping open/closed (JS drives --seal-drag-y).
        SYNCED WITH PANEL. */
     transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease, transform var(--lexicon-snap-duration) var(--lexicon-snap-ease);
@@ -1928,7 +1933,7 @@ body {
 /* Seal drag: suppress the 1px :active press snap during the drag-open gesture (mobile). */
 @media (max-width: 600px) {
   #lexiconToggle.is-seal-dragging:active:not(:disabled) {
-    transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)));
+    transform: translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge)), 0);
   }
 }
 
