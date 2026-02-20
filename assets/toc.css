@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.61 (Pending: lantern wash tightened + node-biased glow) */
+/*! Covenant ToC Panel Styles v3.1.62 (Pending: dreamy lantern wash edges) */
 
 /* -------------------------------------------------
    Variables
@@ -668,8 +668,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    ------------------------------------------------- */
 
 @keyframes tocLanternWash{
-  0%{opacity:.60}
-  100%{opacity:.82}
+  0%{opacity:.42}
+  100%{opacity:.70}
 }
 
 /* Wash lives on the whole button surface (behind text).
@@ -682,15 +682,16 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 .toc-item--pending .toc-item-btn::after{
   content:'';
   position:absolute;
-  top:-2px;
-  bottom:-2px;
+  top:-6px;
+  bottom:-6px;
 
   /* Pull the wash closer to the left gutter so it reads as emanating from the red node. */
   left:1.02rem;
   right:.30rem;
 
-  /* Tighten edges so it feels "lit from within" rather than boxed. */
-  border-radius:8px;
+  /* Dreamy lantern: bigger radius + blur to erase "box" edges. */
+  border-radius:18px;
+  filter:blur(7px);
 
   background:
     /* Red ember near the node (left). */
@@ -703,14 +704,15 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
     linear-gradient(to right, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 60%);
 
   box-shadow:
-    /* Softer edge; avoid reading as a rectangle. */
-    inset 0 0 0 1px rgba(139,0,0,.07),
+    /* Soft outer haze (avoid reading as a rectangle). */
+    0 0 22px rgba(201,169,97,.14),
+    0 0 16px rgba(139,0,0,.12),
     /* Micro-gutter warmth (a tiny left-sided catch). */
     inset 12px 0 18px -22px rgba(139,0,0,.42),
     /* Depth tint. */
     inset 0 -14px 18px -26px rgba(0,0,0,.58);
 
-  animation:tocLanternWash 3000ms ease-in-out infinite alternate;
+  animation:tocLanternWash 3200ms ease-in-out infinite alternate;
 
   pointer-events:none;
   z-index:0;
