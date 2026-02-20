@@ -68,7 +68,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   --seal-cradle-center-y:1px;
 
   /* Border trace (cradle dock rim). */
-  --footer-cradle-line:#2A210F;
+  --footer-cradle-line:#39332A;
 
   /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
   --seal-cradle-shift-y:0px;
