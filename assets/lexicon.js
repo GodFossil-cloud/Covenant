@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.2 (Overflow-only Scroll Lock) */
+/*! Covenant Lexicon UI v0.3.3 (Overflow-only Scroll Lock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.2';
+  window.COVENANT_LEXICON_VERSION = '0.3.3';
 
   var doc = document;
   var root = doc.documentElement;
@@ -398,6 +398,53 @@
       el.addEventListener('touchend', function () { setTimeout(remove, 160); }, { passive: true });
       el.addEventListener('touchcancel', remove, { passive: true });
     }
+  }
+
+  // ----------------------------------------
+  // Seal interaction feedback (pulse + nudge)
+  // ----------------------------------------
+  var sealPulseTimer = null;
+  var sealNudgeTimer = null;
+
+  function getNavPulseDurationMs() {
+    // CSS var is typically like "520ms"; parseFloat yields 520.
+    return getCssVarNumber('--nav-pulse-duration', 520);
+  }
+
+  function triggerSealPulse() {
+    if (!lexiconToggle || !lexiconToggle.classList) return;
+
+    if (sealPulseTimer) {
+      window.clearTimeout(sealPulseTimer);
+      sealPulseTimer = null;
+    }
+
+    lexiconToggle.classList.remove('is-pulsing');
+    void lexiconToggle.offsetWidth;
+    lexiconToggle.classList.add('is-pulsing');
+
+    sealPulseTimer = window.setTimeout(function () {
+      try { if (lexiconToggle && lexiconToggle.classList) lexiconToggle.classList.remove('is-pulsing'); } catch (err) {}
+      sealPulseTimer = null;
+    }, getNavPulseDurationMs() + 90);
+  }
+
+  function triggerSealNudge() {
+    if (!lexiconToggle || !lexiconToggle.classList) return;
+
+    if (sealNudgeTimer) {
+      window.clearTimeout(sealNudgeTimer);
+      sealNudgeTimer = null;
+    }
+
+    lexiconToggle.classList.remove('is-nudging');
+    void lexiconToggle.offsetWidth;
+    lexiconToggle.classList.add('is-nudging');
+
+    sealNudgeTimer = window.setTimeout(function () {
+      try { if (lexiconToggle && lexiconToggle.classList) lexiconToggle.classList.remove('is-nudging'); } catch (err) {}
+      sealNudgeTimer = null;
+    }, 140);
   }
 
   // ----------------------------------------
@@ -963,6 +1010,19 @@
       lexiconToggle.addEventListener('blur', function () { lexiconHovering = false; setLexiconGlyph(); });
     }
 
+    // Intent feedback for activation/drag/keyboard intent (not hover).
+    lexiconToggle.addEventListener('pointerdown', function (e) {
+      if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
+      triggerSealNudge();
+    });
+
+    lexiconToggle.addEventListener('keydown', function (e) {
+      var k = e && e.key;
+      if (k !== 'Enter' && k !== ' ') return;
+      if (e && e.repeat) return;
+      triggerSealNudge();
+    });
+
     applyPressFeedback(lexiconToggle);
 
     bindActivate(lexiconToggle, function (e) {
@@ -970,6 +1030,8 @@
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
         return;
       }
+
+      triggerSealPulse();
 
       if (panel.classList.contains('is-open')) {
         if (!isTopmostForDismiss()) {
@@ -1188,6 +1250,8 @@
 
     window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
 
+    var dragIntentPulsed = false;
+
     function isMobileSheet() {
       return isBottomSheetMode();
     }
@@ -1300,6 +1364,7 @@
 
       dragging = true;
       moved = false;
+      dragIntentPulsed = false;
       pointerId = e.pointerId;
 
       startY = e.clientY;
@@ -1327,6 +1392,11 @@
       if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
         moved = true;
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
+
+        if (!dragIntentPulsed) {
+          dragIntentPulsed = true;
+          triggerSealPulse();
+        }
       }
       if (!moved) return;
 
