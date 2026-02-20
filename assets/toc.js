@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.0 (Hold-to-enter: use staged entry as the confirm surface; remove header Enter button) */
+/*! Covenant ToC v3.3.1 (A11y cleanup: staged entry is the only confirm surface; legacy confirm button paths removed) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.0';
+  window.COVENANT_TOC_VERSION = '3.3.1';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -26,7 +26,6 @@
   var tocDynamicContent = document.getElementById('tocDynamicContent');
   var tocLiveRegion = document.getElementById('tocLiveRegion');
   var tocToast = document.getElementById('tocToast');
-  var tocConfirmBtn = document.getElementById('tocConfirm');
   var tocProducedTitleEl = document.getElementById('tocProducedTitle');
 
   var root = document.documentElement;
@@ -755,22 +754,6 @@
   // Pending selection
   // ---------------------------
 
-  function setConfirmVisible(isVisible) {
-    if (tocConfirmBtn) {
-      if (isVisible) {
-        tocConfirmBtn.hidden = false;
-        tocConfirmBtn.disabled = false;
-        tocConfirmBtn.setAttribute('aria-hidden', 'false');
-      } else {
-        tocConfirmBtn.disabled = true;
-        tocConfirmBtn.hidden = true;
-        tocConfirmBtn.setAttribute('aria-hidden', 'true');
-      }
-    }
-
-    if (tocPanel) tocPanel.classList.toggle('has-pending', !!isVisible);
-  }
-
   function clearPendingSelection() {
     pendingHref = '';
     pendingPageId = '';
@@ -794,8 +777,6 @@
     pendingItemEl = null;
     pendingHoldEl = null;
     pendingHoldTitleEl = null;
-
-    setConfirmVisible(false);
 
     if (currentPageId) {
       var currentTitle = '';
@@ -835,8 +816,6 @@
 
     if (pendingTitle) setProducedTitle(pendingTitle);
 
-    setConfirmVisible(true);
-
     // Make the staged entry itself the hold surface.
     if (pendingHoldEl) {
       pendingHoldEl.setAttribute('aria-label', 'Hold to enter selected page');
@@ -846,28 +825,14 @@
     if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
       pendingHoldTitleEl.style.setProperty('--toc-hold-p', '0');
     }
-
-    if (tocConfirmBtn) {
-      tocConfirmBtn.textContent = 'Hold to Enter';
-      tocConfirmBtn.setAttribute('aria-label', 'Hold to enter selected page');
-    }
   }
 
   // ---------------------------
   // Hold-to-enter
   // ---------------------------
 
-  function holdSurfaceEl() {
-    return tocConfirmBtn || pendingHoldEl;
-  }
-
   function setHoldProgress(p) {
     var clamped = Math.max(0, Math.min(1, p));
-
-    if (tocConfirmBtn) {
-      tocConfirmBtn.style.setProperty('--toc-hold-p', String(clamped));
-      return;
-    }
 
     if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
       pendingHoldTitleEl.style.setProperty('--toc-hold-p', String(clamped));
@@ -892,10 +857,6 @@
 
     holdStartedAt = 0;
     holdCompleted = false;
-
-    if (tocConfirmBtn && tocConfirmBtn.classList) {
-      tocConfirmBtn.classList.remove('is-holding');
-    }
 
     if (pendingHoldEl && pendingHoldEl.classList) {
       pendingHoldEl.classList.remove('is-holding');
@@ -922,10 +883,6 @@
   function shouldBeginHoldForEvent(e) {
     if (!e) return false;
 
-    if (tocConfirmBtn && e.target && (e.target === tocConfirmBtn || (tocConfirmBtn.contains && tocConfirmBtn.contains(e.target)))) {
-      return true;
-    }
-
     if (pendingHoldEl && e.target && (e.target === pendingHoldEl || (pendingHoldEl.contains && pendingHoldEl.contains(e.target)))) {
       return true;
     }
@@ -941,7 +898,7 @@
   function beginHold(e) {
     if (!pendingHref) return;
 
-    var surface = holdSurfaceEl();
+    var surface = pendingHoldEl;
     if (!surface || surface.disabled) return;
 
     if (!shouldBeginHoldForEvent(e)) return;
@@ -1013,7 +970,7 @@
 
     confirmNavigating = true;
 
-    var surface = holdSurfaceEl();
+    var surface = pendingHoldEl;
     if (surface) surface.disabled = true;
 
     cancelHold();
@@ -1843,26 +1800,6 @@
       tocToggle.addEventListener('click', function (e) {
         stopEvent(e);
         toggleToC();
-      });
-    }
-
-    if (tocConfirmBtn) {
-      tocConfirmBtn.addEventListener('pointerdown', beginHold);
-      tocConfirmBtn.addEventListener('pointerup', endHold);
-      tocConfirmBtn.addEventListener('pointercancel', endHold);
-      tocConfirmBtn.addEventListener('pointerleave', endHold);
-
-      tocConfirmBtn.addEventListener('keydown', function (e) {
-        if (!e) return;
-        if (e.key === ' ' || e.key === 'Enter') beginHold(e);
-      });
-      tocConfirmBtn.addEventListener('keyup', function (e) {
-        if (!e) return;
-        if (e.key === ' ' || e.key === 'Enter') endHold(e);
-      });
-
-      tocConfirmBtn.addEventListener('click', function (e) {
-        stopEvent(e);
       });
     }
 
