@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.60 (Pending: replace staged underline with lantern wash) */
+/*! Covenant ToC Panel Styles v3.1.61 (Pending: lantern wash tightened + node-biased glow) */
 
 /* -------------------------------------------------
    Variables
@@ -668,8 +668,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    ------------------------------------------------- */
 
 @keyframes tocLanternWash{
-  0%{opacity:.72}
-  100%{opacity:.94}
+  0%{opacity:.60}
+  100%{opacity:.82}
 }
 
 /* Wash lives on the whole button surface (behind text).
@@ -682,24 +682,35 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 .toc-item--pending .toc-item-btn::after{
   content:'';
   position:absolute;
-  top:-3px;
-  bottom:-3px;
-  left:1.25rem;
-  right:.25rem;
+  top:-2px;
+  bottom:-2px;
 
-  border-radius:10px;
+  /* Pull the wash closer to the left gutter so it reads as emanating from the red node. */
+  left:1.02rem;
+  right:.30rem;
+
+  /* Tighten edges so it feels "lit from within" rather than boxed. */
+  border-radius:8px;
 
   background:
-    radial-gradient(120% 220% at 22% 55%, rgba(201,169,97,.16) 0%, rgba(201,169,97,0) 62%),
-    radial-gradient(120% 240% at 78% 55%, rgba(139,0,0,.10) 0%, rgba(139,0,0,0) 66%),
-    linear-gradient(to right, rgba(255,255,255,.06) 0%, rgba(255,255,255,0) 70%);
+    /* Red ember near the node (left). */
+    radial-gradient(78% 190% at 0% 56%, rgba(139,0,0,.14) 0%, rgba(139,0,0,0) 60%),
+    /* Brass lantern core, still left-biased. */
+    radial-gradient(95% 220% at 10% 56%, rgba(201,169,97,.18) 0%, rgba(201,169,97,0) 64%),
+    /* Distant brass haze so the wash doesn't abruptly stop mid-line. */
+    radial-gradient(120% 260% at 68% 56%, rgba(201,169,97,.08) 0%, rgba(201,169,97,0) 70%),
+    /* Subtle top sheen that fades quickly (helps "within" feel). */
+    linear-gradient(to right, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 60%);
 
   box-shadow:
-    inset 0 0 0 1px rgba(139,0,0,.10),
-    inset 0 -14px 18px -20px rgba(0,0,0,.55);
+    /* Softer edge; avoid reading as a rectangle. */
+    inset 0 0 0 1px rgba(139,0,0,.07),
+    /* Micro-gutter warmth (a tiny left-sided catch). */
+    inset 12px 0 18px -22px rgba(139,0,0,.42),
+    /* Depth tint. */
+    inset 0 -14px 18px -26px rgba(0,0,0,.58);
 
-  opacity:.86;
-  animation:tocLanternWash 2600ms ease-in-out infinite alternate;
+  animation:tocLanternWash 3000ms ease-in-out infinite alternate;
 
   pointer-events:none;
   z-index:0;
