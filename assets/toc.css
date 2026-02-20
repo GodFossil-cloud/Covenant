@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.54 (Pending hold underline fill) */
+/*! Covenant ToC Panel Styles v3.1.55 (Pending hold underline fill: two-layer baseline + progress) */
 
 /* -------------------------------------------------
    Variables
@@ -326,7 +326,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--current .toc-entry-title{font-weight:600;color:#111}
 .toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
 
-.toc-item--pending .toc-entry-title{color:#111;text-decoration:underline;text-decoration-color:rgba(139,0,0,.46);text-decoration-thickness:1px;text-underline-offset:3px}
+/* Pending state underline is drawn via pseudo-elements below (baseline + progress fill). */
+.toc-item--pending .toc-entry-title{color:#111}
 
 .toc-locked-btn{color:rgba(120,120,120,.94);opacity:.80;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
@@ -693,12 +694,30 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    Pending hold underline fill
    ------------------------------------------------- */
 
-/* The staged (pending) entry keeps its red underline, but gains a brass "fill" that grows
-   left→right while the user holds it (JS updates --toc-hold-p from 0..1). */
+/* Two-layer indicator:
+   - baseline: faint full-width red underline (staging indicator, visible at rest)
+   - fill: brass bar that grows left→right while holding (JS updates --toc-hold-p from 0..1) */
 .toc-item--pending .toc-entry-title{
   position:relative;
   display:inline-block;
   max-width:100%;
+}
+
+.toc-item--pending .toc-entry-title::before{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+
+  /* Align to the hover underline offset (text-underline-offset: 3px). */
+  bottom:-3px;
+  height:1px;
+
+  background:rgba(139,0,0,.40);
+  border-radius:999px;
+
+  pointer-events:none;
+  opacity:1;
 }
 
 .toc-item--pending .toc-entry-title::after{
@@ -707,7 +726,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   left:0;
   right:0;
 
-  /* Align the fill close to the existing underline offset (text-underline-offset: 3px). */
+  /* Seat the fill on the same baseline. */
   bottom:-3px;
   height:2px;
 
