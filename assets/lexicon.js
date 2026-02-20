@@ -841,6 +841,10 @@
     return getCssVarNumber('--seal-seat-nudge-closed', 0);
   }
 
+  function getClosedPeek() {
+    return getCssVarNumber('--lexicon-panel-closed-peek', 0);
+  }
+
   function setSealDragOffset(px, draggingNow) {
     if (!lexiconToggle) return;
 
@@ -868,11 +872,14 @@
   function setSealToOpenPosition() {
     var h = getPanelHeightSafe();
     var f = getFooterHeightSafe();
+    var p = getClosedPeek();
     var n = getSeatNudge();
 
     var OPEN_DROP_PX = isIOS ? 1 : 0;
 
-    if (h > 0) setSealDragOffset(-(h - f) + n + OPEN_DROP_PX, false);
+    // Important: include closed peek so tap-open matches drag-open kinematics.
+    // Without the peek, the seal travels a shorter distance than the sheet.
+    if (h > 0) setSealDragOffset(-(h - (f + p)) + n + OPEN_DROP_PX, false);
   }
 
   function setSealToClosedPosition() {
