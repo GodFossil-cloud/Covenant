@@ -91,7 +91,6 @@ Core runtime files:
 Notes:
 - Note (ToC CSS): Keep all ToC-related styling (including any motion/mask fixes) inside `assets/toc.css`; do not split ToC fixes into extra stylesheets.
 - Note (ToC): The header connector strip is intentionally **persistent** (`.toc-panel-header::after`) and should not be gated behind `html.toc-*` motion classes.
-- Note (ToC deliberate confirm): The ToC uses staged selection + deliberate confirm; the confirm surface is the staged entry itself (hold-to-enter), not a separate header button.
 - Note (ToC dock tab): ToC tab rides with the ToC sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (Reliquary dock tab): Mirror tab rides with the Reliquary sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (ToC positioning): Avoid `Math.floor()` when computing the mobile sheet height from `visualViewport.height`; it can create a 1px top gap.
@@ -102,11 +101,12 @@ Notes:
 - Note (dock mask window): Dock-window mask choreography is removed in favor of **panel-only** motion. `dock-window` / `--dock-window-*` tokens should not exist in runtime CSS unless explicitly requested.
 - Note (mobile Safari): Reliquary notch is a real `clip-path` cutout; if a see-through seam appears during drag, prefer increasing `--reliquary-seat-overlap` on mobile rather than changing notch geometry.
 - Note (ui-stack / iOS Safari): Avoid DOM/state changes that reflow the footer during drag-open shells; Lexicon “locked” visuals should apply only when ToC/Reliquary are *committed open* to prevent a ~1px dock hop.
-- Note (ui-stack / iOS dock gesture guard): The iOS Safari dock-drag scroll/rubber-band guard is implemented inside `assets/ui-stack.js` (not as a separate asset file). Keep it iOS-only, non-invasive, and ensure panel bodies remain scrollable.
+- Note (iOS dock gesture guard): The iOS Safari dock-drag scroll/rubber-band guard is implemented inside `assets/ui-stack.js` (not as a separate asset file). Keep it iOS-only, non-invasive, and ensure panel bodies remain scrollable.
 - Note (iOS dock tabs): Avoid 1px `:active` press-jumps on `#tocToggle`/`#mirrorToggle`; it reads like the iOS Safari dock hop.
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
+- Note (ToC deliberate confirm): Prefer attaching “Hold to Enter” to the staged/pending ToC entry itself (underline/progress), not a dedicated header button.
 
 #### Dock-tab carry verification
 
@@ -221,7 +221,7 @@ Use this when making CSS/JS/include changes.
 - Confirm ToC header band visually blends with the ToC tab face.
 - Confirm ToC sheet reaches the top cleanly on mobile (no 1px gap).
 - Select an unlocked entry; confirm it stages.
-- Hold the staged entry to enter; release early cancels.
+- Hold confirm to enter; release early cancels.
 - Confirm Hold-to-Enter closes panels before navigation.
 - ESC closes and focus returns to the ToC control.
 - Tab/Shift+Tab keep focus trapped in the panel.
