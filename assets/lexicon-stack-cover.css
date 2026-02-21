@@ -6,18 +6,11 @@
    Goal:
    - When covered, the seal should *retract back into the dock* (not vanish in-place).
 
-   Why iPhone Safari was instant:
-   - In bottom-sheet mode, the seal's position is driven by a transform calc using
-     `--seal-drag-y` (set inline by lexicon.js, often as a -100vh/+footer offset expression).
-   - Animating `top` won't show.
-   - If we push the seal further upward (negative), it can disappear immediately because
-     it's already far above its dock seat while Lexicon is open.
-
-   Strategy:
-   - Keep using the existing transform pipeline.
-   - When covered in the footer, apply a cover offset that *cancels the open lift*
-     expression used by lexicon.js, bringing the seal back to its closed seat (~0px).
-   - Fade via opacity.
+   iPhone Safari notes:
+   - In bottom-sheet mode, the seal position is driven by a transform calc using
+     `--seal-drag-y` (set inline by lexicon.js).
+   - If we fade to 0 immediately, the retract motion becomes imperceptible.
+     So we intentionally delay opacity slightly on cover so the down-travel reads.
 */
 
 :root{
@@ -29,6 +22,9 @@
 
   /* Non-footer fallback motion when covered (desktop/header re-parent case). */
   --lexicon-cover-fallback-y:-22px;
+
+  /* Let the retract be seen before we fade out. */
+  --lexicon-cover-opacity-delay:130ms;
 }
 
 @supports (height: 100dvh){
@@ -71,6 +67,9 @@ html body #lexiconToggle.is-ui-stack-covered{
 html body #lexiconToggle.is-ui-stack-covered{
   --lexicon-stack-cover-y:var(--lexicon-cover-fallback-y);
 
+  /* Delay opacity on cover so the motion reads before the fade. */
+  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
+
   -webkit-transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
   transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
 }
@@ -98,6 +97,9 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered{
     transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
     opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
     !important;
+
+  /* Let the retract be seen before we fade away. */
+  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
 
   -webkit-transform:translate3d(
     0,
