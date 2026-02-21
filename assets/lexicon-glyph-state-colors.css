@@ -1,7 +1,7 @@
 /* Lexicon glyph state colors (Palette B)
 
    Goals:
-   - Fully open (panel open): glyph becomes a distinct "moon-ink" tone.
+   - Fully open (panel open): glyph becomes a distinct deep red tone.
    - Passage selected (while closed): glyph becomes antique leaf.
    - Passage selected + fully open: glyph becomes a distinct "aqua-sigil" tone.
 
@@ -12,7 +12,7 @@
 */
 
 :root{
-  --lexicon-glyph-open-color-b: #D6E6FF;   /* moon-ink */
+  --lexicon-glyph-open-color-b: #8C1D18;   /* deep ember (open) */
   --lexicon-glyph-selected-color-b: #F2DC9A; /* antique leaf */
   --lexicon-glyph-selected-open-color-b: #6EE7FF; /* aqua-sigil */
 }
