@@ -1,0 +1,22 @@
+/* Lexicon glyph: fully-open must be quiet (no halo, no aura, no glow).
+
+   Purpose:
+   - When the panel is fully opened (scroll-lock truth), the glyph should read carved/embedded.
+   - Some interaction states can reintroduce text-shadow; we hard-kill it here.
+
+   Scope:
+   - Only applies when html.lexicon-scroll-lock is present (panel fully open).
+*/
+
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+/* Also silence any tap aura/pulse layers while fully open. */
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
+}
