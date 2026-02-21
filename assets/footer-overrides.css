@@ -122,18 +122,36 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   text-shadow:var(--lexicon-glyph-open-shadow);
 }
 
+/* Fully OPEN (scroll-lock): no glow anywhere on the control (button-level + glyph-level).
+   NOTE: do not depend on aria-expanded here; scroll-lock is our truth that the panel is fully open. */
+html.lexicon-scroll-lock #navFooter #lexiconToggle,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:hover,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus-visible{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
 /* Fully OPEN (scroll-lock): keep gold but remove the halo so it "embeds" into the seal.
    Also hard-kill any lingering filter-based glow so the open state stays carved/quiet. */
-html.lexicon-scroll-lock #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
-html.lexicon-scroll-lock #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner{
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-color);
   text-shadow:var(--lexicon-glyph-open-embedded-shadow);
   filter:none !important;
 }
 
-html.lexicon-scroll-lock #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph::before{opacity:0 !important}
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph::before{opacity:0 !important}
 
 /* Fully OPEN + selection: leaf inlay (distinct, but still embedded; no glow). */
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection .lexicon-glyph-mid-inner{
+  color:var(--lexicon-glyph-open-inlay-color);
+  text-shadow:var(--lexicon-glyph-open-inlay-shadow);
+  filter:none !important;
+}
+
+/* Fully OPEN + selection (fallback specificity if aria-expanded remains true): leaf inlay (distinct, but still embedded; no glow). */
 html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="true"] .lexicon-glyph,
 html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="true"] .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-inlay-color);
