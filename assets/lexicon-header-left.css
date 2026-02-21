@@ -42,3 +42,13 @@
     gap:8px !important;
   }
 }
+
+/* Clamp the selected-passage quote box so it aligns with the Lexicon body text edges. */
+.lexicon-panel-body .lexicon-sentence-quote{
+  box-sizing:border-box !important;
+  inline-size:100% !important;
+  max-inline-size:100% !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  overflow-wrap:anywhere;
+}
