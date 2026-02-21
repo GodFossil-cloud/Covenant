@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.15 */
+/*! Covenant UI Stack v0.3.16 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.15';
+  window.COVENANT_UI_STACK_VERSION = '0.3.16';
 
   var registry = Object.create(null);
   var order = [];
@@ -1088,13 +1088,20 @@
     try {
       var tocToggle = document.getElementById('tocToggle');
       var mirrorToggle = document.getElementById('mirrorToggle');
+      var lexiconToggle = document.getElementById('lexiconToggle');
 
       var tocOpen = isPanelOpenByDomId('tocPanel');
       var relOpen = isPanelOpenByDomId('reliquaryPanel');
+      var lexOpen = isPanelOpenByDomId('lexiconPanel');
+
       var bothOpen = !!(tocOpen && relOpen);
 
       var coverToc = bothOpen && (topId === 'reliquary');
       var coverMirror = bothOpen && (topId === 'toc');
+
+      // If Lexicon is open but a side panel is topmost, "cover" the seal so it retracts
+      // back into the dock (prevents the lifted seal from overlaying the topmost panel).
+      var coverLexiconSeal = !!(lexOpen && (topId === 'toc' || topId === 'reliquary'));
 
       if (tocToggle && tocToggle.classList) {
         tocToggle.classList.toggle('is-ui-stack-covered', !!coverToc);
@@ -1106,6 +1113,10 @@
         mirrorToggle.classList.toggle('is-ui-stack-covered', !!coverMirror);
         if (coverMirror) mirrorToggle.setAttribute('aria-hidden', 'true');
         else mirrorToggle.removeAttribute('aria-hidden');
+      }
+
+      if (lexiconToggle && lexiconToggle.classList) {
+        lexiconToggle.classList.toggle('is-ui-stack-covered', !!coverLexiconSeal);
       }
     } catch (errTabs) {}
   }

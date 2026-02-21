@@ -1,0 +1,29 @@
+/* Lexicon seal cover/retract rules (dock remains sovereign).
+
+   Problem:
+   - When Lexicon is fully open, the seal is lifted upward via --seal-drag-y.
+   - If ToC/Reliquary becomes topmost, the dock still sits above panels by design,
+     so the lifted seal can visually overlay the topmost panel.
+
+   Solution:
+   - ui-stack.js applies .is-ui-stack-covered to #lexiconToggle when a side panel is topmost.
+   - We retract the seal back into the dock and restore its closed-seat surface.
+*/
+
+#navFooter #lexiconToggle.is-ui-stack-covered{
+  /* Override lexicon.js inline --seal-drag-y (non-important) so the seal cannot remain lifted. */
+  --seal-drag-y:0px !important;
+}
+
+/* When covered, the seal should look like a seated seal (not a frameless welded glyph). */
+#navFooter #lexiconToggle.is-ui-stack-covered::after{
+  background-color:var(--lexicon-seal-face, #08090b) !important;
+  background-image:none !important;
+}
+
+#navFooter #lexiconToggle.is-ui-stack-covered::before{
+  border:1px solid rgba(0,0,0,0.72) !important;
+  box-shadow:
+    inset 0 0 18px rgba(0,0,0,0.86),
+    inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
