@@ -4,26 +4,29 @@
    but ToC/Reliquary is topmost. [See assets/ui-stack.js]
 
    Goal:
-   - When covered, the seal should *retract back into the dock* (not vanish in-place).
+   - When covered, the seal should move away (so it can’t visually cut through the topmost veil).
 
    iPhone Safari notes:
    - In bottom-sheet mode, the seal position is driven by a transform calc using
      `--seal-drag-y` (set inline by lexicon.js).
-   - If we fade to 0 immediately, the retract motion becomes imperceptible.
-     So we intentionally delay opacity slightly on cover so the down-travel reads.
+   - If we fade to 0 immediately, the motion becomes imperceptible.
+     So we intentionally delay opacity slightly on cover so the travel reads.
 */
 
 :root{
   --lexicon-cover-fade-ms:220ms;
   --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  /* Viewport unit token used for the cover-cancel math. */
+  /* Viewport unit token used (only if needed). */
   --lexicon-cover-vh:100vh;
 
   /* Non-footer fallback motion when covered (desktop/header re-parent case). */
   --lexicon-cover-fallback-y:-22px;
 
-  /* Let the retract be seen before we fade out. */
+  /* Footer covered motion target: slide just out of the top frame. */
+  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 54px));
+
+  /* Let the travel be seen before we fade out. */
   --lexicon-cover-opacity-delay:130ms;
 }
 
@@ -74,22 +77,13 @@ html body #lexiconToggle.is-ui-stack-covered{
   transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
 }
 
-/* Footer case: preserve the existing drag math from assets/footer-overrides.css and
-   add the cover offset into the same translate3d() calc.
+/* Footer case (mobile): keep the existing drag math from assets/footer-overrides.css and
+   add a *small extra upward offset* so the seal slides just out of the top of the viewport.
 
-   Critical: when Lexicon is open on mobile, lexicon.js sets:
-     --seal-drag-y = calc(-100vh + (footer + peek) + seat + 1px)
-   So to retract back into the dock we add its inverse:
-     cover = calc( 100vh - (footer + peek) - seat - 1px )
-   Net ≈ 0px (closed seat), which can visibly animate.
+   This avoids the prior “retract back into dock” behavior.
 */
 html body #navFooter #lexiconToggle.is-ui-stack-covered{
-  --lexicon-stack-cover-y:calc(
-    var(--lexicon-cover-vh)
-    - (var(--footer-total-height) + var(--lexicon-panel-closed-peek))
-    - var(--seal-seat-nudge)
-    - 1px
-  );
+  --lexicon-stack-cover-y:var(--lexicon-cover-out-y);
 
   /* Ensure the transition is defined at the same specificity that owns the transform.
      (Beats any mobile-only transition overrides.) */
@@ -98,7 +92,7 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered{
     opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
     !important;
 
-  /* Let the retract be seen before we fade away. */
+  /* Let the travel be seen before we fade away. */
   transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
 
   -webkit-transform:translate3d(
