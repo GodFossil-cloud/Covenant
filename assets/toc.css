@@ -775,6 +775,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    ------------------------------------------------- */
 
 :root{
+  --toc-glyph-rest-color:rgba(212,226,246,0.72);
+
   --toc-glyph-intent-color:rgba(245,248,255,0.94);
   --toc-glyph-intent-shadow:
     0 1px 0 rgba(0,0,0,0.92),
@@ -795,6 +797,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   position:relative;
   display:inline-block;
   z-index:0;
+
+  color:var(--toc-glyph-rest-color, rgba(212,226,246,0.72));
 
   text-shadow:
     0 1px 0 rgba(0,0,0,0.92);

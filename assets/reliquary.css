@@ -251,6 +251,8 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 
 :root{
   /* “Between” violet and red: a wine-magenta glow. */
+  --mirror-glyph-rest-color:rgba(230,172,182,0.72);
+
   --mirror-glyph-intent-color:rgba(255,214,220,0.94);
   --mirror-glyph-intent-shadow:
     0 1px 0 rgba(0,0,0,0.92),
@@ -271,6 +273,8 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   position:relative;
   display:inline-block;
   z-index:0;
+
+  color:var(--mirror-glyph-rest-color, rgba(230,172,182,0.72));
 
   text-shadow:
     0 1px 0 rgba(0,0,0,0.92);
