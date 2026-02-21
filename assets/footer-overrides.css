@@ -40,6 +40,14 @@
     0 1px 0 rgba(0,0,0,0.92),
     0 -1px 0 rgba(255,255,255,0.08);
 
+  /* Selected + CLOSED: increase distinction without turning the *open* state radiant.
+     This adds a controlled, faint halo (small blur) around the inlay so it reads "chosen" at a glance. */
+  --lexicon-glyph-selected-quiet-halo-shadow:
+    0 1px 0 rgba(0,0,0,0.92),
+    0 -1px 0 rgba(255,255,255,0.10),
+    0 0 10px rgba(242,220,154,0.20),
+    0 0 18px rgba(242,220,154,0.10);
+
   /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
      (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
   --lexicon-glyph-tap-aura-size:3.7em;
@@ -643,11 +651,12 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 /* Selected seal: do not let the button itself glow; highlight lives on the glyph. */
 #navFooter #lexiconToggle.has-selection{ text-shadow:none !important; }
 
-/* Selected + CLOSED: leaf inlay (quiet), no halo (until interaction). */
+/* Selected + CLOSED: leaf inlay with a controlled quiet halo.
+   (Open state remains governed by the "fully open must be quiet" rules.) */
 #navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]) .lexicon-glyph,
 #navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-inlay-color) !important;
-  text-shadow:var(--lexicon-glyph-open-inlay-shadow) !important;
+  text-shadow:var(--lexicon-glyph-selected-quiet-halo-shadow) !important;
   filter:none !important;
 }
 
@@ -719,4 +728,3 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
   background-color: transparent !important;
   background-image: none !important;
 }
-
