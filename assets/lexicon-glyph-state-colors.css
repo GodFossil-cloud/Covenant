@@ -1,0 +1,35 @@
+/* Lexicon glyph state colors (Palette B)
+
+   Goals:
+   - Fully open (panel fully opened): glyph becomes a distinct "moon-ink" tone.
+   - Passage selected (while closed): glyph becomes antique leaf.
+   - Passage selected + fully open: glyph becomes a distinct "aqua-sigil" tone.
+
+   Notes:
+   - This file changes only `color` (no glow). Glow suppression is handled elsewhere.
+   - Excludes locked/disabled state so locked press/pulse can still go black.
+*/
+
+:root{
+  --lexicon-glyph-open-color-b: #D6E6FF;   /* moon-ink */
+  --lexicon-glyph-selected-color-b: #F2DC9A; /* antique leaf */
+  --lexicon-glyph-selected-open-color-b: #6EE7FF; /* aqua-sigil */
+}
+
+/* Fully open, no selection */
+html.lexicon-scroll-lock #navFooter #lexiconToggle:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
+  color: var(--lexicon-glyph-open-color-b) !important;
+}
+
+/* Selected, panel closed */
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
+  color: var(--lexicon-glyph-selected-color-b) !important;
+}
+
+/* Selected + fully open */
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
+  color: var(--lexicon-glyph-selected-open-color-b) !important;
+}
