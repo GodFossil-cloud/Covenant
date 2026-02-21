@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.70 (Tabs +2px only; sockets unchanged) */
+/*! Covenant ToC Panel Styles v3.1.71 (Tabs +3px only; sockets unchanged) */
 
 /* -------------------------------------------------
    Variables
@@ -36,7 +36,7 @@
   /* Socket geometry should follow the ORIGINAL dock-tab width.
      Visual tab width can overhang by a hair without changing the cradle cutouts. */
   --dock-tab-width:calc(var(--toc-tab-width) - 4px);
-  --dock-tab-width-visual:calc(var(--dock-tab-width) + 2px);
+  --dock-tab-width-visual:calc(var(--dock-tab-width) + 3px);
 
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
 
