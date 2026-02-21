@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.10 (Dock glyph: glow only during motion/drag) */
+/*! Covenant Reliquary Panel Styles v0.3.11 (Dock glyph: smoother glow fades) */
 
 /* -------------------------------------------------
    Variables
@@ -280,8 +280,8 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
     0 1px 0 rgba(0,0,0,0.92);
 
   transition:
-    color 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    text-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    color 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    text-shadow 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 #navFooter #mirrorToggle .toc-glyph::before{
@@ -299,8 +299,8 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   z-index:-1;
 
   transition:
-    opacity 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* Glow only during motion/drag (not while fully open). */
@@ -318,20 +318,4 @@ html.reliquary-dragging #navFooter #mirrorToggle .toc-glyph::before,
 #navFooter #mirrorToggle.is-reliquary-dragging .toc-glyph::before{
   opacity:1;
   transform:translate(-50%, -50%) scale(1.03);
-}
-
-@keyframes mirrorGlyphAuraPulse{
-  0%{opacity:0;transform:translate(-50%, -50%) scale(0.55)}
-  16%{opacity:1;transform:translate(-50%, -50%) scale(1.02)}
-  58%{opacity:0.62;transform:translate(-50%, -50%) scale(1.07)}
-  100%{opacity:0;transform:translate(-50%, -50%) scale(1.10)}
-}
-
-/* Tap-open/tap-close pulse keyed off the motion shells. */
-html.reliquary-opening #navFooter #mirrorToggle .toc-glyph::before,
-html.reliquary-closing #navFooter #mirrorToggle .toc-glyph::before{animation:mirrorGlyphAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1}
-
-@media (prefers-reduced-motion: reduce){
-  html.reliquary-opening #navFooter #mirrorToggle .toc-glyph::before,
-  html.reliquary-closing #navFooter #mirrorToggle .toc-glyph::before{animation:none}
 }

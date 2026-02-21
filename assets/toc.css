@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.65 (Dock glyph: glow only during motion/drag) */
+/*! Covenant ToC Panel Styles v3.1.66 (Dock glyph: smoother glow fades) */
 
 /* -------------------------------------------------
    Variables
@@ -804,8 +804,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
     0 1px 0 rgba(0,0,0,0.92);
 
   transition:
-    color 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    text-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    color 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    text-shadow 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 #navFooter #tocToggle .toc-glyph::before{
@@ -823,8 +823,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   z-index:-1;
 
   transition:
-    opacity 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* Glow only during motion/drag (not while fully open). */
@@ -840,20 +840,4 @@ html.toc-closing #navFooter #tocToggle .toc-glyph::before,
 #navFooter #tocToggle.is-toc-dragging .toc-glyph::before{
   opacity:1;
   transform:translate(-50%, -50%) scale(1.03);
-}
-
-@keyframes tocGlyphAuraPulse{
-  0%{opacity:0;transform:translate(-50%, -50%) scale(0.55)}
-  16%{opacity:1;transform:translate(-50%, -50%) scale(1.02)}
-  58%{opacity:0.62;transform:translate(-50%, -50%) scale(1.07)}
-  100%{opacity:0;transform:translate(-50%, -50%) scale(1.10)}
-}
-
-/* Tap-open/tap-close pulse keyed off the motion shells. */
-html.toc-opening #navFooter #tocToggle .toc-glyph::before,
-html.toc-closing #navFooter #tocToggle .toc-glyph::before{animation:tocGlyphAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1}
-
-@media (prefers-reduced-motion: reduce){
-  html.toc-opening #navFooter #tocToggle .toc-glyph::before,
-  html.toc-closing #navFooter #tocToggle .toc-glyph::before{animation:none}
 }
