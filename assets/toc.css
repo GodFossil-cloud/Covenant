@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.69 (Dock tabs +2px width) */
+/*! Covenant ToC Panel Styles v3.1.70 (Tabs +2px only; sockets unchanged) */
 
 /* -------------------------------------------------
    Variables
@@ -28,13 +28,16 @@
   --toc-item-line:1.55;
 
   /* Footer tabs (ToC + Mirror) live beside the Lexicon seal, but do not use the Lexicon "center" medallion styling. */
-  --toc-tab-width:calc(var(--nav-pill-width,56px) + 6px);
+  --toc-tab-width:calc(var(--nav-pill-width,56px) + 4px);
   --toc-tab-height:var(--nav-pill-height,40px);
   --toc-tab-radius:4px;
   --toc-tab-gap:15px;
 
-  /* Slightly smaller face for the ToC + Mirror tabs (keep the cluster columns constant for symmetry). */
+  /* Socket geometry should follow the ORIGINAL dock-tab width.
+     Visual tab width can overhang by a hair without changing the cradle cutouts. */
   --dock-tab-width:calc(var(--toc-tab-width) - 4px);
+  --dock-tab-width-visual:calc(var(--dock-tab-width) + 2px);
+
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
 
   /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
@@ -72,7 +75,7 @@
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 
   /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
-  --dock-cap-size:var(--dock-tab-width);
+  --dock-cap-size:var(--dock-tab-width-visual);
   --dock-cap-h:calc(var(--dock-cap-size) / 2);
   --dock-cap-lift:10px;
   --dock-cap-half:calc(var(--dock-cap-h) / 2);
@@ -414,7 +417,7 @@ html.reliquary-dragging .nav-seals::after{--dock-socket-glow:var(--dock-socket-g
 html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{
   position:relative;
-  width:var(--dock-tab-width);
+  width:var(--dock-tab-width-visual);
   height:var(--dock-tab-height);
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
   padding:0;
@@ -630,7 +633,7 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-socket-spread:5px;
     --dock-socket-y-nudge:-6px;
     --toc-tab-gap:14px;
-    --dock-cap-size:var(--dock-tab-width);
+    --dock-cap-size:var(--dock-tab-width-visual);
     --dock-cap-lift:9px;
 
     --dock-socket-d:calc(var(--dock-tab-width) + 2px);
