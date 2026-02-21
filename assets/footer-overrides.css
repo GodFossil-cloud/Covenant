@@ -712,3 +712,11 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
   background-color:transparent !important;
   background-image:none !important;
 }
+
+/* Weld during drag (open OR close) */
+#navFooter #lexiconToggle.is-seal-dragging::after,
+#navFooter #lexiconToggle.has-selection.is-seal-dragging::after{
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
