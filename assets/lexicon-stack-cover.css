@@ -23,6 +23,11 @@
    - Do NOT animate transform here: the dock seal already uses transform for drag math
      (lexicon.js drives --seal-drag-y, and footer-overrides.css applies translate3d).
    - Animate `top` instead; relative positioning composes cleanly with the existing transform.
+
+   Mobile Safari gotcha:
+   - assets/covenant.css sets a max-width:600px rule for #lexiconToggle that overwrites
+     `transition` (it only animates transform + color/text/filter).
+   - Therefore, we set our transition list with !important so top/opacity animate reliably.
 */
 
 :root{
@@ -38,11 +43,26 @@
   opacity:1;
   visibility:visible;
 
+  /* Default: visibility changes apply immediately unless the covered state sets a delay. */
+  --lexicon-cover-visibility-delay:0s;
+
   will-change:top, opacity;
 
+  /* IMPORTANT: beat the max-width:600px #lexiconToggle transition in assets/covenant.css. */
   transition:
+    /* Preserve existing interactive feel. */
+    color 0.2s ease,
+    text-shadow 0.2s ease,
+    filter 0.2s ease,
+    transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+
+    /* Cover motion. */
     top var(--lexicon-cover-slide-ms) var(--lexicon-cover-ease),
-    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease);
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease),
+
+    /* Hide after the slide completes (delay set by covered state). */
+    visibility 0s linear var(--lexicon-cover-visibility-delay)
+    !important;
 }
 
 /* Covered: move it fully out of the viewport so it cannot show through translucent veils. */
@@ -56,12 +76,9 @@
 
   pointer-events:none !important;
 
-  /* After motion completes, remove from paint/hit-testing entirely. */
+  /* Delay the visibility flip until the slide completes. */
+  --lexicon-cover-visibility-delay:var(--lexicon-cover-slide-ms);
   visibility:hidden !important;
-  transition:
-    top var(--lexicon-cover-slide-ms) var(--lexicon-cover-ease),
-    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease),
-    visibility 0s linear var(--lexicon-cover-slide-ms);
 
   /* Avoid any accidental compositing artifacts. */
   filter:none !important;
@@ -69,6 +86,7 @@
 
 /* Uncovered: ensure visibility is immediate so it can slide back in. */
 #lexiconToggle:not(.is-ui-stack-covered){
+  --lexicon-cover-visibility-delay:0s;
   visibility:visible !important;
 }
 
