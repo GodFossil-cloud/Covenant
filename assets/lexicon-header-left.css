@@ -1,0 +1,33 @@
+/* Lexicon header text alignment
+   Purpose: make Lexicon panel title + subtitle read from the left edge (not centered between seal slot and close button).
+
+   Markup: _includes/lexicon-panel.html
+   - .lexicon-panel-header
+   - #lexiconSealSlot (may be empty on mobile; populated on desktop/tablet while open)
+   - #lexiconHeaderText (title + mode)
+   - .lexicon-panel-close
+*/
+
+/* Make the header a left-flow row; keep the close button pinned right. */
+.lexicon-panel-header{
+  justify-content:flex-start;
+  gap:12px;
+}
+
+/* Pin the close button to the far right without forcing the title block to center. */
+.lexicon-panel-close{
+  margin-left:auto;
+}
+
+/* Ensure the title stack itself is left-aligned. */
+#lexiconHeaderText{
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+#lexiconHeaderText .lexicon-panel-title,
+#lexiconHeaderText .lexicon-panel-mode{
+  text-align:left;
+}
