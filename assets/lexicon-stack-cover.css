@@ -14,37 +14,71 @@
    - ToC/Reliquary overlays are intentionally translucent.
      If the seal is merely "behind" them, it can still be visible through the veil.
 
-   Fix:
-   - When covered, fade the seal out, then set visibility:hidden so it cannot read through veils.
-   - When uncovered, restore visibility immediately and fade back in.
+   Behavior:
+   - When covered, the seal slides upward out of the viewport (and fades), then flips to
+     visibility:hidden so it cannot read through veils at rest.
+   - When uncovered, visibility returns immediately and the seal slides back into place.
+
+   Implementation note:
+   - Do NOT animate transform here: the dock seal already uses transform for drag math
+     (lexicon.js drives --seal-drag-y, and footer-overrides.css applies translate3d).
+   - Animate `top` instead; relative positioning composes cleanly with the existing transform.
 */
 
-/* Base: enable a gentle fade without affecting the seal’s existing transform/filters. */
-#lexiconToggle{
-  transition: opacity 180ms ease;
-  will-change: opacity;
+:root{
+  --lexicon-cover-slide-ms:260ms;
+  --lexicon-cover-fade-ms:220ms;
+  --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Covered: lower z-index as a backstop, fade out, then flip visibility after the fade. */
+/* Base: enable motion (safe both in dock and when re-parented into the Lexicon header). */
+#lexiconToggle{
+  position:relative;
+  top:0;
+  opacity:1;
+  visibility:visible;
+
+  will-change:top, opacity;
+
+  transition:
+    top var(--lexicon-cover-slide-ms) var(--lexicon-cover-ease),
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease);
+}
+
+/* Covered: move it fully out of the viewport so it cannot show through translucent veils. */
 #lexiconToggle.is-ui-stack-covered{
   /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
-  position: relative;
-  z-index: 1490 !important;
+  z-index:1490 !important;
 
-  opacity: 0 !important;
-  pointer-events: none !important;
+  /* Slide away + fade. */
+  top:calc(-120vh) !important;
+  opacity:0 !important;
 
-  /* After the fade completes, remove from paint/AT hit-testing. */
-  visibility: hidden !important;
+  pointer-events:none !important;
+
+  /* After motion completes, remove from paint/hit-testing entirely. */
+  visibility:hidden !important;
   transition:
-    opacity 180ms ease,
-    visibility 0s linear 180ms;
+    top var(--lexicon-cover-slide-ms) var(--lexicon-cover-ease),
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease),
+    visibility 0s linear var(--lexicon-cover-slide-ms);
 
   /* Avoid any accidental compositing artifacts. */
-  filter: none !important;
+  filter:none !important;
 }
 
-/* Uncovered: make it visible immediately so opacity can fade back up. */
+/* Uncovered: ensure visibility is immediate so it can slide back in. */
 #lexiconToggle:not(.is-ui-stack-covered){
-  visibility: visible;
+  visibility:visible !important;
+}
+
+@media (prefers-reduced-motion: reduce){
+  #lexiconToggle{
+    transition:none !important;
+  }
+  #lexiconToggle.is-ui-stack-covered{
+    top:0 !important;
+    opacity:0 !important;
+    visibility:hidden !important;
+  }
 }
