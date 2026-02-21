@@ -1,25 +1,30 @@
-/* Lexicon seal cover rules (dock remains sovereign).
+/* Lexicon seal cover rules (z-layer fix).
 
-   Intent:
-   - Do NOT retract or move the seal when ToC/Reliquary is topmost.
-   - Instead, make the seal read as "behind" (dimmed) while another panel is on top.
+   Problem:
+   - UI stack surfaces (ToC/Reliquary/Lexicon panels + scrims) are assigned z-indexes by
+     assets/ui-stack.js starting at Z_BASE=1500 (step 10).
+   - The footer dock is sovereign and typically sits above those surfaces.
+   - When Lexicon is open, the Lexicon seal (footer toggle) can be lifted upward into the
+     Lexicon header region; if ToC/Reliquary becomes topmost, that lifted seal must not
+     remain above the topmost panel.
 
    Mechanism:
    - ui-stack.js toggles .is-ui-stack-covered on #lexiconToggle when Lexicon is open
      and the topmost surface is ToC or Reliquary.
+
+   Fix:
+   - Lower ONLY the Lexicon seal's z-index below the UI stack base while covered.
+   - Do not retract, move, or visually restyle the seal; this is purely layering.
 */
 
 #navFooter #lexiconToggle.is-ui-stack-covered{
-  /* Dim the entire control (including pseudo-elements) without altering its position. */
-  opacity: 0.22;
-  filter: saturate(0.7) brightness(0.7);
-}
+  /* Ensure z-index applies. */
+  position: relative;
 
-/* Suppress any intent/halo effects while "covered" so it doesn't call attention on top. */
-#navFooter #lexiconToggle.is-ui-stack-covered.is-pulsing,
-#navFooter #lexiconToggle.is-ui-stack-covered.is-nudging,
-#navFooter #lexiconToggle.is-ui-stack-covered.is-tap-opening,
-#navFooter #lexiconToggle.is-ui-stack-covered.is-tap-closing{
-  filter: saturate(0.7) brightness(0.7) !important;
-  box-shadow: none !important;
+  /* Keep below ui-stack surfaces (Z_BASE=1500). */
+  z-index: 1490 !important;
+
+  /* No dimming: if it is below, it will be covered by the top panel naturally. */
+  opacity: 1;
+  filter: none;
 }
