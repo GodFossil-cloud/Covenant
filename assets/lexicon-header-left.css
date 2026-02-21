@@ -65,6 +65,12 @@
   /* Match paragraph text right edge (12px body padding-right + 20px paragraph padding-right). */
   margin-right:20px !important;
 
+  /* Deep opaque red backdrop for selected passage quote. */
+  background:#3b0c10 !important;
+
+  /* Slightly brighter text for contrast on deep red. */
+  color:#d0c0c0 !important;
+
   overflow-wrap:anywhere;
   word-break:break-word;
 }
