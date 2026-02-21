@@ -1,36 +1,38 @@
-/* Lexicon seal cover rules (ui-stack + translucency fix).
+/* Lexicon seal cover rules (ui-stack + iPhone Safari fix).
 
-   Context:
-   - assets/ui-stack.js assigns z-index to modal surfaces starting at Z_BASE=1500.
-   - When Lexicon is open and another surface (ToC/Reliquary) becomes topmost, ui-stack.js
-     toggles `.is-ui-stack-covered` on #lexiconToggle.
+   ui-stack.js toggles `.is-ui-stack-covered` on #lexiconToggle when Lexicon is open
+   but ToC/Reliquary is topmost. [See assets/ui-stack.js]
 
-   Problem (iPhone Safari):
-   - The seal's visible position is primarily driven by transform (footer-overrides.css:
-     translate3d(... var(--seal-drag-y) ... ) !important).
-   - On mobile, assets/covenant.css also overwrites #lexiconToggle's transition list so
-     transform is the only reliable animated channel.
-   - Therefore, animating `top` can appear to do nothing, and hiding can read as instant.
+   Goal:
+   - When covered, the seal should *retract back into the dock* (not vanish in-place).
+
+   Why iPhone Safari was instant:
+   - In bottom-sheet mode, the seal's position is driven by a transform calc using
+     `--seal-drag-y` (set inline by lexicon.js, often as a -100vh/+footer offset expression).
+   - Animating `top` won't show.
+   - If we push the seal further upward (negative), it can disappear immediately because
+     it's already far above its dock seat while Lexicon is open.
 
    Strategy:
-   - Inject cover motion into the existing transform pipeline by adding a dedicated cover
-     offset variable (--lexicon-stack-cover-y) into the translate3d() calc.
-   - Fade via opacity (also included in our transition list via !important).
-   - Avoid visibility/display changes in the animated path.
-
-   Important:
-   - The seal may be re-parented into the Lexicon panel header while the panel is open,
-     so these rules must not depend on #navFooter ancestry.
-   - However, when the seal *is* inside #navFooter, we must preserve drag math.
+   - Keep using the existing transform pipeline.
+   - When covered in the footer, apply a cover offset that *cancels the open lift*
+     expression used by lexicon.js, bringing the seal back to its closed seat (~0px).
+   - Fade via opacity.
 */
 
 :root{
-  --lexicon-cover-slide-ms:260ms;
   --lexicon-cover-fade-ms:220ms;
   --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  /* How far to retract the seal when covered. */
-  --lexicon-cover-retract-y:-120vh;
+  /* Viewport unit token used for the cover-cancel math. */
+  --lexicon-cover-vh:100vh;
+
+  /* Non-footer fallback motion when covered (desktop/header re-parent case). */
+  --lexicon-cover-fallback-y:-22px;
+}
+
+@supports (height: 100dvh){
+  :root{ --lexicon-cover-vh:100dvh; }
 }
 
 /* Base: keep a cover offset var we can animate via transform. */
@@ -42,12 +44,11 @@ html body #lexiconToggle{
 
   /* IMPORTANT: beat the max-width:600px #lexiconToggle transition in assets/covenant.css. */
   transition:
-    /* Preserve existing interactive feel. */
     color 0.2s ease,
     text-shadow 0.2s ease,
     filter 0.2s ease,
 
-    /* The seal's motion channel (drag/snap + cover). */
+    /* Seal motion channel (drag/snap + cover). */
     transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
 
     /* Cover fade. */
@@ -55,30 +56,49 @@ html body #lexiconToggle{
     !important;
 }
 
-/* Covered: retract upward (via the transform pipeline) + fade. */
+/* Covered: fade, disable interaction. */
 html body #lexiconToggle.is-ui-stack-covered{
   /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
   z-index:1490 !important;
 
-  --lexicon-stack-cover-y:var(--lexicon-cover-retract-y);
   opacity:0 !important;
-
   pointer-events:none !important;
-
-  /* Avoid any accidental compositing artifacts. */
   filter:none !important;
 }
 
-/* Default cover transform (for the re-parented / non-footer case).
-   We only force a transform when covered, to minimize interference with lexicon.js drag math. */
+/* Default (non-footer) covered motion: small retract upward.
+   We only force a transform when covered to avoid fighting lexicon.js drag math. */
 html body #lexiconToggle.is-ui-stack-covered{
+  --lexicon-stack-cover-y:var(--lexicon-cover-fallback-y);
+
   -webkit-transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
   transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
 }
 
 /* Footer case: preserve the existing drag math from assets/footer-overrides.css and
-   add the cover offset into the same translate3d() calc. */
+   add the cover offset into the same translate3d() calc.
+
+   Critical: when Lexicon is open on mobile, lexicon.js sets:
+     --seal-drag-y = calc(-100vh + (footer + peek) + seat + 1px)
+   So to retract back into the dock we add its inverse:
+     cover = calc( 100vh - (footer + peek) - seat - 1px )
+   Net ≈ 0px (closed seat), which can visibly animate.
+*/
 html body #navFooter #lexiconToggle.is-ui-stack-covered{
+  --lexicon-stack-cover-y:calc(
+    var(--lexicon-cover-vh)
+    - (var(--footer-total-height) + var(--lexicon-panel-closed-peek))
+    - var(--seal-seat-nudge)
+    - 1px
+  );
+
+  /* Ensure the transition is defined at the same specificity that owns the transform.
+     (Beats any mobile-only transition overrides.) */
+  transition:
+    transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+
   -webkit-transform:translate3d(
     0,
     calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px),
@@ -97,8 +117,7 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered{
 
   html body #lexiconToggle.is-ui-stack-covered{
     opacity:0 !important;
-
-    -webkit-transform:translate3d(0, var(--lexicon-cover-retract-y), 0) !important;
-    transform:translate3d(0, var(--lexicon-cover-retract-y), 0) !important;
+    -webkit-transform:translate3d(0, 0, 0) !important;
+    transform:translate3d(0, 0, 0) !important;
   }
 }
