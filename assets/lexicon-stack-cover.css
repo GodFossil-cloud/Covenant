@@ -15,9 +15,10 @@
      If the seal is merely "behind" them, it can still be visible through the veil.
 
    Behavior:
-   - When covered, the seal slides upward out of the viewport (and fades), then flips to
-     visibility:hidden so it cannot read through veils at rest.
-   - When uncovered, visibility returns immediately and the seal slides back into place.
+   - When covered, the seal slides upward out of the viewport and fades to opacity:0.
+     (We intentionally do NOT use visibility:hidden in the animated path: some browsers
+      apply discrete visibility changes immediately, making the exit look instant.)
+   - When uncovered, the seal slides back into place.
 
    Implementation note:
    - Do NOT animate transform here: the dock seal already uses transform for drag math
@@ -41,10 +42,6 @@
   position:relative;
   top:0;
   opacity:1;
-  visibility:visible;
-
-  /* Default: visibility changes apply immediately unless the covered state sets a delay. */
-  --lexicon-cover-visibility-delay:0s;
 
   will-change:top, opacity;
 
@@ -58,14 +55,11 @@
 
     /* Cover motion. */
     top var(--lexicon-cover-slide-ms) var(--lexicon-cover-ease),
-    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease),
-
-    /* Hide after the slide completes (delay set by covered state). */
-    visibility 0s linear var(--lexicon-cover-visibility-delay)
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
     !important;
 }
 
-/* Covered: move it fully out of the viewport so it cannot show through translucent veils. */
+/* Covered: move it out of the viewport so it cannot show through translucent veils. */
 #lexiconToggle.is-ui-stack-covered{
   /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
   z-index:1490 !important;
@@ -76,18 +70,8 @@
 
   pointer-events:none !important;
 
-  /* Delay the visibility flip until the slide completes. */
-  --lexicon-cover-visibility-delay:var(--lexicon-cover-slide-ms);
-  visibility:hidden !important;
-
   /* Avoid any accidental compositing artifacts. */
   filter:none !important;
-}
-
-/* Uncovered: ensure visibility is immediate so it can slide back in. */
-#lexiconToggle:not(.is-ui-stack-covered){
-  --lexicon-cover-visibility-delay:0s;
-  visibility:visible !important;
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -97,6 +81,5 @@
   #lexiconToggle.is-ui-stack-covered{
     top:0 !important;
     opacity:0 !important;
-    visibility:hidden !important;
   }
 }
