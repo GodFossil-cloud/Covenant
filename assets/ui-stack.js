@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.16 */
+/*! Covenant UI Stack v0.3.17 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.16';
+  window.COVENANT_UI_STACK_VERSION = '0.3.17';
 
   var registry = Object.create(null);
   var order = [];
@@ -1240,8 +1240,17 @@
     return true;
   }
 
+  function prefersReducedMotion() {
+    try {
+      return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    } catch (err) {
+      return false;
+    }
+  }
+
   (function wireDockNavCloseAll() {
     var armed = null;
+    var TAKEOFF_MS = 260;
 
     function clearArmed() {
       if (!armed) return;
@@ -1255,6 +1264,57 @@
       } catch (err) {
         return null;
       }
+    }
+
+    function triggerNavTakeoff(link) {
+      if (!link) return;
+      if (prefersReducedMotion()) return;
+
+      try {
+        var isNext = !!(link.classList && link.classList.contains('nav-next'));
+        var icon = link.querySelector('.nav-btn-icon--arrow');
+        if (!icon) return;
+
+        var frame = link.querySelector('.nav-next-frame, .nav-prev-frame');
+        if (frame && frame.style) frame.style.overflow = 'hidden';
+
+        // Normalize transform so we don't depend on computed matrix() values.
+        try { icon.style.transform = 'scale(1.12)'; } catch (err0) {}
+        try { icon.style.willChange = 'transform'; } catch (err1) {}
+
+        if (!icon.animate) return;
+
+        var dx = isNext ? 54 : -54;
+        var dy = -14;
+        var rot = isNext ? 14 : -14;
+
+        var anim = icon.animate([
+          { transform: 'scale(1.12) translate3d(0px, 0px, 0) rotate(0deg)' },
+          { transform: 'scale(1.12) translate3d(' + dx + 'px, ' + dy + 'px, 0) rotate(' + rot + 'deg)' }
+        ], {
+          duration: TAKEOFF_MS,
+          easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)',
+          fill: 'forwards'
+        });
+
+        // Cleanup (in case navigation is delayed by panel close timing).
+        var cleaned = false;
+        function cleanup() {
+          if (cleaned) return;
+          cleaned = true;
+          try { icon.style.willChange = ''; } catch (err2) {}
+          try { icon.style.transform = ''; } catch (err3) {}
+          try { if (frame && frame.style) frame.style.overflow = ''; } catch (err4) {}
+        }
+
+        anim.onfinish = function () {
+          setTimeout(cleanup, 120);
+        };
+
+        anim.oncancel = function () {
+          cleanup();
+        };
+      } catch (errX) {}
     }
 
     // Any touch/click elsewhere disarms.
@@ -1311,8 +1371,15 @@
 
       clearArmed();
 
+      // Commit feedback.
+      triggerNavTakeoff(link);
+
+      var takeoffDelay = prefersReducedMotion() ? 0 : TAKEOFF_MS;
+
       if (!isPanelOpenByDom()) {
-        window.location.href = href;
+        setTimeout(function () {
+          window.location.href = href;
+        }, takeoffDelay);
         return;
       }
 
@@ -1320,7 +1387,7 @@
 
       setTimeout(function () {
         window.location.href = href;
-      }, getCloseAllDelayMs());
+      }, Math.max(getCloseAllDelayMs(), takeoffDelay));
 
     }, true);
   })();
