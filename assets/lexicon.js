@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.7 (Overflow-only Scroll Lock) */
+/*! Covenant Lexicon UI v0.3.8 (Seal re-parents into header while open) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.7';
+  window.COVENANT_LEXICON_VERSION = '0.3.8';
 
   var doc = document;
   var root = doc.documentElement;
@@ -234,6 +234,93 @@
     // ToC/Reliquary tabs after an open→close cycle.
     try { if (lexOverlay) lexOverlay.style.zIndex = ''; } catch (err1) {}
     try { if (panel) panel.style.zIndex = ''; } catch (err2) {}
+  }
+
+  // ----------------------------------------
+  // Seal re-parenting (desktop/tablet only)
+  // ----------------------------------------
+  var sealSlot = byId('lexiconSealSlot');
+  var headerText = byId('lexiconHeaderText');
+  var sealDockParent = null;
+  var sealDockPlaceholder = null;
+  var sealIsInHeader = false;
+
+  function ensureSealDockPlaceholder() {
+    if (sealDockPlaceholder) return sealDockPlaceholder;
+
+    var el = doc.createElement('span');
+    el.setAttribute('aria-hidden', 'true');
+    el.style.display = 'block';
+    el.style.width = 'var(--seal-size, 56px)';
+    el.style.height = 'var(--seal-size, 56px)';
+    el.style.pointerEvents = 'none';
+
+    sealDockPlaceholder = el;
+    return el;
+  }
+
+  function ensureHeaderLayout() {
+    if (sealSlot) {
+      sealSlot.style.display = 'flex';
+      sealSlot.style.alignItems = 'center';
+      sealSlot.style.justifyContent = 'center';
+      sealSlot.style.flex = '0 0 auto';
+    }
+
+    if (headerText) {
+      headerText.style.flex = '1 1 auto';
+      headerText.style.minWidth = '0';
+    }
+  }
+
+  function moveSealIntoHeader() {
+    if (!lexiconToggle || !sealSlot) return;
+    if (sealIsInHeader) return;
+
+    sealDockParent = lexiconToggle.parentNode;
+    if (!sealDockParent) return;
+
+    // Maintain footer geometry: leave a placeholder where the seal lived.
+    try {
+      sealDockParent.insertBefore(ensureSealDockPlaceholder(), lexiconToggle);
+    } catch (err0) {}
+
+    // Move the live button into the panel header.
+    try {
+      ensureHeaderLayout();
+      sealSlot.appendChild(lexiconToggle);
+
+      // When the seal is in the header, it must behave as a static emblem,
+      // not as the mobile bottom-sheet drag handle.
+      lexiconToggle.classList.add('is-seal-in-header');
+      lexiconToggle.style.transform = 'none';
+      lexiconToggle.style.margin = '0 8px 0 0';
+      lexiconToggle.style.removeProperty('--seal-drag-y');
+
+      sealIsInHeader = true;
+    } catch (err1) {}
+  }
+
+  function restoreSealToDock() {
+    if (!lexiconToggle) return;
+    if (!sealDockParent) return;
+    if (!sealIsInHeader) return;
+
+    try {
+      if (sealDockPlaceholder && sealDockPlaceholder.parentNode === sealDockParent) {
+        sealDockParent.insertBefore(lexiconToggle, sealDockPlaceholder);
+        sealDockParent.removeChild(sealDockPlaceholder);
+      } else {
+        sealDockParent.appendChild(lexiconToggle);
+      }
+
+      lexiconToggle.classList.remove('is-seal-in-header');
+      lexiconToggle.style.transform = '';
+      lexiconToggle.style.margin = '';
+
+      sealDockPlaceholder = null;
+      sealIsInHeader = false;
+    } catch (err2) {}
   }
 
   var sealClearTimer = null;
@@ -874,6 +961,7 @@
 
   function setSealDragOffset(px, draggingNow) {
     if (!lexiconToggle) return;
+    if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
 
     if (sealClearTimer) {
       window.clearTimeout(sealClearTimer);
@@ -898,6 +986,7 @@
 
   function setSealToOpenPosition() {
     if (!lexiconToggle) return;
+    if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
 
     // iOS Safari: when the seal's travel is computed in JS px, it can desync slightly from
     // the panel's own viewport-based transition (reads like the seal is being "dragged").
@@ -983,6 +1072,11 @@
 
     var bottomSheet = isBottomSheetMode();
 
+    // Desktop/tablet: move seal into the Lexicon header so it is correctly covered by higher UI-stack panels.
+    // Mobile bottom-sheet: keep the seal in the dock as the drag handle.
+    if (!bottomSheet) moveSealIntoHeader();
+    else restoreSealToDock();
+
     if (bottomSheet) {
       // iOS Safari: commit the seal transform BEFORE the sheet transition begins.
       setSealToOpenPosition();
@@ -1031,6 +1125,9 @@
 
     noteClose();
     clearStackZIndex();
+
+    // Desktop/tablet: return the seal to the dock after close.
+    if (!isBottomSheetMode()) restoreSealToDock();
 
     setTimeout(function () {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : lexiconToggle;

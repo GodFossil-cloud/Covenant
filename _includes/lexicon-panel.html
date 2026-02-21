@@ -11,11 +11,15 @@
   </div>
 
   <div class="lexicon-panel-header">
-    <div>
+    <!-- Seal slot: assets/lexicon.js will temporarily move #lexiconToggle here while the panel is open (desktop/tablet). -->
+    <div class="lexicon-panel-seal-slot" id="lexiconSealSlot"></div>
+
+    <div id="lexiconHeaderText">
       <div class="lexicon-panel-title" id="lexiconPanelTitle">Lexicon</div>
       <!-- Populated by assets/lexicon.js from window.COVENANT_PAGE.modeLabel. -->
       <div class="lexicon-panel-mode" id="lexiconModeLabel"></div>
     </div>
+
     <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
   </div>
 
