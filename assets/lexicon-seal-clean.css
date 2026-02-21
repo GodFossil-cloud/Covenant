@@ -1,0 +1,13 @@
+/* Lexicon seal: remove selected fleck texture everywhere.
+
+   Covenant baseline (assets/covenant.css) paints the selected seal with a flecked gradient stack.
+   This override keeps selection "quiet": glyph carries the distinction; seal surface stays clean.
+
+   IMPORTANT:
+   - Do not interfere with weld/open/drag rules that intentionally make the seal backdrop transparent.
+*/
+
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-seal-dragging)::after{
+  background-color:var(--lexicon-seal-face, #08090b) !important;
+  background-image:none !important;
+}
