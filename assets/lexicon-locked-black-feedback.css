@@ -1,0 +1,34 @@
+/* Lexicon (locked): pulse/press feedback should go black (not brass-gold).
+
+   Scope:
+   - Only during touch/press intent states: :active, .is-nudging, .is-pulsing.
+   - Does not change locked at-rest styling.
+*/
+
+#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph-mid-inner{
+  color:#000 !important;
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph::before,
+#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph::before,
+#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
+}
