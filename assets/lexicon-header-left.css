@@ -43,15 +43,26 @@
   }
 }
 
-/* Align the selected-passage quote box with the Lexicon body text column.
-   Note: assets/covenant.css sets `.lexicon-panel-body p { padding-right: 20px; }`.
-   This rule matches that right edge without altering the quote’s left inset. */
+/* Quote box geometry
+   Goal:
+   - Left edge flush with the Lexicon panel body surface (cancel the body’s left padding).
+   - Right edge aligned to the main text column (body padding-right + p padding-right).
+
+   Note: assets/covenant.css defines:
+   - `.lexicon-panel-body { padding-left: 20px; padding-right: 12px; }`
+   - `.lexicon-panel-body p { padding-right: 20px; }`
+
+   So the paragraph text column ends 12px + 20px = 32px from the right edge.
+*/
 .lexicon-panel-body .lexicon-sentence-quote{
   box-sizing:border-box !important;
   width:auto !important;
   max-width:100% !important;
 
-  margin-left:0 !important;
+  /* Extend into the panel-body padding so the box edge hits the body surface. */
+  margin-left:-20px !important;
+
+  /* Match paragraph text right edge (12px body padding-right + 20px paragraph padding-right). */
   margin-right:20px !important;
 
   overflow-wrap:anywhere;
