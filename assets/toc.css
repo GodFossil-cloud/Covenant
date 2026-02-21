@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.68 (Restore dock glyph color; cradle-only glow) */
+/*! Covenant ToC Panel Styles v3.1.69 (Dock tabs +2px width) */
 
 /* -------------------------------------------------
    Variables
@@ -28,7 +28,7 @@
   --toc-item-line:1.55;
 
   /* Footer tabs (ToC + Mirror) live beside the Lexicon seal, but do not use the Lexicon "center" medallion styling. */
-  --toc-tab-width:calc(var(--nav-pill-width,56px) + 4px);
+  --toc-tab-width:calc(var(--nav-pill-width,56px) + 6px);
   --toc-tab-height:var(--nav-pill-height,40px);
   --toc-tab-radius:4px;
   --toc-tab-gap:15px;
