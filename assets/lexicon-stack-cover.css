@@ -17,6 +17,9 @@
   --lexicon-cover-fade-ms:220ms;
   --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
 
+  /* Dedicated cover travel duration (slightly slower than snap so it reads deliberate). */
+  --lexicon-cover-transform-ms:560ms;
+
   /* Viewport unit token used (only if needed). */
   --lexicon-cover-vh:100vh;
 
@@ -24,8 +27,8 @@
   --lexicon-cover-fallback-y:-22px;
 
   /* Footer covered motion target: slide just out of the top frame.
-     Tuned to be “barely gone” so the cover motion doesn’t read as too fast. */
-  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 26px));
+     Keep it *barely gone* so it doesn’t feel like it rockets upward. */
+  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 14px));
 
   /* Let the travel be seen before we fade out. */
   --lexicon-cover-opacity-delay:130ms;
@@ -79,17 +82,15 @@ html body #lexiconToggle.is-ui-stack-covered{
 }
 
 /* Footer case (mobile): keep the existing drag math from assets/footer-overrides.css and
-   add a *small extra upward offset* so the seal slides just out of the top of the viewport.
-
-   This avoids the prior “retract back into dock” behavior.
+   add a small extra upward offset so the seal slides just out of the top of the viewport.
 */
 html body #navFooter #lexiconToggle.is-ui-stack-covered{
   --lexicon-stack-cover-y:var(--lexicon-cover-out-y);
 
   /* Ensure the transition is defined at the same specificity that owns the transform.
-     (Beats any mobile-only transition overrides.) */
+     Use a slightly slower duration for *covered* travel only. */
   transition:
-    transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+    transform var(--lexicon-cover-transform-ms, 560ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
     opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
     !important;
 
