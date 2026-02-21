@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.18 */
+/*! Covenant UI Stack v0.3.19 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.18';
+  window.COVENANT_UI_STACK_VERSION = '0.3.19';
 
   var registry = Object.create(null);
   var order = [];
@@ -278,7 +278,7 @@
 
       // Older opens first (stable).
       var ta = (a && typeof a.openedAt === 'number') ? a.openedAt : 0;
-      var tb = (a && typeof a.openedAt === 'number') ? a.openedAt : 0;
+      var tb = (b && typeof b.openedAt === 'number') ? b.openedAt : 0;
       return ta - tb;
     });
     return list;
@@ -751,9 +751,17 @@
     var lexOpen = isPanelOpenByDomId('lexiconPanel');
     if (lexOpen) return false;
 
-    // Styling must not cause a footer reflow during drag shells on iOS Safari,
-    // so only apply the "locked" visual state when the other surface is *committed open*.
-    return !!(isToCCommittedOpen() || isReliquaryCommittedOpen());
+    // Visual lock should engage during ToC motion shells (drag + tap-open/tap-close)
+    // so the seal reads "disabled" immediately, matching Reliquary behavior.
+    var root = document.documentElement;
+    var tocMotion = false;
+    try {
+      tocMotion = !!(root && root.classList && (root.classList.contains('toc-opening') || root.classList.contains('toc-closing')));
+    } catch (err0) {
+      tocMotion = false;
+    }
+
+    return !!(tocMotion || isToCCommittedOpen() || isReliquaryCommittedOpen());
   }
 
   function applyLexiconGateState() {
