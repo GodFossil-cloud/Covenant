@@ -31,3 +31,14 @@
 #lexiconHeaderText .lexicon-panel-mode{
   text-align:left;
 }
+
+/* Mobile: don’t reserve space for an empty seal slot; tighten the gap so the header text sits closer left. */
+@media (max-width: 520px){
+  #lexiconSealSlot:empty{
+    display:none !important;
+  }
+
+  .lexicon-panel-header{
+    gap:8px !important;
+  }
+}
