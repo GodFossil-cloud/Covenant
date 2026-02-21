@@ -1,7 +1,7 @@
 /* Lexicon glyph state colors (Palette B)
 
    Goals:
-   - Fully open (panel open): glyph becomes a distinct deep red tone.
+   - Fully open (panel open): glyph uses embedded brass-gold (no red).
    - Passage selected (while closed): glyph becomes antique leaf.
    - Passage selected + fully open: glyph becomes an embedded leaf-inlay tone (no neon/aqua).
 
@@ -12,7 +12,9 @@
 */
 
 :root{
-  --lexicon-glyph-open-color-b: #8C1D18;   /* deep ember (open) */
+  /* Reuse the footer's brass-gold token so we stay aligned with the dock palette. */
+  --lexicon-glyph-open-color-b: var(--lexicon-glyph-open-color, rgba(242,220,154,0.98));
+
   --lexicon-glyph-selected-color-b: #F2DC9A; /* antique leaf */
   --lexicon-glyph-selected-open-color-b: #D8C07A; /* embedded leaf-inlay (open + selected) */
 }
