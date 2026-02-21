@@ -7,7 +7,18 @@
    - Do not interfere with weld/open/drag rules that intentionally make the seal backdrop transparent.
 */
 
+/* Selected + CLOSED (resting and interaction): always a clean face (no fleck stack). */
 #navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-seal-dragging)::after{
   background-color:var(--lexicon-seal-face, #08090b) !important;
+  background-image:none !important;
+}
+
+/* Fully OPEN: keep seal backdrop welded/empty even while pressed.
+   (Prevents touch/coarse-pointer :active rules from reintroducing flecks.) */
+html.lexicon-scroll-lock #navFooter #lexiconToggle:active::after,
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
+#navFooter #lexiconToggle[aria-expanded="true"]:active::after,
+#navFooter #lexiconToggle.has-selection[aria-expanded="true"]:active::after{
+  background-color:transparent !important;
   background-image:none !important;
 }
