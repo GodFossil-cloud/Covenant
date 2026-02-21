@@ -2,48 +2,43 @@
 
    Context:
    - assets/ui-stack.js assigns z-index to modal surfaces starting at Z_BASE=1500.
-   - The footer dock remains sovereign (higher z-index) and can visually sit above scrims.
    - When Lexicon is open and another surface (ToC/Reliquary) becomes topmost, ui-stack.js
      toggles `.is-ui-stack-covered` on #lexiconToggle.
 
-   Important update (Option B):
-   - The seal may be re-parented into the Lexicon panel header while the panel is open.
-     Therefore, cover rules MUST NOT depend on #navFooter ancestry.
+   Problem (iPhone Safari):
+   - The seal's visible position is primarily driven by transform (footer-overrides.css:
+     translate3d(... var(--seal-drag-y) ... ) !important).
+   - On mobile, assets/covenant.css also overwrites #lexiconToggle's transition list so
+     transform is the only reliable animated channel.
+   - Therefore, animating `top` can appear to do nothing, and hiding can read as instant.
 
-   Why hide (not just z-index):
-   - ToC/Reliquary overlays are intentionally translucent.
-     If the seal is merely "behind" them, it can still be visible through the veil.
+   Strategy:
+   - Inject cover motion into the existing transform pipeline by adding a dedicated cover
+     offset variable (--lexicon-stack-cover-y) into the translate3d() calc.
+   - Fade via opacity (also included in our transition list via !important).
+   - Avoid visibility/display changes in the animated path.
 
-   Behavior:
-   - When covered, the seal slides upward out of the viewport and fades to opacity:0.
-     (We intentionally do NOT use visibility:hidden in the animated path: some browsers
-      apply discrete visibility changes immediately, making the exit look instant.)
-   - When uncovered, the seal slides back into place.
-
-   Implementation note:
-   - Do NOT animate transform here: the dock seal already uses transform for drag math
-     (lexicon.js drives --seal-drag-y, and footer-overrides.css applies translate3d).
-   - Animate `top` instead; relative positioning composes cleanly with the existing transform.
-
-   Mobile Safari gotcha:
-   - assets/covenant.css sets a max-width:600px rule for #lexiconToggle that overwrites
-     `transition` (it only animates transform + color/text/filter).
-   - Therefore, we set our transition list with !important so top/opacity animate reliably.
+   Important:
+   - The seal may be re-parented into the Lexicon panel header while the panel is open,
+     so these rules must not depend on #navFooter ancestry.
+   - However, when the seal *is* inside #navFooter, we must preserve drag math.
 */
 
 :root{
   --lexicon-cover-slide-ms:260ms;
   --lexicon-cover-fade-ms:220ms;
   --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* How far to retract the seal when covered. */
+  --lexicon-cover-retract-y:-120vh;
 }
 
-/* Base: enable motion (safe both in dock and when re-parented into the Lexicon header). */
-#lexiconToggle{
-  position:relative;
-  top:0;
+/* Base: keep a cover offset var we can animate via transform. */
+html body #lexiconToggle{
   opacity:1;
+  --lexicon-stack-cover-y:0px;
 
-  will-change:top, opacity;
+  will-change:transform, opacity;
 
   /* IMPORTANT: beat the max-width:600px #lexiconToggle transition in assets/covenant.css. */
   transition:
@@ -51,21 +46,21 @@
     color 0.2s ease,
     text-shadow 0.2s ease,
     filter 0.2s ease,
+
+    /* The seal's motion channel (drag/snap + cover). */
     transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
 
-    /* Cover motion. */
-    top var(--lexicon-cover-slide-ms) var(--lexicon-cover-ease),
+    /* Cover fade. */
     opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
     !important;
 }
 
-/* Covered: move it out of the viewport so it cannot show through translucent veils. */
-#lexiconToggle.is-ui-stack-covered{
+/* Covered: retract upward (via the transform pipeline) + fade. */
+html body #lexiconToggle.is-ui-stack-covered{
   /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
   z-index:1490 !important;
 
-  /* Slide away + fade. */
-  top:calc(-120vh) !important;
+  --lexicon-stack-cover-y:var(--lexicon-cover-retract-y);
   opacity:0 !important;
 
   pointer-events:none !important;
@@ -74,12 +69,36 @@
   filter:none !important;
 }
 
+/* Default cover transform (for the re-parented / non-footer case).
+   We only force a transform when covered, to minimize interference with lexicon.js drag math. */
+html body #lexiconToggle.is-ui-stack-covered{
+  -webkit-transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
+  transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
+}
+
+/* Footer case: preserve the existing drag math from assets/footer-overrides.css and
+   add the cover offset into the same translate3d() calc. */
+html body #navFooter #lexiconToggle.is-ui-stack-covered{
+  -webkit-transform:translate3d(
+    0,
+    calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px),
+    0
+  ) !important;
+
+  transform:translate3d(
+    0,
+    calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px),
+    0
+  ) !important;
+}
+
 @media (prefers-reduced-motion: reduce){
-  #lexiconToggle{
-    transition:none !important;
-  }
-  #lexiconToggle.is-ui-stack-covered{
-    top:0 !important;
+  html body #lexiconToggle{transition:none !important}
+
+  html body #lexiconToggle.is-ui-stack-covered{
     opacity:0 !important;
+
+    -webkit-transform:translate3d(0, var(--lexicon-cover-retract-y), 0) !important;
+    transform:translate3d(0, var(--lexicon-cover-retract-y), 0) !important;
   }
 }
