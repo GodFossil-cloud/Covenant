@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.74 (Tabs +3px only; sockets unchanged; tabs spread +1px; tabs -2px tall w/ top edge locked) */
+/*! Covenant ToC Panel Styles v3.1.75 (Tabs +3px only; sockets unchanged; tabs spread +1px; tabs -3px tall w/ top edge locked) */
 
 /* -------------------------------------------------
    Variables
@@ -44,11 +44,11 @@
 
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
 
-  /* Visual resize: tabs are 2px shorter, but their TOP EDGE must not move.
-     (Because the dock tabs are align-self:center, shrinking height by 2px would normally drop the top edge by 1px,
-      so we lift the whole tab by 1px via a shared carry.) */
-  --dock-tab-height-visual:calc(var(--dock-tab-height) - 2px);
-  --dock-tab-top-edge-lock:-1px;
+  /* Visual resize: tabs are 3px shorter, but their TOP EDGE must not move.
+     (Because the dock tabs are align-self:center, shrinking height by 3px would normally drop the top edge by 1.5px,
+      so we lift the whole tab by 1.5px via a shared carry.) */
+  --dock-tab-height-visual:calc(var(--dock-tab-height) - 3px);
+  --dock-tab-top-edge-lock:-1.5px;
 
   /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
