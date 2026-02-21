@@ -1,12 +1,13 @@
 /* Lexicon glyph state colors (Palette B)
 
    Goals:
-   - Fully open (panel open): glyph uses embedded brass-gold (no red).
-   - Passage selected (while closed): glyph becomes antique leaf.
+   - Fully open (panel open): glyph uses embedded brass-gold.
+   - Passage selected (while closed): glyph becomes antique leaf and reads more "set apart".
    - Passage selected + fully open: glyph becomes an embedded leaf-inlay tone (no neon/aqua).
 
    Notes:
-   - This file changes only `color` (no glow). Glow suppression is handled elsewhere.
+   - Open/fully-open glow suppression is handled elsewhere.
+   - We *do* override the selected-at-rest quiet halo token here so it is visible across displays.
    - Excludes locked/disabled state so locked press/pulse can still go black.
    - "Open" is detected via aria-expanded="true" (works with shared UI stack mode).
 */
@@ -17,6 +18,15 @@
 
   --lexicon-glyph-selected-color-b: #F2DC9A; /* antique leaf */
   --lexicon-glyph-selected-open-color-b: #D8C07A; /* embedded leaf-inlay (open + selected) */
+
+  /* Stronger at-rest distinction for selected+closed.
+     (footer-overrides.css consumes this token for the selected+closed text-shadow.) */
+  --lexicon-glyph-selected-quiet-halo-shadow:
+    0 1px 0 rgba(0,0,0,0.94),
+    0 -1px 0 rgba(255,255,255,0.14),
+    0 0 12px rgba(255,255,255,0.12),
+    0 0 22px rgba(242,220,154,0.34),
+    0 0 46px rgba(242,220,154,0.16);
 }
 
 /* Fully open, no selection */
