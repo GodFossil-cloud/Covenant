@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.72 (Tabs +3px only; sockets unchanged; tabs spread +1px) */
+/*! Covenant ToC Panel Styles v3.1.73 (Tabs +3px only; sockets unchanged; tabs spread +1px; tabs -1px tall w/ top edge locked) */
 
 /* -------------------------------------------------
    Variables
@@ -43,6 +43,12 @@
   --mirror-tab-x-nudge:1px;
 
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
+
+  /* Visual resize: tabs are 1px shorter, but their TOP EDGE must not move.
+     (Because the dock tabs are align-self:center, shrinking height by 1px would normally drop the top edge by 0.5px,
+      so we lift the whole tab by 0.5px via a shared carry.) */
+  --dock-tab-height-visual:calc(var(--dock-tab-height) - 1px);
+  --dock-tab-top-edge-lock:-0.5px;
 
   /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
@@ -422,7 +428,7 @@ html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{
   position:relative;
   width:var(--dock-tab-width-visual);
-  height:var(--dock-tab-height);
+  height:var(--dock-tab-height-visual, var(--dock-tab-height));
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
   padding:0;
   justify-self:center;
@@ -453,7 +459,10 @@ html #mirrorToggle.dock-tab .toc-glyph{transform:translate3d(-50%,-50%,0) transl
 
 /* ToC + Mirror tabs ride with their panels (Lexicon-style). */
 html #tocToggle.dock-tab{
-  transform:translate3d(var(--toc-tab-x-nudge, 0px),calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px)),0);
+  transform:translate3d(
+    var(--toc-tab-x-nudge, 0px),
+    calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    0);
   transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
   will-change:transform;
 
@@ -466,7 +475,10 @@ html #tocToggle.dock-tab{
 }
 
 html #mirrorToggle.dock-tab{
-  transform:translate3d(var(--mirror-tab-x-nudge, 0px),calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px)),0);
+  transform:translate3d(
+    var(--mirror-tab-x-nudge, 0px),
+    calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    0);
   transition:transform var(--reliquary-snap-duration, var(--toc-snap-duration)) var(--reliquary-snap-ease, var(--toc-snap-ease));
   will-change:transform;
 
@@ -555,12 +567,18 @@ html #mirrorToggle.dock-tab:focus-visible::after{
 
 /* Mechanical press: remove iOS touch-down 1px hop (it reads like a dock glitch). */
 html #mirrorToggle.dock-tab:active:not(:disabled){
-  transform:translate3d(var(--mirror-tab-x-nudge, 0px),calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px)),0);
+  transform:translate3d(
+    var(--mirror-tab-x-nudge, 0px),
+    calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    0);
 }
 
 /* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
 html #tocToggle.dock-tab:active:not(:disabled){
-  transform:translate3d(var(--toc-tab-x-nudge, 0px),calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px)),0);
+  transform:translate3d(
+    var(--toc-tab-x-nudge, 0px),
+    calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    0);
 }
 
 html #tocToggle.dock-tab .toc-glyph,
