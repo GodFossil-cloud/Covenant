@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.67 (Dock glow constrained to cradle) */
+/*! Covenant ToC Panel Styles v3.1.68 (Restore dock glyph color; cradle-only glow) */
 
 /* -------------------------------------------------
    Variables
@@ -798,6 +798,45 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 /* Kill the old underline indicator (baseline + fill). */
 .toc-item--pending .toc-entry-title::before,
 .toc-item--pending .toc-entry-title::after{content:none !important;display:none !important}
+
+/* -------------------------------------------------
+   ToC dock glyph feedback (cool/white)
+   ------------------------------------------------- */
+
+:root{
+  --toc-glyph-rest-color:rgba(212,226,246,0.72);
+
+  --toc-glyph-intent-color:rgba(245,248,255,0.94);
+
+  /* Keep glyph shadow tight so the footer slab never reads "washed".
+     Intent glow is carried by the socket cradle, not the glyph aura. */
+  --toc-glyph-intent-shadow:
+    0 1px 0 rgba(0,0,0,0.92),
+    0 0 4px rgba(255,255,255,0.10);
+}
+
+#navFooter #tocToggle .toc-glyph{
+  position:relative;
+  display:inline-block;
+  z-index:0;
+
+  color:var(--toc-glyph-rest-color, rgba(212,226,246,0.72));
+
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.92);
+
+  transition:
+    color 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    text-shadow 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Glow only during motion/drag (not while fully open). */
+html.toc-opening #navFooter #tocToggle .toc-glyph,
+html.toc-closing #navFooter #tocToggle .toc-glyph,
+#navFooter #tocToggle.is-toc-dragging .toc-glyph{
+  color:var(--toc-glyph-intent-color);
+  text-shadow:var(--toc-glyph-intent-shadow);
+}
 
 /* -------------------------------------------------
    Dock glyph aura guard
