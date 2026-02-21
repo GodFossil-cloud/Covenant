@@ -33,6 +33,13 @@
   /* Fully-open "embedded" state: keep gold, remove halo (tiny ink seat only). */
   --lexicon-glyph-open-embedded-shadow:0 1px 0 rgba(0,0,0,0.86);
 
+  /* Fully-open + selection: "leaf inlay" (sacred distinction without radiance).
+     Crisp bevel/seat only: no blur values, so it reads engraved/inlaid, not glowing. */
+  --lexicon-glyph-open-inlay-color:var(--leaf-1, rgba(255,215,122,0.98));
+  --lexicon-glyph-open-inlay-shadow:
+    0 1px 0 rgba(0,0,0,0.92),
+    0 -1px 0 rgba(255,255,255,0.08);
+
   /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
      (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
   --lexicon-glyph-tap-aura-size:3.7em;
@@ -102,7 +109,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   text-shadow:none;
   transition:
     color 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    text-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    text-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* OPEN (and selection): brass-gold glyph with bright halo while the panel is moving/engaging. */
@@ -114,11 +122,23 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   text-shadow:var(--lexicon-glyph-open-shadow);
 }
 
-/* Fully OPEN (scroll-lock): keep gold but remove the halo so it "embeds" into the seal. */
+/* Fully OPEN (scroll-lock): keep gold but remove the halo so it "embeds" into the seal.
+   Also hard-kill any lingering filter-based glow so the open state stays carved/quiet. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
 html.lexicon-scroll-lock #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-color);
   text-shadow:var(--lexicon-glyph-open-embedded-shadow);
+  filter:none !important;
+}
+
+html.lexicon-scroll-lock #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph::before{opacity:0 !important}
+
+/* Fully OPEN + selection: leaf inlay (distinct, but still embedded; no glow). */
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="true"] .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="true"] .lexicon-glyph-mid-inner{
+  color:var(--lexicon-glyph-open-inlay-color);
+  text-shadow:var(--lexicon-glyph-open-inlay-shadow);
+  filter:none !important;
 }
 
 /* Tap-to-close: keep the same halo through the closing transition even after aria-expanded flips. */
