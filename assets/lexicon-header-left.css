@@ -43,12 +43,17 @@
   }
 }
 
-/* Clamp the selected-passage quote box so it aligns with the Lexicon body text edges. */
+/* Align the selected-passage quote box with the Lexicon body text column.
+   Note: assets/covenant.css sets `.lexicon-panel-body p { padding-right: 20px; }`.
+   This rule matches that right edge without altering the quote’s left inset. */
 .lexicon-panel-body .lexicon-sentence-quote{
   box-sizing:border-box !important;
-  inline-size:100% !important;
-  max-inline-size:100% !important;
+  width:auto !important;
+  max-width:100% !important;
+
   margin-left:0 !important;
-  margin-right:0 !important;
+  margin-right:20px !important;
+
   overflow-wrap:anywhere;
+  word-break:break-word;
 }
