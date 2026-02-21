@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.17 */
+/*! Covenant UI Stack v0.3.18 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.17';
+  window.COVENANT_UI_STACK_VERSION = '0.3.18';
 
   var registry = Object.create(null);
   var order = [];
@@ -278,7 +278,7 @@
 
       // Older opens first (stable).
       var ta = (a && typeof a.openedAt === 'number') ? a.openedAt : 0;
-      var tb = (b && typeof b.openedAt === 'number') ? b.openedAt : 0;
+      var tb = (a && typeof a.openedAt === 'number') ? a.openedAt : 0;
       return ta - tb;
     });
     return list;
@@ -1284,13 +1284,12 @@
 
         if (!icon.animate) return;
 
+        // Straight horizontal takeoff (no pitch / no rise).
         var dx = isNext ? 54 : -54;
-        var dy = -14;
-        var rot = isNext ? 14 : -14;
 
         var anim = icon.animate([
-          { transform: 'scale(1.12) translate3d(0px, 0px, 0) rotate(0deg)' },
-          { transform: 'scale(1.12) translate3d(' + dx + 'px, ' + dy + 'px, 0) rotate(' + rot + 'deg)' }
+          { transform: 'scale(1.12) translate3d(0px, 0px, 0)' },
+          { transform: 'scale(1.12) translate3d(' + dx + 'px, 0px, 0)' }
         ], {
           duration: TAKEOFF_MS,
           easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)',
