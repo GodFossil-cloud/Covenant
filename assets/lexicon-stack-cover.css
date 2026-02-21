@@ -15,20 +15,36 @@
      If the seal is merely "behind" them, it can still be visible through the veil.
 
    Fix:
-   - When covered, fully hide the seal so it cannot read through translucent overlays.
-   - Also set a low z-index as a backstop for states where visibility is overridden.
+   - When covered, fade the seal out, then set visibility:hidden so it cannot read through veils.
+   - When uncovered, restore visibility immediately and fade back in.
 */
 
+/* Base: enable a gentle fade without affecting the seal’s existing transform/filters. */
+#lexiconToggle{
+  transition: opacity 180ms ease;
+  will-change: opacity;
+}
+
+/* Covered: lower z-index as a backstop, fade out, then flip visibility after the fade. */
 #lexiconToggle.is-ui-stack-covered{
   /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
   position: relative;
   z-index: 1490 !important;
 
-  /* Primary: remove it entirely from the painted stack so it cannot show through veils. */
   opacity: 0 !important;
-  visibility: hidden !important;
   pointer-events: none !important;
+
+  /* After the fade completes, remove from paint/AT hit-testing. */
+  visibility: hidden !important;
+  transition:
+    opacity 180ms ease,
+    visibility 0s linear 180ms;
 
   /* Avoid any accidental compositing artifacts. */
   filter: none !important;
+}
+
+/* Uncovered: make it visible immediately so opacity can fade back up. */
+#lexiconToggle:not(.is-ui-stack-covered){
+  visibility: visible;
 }
