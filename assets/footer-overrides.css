@@ -700,3 +700,15 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
       linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0)) !important;
   }
 }
+
+/* -------------------------------------------------
+   Lexicon weld (open): remove seal backdrop
+   ------------------------------------------------- */
+
+/* When the seal rides up into the Lexicon header, it must not carry its own painted surface.
+   The header is the surface; the seal becomes purely the glyph (plus aura). */
+html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
+#navFooter #lexiconToggle[aria-expanded="true"]::after{
+  background-color:transparent !important;
+  background-image:none !important;
+}
