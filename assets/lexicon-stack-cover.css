@@ -23,8 +23,9 @@
   /* Non-footer fallback motion when covered (desktop/header re-parent case). */
   --lexicon-cover-fallback-y:-22px;
 
-  /* Footer covered motion target: slide just out of the top frame. */
-  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 54px));
+  /* Footer covered motion target: slide just out of the top frame.
+     Tuned to be “barely gone” so the cover motion doesn’t read as too fast. */
+  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 26px));
 
   /* Let the travel be seen before we fade out. */
   --lexicon-cover-opacity-delay:130ms;
