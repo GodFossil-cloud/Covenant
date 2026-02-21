@@ -1,30 +1,34 @@
-/* Lexicon seal cover rules (z-layer fix).
+/* Lexicon seal cover rules (ui-stack + translucency fix).
 
-   Problem:
-   - UI stack surfaces (ToC/Reliquary/Lexicon panels + scrims) are assigned z-indexes by
-     assets/ui-stack.js starting at Z_BASE=1500 (step 10).
-   - The footer dock is sovereign and typically sits above those surfaces.
-   - When Lexicon is open, the Lexicon seal (footer toggle) can be lifted upward into the
-     Lexicon header region; if ToC/Reliquary becomes topmost, that lifted seal must not
-     remain above the topmost panel.
+   Context:
+   - assets/ui-stack.js assigns z-index to modal surfaces starting at Z_BASE=1500.
+   - The footer dock remains sovereign (higher z-index) and can visually sit above scrims.
+   - When Lexicon is open and another surface (ToC/Reliquary) becomes topmost, ui-stack.js
+     toggles `.is-ui-stack-covered` on #lexiconToggle.
 
-   Mechanism:
-   - ui-stack.js toggles .is-ui-stack-covered on #lexiconToggle when Lexicon is open
-     and the topmost surface is ToC or Reliquary.
+   Important update (Option B):
+   - The seal may be re-parented into the Lexicon panel header while the panel is open.
+     Therefore, cover rules MUST NOT depend on #navFooter ancestry.
+
+   Why hide (not just z-index):
+   - ToC/Reliquary overlays are intentionally translucent.
+     If the seal is merely "behind" them, it can still be visible through the veil.
 
    Fix:
-   - Lower ONLY the Lexicon seal's z-index below the UI stack base while covered.
-   - Do not retract, move, or visually restyle the seal; this is purely layering.
+   - When covered, fully hide the seal so it cannot read through translucent overlays.
+   - Also set a low z-index as a backstop for states where visibility is overridden.
 */
 
-#navFooter #lexiconToggle.is-ui-stack-covered{
-  /* Ensure z-index applies. */
+#lexiconToggle.is-ui-stack-covered{
+  /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
   position: relative;
-
-  /* Keep below ui-stack surfaces (Z_BASE=1500). */
   z-index: 1490 !important;
 
-  /* No dimming: if it is below, it will be covered by the top panel naturally. */
-  opacity: 1;
-  filter: none;
+  /* Primary: remove it entirely from the painted stack so it cannot show through veils. */
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+
+  /* Avoid any accidental compositing artifacts. */
+  filter: none !important;
 }
