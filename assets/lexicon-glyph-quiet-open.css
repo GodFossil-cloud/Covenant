@@ -1,20 +1,38 @@
 /* Lexicon glyph: fully-open must be quiet (no halo, no aura, no glow).
 
    Purpose:
-   - When the panel is fully opened (scroll-lock truth), the glyph should read carved/embedded.
+   - When the panel is fully opened, the glyph should read carved/embedded.
    - Some interaction states can reintroduce text-shadow; we hard-kill it here.
 
-   Scope:
-   - Only applies when html.lexicon-scroll-lock is present (panel fully open).
+   Truth for "open":
+   - Prefer #lexiconToggle[aria-expanded="true"] so this works even when a shared UI stack
+     handles scroll lock (html.lexicon-scroll-lock may not be present).
 */
 
+/* Fully OPEN: hard-kill glow on the glyph (any selection state). */
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner,
 html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
 html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
   text-shadow:none !important;
   filter:none !important;
 }
 
-/* Also silence any tap aura/pulse layers while fully open. */
+/* Fully OPEN: also prevent any button-level text glow / filter tint from reading as a seal glow. */
+#navFooter #lexiconToggle[aria-expanded="true"],
+#navFooter #lexiconToggle[aria-expanded="true"]:hover,
+#navFooter #lexiconToggle[aria-expanded="true"]:focus,
+#navFooter #lexiconToggle[aria-expanded="true"]:focus-visible,
+html.lexicon-scroll-lock #navFooter #lexiconToggle,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:hover,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus-visible{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+/* Fully OPEN: silence any tap aura/pulse layers while open. */
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph::before,
 html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph::before{
   opacity:0 !important;
   animation:none !important;
