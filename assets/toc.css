@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.75 (Tabs +3px only; sockets unchanged; tabs spread +1px; tabs -3px tall w/ top edge locked) */
+/*! Covenant ToC Panel Styles v3.1.76 (Tabs +2px only; sockets unchanged; tabs spread +1px; tabs -3px tall w/ top edge locked) */
 
 /* -------------------------------------------------
    Variables
@@ -36,7 +36,7 @@
   /* Socket geometry should follow the ORIGINAL dock-tab width.
      Visual tab width can overhang by a hair without changing the cradle cutouts. */
   --dock-tab-width:calc(var(--toc-tab-width) - 4px);
-  --dock-tab-width-visual:calc(var(--dock-tab-width) + 3px);
+  --dock-tab-width-visual:calc(var(--dock-tab-width) + 2px);
 
   /* Micro spacing: move only the tabs outward from center (do not move sockets). */
   --toc-tab-x-nudge:-1px;
