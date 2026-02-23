@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.35 (iOS dock-settle: force Mirror tab transform transition during tap-open) */
+/*! Covenant Reliquary UI v0.3.36 (Drag-cancel snap-back: treat as closing to avoid 1px pop) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.35';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.36';
 
   var doc = document;
   var root = doc.documentElement;
@@ -890,6 +890,12 @@
         if (startWasOpen) {
           snapCloseFromOpen();
         } else {
+          // IMPORTANT: cancel-open snap-back should behave like a close (not "opening") so
+          // root class cleanup cannot re-target the dock tab by 1px at the last frame.
+          root.classList.add('reliquary-closing');
+          root.classList.remove('reliquary-opening');
+          root.classList.remove('reliquary-dock-settling');
+
           var cancelTargetY = closedY + CANCEL_OPEN_SINK_PX;
           applyDragFrame(cancelTargetY, false);
         }
@@ -916,6 +922,7 @@
           raf(function () {
             raf(function () {
               root.classList.remove('reliquary-opening');
+              root.classList.remove('reliquary-closing');
             });
           });
 

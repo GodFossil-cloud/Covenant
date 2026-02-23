@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.4 (Staging suppresses current node indicator; commit flash) */
+/*! Covenant ToC v3.3.5 (Drag-cancel snap-back: treat as closing to avoid 1px pop) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.4';
+  window.COVENANT_TOC_VERSION = '3.3.5';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1340,13 +1340,19 @@
           else if (tocPanel.focus) tocPanel.focus();
         }, 0);
       } else {
-        if (!startWasOpen) root.classList.add('toc-opening');
+        if (!startWasOpen) {
+          // IMPORTANT: cancel-open snap-back should behave like a close (not "opening") so
+          // root class cleanup cannot re-target the dock tab by 1px at the last frame.
+          root.classList.add('toc-closing');
+          root.classList.remove('toc-opening');
+          root.classList.remove('toc-dock-settling');
+        }
 
         if (startWasOpen) {
           snapCloseFromOpen();
         } else {
           setRootWeldNudge(0);
-          applyDragFrame(closedY + 12, false);
+          applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
         }
       }
 
@@ -1377,6 +1383,7 @@
           raf2(function () {
             raf2(function () {
               root.classList.remove('toc-opening');
+              root.classList.remove('toc-closing');
               clearRootWeldNudge();
             });
           });
