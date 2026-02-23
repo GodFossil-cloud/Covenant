@@ -80,7 +80,7 @@ Rules:
 
 Core runtime files:
 - `assets/covenant.css` — sacred visual system (CSS guard applies).
-- `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges).
+- `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges, including citation label styling beneath the Lexicon seal).
 - `assets/journey.js` — journey definitions + helpers.
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.

@@ -23,6 +23,12 @@
   --lexicon-seal-face:#08090b;
   --lexicon-seal-face-hover:#0a0b0e;
 
+  /* Footer citation label beneath Lexicon seal (copy-to-clipboard). */
+  --citation-label-color:rgba(123, 20, 28, 0.92);
+  --citation-label-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.96),
+    0 0 12px rgba(123, 20, 28, 0.18);
+
   /* Lexicon glyph (open state): keep the symbol itself brass-gold, but let the halo go bright. */
   --lexicon-glyph-open-color:var(--gold-1, rgba(242,220,154,0.98));
   --lexicon-glyph-open-shadow:
@@ -579,6 +585,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   position:relative;
   visibility:visible !important;
   pointer-events:auto;
+  color:var(--citation-label-color, rgba(123, 20, 28, 0.92));
+  text-shadow:var(--citation-label-shadow, 0 1px 1px rgba(0, 0, 0, 0.96));
 }
 #navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
 
