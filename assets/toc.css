@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.78 (Notch width matches visual tab; tabs +2px only; sockets unchanged; tabs spread +1px; tabs -2px tall w/ top edge locked) */
+/*! Covenant ToC Panel Styles v3.1.79 (Notch width matches visual tab; tabs +2px only; sockets unchanged; tabs spread +1px; tabs -2px tall w/ top edge locked; close-pop guard) */
 
 /* -------------------------------------------------
    Variables
@@ -138,15 +138,16 @@
 html.toc-opening,
 html.toc-open{--toc-tab-weld-nudge:1px}
 
-/* While a panel is open (or in open/close motion), drop the top-edge-lock so the active tab
-   can meet its panel without altering the other tab's cradle alignment. */
+/* While a panel is open (or opening), drop the top-edge-lock so the active tab can meet its panel.
+   IMPORTANT: During closing, restore the lock so there is no last-frame 1px "drop then pop" when
+   root motion classes are cleaned up. */
 html.toc-opening,
-html.toc-open,
-html.toc-closing{--toc-tab-top-edge-lock:0px}
+html.toc-open{--toc-tab-top-edge-lock:0px}
+html.toc-closing{--toc-tab-top-edge-lock:var(--dock-tab-top-edge-lock)}
 
 html.reliquary-opening,
-html.reliquary-open,
-html.reliquary-closing{--mirror-tab-top-edge-lock:0px}
+html.reliquary-open{--mirror-tab-top-edge-lock:0px}
+html.reliquary-closing{--mirror-tab-top-edge-lock:var(--dock-tab-top-edge-lock)}
 
 /* -------------------------------------------------
    Scroll lock
