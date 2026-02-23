@@ -131,6 +131,14 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 .reliquary-panel[aria-hidden="true"]{pointer-events:none}
 .reliquary-panel[aria-hidden="false"]{pointer-events:auto}
 
+/* When the Reliquary is open, follow the Mirror tab's cradle nudge by shifting the panel (not the tab).
+   This preserves dock socket alignment while eliminating the outer-edge 1px overhang on the sheet. */
+@media (min-width:601px){
+  html.reliquary-opening .reliquary-panel,
+  html.reliquary-open .reliquary-panel,
+  html.reliquary-closing .reliquary-panel{--reliquary-panel-x:calc(-50% + var(--mirror-tab-x-nudge, 0px))}
+}
+
 /* -------------------------------------------------
    Drag handle region (sheet-style)
    ------------------------------------------------- */
@@ -244,6 +252,12 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
     /* Sharp 90° corner (upper-right) */
     border-radius:0;
   }
+
+  /* Mobile Safari: the Mirror tab's decorative cap can extend ~1px beyond the button's rect.
+     When open, bias the sheet right by 1px so the outer edge never reads "overhanging". */
+  html.reliquary-opening .reliquary-panel,
+  html.reliquary-open .reliquary-panel,
+  html.reliquary-closing .reliquary-panel{right:max(0px, calc(var(--reliquary-panel-right, 0px) - 1px))}
 }
 
 /* -------------------------------------------------

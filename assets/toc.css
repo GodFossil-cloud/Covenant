@@ -50,6 +50,11 @@
   --dock-tab-height-visual:calc(var(--dock-tab-height) - 3px);
   --dock-tab-top-edge-lock:-1.5px;
 
+  /* Per-tab top edge lock.
+     Lets the active (welded) tab align to its panel without disturbing the other tab's dock seat. */
+  --toc-tab-top-edge-lock:var(--dock-tab-top-edge-lock);
+  --mirror-tab-top-edge-lock:var(--dock-tab-top-edge-lock);
+
   /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
 
@@ -131,6 +136,16 @@
 html.toc-opening,
 html.toc-open{--toc-tab-weld-nudge:1px}
 
+/* While a panel is open (or in open/close motion), drop the top-edge-lock so the active tab
+   can meet its panel without altering the other tab's cradle alignment. */
+html.toc-opening,
+html.toc-open,
+html.toc-closing{--toc-tab-top-edge-lock:0px}
+
+html.reliquary-opening,
+html.reliquary-open,
+html.reliquary-closing{--mirror-tab-top-edge-lock:0px}
+
 /* -------------------------------------------------
    Scroll lock
    ------------------------------------------------- */
@@ -179,6 +194,14 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
 
 .toc-panel.is-dragging{transition:none !important}
+
+/* When the ToC is open, follow the tab's cradle nudge by shifting the panel (not the tab).
+   This preserves dock socket alignment while eliminating the outer-edge 1px overhang on the sheet. */
+@media (min-width:601px){
+  html.toc-opening .toc-panel,
+  html.toc-open .toc-panel,
+  html.toc-closing .toc-panel{--toc-panel-x:calc(-50% + var(--toc-tab-x-nudge, 0px))}
+}
 
 .toc-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 58%,rgba(0,0,0,.012) 74%,rgba(0,0,0,.060) 100%);pointer-events:none;z-index:3}
 
@@ -462,7 +485,7 @@ html #mirrorToggle.dock-tab .toc-glyph{transform:translate3d(-50%,-50%,0) transl
 html #tocToggle.dock-tab{
   transform:translate3d(
     var(--toc-tab-x-nudge, 0px),
-    calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px) + var(--toc-tab-top-edge-lock, var(--dock-tab-top-edge-lock, 0px))),
     0);
   transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
   will-change:transform;
@@ -478,7 +501,7 @@ html #tocToggle.dock-tab{
 html #mirrorToggle.dock-tab{
   transform:translate3d(
     var(--mirror-tab-x-nudge, 0px),
-    calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px) + var(--mirror-tab-top-edge-lock, var(--dock-tab-top-edge-lock, 0px))),
     0);
   transition:transform var(--reliquary-snap-duration, var(--toc-snap-duration)) var(--reliquary-snap-ease, var(--toc-snap-ease));
   will-change:transform;
@@ -570,7 +593,7 @@ html #mirrorToggle.dock-tab:focus-visible::after{
 html #mirrorToggle.dock-tab:active:not(:disabled){
   transform:translate3d(
     var(--mirror-tab-x-nudge, 0px),
-    calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    calc(var(--dock-tab-raise) + var(--mirror-tab-drag-y, 0px) + var(--mirror-tab-top-edge-lock, var(--dock-tab-top-edge-lock, 0px))),
     0);
 }
 
@@ -578,7 +601,7 @@ html #mirrorToggle.dock-tab:active:not(:disabled){
 html #tocToggle.dock-tab:active:not(:disabled){
   transform:translate3d(
     var(--toc-tab-x-nudge, 0px),
-    calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px) + var(--dock-tab-top-edge-lock, 0px)),
+    calc(var(--dock-tab-raise) + var(--toc-tab-drag-y, 0px) + var(--toc-tab-weld-nudge, 0px) + var(--toc-tab-top-edge-lock, var(--dock-tab-top-edge-lock, 0px))),
     0);
 }
 
@@ -673,6 +696,12 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
 
     max-height:none;
   }
+
+  /* Mobile Safari: the tab's decorative cap can extend ~1px beyond the button's rect.
+     When open, bias the sheet left by 1px so the outer edge never reads "overhanging". */
+  html.toc-opening .toc-panel,
+  html.toc-open .toc-panel,
+  html.toc-closing .toc-panel{left:max(0px, calc(var(--toc-panel-left, 12px) - 1px))}
 
   .toc-panel-header{padding:.95rem 1.25rem .78rem;min-height:3.05rem}
   .toc-produced-title{font-size:1.0rem}
