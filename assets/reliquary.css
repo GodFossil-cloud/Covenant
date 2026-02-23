@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.11 (Dock glyph: smoother glow fades) */
+/*! Covenant Reliquary Panel Styles v0.3.12 (Notch width matches visual tab) */
 
 /* -------------------------------------------------
    Variables
@@ -20,8 +20,9 @@
 
   --reliquary-brass:rgba(201,169,97,1);
 
-  /* Corner socket geometry: used for width + seating math (even if the panel corner is not clipped). */
-  --reliquary-notch-w:calc(var(--dock-tab-width, var(--nav-pill-width,56px)) + 0px);
+  /* Corner socket geometry: used for width + seating math (even if the panel corner is not clipped).
+     IMPORTANT: notch width must match the *visual* tab width so the opened sheet meets the tab edges cleanly. */
+  --reliquary-notch-w:var(--dock-tab-width-visual, var(--dock-tab-width, var(--nav-pill-width,56px)));
 
   /* Notch depth (used for seating math). */
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);

@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.76 (Tabs +2px only; sockets unchanged; tabs spread +1px; tabs -3px tall w/ top edge locked) */
+/*! Covenant ToC Panel Styles v3.1.77 (Notch width matches visual tab; tabs +2px only; sockets unchanged; tabs spread +1px; tabs -3px tall w/ top edge locked) */
 
 /* -------------------------------------------------
    Variables
@@ -100,8 +100,9 @@
      (Lets the top edge fully cover the footer slab hairline in the closed state.) */
   --dock-cradle-h:calc(var(--dock-socket-h) + 0px);
 
-  /* ToC header connector geometry. */
-  --toc-notch-w:calc(var(--dock-tab-width, 52px) + 0px);
+  /* ToC header connector geometry.
+     IMPORTANT: notch width must match the *visual* tab width so the opened sheet meets the tab edges cleanly. */
+  --toc-notch-w:var(--dock-tab-width-visual);
   --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
   --toc-seat-overlap:2px;
 
