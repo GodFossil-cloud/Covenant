@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.77 (Notch width matches visual tab; tabs +2px only; sockets unchanged; tabs spread +1px; tabs -3px tall w/ top edge locked) */
+/*! Covenant ToC Panel Styles v3.1.78 (Notch width matches visual tab; tabs +2px only; sockets unchanged; tabs spread +1px; tabs -2px tall w/ top edge locked) */
 
 /* -------------------------------------------------
    Variables
@@ -44,11 +44,13 @@
 
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
 
-  /* Visual resize: tabs are 3px shorter, but their TOP EDGE must not move.
-     (Because the dock tabs are align-self:center, shrinking height by 3px would normally drop the top edge by 1.5px,
-      so we lift the whole tab by 1.5px via a shared carry.) */
-  --dock-tab-height-visual:calc(var(--dock-tab-height) - 3px);
-  --dock-tab-top-edge-lock:-1.5px;
+  /* Visual resize: tabs are 2px shorter, but their TOP EDGE must not move.
+     (Because the dock tabs are align-self:center, shrinking height by 2px would normally drop the top edge by 1px,
+      so we lift the whole tab by 1px via a shared carry.)
+
+     IMPORTANT: keep this an integer pixel to avoid device-pixel rounding reading as a 1px "proud" seat. */
+  --dock-tab-height-visual:calc(var(--dock-tab-height) - 2px);
+  --dock-tab-top-edge-lock:-1px;
 
   /* Per-tab top edge lock.
      Lets the active (welded) tab align to its panel without disturbing the other tab's dock seat. */
