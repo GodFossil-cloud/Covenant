@@ -242,6 +242,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
    ------------------------------------------------- */
 
 #navFooter{
+  /* Footer citation label (universal): variables consumed by assets/covenant.css (.citation-text). */
+  --citation-color:rgba(123, 20, 28, 0.92);
+  --citation-shadow:rgba(123, 20, 28, 0.18);
+
   /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top.
      IMPORTANT (iPhone Safari): navFooterCritical defines this token later in the DOM.
      Use !important so vertical positioning changes actually take effect. */
@@ -585,8 +589,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   position:relative;
   visibility:visible !important;
   pointer-events:auto;
-  color:var(--citation-label-color, rgba(123, 20, 28, 0.92));
-  text-shadow:var(--citation-label-shadow, 0 1px 1px rgba(0, 0, 0, 0.96));
+  color:var(--citation-color, rgba(123, 20, 28, 0.92));
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.96),
+    0 0 12px var(--citation-shadow, rgba(123, 20, 28, 0.18));
 }
 #navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
 
@@ -616,7 +622,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
    Style it as a faint pill so it reads cleanly against the dock gradient. */
 #navFooter .citation-label.is-copied #citationText{
   display:inline-block;
-  color:var(--citation-color, rgba(242, 220, 154, 0.96));
+  color:rgba(242, 220, 154, 0.96);
   text-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
     0 0 12px rgba(242, 220, 154, 0.18);
