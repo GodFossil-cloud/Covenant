@@ -25,27 +25,38 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]){
   cursor:not-allowed;
 }
 
+/* Dark, embedded face (with a faint "barred" hatch so it reads locked, not merely off). */
 html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
 html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
 html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
 html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"])::after{
-  background-color:var(--obsidian-0, #050506) !important;
+  background-color:#020203 !important;
   background-image:
-    radial-gradient(120% 160% at 50% 15%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
-    radial-gradient(120% 160% at 50% 110%, rgba(0,0,0,0.92), rgba(0,0,0,0) 62%),
-    linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.58));
+    radial-gradient(120% 150% at 50% 10%, rgba(255,255,255,0.05), rgba(255,255,255,0) 52%),
+    radial-gradient(140% 190% at 50% 118%, rgba(0,0,0,0.98), rgba(0,0,0,0) 62%),
+    repeating-linear-gradient(135deg,
+      rgba(255,255,255,0.055) 0 1px,
+      rgba(0,0,0,0) 1px 7px
+    ),
+    linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(0,0,0,0.66));
+
+  box-shadow:
+    inset 0 0 26px rgba(0,0,0,0.92),
+    inset 0 -22px 26px rgba(0,0,0,0.88),
+    inset 0 12px 18px -18px rgba(255,255,255,0.10);
 }
 
 html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
 html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
 html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
 html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"])::before{
-  border-color:rgba(0,0,0,0.80) !important;
+  border-color:rgba(0,0,0,0.92) !important;
   box-shadow:
-    inset 0 0 26px rgba(0,0,0,0.98),
-    inset 0 2px 14px rgba(0,0,0,0.70),
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 0 0 1px rgba(0,0,0,0.88) !important;
+    inset 0 0 34px rgba(0,0,0,1),
+    inset 0 3px 18px rgba(0,0,0,0.86),
+    inset 0 1px 0 rgba(255,255,255,0.02),
+    inset 0 -1px 0 rgba(255,255,255,0.015),
+    0 0 0 1px rgba(0,0,0,0.94) !important;
 }
 
 html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
@@ -56,11 +67,18 @@ html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .le
 html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
 html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
 html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{
-  color:rgba(201, 169, 97, 0.42) !important;
+  color:rgba(201, 169, 97, 0.30) !important;
   text-shadow:
-    0 1px 0 rgba(0,0,0,0.92),
-    0 -1px 0 rgba(255,255,255,0.06) !important;
+    0 1px 0 rgba(0,0,0,0.94),
+    0 -1px 0 rgba(255,255,255,0.05) !important;
   filter:none !important;
+}
+
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph{
+  transform:translateY(1px);
 }
 
 html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before,
@@ -80,7 +98,7 @@ html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]).has
 html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
 html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
 html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner{
-  color:rgba(242, 220, 154, 0.56) !important;
+  color:rgba(242, 220, 154, 0.44) !important;
 }
 
 
@@ -100,13 +118,22 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
 #navFooter #lexiconToggle.is-lexicon-locked::after,
 #navFooter #lexiconToggle[data-lexicon-locked="true"]::after,
 #navFooter #lexiconToggle[aria-disabled="true"]::after{
-  background-color:var(--obsidian-0, #050506) !important;
+  background-color:#020203 !important;
 
-  /* Subtle inlay/vignette: reads as embedded metal, not faded UI. */
+  /* Harder inlay/vignette + faint hatch so it reads "barred" (locked). */
   background-image:
-    radial-gradient(120% 160% at 50% 15%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
-    radial-gradient(120% 160% at 50% 110%, rgba(0,0,0,0.92), rgba(0,0,0,0) 62%),
-    linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.58));
+    radial-gradient(120% 150% at 50% 10%, rgba(255,255,255,0.05), rgba(255,255,255,0) 52%),
+    radial-gradient(140% 190% at 50% 118%, rgba(0,0,0,0.98), rgba(0,0,0,0) 62%),
+    repeating-linear-gradient(135deg,
+      rgba(255,255,255,0.055) 0 1px,
+      rgba(0,0,0,0) 1px 7px
+    ),
+    linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(0,0,0,0.66));
+
+  box-shadow:
+    inset 0 0 26px rgba(0,0,0,0.92),
+    inset 0 -22px 26px rgba(0,0,0,0.88),
+    inset 0 12px 18px -18px rgba(255,255,255,0.10);
 
   transition:background-color 160ms linear;
 }
@@ -115,27 +142,32 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
 #navFooter #lexiconToggle.is-lexicon-locked::before,
 #navFooter #lexiconToggle[data-lexicon-locked="true"]::before,
 #navFooter #lexiconToggle[aria-disabled="true"]::before{
-  border-color:rgba(0,0,0,0.80) !important;
+  border-color:rgba(0,0,0,0.92) !important;
   box-shadow:
-    inset 0 0 26px rgba(0,0,0,0.98),
-    inset 0 2px 14px rgba(0,0,0,0.70),
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 0 0 1px rgba(0,0,0,0.88) !important;
+    inset 0 0 34px rgba(0,0,0,1),
+    inset 0 3px 18px rgba(0,0,0,0.86),
+    inset 0 1px 0 rgba(255,255,255,0.02),
+    inset 0 -1px 0 rgba(255,255,255,0.015),
+    0 0 0 1px rgba(0,0,0,0.94) !important;
 }
 
-/* Glyph: keep it readable, but cold/engraved (no aura). */
+/* Glyph: keep it readable, but colder + slightly "pressed in" (no aura). */
 #navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph,
 #navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph-mid-inner,
 #navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph,
 #navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph-mid-inner,
 #navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph,
 #navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph-mid-inner{
-  color:rgba(201, 169, 97, 0.42) !important;
+  color:rgba(201, 169, 97, 0.30) !important;
   text-shadow:
-    0 1px 0 rgba(0,0,0,0.92),
-    0 -1px 0 rgba(255,255,255,0.06) !important;
+    0 1px 0 rgba(0,0,0,0.94),
+    0 -1px 0 rgba(255,255,255,0.05) !important;
   filter:none !important;
 }
+
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph{transform:translateY(1px)}
 
 #navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph::before,
 #navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph::before,
@@ -152,7 +184,7 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
 #navFooter #lexiconToggle[data-lexicon-locked="true"].has-selection .lexicon-glyph-mid-inner,
 #navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph,
 #navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph-mid-inner{
-  color:rgba(242, 220, 154, 0.56) !important;
+  color:rgba(242, 220, 154, 0.44) !important;
 }
 
 /* Keep hover/focus quiet while locked (no brightening).
