@@ -519,5 +519,61 @@
   })();
 </script>
 
+<script>
+  (function () {
+    'use strict';
+
+    var root = document.documentElement;
+
+    function byId(id) { return document.getElementById(id); }
+
+    var toc = byId('tocToggle');
+    var mirror = byId('mirrorToggle');
+
+    function clearTapState(btn) {
+      if (!btn) return;
+      try {
+        btn.classList.remove('is-tap-opening');
+        btn.classList.remove('is-tap-closing');
+      } catch (err) {}
+    }
+
+    function onClick(btn, e) {
+      if (!btn || !e) return;
+
+      /* Tap/click only: ignore keyboard-triggered click. */
+      if (typeof e.detail === 'number' && e.detail === 0) return;
+
+      /* If another handler has already suppressed this event, do not flash. */
+      if (e.defaultPrevented) return;
+
+      /* Safety: never flash during active drag shells. */
+      if (root && (root.classList.contains('toc-dragging') || root.classList.contains('reliquary-dragging'))) return;
+
+      clearTapState(btn);
+
+      var expanded = (btn.getAttribute('aria-expanded') === 'true');
+      try {
+        btn.classList.add(expanded ? 'is-tap-closing' : 'is-tap-opening');
+      } catch (err2) {}
+
+      window.setTimeout(function () {
+        clearTapState(btn);
+      }, 440);
+    }
+
+    function wire(btn) {
+      if (!btn) return;
+      /* Capture so we see the aria-expanded state before other toggle handlers flip it. */
+      btn.addEventListener('click', function (e) {
+        onClick(btn, e);
+      }, true);
+    }
+
+    wire(toc);
+    wire(mirror);
+  })();
+</script>
+
 {% include toc-panel.html %}
 {% include reliquary-panel.html %}
