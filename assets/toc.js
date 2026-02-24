@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.4.0 (dock tab tap flash: is-tap-opening / is-tap-closing) */
+/*! Covenant ToC v3.3.9 (iOS Safari: more reliable ToC tab taps via seal slop tuning) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.4.0';
+  window.COVENANT_TOC_VERSION = '3.3.9';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -56,42 +56,6 @@
 
   // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
   var tapAnimating = false;
-
-  // Dock tab tap flash (glyph aura).
-  var tocTapClassTimer = null;
-  var TOC_TAP_OPEN_MS = 280;
-  var TOC_TAP_CLOSE_MS = 240;
-
-  function clearToCTapClasses() {
-    if (!tocToggle || !tocToggle.classList) return;
-    tocToggle.classList.remove('is-tap-opening', 'is-tap-closing');
-  }
-
-  function scheduleToCTapClassClear(ms) {
-    if (tocTapClassTimer) {
-      clearTimeout(tocTapClassTimer);
-      tocTapClassTimer = null;
-    }
-
-    tocTapClassTimer = setTimeout(function () {
-      tocTapClassTimer = null;
-      clearToCTapClasses();
-    }, Math.max(0, ms || 0) + 80);
-  }
-
-  function markToCTapOpening() {
-    if (!tocToggle || !tocToggle.classList) return;
-    clearToCTapClasses();
-    tocToggle.classList.add('is-tap-opening');
-    scheduleToCTapClassClear(TOC_TAP_OPEN_MS);
-  }
-
-  function markToCTapClosing() {
-    if (!tocToggle || !tocToggle.classList) return;
-    clearToCTapClasses();
-    tocToggle.classList.add('is-tap-closing');
-    scheduleToCTapClassClear(TOC_TAP_CLOSE_MS);
-  }
 
   // Optional: UI stack coordination.
   var uiRegistered = false;
@@ -361,7 +325,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/\"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
 
@@ -840,7 +804,933 @@
     tocDynamicContent.innerHTML = html;
   }
 
-  // ... (unchanged code omitted for brevity in this patch) ...
+  // ---------------------------
+  // Pending selection
+  // ---------------------------
+
+  function findCurrentItemElement() {
+    if (!currentPageId || !tocDynamicContent || !tocDynamicContent.querySelector) return null;
+
+    try {
+      return tocDynamicContent.querySelector('.toc-item[data-page-id="' + CSS.escape(currentPageId) + '"]');
+    } catch (err) {
+      // CSS.escape not supported? Fall back to current class.
+      return tocDynamicContent.querySelector('.toc-item--current');
+    }
+  }
+
+  function suppressCurrentIndicator() {
+    if (!currentPageId) return;
+
+    var el = findCurrentItemElement();
+    if (!el || !el.classList) return;
+
+    if (el.classList.contains('toc-item--current')) {
+      el.classList.remove('toc-item--current');
+      el.classList.add('toc-item--current-suppressed');
+      suppressedCurrentItemEl = el;
+    }
+  }
+
+  function restoreCurrentIndicator() {
+    var el = (suppressedCurrentItemEl && suppressedCurrentItemEl.classList) ? suppressedCurrentItemEl : findCurrentItemElement();
+    if (!el || !el.classList) {
+      suppressedCurrentItemEl = null;
+      return;
+    }
+
+    if (el.classList.contains('toc-item--current-suppressed')) {
+      el.classList.remove('toc-item--current-suppressed');
+      el.classList.add('toc-item--current');
+    }
+
+    suppressedCurrentItemEl = null;
+  }
+
+  function clearPendingSelection() {
+    restoreCurrentIndicator();
+
+    pendingHref = '';
+    pendingPageId = '';
+    pendingTitle = '';
+
+    if (pendingItemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.remove('toc-item--pending');
+      pendingItemEl.classList.remove('is-holding');
+    }
+
+    if (pendingHoldEl && pendingHoldEl.classList) {
+      pendingHoldEl.classList.remove('is-holding');
+      pendingHoldEl.disabled = false;
+      pendingHoldEl.removeAttribute('aria-label');
+    }
+
+    if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
+      pendingHoldTitleEl.style.removeProperty('--toc-hold-p');
+    }
+
+    pendingItemEl = null;
+    pendingHoldEl = null;
+    pendingHoldTitleEl = null;
+
+    if (currentPageId) {
+      var currentTitle = '';
+      for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
+        if (window.COVENANT_JOURNEY[i].id === currentPageId) {
+          currentTitle = window.COVENANT_JOURNEY[i].title || '';
+          break;
+        }
+      }
+      if (currentTitle) setProducedTitle(currentTitle);
+    }
+  }
+
+  function stageSelection(pageId, href, title, itemEl, itemBtnEl) {
+    if (!pageId || !href) return;
+    if (pageId === currentPageId) return;
+
+    if (pendingItemEl && pendingItemEl !== itemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.remove('toc-item--pending');
+      pendingItemEl.classList.remove('is-holding');
+    }
+
+    pendingHref = href;
+    pendingPageId = pageId;
+    pendingTitle = title || '';
+    pendingItemEl = itemEl;
+    pendingHoldEl = itemBtnEl || null;
+    pendingHoldTitleEl = null;
+
+    if (pendingHoldEl && pendingHoldEl.querySelector) {
+      pendingHoldTitleEl = pendingHoldEl.querySelector('.toc-entry-title');
+    }
+
+    if (pendingItemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.add('toc-item--pending');
+    }
+
+    suppressCurrentIndicator();
+
+    if (pendingTitle) setProducedTitle(pendingTitle);
+
+    // Deliberate confirm lives on the staged entry itself: click again to enter.
+    if (pendingHoldEl) {
+      pendingHoldEl.setAttribute('aria-label', 'Click again to enter selected page');
+      pendingHoldEl.disabled = false;
+    }
+
+    if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
+      pendingHoldTitleEl.style.setProperty('--toc-hold-p', '0');
+    }
+  }
+
+  // ---------------------------
+  // Hold-to-enter (legacy)
+  // ---------------------------
+
+  function setHoldProgress(p) {
+    var clamped = Math.max(0, Math.min(1, p));
+
+    if (pendingHoldTitleEl && pendingHoldTitleEl.style) {
+      pendingHoldTitleEl.style.setProperty('--toc-hold-p', String(clamped));
+      return;
+    }
+
+    if (pendingHoldEl && pendingHoldEl.style) {
+      pendingHoldEl.style.setProperty('--toc-hold-p', String(clamped));
+    }
+  }
+
+  function cancelHold() {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      holdTimer = null;
+    }
+
+    if (holdRaf) {
+      cancelAnimationFrame(holdRaf);
+      holdRaf = 0;
+    }
+
+    holdStartedAt = 0;
+    holdCompleted = false;
+
+    if (pendingHoldEl && pendingHoldEl.classList) {
+      pendingHoldEl.classList.remove('is-holding');
+    }
+
+    if (pendingItemEl && pendingItemEl.classList) {
+      pendingItemEl.classList.remove('is-holding');
+    }
+
+    setHoldProgress(0);
+  }
+
+  function tickHold() {
+    if (!holdStartedAt) return;
+
+    var elapsed = Date.now() - holdStartedAt;
+    setHoldProgress(elapsed / HOLD_MS);
+
+    if (elapsed >= HOLD_MS) return;
+
+    holdRaf = requestAnimationFrame(tickHold);
+  }
+
+  function shouldBeginHoldForEvent(e) {
+    if (!e) return false;
+
+    if (pendingHoldEl && e.target && (e.target === pendingHoldEl || (pendingHoldEl.contains && pendingHoldEl.contains(e.target)))) {
+      return true;
+    }
+
+    // Keyboard path: focused element is the pending hold surface.
+    try {
+      if ((e.type === 'keydown' || e.type === 'keyup') && pendingHoldEl && document.activeElement === pendingHoldEl) return true;
+    } catch (err) {}
+
+    return false;
+  }
+
+  function beginHold(e) {
+    if (!pendingHref) return;
+
+    var surface = pendingHoldEl;
+    if (!surface || surface.disabled) return;
+
+    if (!shouldBeginHoldForEvent(e)) return;
+
+    stopEvent(e);
+
+    if (holdTimer || holdStartedAt) return;
+
+    holdStartedAt = Date.now();
+    holdCompleted = false;
+
+    if (surface.classList) surface.classList.add('is-holding');
+    if (pendingItemEl && pendingItemEl.classList) pendingItemEl.classList.add('is-holding');
+
+    setHoldProgress(0);
+
+    if (pendingHoldEl && pendingHoldEl.setPointerCapture && e && typeof e.pointerId === 'number') {
+      try { pendingHoldEl.setPointerCapture(e.pointerId); } catch (err0) {}
+    }
+
+    holdRaf = requestAnimationFrame(tickHold);
+
+    holdTimer = setTimeout(function () {
+      holdTimer = null;
+      holdCompleted = true;
+      commitNavigation();
+    }, HOLD_MS);
+  }
+
+  function endHold(e) {
+    if (!holdStartedAt) return;
+
+    if (pendingHoldEl && pendingHoldEl.releasePointerCapture && e && typeof e.pointerId === 'number') {
+      try { pendingHoldEl.releasePointerCapture(e.pointerId); } catch (err0) {}
+    }
+
+    stopEvent(e);
+
+    if (holdCompleted) return;
+
+    cancelHold();
+  }
+
+  function requestCloseAllPanelsForNavigation() {
+    try {
+      var stack = window.COVENANT_UI_STACK;
+      if (stack && typeof stack.requestCloseAll === 'function') {
+        stack.requestCloseAll();
+        return;
+      }
+    } catch (err) {}
+  }
+
+  function getNavigationDelayMs() {
+    var maxMs = Math.max(
+      readCssNumberVar('--toc-snap-duration') || 0,
+      readCssNumberVar('--reliquary-snap-duration') || 0,
+      readCssNumberVar('--lexicon-snap-duration') || 0
+    );
+
+    return Math.max(220, maxMs + 90);
+  }
+
+  function commitNavigation() {
+    if (!pendingHref) {
+      cancelHold();
+      return;
+    }
+
+    confirmNavigating = true;
+
+    playCommitFlash(getCommitFlashTarget());
+
+    var surface = pendingHoldEl;
+    if (surface) surface.disabled = true;
+
+    cancelHold();
+
+    requestCloseAllPanelsForNavigation();
+
+    closeToC(false);
+
+    var href = pendingHref;
+    var navDelay = getNavigationDelayMs();
+
+    setTimeout(function () {
+      window.location.href = href;
+    }, navDelay);
+  }
+
+  // ---------------------------
+  // Drag-to-open/close (seal + handle)
+  // ---------------------------
+
+  (function initToCDrag() {
+    if (!tocPanel || !tocOverlay || !tocToggle) return;
+    if (!window.PointerEvent) return;
+
+    var dragging = false;
+    var moved = false;
+    var pointerId = null;
+    var dragSource = null; // 'seal' or 'handle'
+
+    var sealPrimed = false;
+    var sealPointerId = null;
+    var sealStartY = 0;
+
+    // Pre-arm (iOS Safari): do heavier prep work on pointerdown so the first move frame can
+    // translate immediately without waiting on render/measure.
+    var preArmed = false;
+    var preArmedPointerId = null;
+    var preArmedStartY = 0;
+    var preArmedWasOpen = false;
+
+    var startY = 0;
+    var lastY = 0;
+    var lastT = 0;
+    var velocity = 0;
+
+    var startWasOpen = false;
+
+    var closedY = 0;
+    var currentY = 0;
+
+    var panelHBase = 0;
+    var closedOffsetPx = 0;
+    var openLiftPx = 0;
+
+    var weldPxForDrag = 0;
+
+    // iOS Safari: taps often include a few pixels of jitter; treat touch as touch, not drag.
+    var MOVE_SLOP = 2;
+
+    var OPEN_VELOCITY = -0.85;
+    var OPEN_RATIO = 0.38;
+
+    var CLOSE_VELOCITY = 0.85;
+    var CLOSE_RATIO = 0.28;
+
+    var SNAP_MS = readCssNumberVar('--toc-snap-duration');
+    if (!SNAP_MS || SNAP_MS <= 0) SNAP_MS = 420;
+
+    var SNAP_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
+
+    var CANCEL_OPEN_SINK_PX = 12;
+
+    window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
+
+    function computeMoveSlop(pointerType, source) {
+      if (pointerType !== 'touch') return 2;
+      // The ToC seal needs more slop than the handle to keep taps from becoming accidental drags on iOS Safari.
+      if (source === 'seal') return 12;
+      return 9;
+    }
+
+    function computeOpenRatio(pointerType) {
+      return (pointerType === 'touch') ? 0.22 : 0.38;
+    }
+
+    function clearPreArm() {
+      preArmed = false;
+      preArmedPointerId = null;
+      preArmedStartY = 0;
+      preArmedWasOpen = false;
+    }
+
+    function computeOpenLift() {
+      var v = readCssNumberVar('--toc-open-lift');
+      openLiftPx = (typeof v === 'number' && !isNaN(v)) ? v : 0;
+    }
+
+    function computeClosedY() {
+      if (!tocPanel) return;
+      var rect = tocPanel.getBoundingClientRect();
+      var panelH = (rect && rect.height) ? rect.height : 1;
+
+      panelHBase = Math.max(1, panelH);
+      closedOffsetPx = readCssNumberVar('--toc-closed-offset') || 0;
+
+      closedY = Math.max(1, panelHBase + closedOffsetPx);
+    }
+
+    function preArmSealDrag(e) {
+      if (!e) return;
+      if (tapAnimating) return;
+      if (dragging) return;
+
+      MOVE_SLOP = computeMoveSlop(e.pointerType, 'seal');
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
+
+      preArmed = true;
+      preArmedPointerId = e.pointerId;
+      preArmedStartY = e.clientY;
+      preArmedWasOpen = tocPanel.classList.contains('is-open');
+
+      // Prep work that would otherwise happen on the first move frame.
+      positionPanel();
+      computeOpenLift();
+
+      if (!preArmedWasOpen) {
+        // Rendering the ToC index is the most expensive part of drag-open.
+        // Doing it here reduces the chance that iOS Safari drops the first move frame.
+        renderToC();
+      }
+
+      computeClosedY();
+    }
+
+    function applyDragFrame(y, draggingNow) {
+      if (!tocPanel) return;
+      currentY = y;
+
+      tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
+
+      var denom = (closedY - openLiftPx);
+      if (!denom || denom <= 0) denom = 1;
+
+      var progress = (closedY - y) / denom;
+      if (progress < 0) progress = 0;
+      if (progress > 1) progress = 1;
+
+      tocPanel.style.opacity = '1';
+
+      if (tocOverlay) tocOverlay.style.opacity = String(progress);
+
+      var tabOffset = (y - closedY);
+      if (tabOffset > 0) tabOffset = 0;
+
+      if (draggingNow && weldPxForDrag > 0 && tabOffset > -(weldPxForDrag + 0.25)) {
+        tabOffset = -weldPxForDrag;
+      }
+
+      setToCTabDragOffset(tabOffset);
+    }
+
+    function applyOpenStateFromDrag() {
+      if (!tocPanel || !tocOverlay) return;
+
+      cancelCloseWeldDrop();
+      clearRootWeldNudge();
+
+      if (!tocPanel.classList.contains('is-open')) {
+        focusReturnEl = tocToggle;
+
+        tocPanel.classList.remove('is-closing');
+        tocPanel.classList.add('is-open');
+        tocOverlay.classList.add('is-open');
+
+        tocPanel.setAttribute('aria-hidden', 'false');
+        tocOverlay.setAttribute('aria-hidden', 'false');
+
+        if (tocToggle) {
+          tocToggle.classList.add('is-open');
+          tocToggle.setAttribute('aria-expanded', 'true');
+          tocToggle.setAttribute('aria-label', 'Close Contents');
+        }
+
+        if (currentPageId) {
+          for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
+            if (window.COVENANT_JOURNEY[i].id === currentPageId) {
+              setProducedTitle(window.COVENANT_JOURNEY[i].title || '');
+              break;
+            }
+          }
+        }
+
+        clearPendingSelection();
+        renderToC();
+        enableFocusTrap();
+
+        noteOpenToUIStack();
+      }
+
+      root.classList.add('toc-open');
+      root.classList.remove('toc-closing');
+      root.classList.remove('toc-dock-settling');
+
+      setToCTabDragOffset(openLiftPx - closedY, false);
+    }
+
+    function settleDockAfterSnapClose() {
+      var snapMs = readCssNumberVar('--toc-snap-duration');
+      if (!snapMs || snapMs <= 0) snapMs = 420;
+
+      root.classList.add('toc-dock-settling');
+      root.classList.remove('toc-closing');
+
+      setTimeout(function () {
+        root.classList.remove('toc-dock-settling');
+      }, snapMs + 30);
+    }
+
+    function finalizeCloseAfterSnap() {
+      if (!tocPanel || !tocOverlay) return;
+
+      setToCTabDragOffset(-CLOSE_WELD_PX, true);
+
+      cancelCloseWeldDrop();
+      clearRootWeldNudge();
+
+      disableFocusTrap();
+      cancelHold();
+
+      if (!confirmNavigating) clearPendingSelection();
+
+      tocPanel.classList.remove('is-open');
+      tocPanel.setAttribute('aria-hidden', 'true');
+
+      tocOverlay.classList.remove('is-open');
+      tocOverlay.setAttribute('aria-hidden', 'true');
+
+      tocPanel.style.opacity = '0';
+      tocOverlay.style.opacity = '0';
+
+      if (tocToggle) {
+        tocToggle.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        tocToggle.setAttribute('aria-label', 'Open Contents');
+      }
+
+      noteCloseToUIStack();
+
+      root.classList.remove('toc-open');
+
+      settleDockAfterSnapClose();
+
+      clearToCTabDragOffset();
+
+      var target = (focusReturnEl && document.contains(focusReturnEl)) ? focusReturnEl : tocToggle;
+      if (target && target.focus) target.focus();
+      focusReturnEl = null;
+
+      tocPanel.style.transition = '';
+      tocOverlay.style.transition = '';
+    }
+
+    function snapCloseFromOpen() {
+      if (!tocPanel) return;
+
+      var done = false;
+
+      cancelCloseWeldDrop();
+      setRootWeldNudge(CLOSE_WELD_PX);
+
+      root.classList.add('toc-closing');
+      root.classList.remove('toc-opening');
+      root.classList.remove('toc-dock-settling');
+
+      var targetY = closedY;
+      applyDragFrame(targetY, false);
+
+      setToCTabDragOffset(-CLOSE_WELD_PX, false);
+
+      var onEnd = function (e) {
+        if (!e) return;
+        if (e.target !== tocPanel) return;
+        if (e.propertyName && e.propertyName.indexOf('transform') === -1) return;
+        finish();
+      };
+
+      function finish() {
+        if (done) return;
+        done = true;
+        if (tocPanel && tocPanel.removeEventListener) tocPanel.removeEventListener('transitionend', onEnd);
+        finalizeCloseAfterSnap();
+      }
+
+      tocPanel.addEventListener('transitionend', onEnd);
+      setTimeout(finish, SNAP_MS + 90);
+    }
+
+    function snap() {
+      if (!tocPanel) return;
+
+      var shouldOpen = false;
+      var baseH = panelHBase || closedY || 1;
+
+      if (startWasOpen) {
+        var dragDown = currentY - openLiftPx;
+        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > baseH * 0.28);
+      } else {
+        var dragUp = closedY - currentY;
+        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > baseH * OPEN_RATIO);
+      }
+
+      tocPanel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE + ', opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
+      if (tocOverlay) tocOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
+
+      if (shouldOpen) {
+        cancelCloseWeldDrop();
+        clearRootWeldNudge();
+
+        tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + openLiftPx + 'px)';
+        tocPanel.style.opacity = '1';
+        if (tocOverlay) tocOverlay.style.opacity = '1';
+
+        applyOpenStateFromDrag();
+
+        setTimeout(function () {
+          if (!tocPanel) return;
+          var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
+          if (firstBtn && firstBtn.focus) firstBtn.focus();
+          else if (tocPanel.focus) tocPanel.focus();
+        }, 0);
+      } else {
+        if (!startWasOpen) {
+          // IMPORTANT: cancel-open snap-back should behave like a close (not "opening") so
+          // root class cleanup cannot re-target the dock tab by 1px at the last frame.
+          root.classList.add('toc-closing');
+          root.classList.remove('toc-opening');
+          root.classList.remove('toc-dock-settling');
+        }
+
+        if (startWasOpen) {
+          snapCloseFromOpen();
+        } else {
+          setRootWeldNudge(0);
+          applyDragFrame(closedY + CANCEL_OPEN_SINK_PX, false);
+        }
+      }
+
+      setTimeout(function () {
+        if (!tocPanel) return;
+
+        if (shouldOpen) {
+          tocPanel.style.transform = '';
+          tocPanel.style.opacity = '';
+          tocPanel.style.transition = '';
+          if (tocOverlay) {
+            tocOverlay.style.opacity = '';
+            tocOverlay.style.transition = '';
+          }
+
+          root.classList.remove('toc-opening');
+        } else if (!startWasOpen) {
+          tocPanel.style.opacity = '0';
+          if (tocOverlay) tocOverlay.style.opacity = '0';
+          tocPanel.style.transition = '';
+          if (tocOverlay) tocOverlay.style.transition = '';
+
+          noteCloseToUIStack();
+
+          root.classList.add('toc-dock-settling');
+
+          var raf2 = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+          raf2(function () {
+            raf2(function () {
+              root.classList.remove('toc-opening');
+              root.classList.remove('toc-closing');
+              clearRootWeldNudge();
+            });
+          });
+
+          setTimeout(function () {
+            root.classList.remove('toc-dock-settling');
+          }, SNAP_MS + 80);
+
+          clearToCTabDragOffset();
+        }
+      }, SNAP_MS + 20);
+    }
+
+    function beginDrag(e, source, forcedStartY) {
+      if (tapAnimating) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      MOVE_SLOP = computeMoveSlop(e.pointerType, source);
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
+
+      var usePreArm = (source === 'seal' && preArmed && preArmedPointerId === e.pointerId);
+
+      dragging = true;
+      moved = false;
+      pointerId = e.pointerId;
+      dragSource = source;
+
+      startY = (typeof forcedStartY === 'number') ? forcedStartY : e.clientY;
+      lastY = e.clientY;
+      lastT = Date.now();
+      velocity = 0;
+
+      startWasOpen = usePreArm ? preArmedWasOpen : tocPanel.classList.contains('is-open');
+
+      // Once we commit to a drag, clear pre-arm state (tap path should not keep it around).
+      clearPreArm();
+
+      if (!usePreArm) {
+        positionPanel();
+        computeOpenLift();
+      }
+
+      tocPanel.classList.add('is-dragging');
+      setToCTabDraggingState(true);
+
+      cancelCloseWeldDrop();
+      if (startWasOpen) setRootWeldNudge(CLOSE_WELD_PX);
+      else clearRootWeldNudge();
+
+      if (startWasOpen) {
+        root.classList.add('toc-closing');
+        root.classList.remove('toc-opening');
+        root.classList.remove('toc-dock-settling');
+      }
+
+      if (!startWasOpen) {
+        root.classList.remove('toc-closing');
+        root.classList.add('toc-opening');
+        root.classList.remove('toc-dock-settling');
+
+        if (!usePreArm) {
+          renderToC();
+        }
+
+        noteOpenToUIStack();
+      }
+
+      // Cache weld value once per drag (avoid per-frame computed-style reads on iOS Safari).
+      weldPxForDrag = readCssNumberVar('--toc-tab-weld-nudge') || 0;
+
+      if (!usePreArm) {
+        computeClosedY();
+      }
+
+      currentY = startWasOpen ? openLiftPx : closedY;
+
+      tocPanel.style.transition = 'none';
+      if (tocOverlay) tocOverlay.style.transition = 'none';
+
+      tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
+
+      applyDragFrame(currentY, true);
+
+      var captureTarget = (source === 'seal') ? tocToggle : tocDragRegion;
+      if (captureTarget && captureTarget.setPointerCapture) {
+        try { captureTarget.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+
+      if (e && e.preventDefault) e.preventDefault();
+    }
+
+    function moveDrag(e) {
+      if (!dragging || e.pointerId !== pointerId) return;
+
+      var deltaY = e.clientY - startY;
+      if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
+        moved = true;
+        window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
+      }
+      if (!moved) return;
+
+      var now = Date.now();
+      var dt = now - lastT;
+      if (dt > 0) velocity = (e.clientY - lastY) / dt;
+
+      lastY = e.clientY;
+      lastT = now;
+
+      var base = startWasOpen ? openLiftPx : closedY;
+      var targetY = base + deltaY;
+      if (targetY < openLiftPx) targetY = openLiftPx;
+      if (targetY > closedY) targetY = closedY;
+
+      applyDragFrame(targetY, true);
+      e.preventDefault();
+    }
+
+    function endDrag(e) {
+      if (!dragging || (e && e.pointerId !== pointerId)) return;
+
+      dragging = false;
+      tocPanel.classList.remove('is-dragging');
+      setToCTabDraggingState(false);
+
+      if (moved) {
+        window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
+        setTimeout(function () { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 300);
+        snap();
+      } else {
+        // If we never moved enough to commit, discard any pre-arm state too.
+        clearPreArm();
+
+        if (startWasOpen) root.classList.remove('toc-closing');
+        else root.classList.remove('toc-opening');
+        clearToCTabDragOffset();
+        cancelCloseWeldDrop();
+        clearRootWeldNudge();
+      }
+
+      if (e) {
+        var captureTarget = (dragSource === 'seal') ? tocToggle : tocDragRegion;
+        if (captureTarget && captureTarget.hasPointerCapture && captureTarget.hasPointerCapture(e.pointerId)) {
+          try { captureTarget.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+      }
+    }
+
+    function releaseSealCapture(e) {
+      if (!e || !tocToggle) return;
+      if (tocToggle && tocToggle.hasPointerCapture && tocToggle.hasPointerCapture(e.pointerId)) {
+        try { tocToggle.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+    }
+
+    tocToggle.addEventListener('pointerdown', function (e) {
+      if (tapAnimating) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      sealPrimed = true;
+      sealPointerId = e.pointerId;
+      sealStartY = e.clientY;
+
+      MOVE_SLOP = computeMoveSlop(e.pointerType, 'seal');
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
+
+      // Pre-arm: do measurement + (if needed) ToC render now so the first move frame can translate immediately.
+      preArmSealDrag(e);
+
+      if (tocToggle && tocToggle.setPointerCapture) {
+        try { tocToggle.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+    });
+
+    tocToggle.addEventListener('pointermove', function (e) {
+      if (dragging) {
+        moveDrag(e);
+        return;
+      }
+
+      if (!sealPrimed || e.pointerId !== sealPointerId) return;
+
+      var dy = e.clientY - sealStartY;
+      var slop = computeMoveSlop(e.pointerType, 'seal');
+      if (Math.abs(dy) <= slop) return;
+
+      sealPrimed = false;
+      beginDrag(e, 'seal', sealStartY);
+      moveDrag(e);
+    });
+
+    tocToggle.addEventListener('pointerup', function (e) {
+      if (sealPrimed) releaseSealCapture(e);
+      sealPrimed = false;
+      sealPointerId = null;
+      clearPreArm();
+      endDrag(e);
+    });
+
+    tocToggle.addEventListener('pointercancel', function (e) {
+      if (sealPrimed) releaseSealCapture(e);
+      sealPrimed = false;
+      sealPointerId = null;
+      clearPreArm();
+      endDrag(e);
+    });
+
+    tocToggle.addEventListener('lostpointercapture', function (e) {
+      sealPrimed = false;
+      sealPointerId = null;
+      clearPreArm();
+      endDrag(e);
+    });
+
+    if (tocDragRegion) {
+      tocDragRegion.addEventListener('pointerdown', function (e) {
+        if (!tocPanel.classList.contains('is-open')) return;
+        beginDrag(e, 'handle');
+      });
+
+      tocDragRegion.addEventListener('pointermove', function (e) {
+        moveDrag(e);
+      });
+
+      tocDragRegion.addEventListener('pointerup', function (e) {
+        endDrag(e);
+      });
+
+      tocDragRegion.addEventListener('pointercancel', function (e) {
+        endDrag(e);
+      });
+
+      tocDragRegion.addEventListener('lostpointercapture', function (e) {
+        endDrag(e);
+      });
+    }
+  })();
+
+  // ---------------------------
+  // Bind
+  // ---------------------------
+
+  function bindContentClicks() {
+    if (!tocDynamicContent) return;
+
+    tocDynamicContent.addEventListener('click', function (e) {
+      var lockedBtn = closestSafe(e.target, '.toc-locked-btn');
+      if (lockedBtn) {
+        stopEvent(e);
+        announceLockedAttempt();
+        return;
+      }
+
+      var itemBtn = closestSafe(e.target, '.toc-item-btn');
+      if (!itemBtn) {
+        // Any click elsewhere inside the ToC clears staging.
+        // (Do not interfere with annex link navigation.)
+        var annexLink = closestSafe(e.target, '.toc-annex-link');
+        if (!annexLink && pendingPageId) clearPendingSelection();
+        return;
+      }
+
+      var itemEl = closestSafe(itemBtn, '.toc-item');
+      var pageId = itemEl ? itemEl.getAttribute('data-page-id') : '';
+
+      if (pageId && pageId === currentPageId) {
+        stopEvent(e);
+        clearPendingSelection();
+        return;
+      }
+
+      // Second click on the staged entry commits navigation.
+      if (pageId && pendingPageId && pageId === pendingPageId) {
+        stopEvent(e);
+        commitNavigation();
+        return;
+      }
+
+      var href = itemBtn.getAttribute('data-href');
+      if (!href || !pageId) return;
+
+      stopEvent(e);
+
+      var title = String(itemBtn.textContent || '').trim();
+      stageSelection(pageId, href, title, itemEl, itemBtn);
+    });
+  }
 
   function openToC() {
     if (!tocPanel || !tocOverlay) return;
@@ -851,8 +1741,6 @@
       window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
       return;
     }
-
-    markToCTapOpening();
 
     cancelCloseWeldDrop();
     clearRootWeldNudge();
@@ -928,8 +1816,8 @@
       tocPanel.style.opacity = '1';
       setPanelTranslateY(closedY);
 
-      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () {
+      var raf1 = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+      raf1(function () {
         setToCTabDragOffset(0, false);
 
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -964,8 +1852,6 @@
     if (!tocPanel || !tocOverlay) return;
 
     if (tapAnimating) return;
-
-    markToCTapClosing();
 
     disableFocusTrap();
     cancelHold();
@@ -1013,8 +1899,8 @@
 
     setToCTabDragOffset(openLift - closedYForTab, true);
 
-    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-    raf(function () {
+    var raf2 = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+    raf2(function () {
       setToCTabDragOffset(openLift - closedYForTab, false);
 
       tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -1064,6 +1950,73 @@
 
         tapAnimating = false;
       }, snapMs + 50);
+    });
+  }
+
+  function toggleToC() {
+    if (tapAnimating) return;
+
+    if (tocPanel && (tocPanel.classList.contains('is-open') || tocPanel.classList.contains('is-closing'))) {
+      if (!isTopmost()) {
+        bringSelfToFront();
+        return;
+      }
+
+      closeToC(true);
+    } else {
+      openToC();
+    }
+  }
+
+  function wireControls() {
+    if (tocToggle) {
+      tocToggle.addEventListener('click', function (e) {
+        stopEvent(e);
+        toggleToC();
+      });
+    }
+
+    if (tocOverlay) {
+      tocOverlay.addEventListener('click', function (e) {
+        stopEvent(e);
+        if (!isTopmost()) return;
+        closeToC(true);
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (!e || e.key !== 'Escape') return;
+      if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
+      if (!isTopmost()) return;
+
+      // ESC clears staging first; ESC again closes.
+      if (pendingPageId && !confirmNavigating) {
+        stopEvent(e);
+        clearPendingSelection();
+        return;
+      }
+
+      closeToC(true);
+    });
+
+    window.addEventListener('resize', function () {
+      if (tocPanel && tocPanel.classList.contains('is-open')) {
+        positionPanel();
+      }
+    });
+
+    window.addEventListener('orientationchange', function () {
+      if (tocPanel && tocPanel.classList.contains('is-open')) {
+        positionPanel();
+      }
+    });
+
+    window.addEventListener('blur', function () {
+      if (tocPanel && tocPanel.classList.contains('is-open') && isTopmost()) closeToC(false);
+    });
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden && tocPanel && tocPanel.classList.contains('is-open') && isTopmost()) closeToC(false);
     });
   }
 
