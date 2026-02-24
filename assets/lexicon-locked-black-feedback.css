@@ -1,9 +1,99 @@
-/* Lexicon (locked): pulse/press feedback should go black (not brass-gold).
+/* Lexicon (locked): should read sealed/embedded (opaque), with touch/press feedback going black (not brass-gold).
 
    Scope:
-   - Only during touch/press intent states: :active, .is-nudging, .is-pulsing.
-   - Does not change locked at-rest styling.
+   - At-rest styling: locked state only (ui-stack gate).
+   - Intent styling: :active, .is-nudging, .is-pulsing.
+   - Does not change enabled behavior.
 */
+
+/* -------------------------------------------------
+   Locked at-rest: embedded, opaque, "locked".
+   ------------------------------------------------- */
+
+#navFooter #lexiconToggle.is-lexicon-locked,
+#navFooter #lexiconToggle[data-lexicon-locked="true"],
+#navFooter #lexiconToggle[aria-disabled="true"]{
+  opacity:1 !important;
+  filter:none !important;
+  cursor:not-allowed;
+}
+
+/* Darken the medallion face (no dimming). */
+#navFooter #lexiconToggle.is-lexicon-locked::after,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]::after,
+#navFooter #lexiconToggle[aria-disabled="true"]::after{
+  background-color:var(--obsidian-0, #050506) !important;
+
+  /* Subtle inlay/vignette: reads as embedded metal, not faded UI. */
+  background-image:
+    radial-gradient(120% 160% at 50% 15%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    radial-gradient(120% 160% at 50% 110%, rgba(0,0,0,0.92), rgba(0,0,0,0) 62%),
+    linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.58));
+
+  transition:background-color 160ms linear;
+}
+
+/* Deepen the rim/seat so the seal feels welded shut. */
+#navFooter #lexiconToggle.is-lexicon-locked::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]::before,
+#navFooter #lexiconToggle[aria-disabled="true"]::before{
+  border-color:rgba(0,0,0,0.80) !important;
+  box-shadow:
+    inset 0 0 26px rgba(0,0,0,0.98),
+    inset 0 2px 14px rgba(0,0,0,0.70),
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    0 0 0 1px rgba(0,0,0,0.88) !important;
+}
+
+/* Glyph: keep it readable, but cold/engraved (no aura). */
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph-mid-inner{
+  color:rgba(201, 169, 97, 0.42) !important;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.92),
+    0 -1px 0 rgba(255,255,255,0.06) !important;
+  filter:none !important;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph::before,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
+}
+
+/* If a selection exists but the Lexicon is locked, keep the leaf hint subdued (still embedded). */
+#navFooter #lexiconToggle.is-lexicon-locked.has-selection .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked.has-selection .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].has-selection .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].has-selection .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph,
+#navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph-mid-inner{
+  color:rgba(242, 220, 154, 0.56) !important;
+}
+
+/* Keep hover/focus quiet while locked (no brightening).
+   NOTE: the toggle remains focusable for the "locked breath" feedback.
+*/
+#navFooter #lexiconToggle.is-lexicon-locked:hover,
+#navFooter #lexiconToggle.is-lexicon-locked:focus-visible,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:hover,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:focus-visible,
+#navFooter #lexiconToggle[aria-disabled="true"]:hover,
+#navFooter #lexiconToggle[aria-disabled="true"]:focus-visible{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+
+/* -------------------------------------------------
+   Locked intent feedback: black (not gold).
+   ------------------------------------------------- */
 
 #navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph,
 #navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph,
