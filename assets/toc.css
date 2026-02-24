@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.79 (Notch width matches visual tab; tabs +2px only; sockets unchanged; tabs spread +1px; tabs -2px tall w/ top edge locked; close-pop guard) */
+/*! Covenant ToC Panel Styles v3.1.80 (Bigger side-tab hit-box; no visual change; sockets unchanged) */
 
 /* -------------------------------------------------
    Variables
@@ -568,6 +568,36 @@ html #tocToggle.dock-tab{box-shadow:none;background:transparent}
 html #tocToggle.dock-tab::before,
 html #tocToggle.dock-tab::after{content:none !important;display:none !important}
 
+/* Bigger hit-box for side tabs (no visual change).
+   NOTE: keep bottom expansion small so we do not steal taps from the citation label beneath. */
+html #tocToggle.dock-tab::before{
+  content:'' !important;
+  display:block !important;
+  position:absolute;
+  top:-16px;
+  bottom:-4px;
+  left:-16px;
+  right:-6px;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  pointer-events:auto;
+}
+
+html #mirrorToggle.dock-tab::before{
+  content:'' !important;
+  display:block !important;
+  position:absolute;
+  top:-16px;
+  bottom:-4px;
+  left:-6px;
+  right:-16px;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  pointer-events:auto;
+}
+
 /* ToC tab: sharp bottom-left, slightly rounder bottom-right. */
 html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 html #tocToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
@@ -581,7 +611,7 @@ html #mirrorToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(
 html #tocToggle.dock-tab:hover::before,
 html #tocToggle.dock-tab:focus-visible::before,
 html #mirrorToggle.dock-tab:hover::before,
-html #mirrorToggle.dock-tab:focus-visible::before{box-shadow:inset 0 0 14px rgba(0,0,0,.95)}
+html #mirrorToggle.dock-tab:focus-visible::before{box-shadow:none !important}
 
 html #tocToggle.dock-tab:hover::after,
 html #tocToggle.dock-tab:focus-visible::after,
