@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.36 (Drag-cancel snap-back: treat as closing to avoid 1px pop) */
+/*! Covenant Reliquary UI v0.3.37 (Drag perf: will-change hints during drag + snap) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.36';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.37';
 
   var doc = document;
   var root = doc.documentElement;
@@ -205,6 +205,70 @@
     // Pin carry to 0px (do not remove). Removing the property can cause a last-frame
     // compositor re-evaluation where the tab briefly re-targets its transform.
     toggle.style.setProperty('--mirror-tab-drag-y', '0px');
+  }
+
+  // Drag perf hint: pre-promote the moving layers only while dragging/snapping.
+  // (We keep it scoped to drag so the compositor doesn't hold extra layers while idle.)
+  var dragWillChangeRestore = null;
+  var dragWillChangeTimer = null;
+
+  function enableDragWillChange() {
+    if (!panel || !overlay || !toggle) return;
+    if (dragWillChangeRestore) return;
+
+    dragWillChangeRestore = {
+      panel: panel.style.getPropertyValue('will-change') || '',
+      overlay: overlay.style.getPropertyValue('will-change') || '',
+      toggle: toggle.style.getPropertyValue('will-change') || ''
+    };
+
+    try { panel.style.setProperty('will-change', 'transform, opacity'); } catch (err1) {}
+    try { overlay.style.setProperty('will-change', 'opacity'); } catch (err2) {}
+    try { toggle.style.setProperty('will-change', 'transform'); } catch (err3) {}
+  }
+
+  function disableDragWillChange() {
+    if (!dragWillChangeRestore) return;
+
+    if (dragWillChangeTimer) {
+      clearTimeout(dragWillChangeTimer);
+      dragWillChangeTimer = null;
+    }
+
+    try {
+      if (dragWillChangeRestore.panel) panel.style.setProperty('will-change', dragWillChangeRestore.panel);
+      else panel.style.removeProperty('will-change');
+    } catch (err1) {}
+
+    try {
+      if (dragWillChangeRestore.overlay) overlay.style.setProperty('will-change', dragWillChangeRestore.overlay);
+      else overlay.style.removeProperty('will-change');
+    } catch (err2) {}
+
+    try {
+      if (dragWillChangeRestore.toggle) toggle.style.setProperty('will-change', dragWillChangeRestore.toggle);
+      else toggle.style.removeProperty('will-change');
+    } catch (err3) {}
+
+    dragWillChangeRestore = null;
+  }
+
+  function scheduleDisableDragWillChange(ms) {
+    if (dragWillChangeTimer) {
+      clearTimeout(dragWillChangeTimer);
+      dragWillChangeTimer = null;
+    }
+
+    var delay = (typeof ms === 'number' && isFinite(ms)) ? ms : 0;
+    if (delay <= 0) {
+      disableDragWillChange();
+      return;
+    }
+
+    dragWillChangeTimer = setTimeout(function () {
+      dragWillChangeTimer = null;
+      disableDragWillChange();
+    }, delay);
   }
 
   // iOS Safari: the dock settling window disables transitions on the Mirror tab (toc.css + reliquary.css).
@@ -481,6 +545,7 @@
 
     clearMirrorTabDragOffset();
     clearMirrorTabTransitionOverride();
+    disableDragWillChange();
 
     if (isIOS) disableIOSTouchScrollLock();
     clearLegacyLocalScrollLockArtifacts();
@@ -600,7 +665,7 @@
 
     tapAnimating = true;
 
-    // Tap-close should return to the true seated closed position (no sink below seat).
+    // Tap-close should return to the true seated closed position (no sink below dock).
     var closedY = computePanelClosedY(false);
     var closedYForTab = closedY;
 
@@ -653,6 +718,7 @@
 
         clearMirrorTabDragOffset();
         clearMirrorTabTransitionOverride();
+        disableDragWillChange();
 
         if (isIOS) disableIOSTouchScrollLock();
         clearLegacyLocalScrollLockArtifacts();
@@ -814,6 +880,7 @@
 
       clearMirrorTabDragOffset();
       clearMirrorTabTransitionOverride();
+      scheduleDisableDragWillChange(0);
 
       if (isIOS) disableIOSTouchScrollLock();
       clearLegacyLocalScrollLockArtifacts();
@@ -866,6 +933,9 @@
     function snap() {
       var shouldOpen = false;
       var baseH = panelHBase || closedY || 1;
+
+      // Keep compositor promotion through the snap transition.
+      scheduleDisableDragWillChange(SNAP_MS + 140);
 
       if (startWasOpen) {
         var dragDown = currentY - openLiftPx;
@@ -938,6 +1008,9 @@
     function beginDrag(e, source, forcedStartY) {
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      enableDragWillChange();
+      scheduleDisableDragWillChange(0);
 
       dragging = true;
       moved = false;
@@ -1034,6 +1107,7 @@
         if (startWasOpen) root.classList.remove('reliquary-closing');
         else root.classList.remove('reliquary-opening');
         clearMirrorTabDragOffset();
+        disableDragWillChange();
       }
 
       if (e) {
