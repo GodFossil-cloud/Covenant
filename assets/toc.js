@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.7 (Drag perf: avoid per-frame computed-style reads + class toggles) */
+/*! Covenant ToC v3.3.8 (iOS Safari: touch slop + open ratio tuning for tab responsiveness) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.7';
+  window.COVENANT_TOC_VERSION = '3.3.8';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1126,6 +1126,7 @@
 
     var weldPxForDrag = 0;
 
+    // iOS Safari: taps often include a few pixels of jitter; treat touch as touch, not drag.
     var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
@@ -1142,6 +1143,14 @@
     var CANCEL_OPEN_SINK_PX = 12;
 
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
+
+    function computeMoveSlop(pointerType) {
+      return (pointerType === 'touch') ? 9 : 2;
+    }
+
+    function computeOpenRatio(pointerType) {
+      return (pointerType === 'touch') ? 0.22 : 0.38;
+    }
 
     function clearPreArm() {
       preArmed = false;
@@ -1170,6 +1179,9 @@
       if (!e) return;
       if (tapAnimating) return;
       if (dragging) return;
+
+      MOVE_SLOP = computeMoveSlop(e.pointerType);
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
 
       preArmed = true;
       preArmedPointerId = e.pointerId;
@@ -1447,6 +1459,9 @@
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
+      MOVE_SLOP = computeMoveSlop(e.pointerType);
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
+
       var usePreArm = (source === 'seal' && preArmed && preArmedPointerId === e.pointerId);
 
       dragging = true;
@@ -1522,7 +1537,7 @@
       if (!dragging || e.pointerId !== pointerId) return;
 
       var deltaY = e.clientY - startY;
-      if (!moved && Math.abs(deltaY) > 2) {
+      if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
         moved = true;
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
       }
@@ -1589,6 +1604,9 @@
       sealPointerId = e.pointerId;
       sealStartY = e.clientY;
 
+      MOVE_SLOP = computeMoveSlop(e.pointerType);
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
+
       // Pre-arm: do measurement + (if needed) ToC render now so the first move frame can translate immediately.
       preArmSealDrag(e);
 
@@ -1606,7 +1624,8 @@
       if (!sealPrimed || e.pointerId !== sealPointerId) return;
 
       var dy = e.clientY - sealStartY;
-      if (Math.abs(dy) <= 2) return;
+      var slop = computeMoveSlop(e.pointerType);
+      if (Math.abs(dy) <= slop) return;
 
       sealPrimed = false;
       beginDrag(e, 'seal', sealStartY);
