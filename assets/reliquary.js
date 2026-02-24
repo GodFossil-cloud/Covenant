@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.37 (Drag perf: will-change hints during drag + snap) */
+/*! Covenant Reliquary UI v0.3.38 (iOS Safari: touch slop + open ratio tuning for tab responsiveness) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.37';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.38';
 
   var doc = document;
   var root = doc.documentElement;
@@ -784,6 +784,7 @@
     var panelHBase = 0;
     var openLiftPx = 0;
 
+    // iOS Safari: taps often include a few pixels of jitter; treat touch as touch, not drag.
     var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
@@ -796,6 +797,14 @@
     var SNAP_EASE = getSnapEase();
 
     var CANCEL_OPEN_SINK_PX = 12;
+
+    function computeMoveSlop(pointerType) {
+      return (pointerType === 'touch') ? 9 : 2;
+    }
+
+    function computeOpenRatio(pointerType) {
+      return (pointerType === 'touch') ? 0.22 : 0.38;
+    }
 
     function computeOpenLift() {
       var v = readCssNumberVar('--reliquary-open-lift');
@@ -1009,6 +1018,9 @@
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
+      MOVE_SLOP = computeMoveSlop(e.pointerType);
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
+
       enableDragWillChange();
       scheduleDisableDragWillChange(0);
 
@@ -1132,6 +1144,9 @@
       sealPrimed = true;
       sealPointerId = e.pointerId;
       sealStartY = e.clientY;
+
+      MOVE_SLOP = computeMoveSlop(e.pointerType);
+      OPEN_RATIO = computeOpenRatio(e.pointerType);
 
       if (toggle && toggle.setPointerCapture) {
         try { toggle.setPointerCapture(e.pointerId); } catch (err) {}
