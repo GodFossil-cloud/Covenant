@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.5 (Drag-cancel snap-back: treat as closing to avoid 1px pop) */
+/*! Covenant ToC v3.3.6 (Pre-arm seal drag on pointerdown to reduce first-move lag on iOS Safari) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.5';
+  window.COVENANT_TOC_VERSION = '3.3.6';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1093,6 +1093,13 @@
     var sealPointerId = null;
     var sealStartY = 0;
 
+    // Pre-arm (iOS Safari): do heavier prep work on pointerdown so the first move frame can
+    // translate immediately without waiting on render/measure.
+    var preArmed = false;
+    var preArmedPointerId = null;
+    var preArmedStartY = 0;
+    var preArmedWasOpen = false;
+
     var startY = 0;
     var lastY = 0;
     var lastT = 0;
@@ -1124,6 +1131,13 @@
 
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
 
+    function clearPreArm() {
+      preArmed = false;
+      preArmedPointerId = null;
+      preArmedStartY = 0;
+      preArmedWasOpen = false;
+    }
+
     function computeOpenLift() {
       var v = readCssNumberVar('--toc-open-lift');
       openLiftPx = (typeof v === 'number' && !isNaN(v)) ? v : 0;
@@ -1138,6 +1152,29 @@
       closedOffsetPx = readCssNumberVar('--toc-closed-offset') || 0;
 
       closedY = Math.max(1, panelHBase + closedOffsetPx);
+    }
+
+    function preArmSealDrag(e) {
+      if (!e) return;
+      if (tapAnimating) return;
+      if (dragging) return;
+
+      preArmed = true;
+      preArmedPointerId = e.pointerId;
+      preArmedStartY = e.clientY;
+      preArmedWasOpen = tocPanel.classList.contains('is-open');
+
+      // Prep work that would otherwise happen on the first move frame.
+      positionPanel();
+      computeOpenLift();
+
+      if (!preArmedWasOpen) {
+        // Rendering the ToC index is the most expensive part of drag-open.
+        // Doing it here reduces the chance that iOS Safari drops the first move frame.
+        renderToC();
+      }
+
+      computeClosedY();
     }
 
     function applyDragFrame(y, draggingNow) {
@@ -1398,7 +1435,10 @@
     }
 
     function beginDrag(e, source, forcedStartY) {
+      if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      var usePreArm = (source === 'seal' && preArmed && preArmedPointerId === e.pointerId);
 
       dragging = true;
       moved = false;
@@ -1410,11 +1450,15 @@
       lastT = Date.now();
       velocity = 0;
 
-      startWasOpen = tocPanel.classList.contains('is-open');
+      startWasOpen = usePreArm ? preArmedWasOpen : tocPanel.classList.contains('is-open');
 
-      positionPanel();
+      // Once we commit to a drag, clear pre-arm state (tap path should not keep it around).
+      clearPreArm();
 
-      computeOpenLift();
+      if (!usePreArm) {
+        positionPanel();
+        computeOpenLift();
+      }
 
       tocPanel.classList.add('is-dragging');
 
@@ -1432,12 +1476,17 @@
         root.classList.remove('toc-closing');
         root.classList.add('toc-opening');
         root.classList.remove('toc-dock-settling');
-        renderToC();
+
+        if (!usePreArm) {
+          renderToC();
+        }
 
         noteOpenToUIStack();
       }
 
-      computeClosedY();
+      if (!usePreArm) {
+        computeClosedY();
+      }
 
       currentY = startWasOpen ? openLiftPx : closedY;
 
@@ -1493,6 +1542,9 @@
         setTimeout(function () { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       } else {
+        // If we never moved enough to commit, discard any pre-arm state too.
+        clearPreArm();
+
         if (startWasOpen) root.classList.remove('toc-closing');
         else root.classList.remove('toc-opening');
         clearToCTabDragOffset();
@@ -1516,11 +1568,15 @@
     }
 
     tocToggle.addEventListener('pointerdown', function (e) {
+      if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
       sealPrimed = true;
       sealPointerId = e.pointerId;
       sealStartY = e.clientY;
+
+      // Pre-arm: do measurement + (if needed) ToC render now so the first move frame can translate immediately.
+      preArmSealDrag(e);
 
       if (tocToggle && tocToggle.setPointerCapture) {
         try { tocToggle.setPointerCapture(e.pointerId); } catch (err) {}
@@ -1547,6 +1603,7 @@
       if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
+      clearPreArm();
       endDrag(e);
     });
 
@@ -1554,12 +1611,14 @@
       if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
+      clearPreArm();
       endDrag(e);
     });
 
     tocToggle.addEventListener('lostpointercapture', function (e) {
       sealPrimed = false;
       sealPointerId = null;
+      clearPreArm();
       endDrag(e);
     });
 
