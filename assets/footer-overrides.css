@@ -23,11 +23,26 @@
   --lexicon-seal-face:#08090b;
   --lexicon-seal-face-hover:#0a0b0e;
 
-  /* Footer citation label beneath Lexicon seal (copy-to-clipboard). */
-  --citation-label-color:rgba(242, 220, 154, 0.92);
-  --citation-label-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 12px rgba(242, 220, 154, 0.16);
+  /* -------------------------------------------------
+     Metal system (palette improvements)
+     - Adds a clear ladder: rest → intent → blessed
+     - Standardizes shadow recipes (structure stays constant; only alpha shifts)
+     ------------------------------------------------- */
+
+  /* Brass / leaf anchors (fallbacks preserve behavior if covenant.css isn't loaded yet). */
+  --metal-brass-rest:var(--brass-1, rgba(201, 169, 97, 0.72));
+  --metal-leaf-intent:var(--leaf-0, rgba(242, 220, 154, 0.94));
+  --metal-leaf-blessed:var(--leaf-1, rgba(255, 215, 122, 0.98));
+
+  /* Shared ink seat + halo recipes (used across dock glyphs + citation). */
+  --metal-ink-seat:0 1px 0 rgba(0, 0, 0, 0.92);
+  --metal-halo-soft:0 0 8px rgba(242, 220, 154, 0.12);
+  --metal-halo-intent:0 0 12px rgba(242, 220, 154, 0.16);
+
+  /* Footer citation label beneath Lexicon seal (copy-to-clipboard).
+     Default should read as brass (rest); leaf is reserved for the moment of confirmation. */
+  --citation-label-color:rgba(201, 169, 97, 0.88);
+  --citation-label-shadow:var(--metal-ink-seat), var(--metal-halo-soft);
 
   /* Lexicon glyph (open state): keep the symbol itself brass-gold, but let the halo go bright. */
   --lexicon-glyph-open-color:var(--gold-1, rgba(242,220,154,0.98));
@@ -77,17 +92,13 @@
 
 html #navFooter{
   /* Force dock glyph feedback into the brass/leaf family (no blue/pink/magenta). */
-  --toc-glyph-rest-color:rgba(201, 169, 97, 0.72);
-  --toc-glyph-intent-color:rgba(242, 220, 154, 0.94);
-  --toc-glyph-intent-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.92),
-    0 0 6px rgba(242, 220, 154, 0.14);
+  --toc-glyph-rest-color:var(--metal-brass-rest);
+  --toc-glyph-intent-color:var(--metal-leaf-intent);
+  --toc-glyph-intent-shadow:var(--metal-ink-seat), var(--metal-halo-soft);
 
-  --mirror-glyph-rest-color:rgba(201, 169, 97, 0.72);
-  --mirror-glyph-intent-color:rgba(242, 220, 154, 0.94);
-  --mirror-glyph-intent-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.92),
-    0 0 10px rgba(242, 220, 154, 0.16);
+  --mirror-glyph-rest-color:var(--metal-brass-rest);
+  --mirror-glyph-intent-color:var(--metal-leaf-intent);
+  --mirror-glyph-intent-shadow:var(--metal-ink-seat), var(--metal-halo-intent);
 }
 
 html #navFooter .nav-seals{
@@ -276,8 +287,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 
 #navFooter{
   /* Footer citation label (universal): variables consumed by assets/covenant.css (.citation-text). */
-  --citation-color:rgba(242, 220, 154, 0.92);
-  --citation-shadow:rgba(242, 220, 154, 0.16);
+  --citation-color:var(--citation-label-color);
+  --citation-shadow:rgba(242, 220, 154, 0.12);
 
   /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top.
      IMPORTANT (iPhone Safari): navFooterCritical defines this token later in the DOM.
@@ -624,9 +635,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   visibility:visible !important;
   pointer-events:auto;
   color:var(--citation-color, rgba(242, 220, 154, 0.92));
-  text-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 12px var(--citation-shadow, rgba(242, 220, 154, 0.16));
+  text-shadow:var(--citation-label-shadow);
 }
 #navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
 
@@ -653,13 +662,12 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 }
 
 /* "Copied" momentarily replaces the citation text (JS swaps #citationText content).
-   Style it as a faint pill so it reads cleanly against the dock gradient. */
+   Style it as a faint pill so it reads cleanly against the dock gradient.
+   Leaf is allowed here because it's a momentary confirmation. */
 #navFooter .citation-label.is-copied #citationText{
   display:inline-block;
-  color:rgba(242, 220, 154, 0.96);
-  text-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 12px rgba(242, 220, 154, 0.18);
+  color:var(--metal-leaf-intent);
+  text-shadow:var(--metal-ink-seat), var(--metal-halo-intent);
 
   background:rgba(0, 0, 0, 0.58);
   border:1px solid rgba(242, 220, 154, 0.22);
