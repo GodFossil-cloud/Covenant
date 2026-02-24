@@ -24,10 +24,10 @@
   --lexicon-seal-face-hover:#0a0b0e;
 
   /* Footer citation label beneath Lexicon seal (copy-to-clipboard). */
-  --citation-label-color:rgba(123, 20, 28, 0.92);
+  --citation-label-color:rgba(235, 131, 139, 0.92);
   --citation-label-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 12px rgba(123, 20, 28, 0.18);
+    0 0 12px rgba(235, 131, 139, 0.18);
 
   /* Lexicon glyph (open state): keep the symbol itself brass-gold, but let the halo go bright. */
   --lexicon-glyph-open-color:var(--gold-1, rgba(242,220,154,0.98));
@@ -243,8 +243,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 
 #navFooter{
   /* Footer citation label (universal): variables consumed by assets/covenant.css (.citation-text). */
-  --citation-color:rgba(123, 20, 28, 0.92);
-  --citation-shadow:rgba(123, 20, 28, 0.18);
+  --citation-color:rgba(235, 131, 139, 0.92);
+  --citation-shadow:rgba(235, 131, 139, 0.18);
 
   /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top.
      IMPORTANT (iPhone Safari): navFooterCritical defines this token later in the DOM.
@@ -589,10 +589,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   position:relative;
   visibility:visible !important;
   pointer-events:auto;
-  color:var(--citation-color, rgba(123, 20, 28, 0.92));
+  color:var(--citation-color, rgba(235, 131, 139, 0.92));
   text-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 12px var(--citation-shadow, rgba(123, 20, 28, 0.18));
+    0 0 12px var(--citation-shadow, rgba(235, 131, 139, 0.18));
 }
 #navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
 
