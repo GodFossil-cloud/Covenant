@@ -491,6 +491,12 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   height:var(--lexicon-seal-h);
 }
 
+/* Tap flash must radiate outward from the glyph (not clip to the seal silhouette). */
+#navFooter #lexiconToggle.is-tap-opening,
+#navFooter #lexiconToggle.is-tap-closing{
+  overflow:visible;
+}
+
 @media (max-width: 600px){
   #navFooter{--toc-tab-gap:12px !important}
 }
