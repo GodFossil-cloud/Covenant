@@ -103,6 +103,7 @@ Notes:
 - Note (ui-stack / iOS Safari): Avoid DOM/state changes that reflow the footer during drag-open shells; Lexicon “locked” visuals should apply only when ToC/Reliquary are *committed open* to prevent a ~1px dock hop.
 - Note (iOS dock gesture guard): The iOS Safari dock-drag scroll/rubber-band guard is implemented inside `assets/ui-stack.js` (not as a separate asset file). Keep it iOS-only, non-invasive, and ensure panel bodies remain scrollable.
 - Note (iOS dock tabs): Avoid 1px `:active` press-jumps on `#tocToggle`/`#mirrorToggle`; it reads like the iOS Safari dock hop.
+- Note (iOS ToC taps): The ToC seal uses a larger touch slop than the handle-drag region so taps stay taps on iOS Safari.
 - Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
@@ -259,4 +260,5 @@ Update this file if you change any of:
 - Linear flow order, filenames, or navigation rules.
 - Shared includes or shared JS/CSS responsibilities.
 - Build/deploy workflows or `_config.yml` behavior.
+- Any newly discovered coupling rule (X breaks Y).
 - Any newly discovered coupling rule (X breaks Y).
