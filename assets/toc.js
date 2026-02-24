@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.6 (Pre-arm seal drag on pointerdown to reduce first-move lag on iOS Safari) */
+/*! Covenant ToC v3.3.7 (Drag perf: avoid per-frame computed-style reads + class toggles) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.6';
+  window.COVENANT_TOC_VERSION = '3.3.7';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -233,10 +233,20 @@
     try { stack.noteClose(UI_STACK_ID); } catch (err) {}
   }
 
+  var tocTabDraggingState = false;
+
+  function setToCTabDraggingState(isDragging) {
+    if (!tocToggle) return;
+    var next = !!isDragging;
+    if (next === tocTabDraggingState) return;
+    tocTabDraggingState = next;
+    tocToggle.classList.toggle('is-toc-dragging', tocTabDraggingState);
+  }
+
   function setToCTabDragOffset(px, draggingNow) {
     if (!tocToggle) return;
     tocToggle.style.setProperty('--toc-tab-drag-y', px + 'px');
-    tocToggle.classList.toggle('is-toc-dragging', !!draggingNow);
+    if (typeof draggingNow === 'boolean') setToCTabDraggingState(draggingNow);
   }
 
   function clearToCTabDragOffset() {
@@ -245,7 +255,7 @@
     // Pin rather than remove: removing the CSS variable at the end of a close/settle can cause
     // a one-frame compositor re-evaluation that reads as a 1px snap on iOS Safari.
     tocToggle.style.setProperty('--toc-tab-drag-y', '0px');
-    tocToggle.classList.remove('is-toc-dragging');
+    setToCTabDraggingState(false);
   }
 
   function isMobileSheet() {
@@ -1114,6 +1124,8 @@
     var closedOffsetPx = 0;
     var openLiftPx = 0;
 
+    var weldPxForDrag = 0;
+
     var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
@@ -1197,14 +1209,11 @@
       var tabOffset = (y - closedY);
       if (tabOffset > 0) tabOffset = 0;
 
-      if (draggingNow) {
-        var weldPx = readCssNumberVar('--toc-tab-weld-nudge') || 0;
-        if (weldPx > 0 && tabOffset > -(weldPx + 0.25)) {
-          tabOffset = -weldPx;
-        }
+      if (draggingNow && weldPxForDrag > 0 && tabOffset > -(weldPxForDrag + 0.25)) {
+        tabOffset = -weldPxForDrag;
       }
 
-      setToCTabDragOffset(tabOffset, !!draggingNow);
+      setToCTabDragOffset(tabOffset);
     }
 
     function applyOpenStateFromDrag() {
@@ -1461,6 +1470,7 @@
       }
 
       tocPanel.classList.add('is-dragging');
+      setToCTabDraggingState(true);
 
       cancelCloseWeldDrop();
       if (startWasOpen) setRootWeldNudge(CLOSE_WELD_PX);
@@ -1483,6 +1493,9 @@
 
         noteOpenToUIStack();
       }
+
+      // Cache weld value once per drag (avoid per-frame computed-style reads on iOS Safari).
+      weldPxForDrag = readCssNumberVar('--toc-tab-weld-nudge') || 0;
 
       if (!usePreArm) {
         computeClosedY();
@@ -1536,6 +1549,7 @@
 
       dragging = false;
       tocPanel.classList.remove('is-dragging');
+      setToCTabDraggingState(false);
 
       if (moved) {
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
