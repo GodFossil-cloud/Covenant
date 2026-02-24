@@ -31,9 +31,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle:focus-visible{
   filter:none !important;
 }
 
-/* Fully OPEN: silence any tap aura/pulse layers while open. */
-#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph::before,
-html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph::before{
+/* Fully OPEN: silence any tap aura/pulse layers while open.
+   Exception: tap opening/closing must still be allowed to flash. */
+#navFooter #lexiconToggle[aria-expanded="true"]:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before{
   opacity:0 !important;
   animation:none !important;
   filter:none !important;
