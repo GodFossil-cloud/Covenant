@@ -99,6 +99,10 @@ html #navFooter{
   --mirror-glyph-rest-color:var(--metal-brass-rest);
   --mirror-glyph-intent-color:var(--metal-leaf-intent);
   --mirror-glyph-intent-shadow:var(--metal-ink-seat), var(--metal-halo-intent);
+
+  /* Neutralize legacy "glyph-red" usage inside the dock scope.
+     (Some fallback states in covenant.css still reference it.) */
+  --glyph-red:var(--obsidian-1);
 }
 
 html #navFooter .nav-seals{
@@ -127,6 +131,14 @@ html #navFooter #mirrorToggle .toc-glyph::before{content:none !important;display
 #lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{
   background-color:var(--lexicon-seal-face-hover);
   background-image:none !important;
+}
+
+/* Touch/coarse pointer: prevent any legacy red press tint from flashing through. */
+@media (hover: none), (pointer: coarse){
+  #navFooter #lexiconToggle:active::after{
+    background-color:var(--lexicon-seal-face-hover) !important;
+    background-image:none !important;
+  }
 }
 
 /* Lexicon OPEN: seal must be frameless so it welds into the Lexicon header. */
