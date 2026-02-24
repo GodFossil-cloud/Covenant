@@ -71,8 +71,8 @@
 
   /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
      (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
-  --lexicon-glyph-tap-aura-size:3.9em;
-  --lexicon-glyph-tap-aura-blur:10px;
+  --lexicon-glyph-tap-aura-size:3.0em;
+  --lexicon-glyph-tap-aura-blur:8px;
   --lexicon-glyph-tap-aura:
     radial-gradient(circle at 50% 50%,
       rgba(255,255,255,0.94) 0%,
@@ -164,7 +164,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   filter:blur(var(--lexicon-glyph-tap-aura-blur, 11px));
   opacity:0;
   pointer-events:none;
-  transform:translate(-50%, -50%) scale(0.60);
+  transform:translate(-50%, -50%) scale(0.52);
   z-index:-1;
   transition:
     opacity 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -237,10 +237,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 }
 
 @keyframes lexiconTapAuraPulse{
-  0%{opacity:0;transform:translate(-50%, -50%) scale(0.44)}
-  10%{opacity:1;transform:translate(-50%, -50%) scale(0.98)}
-  52%{opacity:0.78;transform:translate(-50%, -50%) scale(1.06)}
-  100%{opacity:0;transform:translate(-50%, -50%) scale(1.10)}
+  0%{opacity:0;transform:translate(-50%, -50%) scale(0.34)}
+  10%{opacity:1;transform:translate(-50%, -50%) scale(0.76)}
+  52%{opacity:0.78;transform:translate(-50%, -50%) scale(0.88)}
+  100%{opacity:0;transform:translate(-50%, -50%) scale(0.94)}
 }
 
 @keyframes lexiconTapGlyphInkBlink{
