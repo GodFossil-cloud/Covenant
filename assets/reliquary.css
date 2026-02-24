@@ -55,7 +55,7 @@ html.reliquary-dragging #lexiconToggle{opacity:.28}
    Avoid toggling dock/toggle z-index during reliquary-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
 
 /* During settle, ignore hover/pointer churn while the tab is sliding into place (desktop fine pointers only). */
-@media (hover: hover) and (pointer: fine){html.reliquary-dock-settling #mirrorToggle{pointer-events:none}}
+@media (hover: hover) and (pointer: fine){html.reliquary-closing #mirrorToggle{pointer-events:none}}
 
 /* -------------------------------------------------
    Dock tab (Mirror button)

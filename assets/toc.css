@@ -645,7 +645,7 @@ html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto S
    Do not toggle dock/toggle z-index during toc-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
 
 /* During settle, ignore hover/pointer churn while the tab is sliding into place (desktop fine pointers only). */
-@media (hover: hover) and (pointer: fine){html.toc-dock-settling #tocToggle{pointer-events:none}}
+@media (hover: hover) and (pointer: fine){html.toc-closing #tocToggle{pointer-events:none}}
 
 /* -------------------------------------------------
    Footer fade choreography

@@ -97,6 +97,7 @@ Notes:
 - Note (footer bookends spacing): `--toc-tab-gap` in `assets/footer-overrides.css` controls ToC/Mirror distance from the center; mobile bookend nudges live in `assets/footer-overrides.css` and the `navFooterCritical` fallback in `_includes/nav-footer.html`.
 - Note (footer bookends vertical seat): `--dock-tab-raise` is defined in `assets/toc.css`; the mobile first-paint fallback may override it on `#navFooter` in `assets/footer-overrides.css`.
 - Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
+- Note (dock settling): Avoid `pointer-events:none` on `#tocToggle`/`#mirrorToggle` during `*-dock-settling`; it creates a brief post-close dead zone on desktop.
 - Note: If JS needs numeric px from calc()/var()-based CSS custom properties, do not `parseFloat(getComputedStyle(...).getPropertyValue('--x'))` (it returns token strings); resolve via a probe element (e.g., set `margin-top: var(--x)` and read computed px).
 - Note (dock mask window): Dock-window mask choreography is removed in favor of **panel-only** motion. `dock-window` / `--dock-window-*` tokens should not exist in runtime CSS unless explicitly requested.
 - Note (mobile Safari): Reliquary notch is a real `clip-path` cutout; if a see-through seam appears during drag, prefer increasing `--reliquary-seat-overlap` on mobile rather than changing notch geometry.
