@@ -24,10 +24,10 @@
   --lexicon-seal-face-hover:#0a0b0e;
 
   /* Footer citation label beneath Lexicon seal (copy-to-clipboard). */
-  --citation-label-color:rgba(235, 131, 139, 0.92);
+  --citation-label-color:rgba(242, 220, 154, 0.92);
   --citation-label-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 12px rgba(235, 131, 139, 0.18);
+    0 0 12px rgba(242, 220, 154, 0.16);
 
   /* Lexicon glyph (open state): keep the symbol itself brass-gold, but let the halo go bright. */
   --lexicon-glyph-open-color:var(--gold-1, rgba(242,220,154,0.98));
@@ -70,6 +70,39 @@
   /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 }
+
+/* -------------------------------------------------
+   Monochrome-metal dock (ToC + Mirror)
+   ------------------------------------------------- */
+
+html #navFooter{
+  /* Force dock glyph feedback into the brass/leaf family (no blue/pink/magenta). */
+  --toc-glyph-rest-color:rgba(201, 169, 97, 0.72);
+  --toc-glyph-intent-color:rgba(242, 220, 154, 0.94);
+  --toc-glyph-intent-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.92),
+    0 0 6px rgba(242, 220, 154, 0.14);
+
+  --mirror-glyph-rest-color:rgba(201, 169, 97, 0.72);
+  --mirror-glyph-intent-color:rgba(242, 220, 154, 0.94);
+  --mirror-glyph-intent-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.92),
+    0 0 10px rgba(242, 220, 154, 0.16);
+}
+
+html #navFooter .nav-seals{
+  /* Socket intent glow lives inside the cradles only, and stays monochrome-metal. */
+  --dock-socket-glow-toc:
+    inset 0 0 22px rgba(242, 220, 154, 0.14),
+    inset 0 0 36px rgba(201, 169, 97, 0.10);
+
+  --dock-socket-glow-mirror:
+    inset 0 0 22px rgba(242, 220, 154, 0.14),
+    inset 0 0 36px rgba(201, 169, 97, 0.10);
+}
+
+/* Never allow Reliquary-era aura overlays to paint over the dock slab. */
+html #navFooter #mirrorToggle .toc-glyph::before{content:none !important;display:none !important}
 
 /* Darken the Lexicon seal base (closed state) + make it a flat single tone (no gradient stack). */
 #lexiconToggle.nav-btn.center:not(.has-selection)::after{
@@ -243,8 +276,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 
 #navFooter{
   /* Footer citation label (universal): variables consumed by assets/covenant.css (.citation-text). */
-  --citation-color:rgba(235, 131, 139, 0.92);
-  --citation-shadow:rgba(235, 131, 139, 0.18);
+  --citation-color:rgba(242, 220, 154, 0.92);
+  --citation-shadow:rgba(242, 220, 154, 0.16);
 
   /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top.
      IMPORTANT (iPhone Safari): navFooterCritical defines this token later in the DOM.
@@ -263,7 +296,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   --seal-cradle-drop-y:var(--seal-cradle-center-y);
 
   /* Lexicon SEAL size.
-     IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM). */
+     IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM).
+     Use !important so cradle geometry stays authoritative and responds to --lexicon-cradle-w changes. */
   --lexicon-seal-w:66px !important;
   --lexicon-seal-h:34px !important;
 
@@ -589,10 +623,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   position:relative;
   visibility:visible !important;
   pointer-events:auto;
-  color:var(--citation-color, rgba(235, 131, 139, 0.92));
+  color:var(--citation-color, rgba(242, 220, 154, 0.92));
   text-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 12px var(--citation-shadow, rgba(235, 131, 139, 0.18));
+    0 0 12px var(--citation-shadow, rgba(242, 220, 154, 0.16));
 }
 #navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
 
