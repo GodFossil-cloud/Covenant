@@ -931,6 +931,8 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
    ------------------------------------------------- */
 
 /* Never allow glyph aura overlays to paint over the footer slab.
-   Any intent glow should live inside the dock cradle cutouts above. */
-#navFooter #tocToggle .toc-glyph::before,
-#navFooter #mirrorToggle .toc-glyph::before{content:none !important;display:none !important}
+   Any intent glow should live inside the dock cradle cutouts above.
+
+   Exception: allow explicit tap flash windows (is-tap-opening/is-tap-closing) to paint. */
+#navFooter #tocToggle:not(.is-tap-opening):not(.is-tap-closing) .toc-glyph::before,
+#navFooter #mirrorToggle:not(.is-tap-opening):not(.is-tap-closing) .toc-glyph::before{content:none !important;display:none !important}
