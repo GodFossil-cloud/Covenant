@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.19 */
+/*! Covenant UI Stack v0.3.20 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.19';
+  window.COVENANT_UI_STACK_VERSION = '0.3.20';
 
   var registry = Object.create(null);
   var order = [];
@@ -385,8 +385,28 @@
 
     // Track a "finger is down on a dock drag handle" session.
     // IMPORTANT: do NOT preventDefault touchstart (it can suppress the click).
+    // Also: iOS Safari often emits a tiny touchmove during an intended tap; do not block that
+    // micro-jitter or the synthetic click can be suppressed.
     var dockTouchActive = false;
     var dockTouchId = null;
+    var dockTouchStartX = 0;
+    var dockTouchStartY = 0;
+    var dockTouchMoved = false;
+
+    // Keep this modest: just enough to preserve tap→click synthesis through jitter.
+    var DOCK_TAP_SLOP_PX = 12;
+
+    function readTouchById(e, id) {
+      try {
+        if (!e) return null;
+        var list = (e.touches && e.touches.length) ? e.touches : ((e.changedTouches && e.changedTouches.length) ? e.changedTouches : null);
+        if (!list) return null;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i] && list[i].identifier === id) return list[i];
+        }
+      } catch (err) {}
+      return null;
+    }
 
     function beginDockTouchSession(e) {
       try {
@@ -395,9 +415,15 @@
         if (!t) return;
         dockTouchActive = true;
         dockTouchId = t.identifier;
+        dockTouchStartX = t.clientX;
+        dockTouchStartY = t.clientY;
+        dockTouchMoved = false;
       } catch (err) {
         dockTouchActive = true;
         dockTouchId = null;
+        dockTouchStartX = 0;
+        dockTouchStartY = 0;
+        dockTouchMoved = false;
       }
     }
 
@@ -408,6 +434,9 @@
         if (!e || !e.changedTouches || dockTouchId == null) {
           dockTouchActive = false;
           dockTouchId = null;
+          dockTouchStartX = 0;
+          dockTouchStartY = 0;
+          dockTouchMoved = false;
           return;
         }
 
@@ -415,12 +444,18 @@
           if (e.changedTouches[i] && e.changedTouches[i].identifier === dockTouchId) {
             dockTouchActive = false;
             dockTouchId = null;
+            dockTouchStartX = 0;
+            dockTouchStartY = 0;
+            dockTouchMoved = false;
             return;
           }
         }
       } catch (err) {
         dockTouchActive = false;
         dockTouchId = null;
+        dockTouchStartX = 0;
+        dockTouchStartY = 0;
+        dockTouchMoved = false;
       }
     }
 
@@ -464,6 +499,20 @@
       // Allow scrolling inside the panel bodies.
       if (closestSafe(e && e.target, '#tocPanel .toc-panel-body')) return;
       if (closestSafe(e && e.target, '#reliquaryPanel .reliquary-panel-body')) return;
+
+      // Tap slop: while a finger is down on a dock tab, avoid preventing touchmove for tiny jitter,
+      // so iOS Safari can still synthesize a click after panel close/settle cycles.
+      if (dockTouchActive && !dockTouchMoved) {
+        if (dockTouchId == null) return;
+
+        var t = readTouchById(e, dockTouchId);
+        if (t) {
+          var dx = t.clientX - dockTouchStartX;
+          var dy = t.clientY - dockTouchStartY;
+          if (Math.abs(dx) <= DOCK_TAP_SLOP_PX && Math.abs(dy) <= DOCK_TAP_SLOP_PX) return;
+          dockTouchMoved = true;
+        }
+      }
 
       if (e && e.cancelable) e.preventDefault();
     };
