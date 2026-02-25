@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.80 (Bigger side-tab hit-box; no visual change; sockets unchanged) */
+/*! Covenant ToC Panel Styles v3.1.81 (Slightly smaller side-tab glyphs) */
 
 /* -------------------------------------------------
    Variables
@@ -639,7 +639,7 @@ html #tocToggle.dock-tab:active:not(:disabled){
 }
 
 html #tocToggle.dock-tab .toc-glyph,
-html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.88rem;line-height:1;display:inline-block}
+html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.86rem;line-height:1;display:inline-block}
 
 /* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
    Do not toggle dock/toggle z-index during toc-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
