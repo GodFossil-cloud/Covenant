@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.39 (Prevent handle-tap drag misfires that desync tab vs panel) */
+/*! Covenant Reliquary UI v0.3.40 (Pointerup toggle guard for iOS Safari Mirror tab) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.39';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.40';
 
   var doc = document;
   var root = doc.documentElement;
@@ -313,6 +313,11 @@
 
   // Tap-open/close animation guard.
   var tapAnimating = false;
+
+  // iOS Safari: tap→click synthesis can be suppressed after micro-jitter; allow a pointerup toggle
+  // and ignore the trailing click if it fires.
+  var ignoreMirrorToggleClickUntil = 0;
+  var IGNORE_MIRROR_TOGGLE_CLICK_MS = 650;
 
   var isIOS = (function () {
     try {
@@ -1263,7 +1268,35 @@
   // Wiring
   // ---------------------------
 
+  toggle.addEventListener('pointerup', function (e) {
+    if (!e) return;
+    if (e.defaultPrevented) return;
+    if (tapAnimating) return;
+
+    // Mouse path stays on click (prevents double-toggle on desktop).
+    if (e.pointerType === 'mouse') return;
+
+    // If a drag just occurred, do not treat this as a tap toggle.
+    if (window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED) return;
+    if (panel && panel.classList && panel.classList.contains('is-dragging')) return;
+
+    ignoreMirrorToggleClickUntil = Date.now() + IGNORE_MIRROR_TOGGLE_CLICK_MS;
+    stopEvent(e);
+    toggleReliquaryTap();
+  });
+
   toggle.addEventListener('click', function (e) {
+    if (ignoreMirrorToggleClickUntil && Date.now() < ignoreMirrorToggleClickUntil) {
+      stopEvent(e);
+      return;
+    }
+
+    if (window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED) {
+      window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED = false;
+      stopEvent(e);
+      return;
+    }
+
     stopEvent(e);
     toggleReliquaryTap();
   });
