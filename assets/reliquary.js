@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.38 (iOS Safari: touch slop + open ratio tuning for tab responsiveness) */
+/*! Covenant Reliquary UI v0.3.39 (Prevent handle-tap drag misfires that desync tab vs panel) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.38';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.39';
 
   var doc = document;
   var root = doc.documentElement;
@@ -771,6 +771,10 @@
     var sealPointerId = null;
     var sealStartY = 0;
 
+    var handlePrimed = false;
+    var handlePointerId = null;
+    var handleStartY = 0;
+
     var startY = 0;
     var lastY = 0;
     var lastT = 0;
@@ -1137,6 +1141,13 @@
       }
     }
 
+    function releaseHandleCapture(e) {
+      if (!e || !dragRegion) return;
+      if (dragRegion && dragRegion.hasPointerCapture && dragRegion.hasPointerCapture(e.pointerId)) {
+        try { dragRegion.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+    }
+
     toggle.addEventListener('pointerdown', function (e) {
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1191,23 +1202,58 @@
 
     if (dragRegion) {
       dragRegion.addEventListener('pointerdown', function (e) {
+        if (tapAnimating) return;
         if (!panel.classList.contains('is-open')) return;
-        beginDrag(e, 'handle');
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+        handlePrimed = true;
+        handlePointerId = e.pointerId;
+        handleStartY = e.clientY;
+
+        MOVE_SLOP = computeMoveSlop(e.pointerType);
+        OPEN_RATIO = computeOpenRatio(e.pointerType);
+
+        if (dragRegion && dragRegion.setPointerCapture) {
+          try { dragRegion.setPointerCapture(e.pointerId); } catch (err) {}
+        }
       });
 
       dragRegion.addEventListener('pointermove', function (e) {
+        if (dragging) {
+          moveDrag(e);
+          return;
+        }
+
+        if (!handlePrimed || e.pointerId !== handlePointerId) return;
+
+        var dy = e.clientY - handleStartY;
+        var slop = computeMoveSlop(e.pointerType);
+        if (Math.abs(dy) <= slop) return;
+
+        handlePrimed = false;
+        handlePointerId = null;
+
+        beginDrag(e, 'handle', handleStartY);
         moveDrag(e);
       });
 
       dragRegion.addEventListener('pointerup', function (e) {
+        if (handlePrimed) releaseHandleCapture(e);
+        handlePrimed = false;
+        handlePointerId = null;
         endDrag(e);
       });
 
       dragRegion.addEventListener('pointercancel', function (e) {
+        if (handlePrimed) releaseHandleCapture(e);
+        handlePrimed = false;
+        handlePointerId = null;
         endDrag(e);
       });
 
       dragRegion.addEventListener('lostpointercapture', function (e) {
+        handlePrimed = false;
+        handlePointerId = null;
         endDrag(e);
       });
     }
