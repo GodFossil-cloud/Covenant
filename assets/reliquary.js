@@ -805,7 +805,7 @@
     var SNAP_MS = getSnapMs();
     var SNAP_EASE = getSnapEase();
 
-    var CANCEL_OPEN_SINK_PX = 12;
+    var CANCEL_OPEN_SINK_PX = 0;
 
     function computeMoveSlop(pointerType) {
       return (pointerType === 'touch') ? 9 : 2;
