@@ -162,7 +162,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]{box-shadow:none !important}
 
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
-#navFooter #lexiconToggle .lexicon-glyph{font-size:0.84em !important;position:relative;display:inline-block;z-index:0}
+#navFooter #lexiconToggle .lexicon-glyph{font-size:0.86em !important;position:relative;display:inline-block;z-index:0}
 
 /* Tap aura (behind the glyph group). */
 #navFooter #lexiconToggle .lexicon-glyph::before{
