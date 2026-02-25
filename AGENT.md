@@ -102,6 +102,7 @@ Notes:
 - Note (dock mask window): Dock-window mask choreography is removed in favor of **panel-only** motion. `dock-window` / `--dock-window-*` tokens should not exist in runtime CSS unless explicitly requested.
 - Note (mobile Safari): Reliquary notch is a real `clip-path` cutout; if a see-through seam appears during drag, prefer increasing `--reliquary-seat-overlap` on mobile rather than changing notch geometry.
 - Note (ui-stack / iOS Safari): Avoid DOM/state changes that reflow the footer during drag-open shells; Lexicon “locked” visuals should apply only when ToC/Reliquary are *committed open* to prevent a ~1px dock hop.
+- Note (iOS Safari / drag-cancel): Cancel-open snap-back must not dip the sheet below the closed seat; keep any `CANCEL_OPEN_SINK_PX` at 0 so the dock tab never appears detached.
 - Note (iOS dock gesture guard): The iOS Safari dock-drag scroll/rubber-band guard is implemented inside `assets/ui-stack.js` (not as a separate asset file). Keep it iOS-only, non-invasive, and ensure panel bodies remain scrollable.
 - Note (iOS dock tabs): Avoid 1px `:active` press-jumps on `#tocToggle`/`#mirrorToggle`; it reads like the iOS Safari dock hop.
 - Note (iOS ToC taps): The ToC seal uses a larger touch slop than the handle-drag region so taps stay taps on iOS Safari.
@@ -263,4 +264,3 @@ Update this file if you change any of:
 - Shared includes or shared JS/CSS responsibilities.
 - Build/deploy workflows or `_config.yml` behavior.
 - Any newly discovered coupling rule (X breaks Y).
-

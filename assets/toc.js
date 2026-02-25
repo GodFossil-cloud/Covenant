@@ -1149,7 +1149,7 @@
 
     var SNAP_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
-    var CANCEL_OPEN_SINK_PX = 12;
+    var CANCEL_OPEN_SINK_PX = 0;
 
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
 
