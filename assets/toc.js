@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.10 (Prime handle drag after slop so taps stay taps; prevents tab/panel desync) */
+/*! Covenant ToC v3.3.11 (Pointerup toggle guard for iOS Safari tap reliability) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.10';
+  window.COVENANT_TOC_VERSION = '3.3.11';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -56,6 +56,11 @@
 
   // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
   var tapAnimating = false;
+
+  // iOS Safari: tap→click synthesis can be suppressed after micro-jitter; allow a pointerup toggle
+  // and ignore the trailing click if it fires.
+  var ignoreToggleClickUntil = 0;
+  var IGNORE_TOGGLE_CLICK_MS = 650;
 
   // Optional: UI stack coordination.
   var uiRegistered = false;
@@ -2016,7 +2021,35 @@
 
   function wireControls() {
     if (tocToggle) {
+      tocToggle.addEventListener('pointerup', function (e) {
+        if (!e) return;
+        if (e.defaultPrevented) return;
+        if (tapAnimating) return;
+
+        // Mouse path stays on click (prevents double-toggle on desktop).
+        if (e.pointerType === 'mouse') return;
+
+        // If a drag just occurred, do not treat this as a tap toggle.
+        if (window.__COVENANT_TOC_DRAG_JUST_HAPPENED) return;
+        if (tocPanel && tocPanel.classList && tocPanel.classList.contains('is-dragging')) return;
+
+        ignoreToggleClickUntil = Date.now() + IGNORE_TOGGLE_CLICK_MS;
+        stopEvent(e);
+        toggleToC();
+      });
+
       tocToggle.addEventListener('click', function (e) {
+        if (ignoreToggleClickUntil && Date.now() < ignoreToggleClickUntil) {
+          stopEvent(e);
+          return;
+        }
+
+        if (window.__COVENANT_TOC_DRAG_JUST_HAPPENED) {
+          window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
+          stopEvent(e);
+          return;
+        }
+
         stopEvent(e);
         toggleToC();
       });
