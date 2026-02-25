@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.9 (iOS Safari: more reliable ToC tab taps via seal slop tuning) */
+/*! Covenant ToC v3.3.10 (Prime handle drag after slop so taps stay taps; prevents tab/panel desync) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.9';
+  window.COVENANT_TOC_VERSION = '3.3.10';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -1103,6 +1103,10 @@
     var sealPointerId = null;
     var sealStartY = 0;
 
+    var handlePrimed = false;
+    var handlePointerId = null;
+    var handleStartY = 0;
+
     // Pre-arm (iOS Safari): do heavier prep work on pointerdown so the first move frame can
     // translate immediately without waiting on render/measure.
     var preArmed = false;
@@ -1599,6 +1603,13 @@
       }
     }
 
+    function releaseHandleCapture(e) {
+      if (!e || !tocDragRegion) return;
+      if (tocDragRegion && tocDragRegion.hasPointerCapture && tocDragRegion.hasPointerCapture(e.pointerId)) {
+        try { tocDragRegion.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+    }
+
     tocToggle.addEventListener('pointerdown', function (e) {
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1660,23 +1671,58 @@
 
     if (tocDragRegion) {
       tocDragRegion.addEventListener('pointerdown', function (e) {
+        if (tapAnimating) return;
         if (!tocPanel.classList.contains('is-open')) return;
-        beginDrag(e, 'handle');
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+        handlePrimed = true;
+        handlePointerId = e.pointerId;
+        handleStartY = e.clientY;
+
+        MOVE_SLOP = computeMoveSlop(e.pointerType, 'handle');
+        OPEN_RATIO = computeOpenRatio(e.pointerType);
+
+        if (tocDragRegion && tocDragRegion.setPointerCapture) {
+          try { tocDragRegion.setPointerCapture(e.pointerId); } catch (err) {}
+        }
       });
 
       tocDragRegion.addEventListener('pointermove', function (e) {
+        if (dragging) {
+          moveDrag(e);
+          return;
+        }
+
+        if (!handlePrimed || e.pointerId !== handlePointerId) return;
+
+        var dy = e.clientY - handleStartY;
+        var slop = computeMoveSlop(e.pointerType, 'handle');
+        if (Math.abs(dy) <= slop) return;
+
+        handlePrimed = false;
+        handlePointerId = null;
+
+        beginDrag(e, 'handle', handleStartY);
         moveDrag(e);
       });
 
       tocDragRegion.addEventListener('pointerup', function (e) {
+        if (handlePrimed) releaseHandleCapture(e);
+        handlePrimed = false;
+        handlePointerId = null;
         endDrag(e);
       });
 
       tocDragRegion.addEventListener('pointercancel', function (e) {
+        if (handlePrimed) releaseHandleCapture(e);
+        handlePrimed = false;
+        handlePointerId = null;
         endDrag(e);
       });
 
       tocDragRegion.addEventListener('lostpointercapture', function (e) {
+        handlePrimed = false;
+        handlePointerId = null;
         endDrag(e);
       });
     }

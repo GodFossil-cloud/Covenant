@@ -263,4 +263,4 @@ Update this file if you change any of:
 - Shared includes or shared JS/CSS responsibilities.
 - Build/deploy workflows or `_config.yml` behavior.
 - Any newly discovered coupling rule (X breaks Y).
-- Any newly discovered coupling rule (X breaks Y).
+
