@@ -288,6 +288,7 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   position:relative;
   display:inline-block;
   z-index:0;
+  transform:translateY(1px);
 
   color:var(--mirror-glyph-rest-color, rgba(230,172,182,0.72));
 
