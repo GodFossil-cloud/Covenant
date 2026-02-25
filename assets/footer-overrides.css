@@ -407,8 +407,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x:0px;
   --mirror-glyph-nudge-x:0px;
-  --toc-glyph-nudge-y:8px;
-  --mirror-glyph-nudge-y:8px;
+  --toc-glyph-nudge-y:9px;
+  --mirror-glyph-nudge-y:9px;
 
   /* Prev/Next frames: slightly larger than the ToC/Mirror pill size (all breakpoints). */
   --nav-wing-pill-w:calc(var(--nav-pill-width) + 10px);
