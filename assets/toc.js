@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.11 (Pointerup toggle guard for iOS Safari tap reliability) */
+/*! Covenant ToC v3.3.12 (Translate3d panel transform for smoother drag-cancel snap-back) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.11';
+  window.COVENANT_TOC_VERSION = '3.3.12';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -458,7 +458,7 @@
 
   function setPanelTranslateY(y) {
     if (!tocPanel) return;
-    tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
+    tocPanel.style.transform = 'translate3d(var(--toc-panel-x, -50%), ' + y + 'px, 0)';
   }
 
   function computePanelClosedY(includeSink) {
@@ -1153,6 +1153,10 @@
 
     window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false;
 
+    function panelTransformY(y) {
+      return 'translate3d(var(--toc-panel-x, -50%), ' + y + 'px, 0)';
+    }
+
     function computeMoveSlop(pointerType, source) {
       if (pointerType !== 'touch') return 2;
       // The ToC seal needs more slop than the handle to keep taps from becoming accidental drags on iOS Safari.
@@ -1217,7 +1221,7 @@
       if (!tocPanel) return;
       currentY = y;
 
-      tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + y + 'px)';
+      tocPanel.style.transform = panelTransformY(y);
 
       var denom = (closedY - openLiftPx);
       if (!denom || denom <= 0) denom = 1;
@@ -1397,7 +1401,7 @@
         cancelCloseWeldDrop();
         clearRootWeldNudge();
 
-        tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + openLiftPx + 'px)';
+        tocPanel.style.transform = panelTransformY(openLiftPx);
         tocPanel.style.opacity = '1';
         if (tocOverlay) tocOverlay.style.opacity = '1';
 
@@ -1533,7 +1537,7 @@
       tocPanel.style.transition = 'none';
       if (tocOverlay) tocOverlay.style.transition = 'none';
 
-      tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + currentY + 'px)';
+      tocPanel.style.transform = panelTransformY(currentY);
 
       applyDragFrame(currentY, true);
 
@@ -1997,7 +2001,7 @@
 
         focusReturnEl = null;
 
-        tocPanel.style.transform = 'translateX(var(--toc-panel-x, -50%)) translateY(' + closedY + 'px)';
+        tocPanel.style.transform = 'translate3d(var(--toc-panel-x, -50%), ' + closedY + 'px, 0)';
 
         tapAnimating = false;
       }, snapMs + 50);
