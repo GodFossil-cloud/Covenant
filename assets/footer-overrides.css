@@ -71,8 +71,8 @@
 
   /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
      (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
-  --lexicon-glyph-tap-aura-size:3.0em;
-  --lexicon-glyph-tap-aura-blur:8px;
+  --lexicon-glyph-tap-aura-size:2.4em;
+  --lexicon-glyph-tap-aura-blur:6px;
   --lexicon-glyph-tap-aura:
     radial-gradient(circle at 50% 50%,
       rgba(255,255,255,0.94) 0%,
