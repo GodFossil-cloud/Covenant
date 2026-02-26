@@ -27,6 +27,11 @@
   --toc-item-pad-y:.26rem;
   --toc-item-line:1.55;
 
+  /* Pending selection: title effect knobs.
+     Staged = partial hairline + soft halo; Confirm = line completes + halo strengthens. */
+  --toc-pending-title-underline-w:44%;
+  --toc-confirm-title-underline-w:100%;
+
   /* Footer tabs (ToC + Mirror) live beside the Lexicon seal, but do not use the Lexicon "center" medallion styling. */
   --toc-tab-width:calc(var(--nav-pill-width,56px) + 4px);
   --toc-tab-height:var(--nav-pill-height,40px);
@@ -897,13 +902,38 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
 .toc-item--pending .toc-item-btn > *{position:relative;z-index:1}
 
+/* Pending selection: title effect (staged vs confirm).
+   Confirm stage uses :disabled because JS disables the button during nav delay. */
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"]) .toc-entry-title{
+  background-image:linear-gradient(to right,
+    rgba(201,169,97,0),
+    rgba(201,169,97,.62),
+    rgba(201,169,97,0));
+  background-repeat:no-repeat;
+  background-position:0 calc(100% - .12em);
+  background-size:var(--toc-pending-title-underline-w, 44%) 1px;
+
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.20),
+    0 0 10px rgba(201,169,97,.12);
+
+  transition:
+    background-size 180ms ease,
+    text-shadow 180ms ease;
+}
+
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"]) .toc-item-btn:disabled .toc-entry-title{
+  background-size:var(--toc-confirm-title-underline-w, 100%) 1px;
+
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.22),
+    0 0 14px rgba(201,169,97,.22),
+    0 0 28px rgba(201,169,97,.10);
+}
+
 /* Kill the old underline indicator (baseline + fill). */
 .toc-item--pending .toc-entry-title::before,
 .toc-item--pending .toc-entry-title::after{content:none !important;display:none !important}
-
-/* Pending selection: node-only indicator (no lantern wash on the row). */
-.toc-item--pending .toc-item-btn::before,
-.toc-item--pending .toc-item-btn::after{content:none !important;display:none !important;animation:none !important;box-shadow:none !important;filter:none !important}
 
 /* -------------------------------------------------
    ToC dock glyph feedback (cool/white)
