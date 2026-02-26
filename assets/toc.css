@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.83 (Side tabs glyph-only) */
+/*! Covenant ToC Panel Styles v3.1.84 (Side tabs glyph-only) */
 
 /* -------------------------------------------------
    Variables
@@ -578,7 +578,7 @@ html #tocToggle.dock-tab::before{
   top:-16px;
   bottom:-4px;
   left:-16px;
-  right:-6px;
+  right:-12px;
   background:transparent !important;
   border:0 !important;
   box-shadow:none !important;
@@ -591,7 +591,7 @@ html #mirrorToggle.dock-tab::before{
   position:absolute;
   top:-16px;
   bottom:-4px;
-  left:-6px;
+  left:-12px;
   right:-16px;
   background:transparent !important;
   border:0 !important;
