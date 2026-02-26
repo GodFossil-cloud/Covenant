@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.88 (Restore node indicators for all items) */
+/*! Covenant ToC Panel Styles v3.1.89 (Colder sealed text) */
 
 /* -------------------------------------------------
    Variables
@@ -386,16 +386,17 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--pending .toc-item-btn:hover .toc-entry-title,
 .toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
 
-/* Sealed entries: ashen slate (diluted ink) rather than "disabled gray". */
-.toc-locked-btn{color:rgba(44,62,80,.60);opacity:.68;cursor:not-allowed;position:relative}
+/* Sealed entries: ashen slate (diluted ink) rather than "disabled gray".
+   Slightly colder (blue-leaning) so sealed territory reads distinct from the warm unlocked track. */
+.toc-locked-btn{color:rgba(38,54,72,.58);opacity:.68;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
 
-.toc-item--locked .toc-entry-key{color:rgba(44,62,80,.44)}
-.toc-item--locked .toc-entry-title{color:rgba(44,62,80,.58)}
+.toc-item--locked .toc-entry-key{color:rgba(38,54,72,.40)}
+.toc-item--locked .toc-entry-title{color:rgba(38,54,72,.54)}
 
 /* First sealed entry: a subtle "dawning" lift (tint only). */
-.toc-item--locked.toc-item--dawning .toc-entry-key{color:rgba(44,62,80,.48)}
-.toc-item--locked.toc-item--dawning .toc-entry-title{color:rgba(44,62,80,.70)}
+.toc-item--locked.toc-item--dawning .toc-entry-key{color:rgba(38,54,72,.46)}
+.toc-item--locked.toc-item--dawning .toc-entry-title{color:rgba(38,54,72,.66)}
 
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
 .toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
