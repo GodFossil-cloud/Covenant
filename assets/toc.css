@@ -165,8 +165,13 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
    Modal veil
    ------------------------------------------------- */
 
-.toc-overlay{position:fixed;inset:0 0 var(--toc-footer-reserved, var(--footer-total-height)) 0;background:rgba(0,0,0,.64);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms var(--toc-scroll-ease)}
+.toc-overlay{position:fixed;inset:0 0 var(--toc-footer-reserved, var(--footer-total-height)) 0;background:rgba(0,0,0,.72);z-index:1400;opacity:0;pointer-events:none;transition:opacity 340ms var(--toc-scroll-ease)}
 .toc-overlay.is-open{opacity:1;pointer-events:auto}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+  .toc-overlay{-webkit-backdrop-filter:blur(0px);backdrop-filter:blur(0px)}
+  .toc-overlay.is-open{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+}
 
 /* -------------------------------------------------
    Panel (anchored above footer)

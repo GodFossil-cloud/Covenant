@@ -74,7 +74,7 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 .reliquary-overlay{
   position:fixed;
   inset:0 0 var(--reliquary-footer-reserved, var(--footer-total-height)) 0;
-  background:rgba(0,0,0,.66);
+  background:rgba(0,0,0,.72);
   z-index:1500;
   opacity:0;
   pointer-events:none;
@@ -82,6 +82,11 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 }
 
 .reliquary-overlay.is-open{opacity:1;pointer-events:auto}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+  .reliquary-overlay{-webkit-backdrop-filter:blur(0px);backdrop-filter:blur(0px)}
+  .reliquary-overlay.is-open{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+}
 
 /* -------------------------------------------------
    Panel
