@@ -324,8 +324,10 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative}
 
-/* Node indicators: restore circles for ALL items so the ToC reads as a vertical progress track. */
-.toc-item::before{
+/* Node indicators: only mark the current location and the staged (pending) selection.
+   Locked entries do not receive node indicators (including the first "dawning" sealed entry). */
+.toc-item--current::before,
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{
   content:'';
   display:block;
   position:absolute;
@@ -341,18 +343,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   pointer-events:none;
 }
 
-/* Locked nodes: smaller + ashen (clear "not yet"). */
-.toc-item--locked::before{
-  left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));
-  width:var(--toc-node-locked);
-  height:var(--toc-node-locked);
-  background:rgba(247,244,238,.72);
-  border-color:rgba(44,62,80,.22);
-  box-shadow:0 0 0 1px rgba(255,255,255,.18),0 10px 14px rgba(0,0,0,.02);
-  opacity:.68;
-}
-
-/* Current + pending nodes: distinct. */
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);opacity:1}
 
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(201,169,97,.92) 0 3px,rgba(201,169,97,0) 3.5px),rgba(247,244,238,1);border-color:rgba(201,169,97,.70);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.14),0 10px 14px rgba(0,0,0,.04);opacity:1}
@@ -436,14 +426,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-gate ~ .toc-item--locked .toc-locked-btn > *{position:relative;z-index:1}
 
-/* Sealed nodes AFTER gate: colder + more hollow. */
-.toc-gate ~ .toc-item--locked::before{
-  background:rgba(247,244,238,.52);
-  border-color:rgba(24,36,52,.28);
-  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 10px 14px rgba(0,0,0,.02);
-  opacity:.52;
-}
-
 /* The "next" sealed entry: warmer, clearer, and slightly larger (but still sealed). */
 .toc-gate + .toc-item--locked.toc-item--dawning .toc-locked-btn,
 .toc-item--dawning.toc-item--locked .toc-locked-btn{opacity:.92}
@@ -455,26 +437,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--dawning.toc-item--locked .toc-entry-title{
   color:rgba(24,36,52,.78);
   text-shadow:0 1px 0 rgba(255,255,255,.20),0 0 14px rgba(201,169,97,.14);
-}
-
-.toc-gate + .toc-item--locked.toc-item--dawning::before,
-.toc-item--dawning.toc-item--locked::before{
-  width:var(--toc-node);
-  height:var(--toc-node);
-  left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));
-
-  background:
-    radial-gradient(circle at 50% 50%, rgba(201,169,97,.95) 0 3px, rgba(201,169,97,0) 3.5px),
-    rgba(247,244,238,.96);
-
-  border-color:rgba(139,0,0,.46);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.18),
-    0 0 18px rgba(201,169,97,.16),
-    0 0 26px rgba(139,0,0,.10),
-    0 10px 14px rgba(0,0,0,.03);
-
-  opacity:1;
 }
 
 .toc-gate + .toc-item--locked.toc-item--dawning .toc-locked-btn::after,
