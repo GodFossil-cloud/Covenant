@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.86 (Side tabs glyph-only) */
+/*! Covenant ToC Panel Styles v3.1.87 (Linear gate + sealed ashen + nodes only for current/pending) */
 
 /* -------------------------------------------------
    Variables
@@ -324,13 +324,32 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative}
 
-.toc-item::before{content:'';position:absolute;left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));top:calc(var(--toc-item-pad-y) + (1em * var(--toc-item-line) / 2));transform:translateY(-50%);width:var(--toc-node);height:var(--toc-node);border-radius:999px;background:rgba(247,244,238,.98);border:1px solid rgba(139,115,85,.66);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
+/* Node indicators: ONLY current + pending may show a left node. */
+.toc-item::before{content:none !important;display:none !important}
+
+.toc-item--current::before,
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{
+  content:'';
+  display:block;
+  position:absolute;
+  left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));
+  top:calc(var(--toc-item-pad-y) + (1em * var(--toc-item-line) / 2));
+  transform:translateY(-50%);
+  width:var(--toc-node);
+  height:var(--toc-node);
+  border-radius:999px;
+  background:rgba(247,244,238,.98);
+  border:1px solid rgba(139,115,85,.66);
+  box-shadow:0 0 0 1px rgba(255,255,255,.22),0 10px 14px rgba(0,0,0,.04);
+  pointer-events:none;
+}
 
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(201,169,97,.92) 0 3px,rgba(201,169,97,0) 3.5px),rgba(247,244,238,1);border-color:rgba(201,169,97,.70);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.14),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
-.toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
+/* Locked entries never show nodes (even the old dashed lock mark). */
+.toc-item--locked::before{content:none !important;display:none !important}
 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.25rem 0 .62rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:50%;transform:translateY(calc(-50% - 2px));height:1px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
@@ -361,10 +380,16 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--pending .toc-item-btn:hover .toc-entry-title,
 .toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
 
-.toc-locked-btn{color:rgba(120,120,120,.94);opacity:.80;cursor:not-allowed;position:relative}
+/* Sealed entries: ashen slate (diluted ink) rather than "disabled gray". */
+.toc-locked-btn{color:rgba(44,62,80,.60);opacity:.68;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
-.toc-item--locked .toc-entry-key{color:rgba(120,120,120,.62)}
-.toc-item--locked .toc-entry-title{color:rgba(120,120,120,.86)}
+
+.toc-item--locked .toc-entry-key{color:rgba(44,62,80,.44)}
+.toc-item--locked .toc-entry-title{color:rgba(44,62,80,.58)}
+
+/* First sealed entry: a subtle "dawning" lift (tint only). */
+.toc-item--locked.toc-item--dawning .toc-entry-key{color:rgba(44,62,80,.48)}
+.toc-item--locked.toc-item--dawning .toc-entry-title{color:rgba(44,62,80,.70)}
 
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
 .toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
