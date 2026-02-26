@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.20 */
+/*! Covenant UI Stack v0.3.21 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.20';
+  window.COVENANT_UI_STACK_VERSION = '0.3.21';
 
   var registry = Object.create(null);
   var order = [];
@@ -396,6 +396,11 @@
     // Keep this modest: just enough to preserve tap→click synthesis through jitter.
     var DOCK_TAP_SLOP_PX = 12;
 
+    // If the user is clearly dragging upward from the dock (intent to open a sheet),
+    // commit early so the browser gesture stack doesn't swallow the first frames.
+    var DOCK_UP_INTENT_PX = 6;
+    var DOCK_UP_DOMINANCE = 1.15;
+
     function readTouchById(e, id) {
       try {
         if (!e) return null;
@@ -509,8 +514,16 @@
         if (t) {
           var dx = t.clientX - dockTouchStartX;
           var dy = t.clientY - dockTouchStartY;
-          if (Math.abs(dx) <= DOCK_TAP_SLOP_PX && Math.abs(dy) <= DOCK_TAP_SLOP_PX) return;
-          dockTouchMoved = true;
+
+          var absDx = Math.abs(dx);
+          var absDy = Math.abs(dy);
+
+          if (dy <= -DOCK_UP_INTENT_PX && absDy > absDx * DOCK_UP_DOMINANCE) {
+            dockTouchMoved = true;
+          } else {
+            if (absDx <= DOCK_TAP_SLOP_PX && absDy <= DOCK_TAP_SLOP_PX) return;
+            dockTouchMoved = true;
+          }
         }
       }
 
