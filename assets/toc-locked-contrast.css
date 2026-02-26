@@ -1,0 +1,95 @@
+/*! Covenant ToC: Locked vs Unlocked Contrast v1 */
+
+/* This file is intentionally override-only.
+   It sharpens the sealed boundary and makes the first sealed entry ("dawning") visually significant.
+*/
+
+/* Stronger gate line (boundary reads instantly). */
+.toc-gate{margin:.35rem 0 .78rem}
+.toc-gate::before{height:2px;opacity:1;transform:translateY(-50%)}
+
+/* Sealed region: cool wash behind all locked entries AFTER the gate. */
+.toc-gate ~ .toc-item--locked .toc-locked-btn{
+  position:relative;
+  isolation:isolate;
+  opacity:.54;
+  color:rgba(24,36,52,.55);
+}
+
+.toc-gate ~ .toc-item--locked .toc-entry-key{color:rgba(24,36,52,.40)}
+.toc-gate ~ .toc-item--locked .toc-entry-title{color:rgba(24,36,52,.54)}
+
+.toc-gate ~ .toc-item--locked .toc-locked-btn::after{
+  content:'';
+  position:absolute;
+  top:-6px;
+  bottom:-6px;
+  left:1.05rem;
+  right:.25rem;
+
+  border-radius:16px;
+  filter:blur(7px);
+
+  background:
+    radial-gradient(85% 260% at 0% 55%, rgba(200,220,255,.12) 0%, rgba(200,220,255,0) 62%),
+    radial-gradient(110% 300% at 55% 55%, rgba(160,190,235,.06) 0%, rgba(160,190,235,0) 70%),
+    linear-gradient(to right, rgba(255,255,255,.05), rgba(255,255,255,0) 56%);
+
+  opacity:.75;
+  pointer-events:none;
+  z-index:0;
+}
+
+.toc-gate ~ .toc-item--locked .toc-locked-btn > *{position:relative;z-index:1}
+
+/* Sealed nodes AFTER gate: colder + more hollow. */
+.toc-gate ~ .toc-item--locked::before{
+  background:rgba(247,244,238,.52);
+  border-color:rgba(24,36,52,.28);
+  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 10px 14px rgba(0,0,0,.02);
+  opacity:.52;
+}
+
+/* The "next" sealed entry: warmer, clearer, and slightly larger (but still sealed). */
+.toc-gate + .toc-item--locked.toc-item--dawning .toc-locked-btn,
+.toc-item--dawning.toc-item--locked .toc-locked-btn{
+  opacity:.92;
+}
+
+.toc-gate + .toc-item--locked.toc-item--dawning .toc-entry-key,
+.toc-item--dawning.toc-item--locked .toc-entry-key{color:rgba(24,36,52,.58)}
+
+.toc-gate + .toc-item--locked.toc-item--dawning .toc-entry-title,
+.toc-item--dawning.toc-item--locked .toc-entry-title{
+  color:rgba(24,36,52,.78);
+  text-shadow:0 1px 0 rgba(255,255,255,.20),0 0 14px rgba(201,169,97,.14);
+}
+
+.toc-gate + .toc-item--locked.toc-item--dawning::before,
+.toc-item--dawning.toc-item--locked::before{
+  width:var(--toc-node);
+  height:var(--toc-node);
+  left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));
+
+  background:
+    radial-gradient(circle at 50% 50%, rgba(201,169,97,.95) 0 3px, rgba(201,169,97,0) 3.5px),
+    rgba(247,244,238,.96);
+
+  border-color:rgba(139,0,0,.46);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.18),
+    0 0 18px rgba(201,169,97,.16),
+    0 0 26px rgba(139,0,0,.10),
+    0 10px 14px rgba(0,0,0,.03);
+
+  opacity:1;
+}
+
+.toc-gate + .toc-item--locked.toc-item--dawning .toc-locked-btn::after,
+.toc-item--dawning.toc-item--locked .toc-locked-btn::after{
+  background:
+    radial-gradient(92% 240% at 0% 55%, rgba(201,169,97,.16) 0%, rgba(201,169,97,0) 64%),
+    radial-gradient(92% 240% at 0% 55%, rgba(139,0,0,.10) 0%, rgba(139,0,0,0) 66%),
+    linear-gradient(to right, rgba(255,255,255,.06), rgba(255,255,255,0) 56%);
+  opacity:.90;
+}
