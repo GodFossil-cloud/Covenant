@@ -318,7 +318,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
-.toc-item--pending::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(139,0,0,.88) 0 3px,rgba(139,0,0,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,0,0,.62);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04);pointer-events:none}
 
 .toc-item--locked::before{left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));width:var(--toc-node-locked);height:var(--toc-node-locked);background:rgba(247,244,238,.96);border:1px dashed rgba(201,169,97,.56);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
 
@@ -787,13 +787,26 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    ------------------------------------------------- */
 
 @keyframes tocPendingNodePulse{
-  0%{
+  0%,58%,100%{
+    opacity:1;
+    transform:translateY(-50%) scale(1);
+    filter:none;
     border-color:rgba(139,0,0,.58);
     box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(139,0,0,.08),0 10px 14px rgba(0,0,0,.04);
   }
-  100%{
-    border-color:rgba(139,0,0,.90);
-    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 28px rgba(139,0,0,.24),0 0 22px rgba(201,169,97,.16),0 10px 14px rgba(0,0,0,.04);
+  66%{
+    opacity:0.26;
+    transform:translateY(-50%) scale(0.92);
+    filter:brightness(0.92);
+    border-color:rgba(139,0,0,.46);
+    box-shadow:0 0 0 1px rgba(255,255,255,.24),0 0 10px rgba(139,0,0,.06),0 10px 14px rgba(0,0,0,.04);
+  }
+  74%{
+    opacity:1;
+    transform:translateY(-50%) scale(1.04);
+    filter:none;
+    border-color:rgba(139,0,0,.92);
+    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 26px rgba(139,0,0,.22),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);
   }
 }
 
@@ -818,7 +831,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 }
 
 /* Pending node pulse (the left dot becomes unmistakably "armed"). */
-.toc-item--pending::before{animation:tocPendingNodePulse 980ms ease-in-out infinite alternate}
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{animation:tocPendingNodePulse 1100ms ease-in-out infinite}
 
 /* Ember flicker layer (brief, occasional flare) beneath the main wash. */
 .toc-item--pending .toc-item-btn::before{
@@ -887,6 +900,10 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 /* Kill the old underline indicator (baseline + fill). */
 .toc-item--pending .toc-entry-title::before,
 .toc-item--pending .toc-entry-title::after{content:none !important;display:none !important}
+
+/* Pending selection: node-only indicator (no lantern wash on the row). */
+.toc-item--pending .toc-item-btn::before,
+.toc-item--pending .toc-item-btn::after{content:none !important;display:none !important;animation:none !important;box-shadow:none !important;filter:none !important}
 
 /* -------------------------------------------------
    ToC dock glyph feedback (cool/white)
