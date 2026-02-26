@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.81 (Slightly smaller side-tab glyphs) */
+/*! Covenant ToC Panel Styles v3.1.82 (Side tab caps transparent) */
 
 /* -------------------------------------------------
    Variables
@@ -476,7 +476,7 @@ html #tocToggle.dock-tab .dock-cap::before,
 html #mirrorToggle.dock-tab .dock-cap::before{content:'';position:absolute;inset:0;border-radius:0 0 999px 999px;border:1px solid rgba(0,0,0,0.72);box-shadow:inset 0 0 18px rgba(0,0,0,0.86),inset 0 1px 0 rgba(255,255,255,0.05)}
 
 html #tocToggle.dock-tab .dock-cap::after,
-html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:0;border-radius:0 0 999px 999px;background:var(--dock-tab-face,#010103)}
+html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:0;border-radius:0 0 999px 999px;background:transparent}
 
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0);z-index:2}
