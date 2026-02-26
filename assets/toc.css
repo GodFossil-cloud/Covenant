@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.82 (Side tab caps transparent) */
+/*! Covenant ToC Panel Styles v3.1.83 (Side tabs glyph-only) */
 
 /* -------------------------------------------------
    Variables
@@ -472,11 +472,12 @@ html #mirrorToggle.dock-tab{overflow:visible}
 html #tocToggle.dock-tab .dock-cap,
 html #mirrorToggle.dock-tab .dock-cap{position:absolute;left:50%;top:0;width:var(--dock-cap-size);height:var(--dock-cap-h);transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h))),0);border-radius:0 0 999px 999px;overflow:hidden;pointer-events:none;z-index:0}
 
+/* Glyph-only: fully remove the medallion silhouette (rim + fill). */
 html #tocToggle.dock-tab .dock-cap::before,
-html #mirrorToggle.dock-tab .dock-cap::before{content:'';position:absolute;inset:0;border-radius:0 0 999px 999px;border:1px solid rgba(0,0,0,0.72);box-shadow:inset 0 0 18px rgba(0,0,0,0.86),inset 0 1px 0 rgba(255,255,255,0.05)}
+html #mirrorToggle.dock-tab .dock-cap::before{content:none;display:none}
 
 html #tocToggle.dock-tab .dock-cap::after,
-html #mirrorToggle.dock-tab .dock-cap::after{content:'';position:absolute;inset:0;border-radius:0 0 999px 999px;background:transparent}
+html #mirrorToggle.dock-tab .dock-cap::after{content:none;display:none}
 
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px - var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h)) + var(--dock-cap-half));transform:translate3d(-50%,-50%,0);z-index:2}
