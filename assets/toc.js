@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.12 (Translate3d panel transform for smoother drag-cancel snap-back) */
+/*! Covenant ToC v3.3.13 (Linear gate list + dawning sealed entry) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.12';
+  window.COVENANT_TOC_VERSION = '3.3.13';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -749,14 +749,11 @@
   function renderToC() {
     if (!tocDynamicContent) return;
 
-    var preludeIds = { invocation: true, foundation: true, declaration: true };
-    var ritesIds = { rituals: true, oath: true, consecrated: true };
-
-    var preludeHtml = '';
-    var articlesHtml = '';
-    var ritesHtml = '';
+    var itemsHtml = '';
 
     var gateInserted = false;
+    var dawningMarked = false;
+
     var gateMarkup = '<li class="toc-gate" aria-hidden="true"></li>';
 
     for (var i = 0; i < window.COVENANT_JOURNEY.length; i++) {
@@ -766,9 +763,19 @@
       var isCurrent = (page.id === currentPageId);
       var unlocked = isUnlockedJourneyIndex(i);
 
+      if (!unlocked && !gateInserted) {
+        itemsHtml += gateMarkup;
+        gateInserted = true;
+      }
+
       var itemClass = 'toc-item'
         + (isCurrent ? ' toc-item--current' : '')
         + (unlocked ? '' : ' toc-item--locked');
+
+      if (!unlocked && !dawningMarked) {
+        itemClass += ' toc-item--dawning';
+        dawningMarked = true;
+      }
 
       var item = ''
         + '<li class="' + itemClass + '" data-page-id="' + escapeHtml(page.id) + '"'
@@ -777,16 +784,7 @@
         + renderEntryButton(page, unlocked, isCurrent)
         + '</li>';
 
-      if (preludeIds[page.id]) {
-        if (!unlocked && !gateInserted) { preludeHtml += gateMarkup; gateInserted = true; }
-        preludeHtml += item;
-      } else if (ritesIds[page.id]) {
-        if (!unlocked && !gateInserted) { ritesHtml += gateMarkup; gateInserted = true; }
-        ritesHtml += item;
-      } else {
-        if (!unlocked && !gateInserted) { articlesHtml += gateMarkup; gateInserted = true; }
-        articlesHtml += item;
-      }
+      itemsHtml += item;
     }
 
     var lexicon = resolveLexiconReference();
@@ -800,9 +798,9 @@
 
     var html = ''
       + '<nav aria-label="Covenant contents" class="toc-index">'
-      +   renderGroup('prelude', 'Prelude', preludeHtml)
-      +   renderGroup('articles', 'Articles', articlesHtml)
-      +   renderGroup('rites', 'Rites', ritesHtml)
+      +   '<ol class="toc-list">'
+      +     itemsHtml
+      +   '</ol>'
       +   annex
       + '</nav>';
 
