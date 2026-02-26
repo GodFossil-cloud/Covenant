@@ -71,8 +71,8 @@
 
   /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
      (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
-  --lexicon-glyph-tap-aura-size:2.4em;
-  --lexicon-glyph-tap-aura-blur:6px;
+  --lexicon-glyph-tap-aura-size:2.0em;
+  --lexicon-glyph-tap-aura-blur:8px;
   --lexicon-glyph-tap-aura:
     radial-gradient(circle at 50% 50%,
       rgba(255,255,255,0.94) 0%,
@@ -231,7 +231,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
   text-shadow:none;
   transition:
-    color 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 260ms cubic-bezier(0.22, 0.61,  0.36, 1),
     text-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1),
     filter 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
