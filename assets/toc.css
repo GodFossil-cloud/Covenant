@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.84 (Side tabs glyph-only) */
+/*! Covenant ToC Panel Styles v3.1.85 (Side tabs glyph-only) */
 
 /* -------------------------------------------------
    Variables
@@ -570,13 +570,13 @@ html #tocToggle.dock-tab::before,
 html #tocToggle.dock-tab::after{content:none !important;display:none !important}
 
 /* Bigger hit-box for side tabs (no visual change).
-   NOTE: keep bottom expansion small so we do not steal taps from the citation label beneath. */
+   NOTE: bottom expansion stays modest so we do not steal taps from the citation label zone. */
 html #tocToggle.dock-tab::before{
   content:'' !important;
   display:block !important;
   position:absolute;
   top:-16px;
-  bottom:-4px;
+  bottom:-6px;
   left:-16px;
   right:-12px;
   background:transparent !important;
@@ -590,7 +590,7 @@ html #mirrorToggle.dock-tab::before{
   display:block !important;
   position:absolute;
   top:-16px;
-  bottom:-4px;
+  bottom:-6px;
   left:-12px;
   right:-16px;
   background:transparent !important;
