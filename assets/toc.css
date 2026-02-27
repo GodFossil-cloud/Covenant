@@ -21,6 +21,9 @@
 
   --toc-brass:rgba(201,169,97,1);
 
+  /* Pending/armed color (warm violet). Use rgba(var(--toc-armed-rgb), <alpha>). */
+  --toc-armed-rgb:178,110,232;
+
   --toc-rule-x:.95rem;
   --toc-node:10px;
   --toc-node-locked:8px;
@@ -363,7 +366,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 /* Current + pending nodes: distinct. */
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);opacity:1}
 
-.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(201,169,97,.92) 0 3px,rgba(201,169,97,0) 3.5px),rgba(247,244,238,1);border-color:rgba(201,169,97,.70);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.14),0 10px 14px rgba(0,0,0,.04);opacity:1}
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(var(--toc-armed-rgb),.92) 0 3px,rgba(var(--toc-armed-rgb),0) 3.5px),rgba(247,244,238,1);border-color:rgba(var(--toc-armed-rgb),.70);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(var(--toc-armed-rgb),.14),0 10px 14px rgba(0,0,0,.04);opacity:1}
 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 1.5px);transform:translateY(-50%);height:1.5px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
@@ -875,22 +878,22 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
     opacity:1;
     transform:translateY(-50%) scale(1);
     filter:none;
-    border-color:rgba(201,169,97,.70);
-    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.14),0 10px 14px rgba(0,0,0,.04);
+    border-color:rgba(var(--toc-armed-rgb),.70);
+    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(var(--toc-armed-rgb),.14),0 10px 14px rgba(0,0,0,.04);
   }
   66%{
     opacity:0.26;
     transform:translateY(-50%) scale(0.92);
     filter:brightness(0.92);
-    border-color:rgba(201,169,97,.54);
-    box-shadow:0 0 0 1px rgba(255,255,255,.24),0 0 10px rgba(201,169,97,.10),0 10px 14px rgba(0,0,0,.04);
+    border-color:rgba(var(--toc-armed-rgb),.54);
+    box-shadow:0 0 0 1px rgba(255,255,255,.24),0 0 10px rgba(var(--toc-armed-rgb),.10),0 10px 14px rgba(0,0,0,.04);
   }
   74%{
     opacity:1;
     transform:translateY(-50%) scale(1.04);
     filter:none;
-    border-color:rgba(201,169,97,.98);
-    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 26px rgba(201,169,97,.26),0 0 18px rgba(201,169,97,.16),0 10px 14px rgba(0,0,0,.04);
+    border-color:rgba(var(--toc-armed-rgb),.98);
+    box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 26px rgba(var(--toc-armed-rgb),.26),0 0 18px rgba(var(--toc-armed-rgb),.16),0 10px 14px rgba(0,0,0,.04);
   }
 }
 
@@ -929,8 +932,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   border-radius:999px;
 
   background:
-    radial-gradient(closest-side at 0% 56%, rgba(201,169,97,.34) 0%, rgba(201,169,97,0) 74%),
-    radial-gradient(closest-side at 12% 56%, rgba(201,169,97,.22) 0%, rgba(201,169,97,0) 78%);
+    radial-gradient(closest-side at 0% 56%, rgba(var(--toc-armed-rgb),.34) 0%, rgba(var(--toc-armed-rgb),0) 74%),
+    radial-gradient(closest-side at 12% 56%, rgba(var(--toc-armed-rgb),.22) 0%, rgba(var(--toc-armed-rgb),0) 78%);
 
   filter:blur(5px);
   opacity:.18;
@@ -956,20 +959,20 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
   background:
     /* Brass ember near the node (left). */
-    radial-gradient(78% 190% at 0% 56%, rgba(201,169,97,.14) 0%, rgba(201,169,97,0) 60%),
+    radial-gradient(78% 190% at 0% 56%, rgba(var(--toc-armed-rgb),.14) 0%, rgba(var(--toc-armed-rgb),0) 60%),
     /* Brass lantern core, still left-biased. */
-    radial-gradient(95% 220% at 10% 56%, rgba(201,169,97,.18) 0%, rgba(201,169,97,0) 64%),
+    radial-gradient(95% 220% at 10% 56%, rgba(var(--toc-armed-rgb),.18) 0%, rgba(var(--toc-armed-rgb),0) 64%),
     /* Distant brass haze so the wash doesn't abruptly stop mid-line. */
-    radial-gradient(120% 260% at 68% 56%, rgba(201,169,97,.08) 0%, rgba(201,169,97,0) 70%),
+    radial-gradient(120% 260% at 68% 56%, rgba(var(--toc-armed-rgb),.08) 0%, rgba(var(--toc-armed-rgb),0) 70%),
     /* Subtle top sheen that fades quickly (helps "within" feel). */
     linear-gradient(to right, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 60%);
 
   box-shadow:
     /* Soft outer haze (avoid reading as a rectangle). */
-    0 0 28px rgba(201,169,97,.18),
-    0 0 24px rgba(201,169,97,.14),
+    0 0 28px rgba(var(--toc-armed-rgb),.18),
+    0 0 24px rgba(var(--toc-armed-rgb),.14),
     /* Micro-gutter warmth (a tiny left-sided catch). */
-    inset 12px 0 18px -22px rgba(201,169,97,.32),
+    inset 12px 0 18px -22px rgba(var(--toc-armed-rgb),.32),
     /* Depth tint. */
     inset 0 -14px 18px -26px rgba(0,0,0,.58);
 
@@ -985,16 +988,16 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    Confirm stage uses :disabled because JS disables the button during nav delay. */
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"]) .toc-entry-title{
   background-image:linear-gradient(to right,
-    rgba(201,169,97,0),
-    rgba(201,169,97,.62),
-    rgba(201,169,97,0));
+    rgba(var(--toc-armed-rgb),0),
+    rgba(var(--toc-armed-rgb),.62),
+    rgba(var(--toc-armed-rgb),0));
   background-repeat:no-repeat;
   background-position:0 calc(100% - .12em);
   background-size:var(--toc-pending-title-underline-w, 44%) 1px;
 
   text-shadow:
     0 1px 0 rgba(255,255,255,.20),
-    0 0 10px rgba(201,169,97,.12);
+    0 0 10px rgba(var(--toc-armed-rgb),.12);
 
   transition:
     background-size 180ms ease,
@@ -1006,8 +1009,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
   text-shadow:
     0 1px 0 rgba(255,255,255,.22),
-    0 0 14px rgba(201,169,97,.22),
-    0 0 28px rgba(201,169,97,.10);
+    0 0 14px rgba(var(--toc-armed-rgb),.22),
+    0 0 28px rgba(var(--toc-armed-rgb),.10);
 }
 
 /* Kill the old underline indicator (baseline + fill). */
