@@ -343,19 +343,22 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   opacity:.92;
 }
 
-/* Locked nodes: smaller + ashen (clear "not yet"). */
+/* Locked nodes: smaller + ashen (clear "not yet").
+   IMPORTANT: do not lower opacity on the whole dot, or the binding rule will bleed through the fill. */
 .toc-item--locked::before{
   left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));
   width:var(--toc-node-locked);
   height:var(--toc-node-locked);
   background:var(--toc-parchment);
-  border-color:rgba(24,36,52,.26);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
-  opacity:.56;
+  border-color:rgba(24,36,52,.20);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
 }
 
-/* Sealed nodes AFTER gate: colder + more hollow. */
-.toc-gate ~ .toc-item--locked::before{opacity:.46}
+/* Sealed nodes AFTER gate: colder + more hollow (but keep the fill opaque so the rule can't show through). */
+.toc-gate ~ .toc-item--locked::before{
+  border-color:rgba(24,36,52,.14);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
 
 /* Current + pending nodes: distinct. */
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(139,115,85,.78);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);opacity:1}
