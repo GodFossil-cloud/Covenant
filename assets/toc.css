@@ -17,7 +17,7 @@
   --toc-rule-strong:rgba(139,115,85,.36);
 
   /* Binding rule below the gate: soft light blue (above-gate binding remains red). */
-  --toc-rule-below:rgba(180,212,246,.32);
+  --toc-rule-below:rgba(115,170,235,.45);
 
   --toc-parchment:rgba(247,244,238,1);
   --toc-parchment-hi:rgba(255,255,255,.72);
@@ -320,7 +320,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    ------------------------------------------------- */
 
 .toc-index{position:relative;color:var(--toc-ink);--toc-gate-y:0px;--toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));isolation:isolate}
-.toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1px;background-image:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%),linear-gradient(to bottom,transparent 0%,var(--toc-rule-below, rgba(180,212,246,.32)) 10%,var(--toc-rule-below, rgba(180,212,246,.32)) 90%,transparent 100%);background-repeat:no-repeat;background-size:1px var(--toc-gate-cut),1px calc(100% - var(--toc-gate-cut));background-position:0 0,0 var(--toc-gate-cut);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none;z-index:0}
+.toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1px;background-image:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%),linear-gradient(to bottom,transparent 0%,var(--toc-rule-below, rgba(115,170,235,.45)) 10%,var(--toc-rule-below, rgba(115,170,235,.45)) 90%,transparent 100%);background-repeat:no-repeat;background-size:1px var(--toc-gate-cut),1px calc(100% - var(--toc-gate-cut));background-position:0 0,0 var(--toc-gate-cut);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none;z-index:0}
 
 /* Binding ABOVE the gate: match the gate divider + ✦ marker; below remains the default rule. */
 .toc-index::after{content:'';position:absolute;top:.3rem;left:var(--toc-rule-x);width:1px;height:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));background:linear-gradient(to bottom,transparent 0%,rgba(139,0,0,1) 10%,rgba(139,0,0,1) 90%,transparent 100%);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none;z-index:0}
