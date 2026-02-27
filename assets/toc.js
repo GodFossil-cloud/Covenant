@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.13 (Linear gate list + dawning sealed entry) */
+/*! Covenant ToC v3.3.14 (Gate-centered binding stop) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.13';
+  window.COVENANT_TOC_VERSION = '3.3.14';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -683,6 +683,56 @@
   // Render
   // ---------------------------
 
+  var gateMeasureRaf = 0;
+
+  function getToCIndexElement() {
+    if (!tocDynamicContent || !tocDynamicContent.querySelector) return null;
+    return tocDynamicContent.querySelector('.toc-index');
+  }
+
+  function updateGateBindingStop() {
+    if (!tocDynamicContent || !tocDynamicContent.querySelector) return;
+
+    var indexEl = getToCIndexElement();
+    if (!indexEl || !indexEl.style || !indexEl.getBoundingClientRect) return;
+
+    var gateEl = tocDynamicContent.querySelector('.toc-gate');
+    if (!gateEl || !gateEl.getBoundingClientRect) {
+      indexEl.style.setProperty('--toc-gate-y', '0px');
+      return;
+    }
+
+    var indexRect = indexEl.getBoundingClientRect();
+    var gateRect = gateEl.getBoundingClientRect();
+
+    var gateCenterY = gateRect.top + (gateRect.height / 2);
+    var y = gateCenterY - indexRect.top;
+
+    if (!isFinite(y)) y = 0;
+    y = Math.max(0, y);
+
+    indexEl.style.setProperty('--toc-gate-y', y.toFixed(2) + 'px');
+  }
+
+  function scheduleGateBindingStopUpdate() {
+    if (!window.requestAnimationFrame) {
+      updateGateBindingStop();
+      return;
+    }
+
+    if (gateMeasureRaf) {
+      cancelAnimationFrame(gateMeasureRaf);
+      gateMeasureRaf = 0;
+    }
+
+    gateMeasureRaf = requestAnimationFrame(function () {
+      gateMeasureRaf = requestAnimationFrame(function () {
+        gateMeasureRaf = 0;
+        updateGateBindingStop();
+      });
+    });
+  }
+
   function parseCatalogTitle(rawTitle) {
     var s = String(rawTitle || '').trim();
     if (!s) return { key: '', title: '' };
@@ -803,6 +853,7 @@
       + '</nav>';
 
     tocDynamicContent.innerHTML = html;
+    scheduleGateBindingStopUpdate();
   }
 
   // ---------------------------
@@ -2081,12 +2132,14 @@
     window.addEventListener('resize', function () {
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
+        scheduleGateBindingStopUpdate();
       }
     });
 
     window.addEventListener('orientationchange', function () {
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
+        scheduleGateBindingStopUpdate();
       }
     });
 
