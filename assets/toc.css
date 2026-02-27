@@ -312,8 +312,11 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    Index structure
    ------------------------------------------------- */
 
-.toc-index{position:relative;color:var(--toc-ink)}
+.toc-index{position:relative;color:var(--toc-ink);--toc-gate-y:0px}
 .toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1px;background:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
+
+/* Binding ABOVE the gate: match the gate divider + ✦ marker; below remains the default rule. */
+.toc-index::after{content:'';position:absolute;top:.3rem;left:var(--toc-rule-x);width:1px;height:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));background:linear-gradient(to bottom,transparent 0%,rgba(139,0,0,1) 10%,rgba(139,0,0,1) 90%,transparent 100%);box-shadow:0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
 
 .toc-group + .toc-group{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
 .toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
