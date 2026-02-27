@@ -111,6 +111,7 @@ Notes:
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
 - Note (ToC deliberate confirm): Deliberate confirm lives on the staged/pending ToC entry itself (click again on the pending item). There is no dedicated header confirm button.
+- Note (ToC gate binding stop): `assets/toc.js` measures the `.toc-gate` divider and sets `--toc-gate-y` on `.toc-index`; `assets/toc.css` uses it to stop the red binding overlay at the gate’s center line. Default `--toc-gate-y: 0px` means “do not show binding” when a gate is absent.
 
 #### Dock-tab carry verification
 
@@ -193,6 +194,7 @@ Docs:
   - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening pages.
   - Verify ToC header band visually blends with the ToC tab face (no jarring seam).
   - Verify ToC panel reaches the top cleanly on mobile (no ~1px gap).
+  - Verify the binding overlay stops at the ToC gate divider center line.
   - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
 
 - If you change `assets/covenant.css`:
@@ -224,6 +226,7 @@ Use this when making CSS/JS/include changes.
 - Open ToC from footer; confirm veil does not cover dock.
 - Confirm ToC header band visually blends with the ToC tab face.
 - Confirm ToC sheet reaches the top cleanly on mobile (no 1px gap).
+- Confirm the red binding overlay stops at the gate divider center line.
 - Select an unlocked entry; confirm it stages.
 - Confirm deliberate confirm surface is the staged entry itself (there is no header confirm button).
 - Click the staged entry again to enter; confirm panels close before navigation.
