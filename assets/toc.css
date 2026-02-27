@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.91 (Node fill masks binding overlay) */
+/*! Covenant ToC Panel Styles v3.1.92 (Node x-nudge aligns to binding) */
 
 /* -------------------------------------------------
    Variables
@@ -25,6 +25,7 @@
   --toc-armed-rgb:178,110,232;
 
   --toc-rule-x:.95rem;
+  --toc-node-x-nudge:-1px;
   --toc-node:10px;
   --toc-node-locked:8px;
   --toc-item-pad-y:.26rem;
@@ -339,7 +340,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   content:'';
   display:block;
   position:absolute;
-  left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));
+  left:calc(var(--toc-rule-x) - (var(--toc-node) / 2) + var(--toc-node-x-nudge, 0px));
   top:calc(var(--toc-item-pad-y) + (1em * var(--toc-item-line) / 2));
   transform:translateY(-50%);
   width:var(--toc-node);
@@ -356,7 +357,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 /* Locked nodes: smaller + ashen (clear "not yet").
    IMPORTANT: do not lower opacity on the whole dot, or the binding rule will bleed through the fill. */
 .toc-item--locked::before{
-  left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));
+  left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2) + var(--toc-node-x-nudge, 0px));
   width:var(--toc-node-locked);
   height:var(--toc-node-locked);
   background:var(--toc-parchment);
