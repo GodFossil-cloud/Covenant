@@ -28,7 +28,7 @@
   --toc-pending-wash-rgb:245,242,255;
 
   --toc-rule-x:.95rem;
-  --toc-node-x-nudge:-1px;
+  --toc-node-x-nudge:-0.5px;
   --toc-node:10px;
   --toc-node-locked:8px;
   --toc-item-pad-y:.26rem;
