@@ -336,7 +336,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   width:var(--toc-node);
   height:var(--toc-node);
   border-radius:999px;
-  background:transparent;
+  background:var(--toc-parchment);
   border:1px solid rgba(139,115,85,.34);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 10px 14px rgba(0,0,0,.03);
   pointer-events:none;
@@ -348,7 +348,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2));
   width:var(--toc-node-locked);
   height:var(--toc-node-locked);
-  background:transparent;
+  background:var(--toc-parchment);
   border-color:rgba(24,36,52,.26);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
   opacity:.56;
@@ -369,7 +369,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   height:var(--toc-node);
   left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));
 
-  background:transparent;
+  background:var(--toc-parchment);
   border-color:rgba(139,0,0,.42);
   box-shadow:inset 0 0 0 1px rgba(201,169,97,.18),0 0 0 1px rgba(255,255,255,.12);
 
