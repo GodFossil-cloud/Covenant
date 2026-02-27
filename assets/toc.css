@@ -365,20 +365,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(201,169,97,.92) 0 3px,rgba(201,169,97,0) 3.5px),rgba(247,244,238,1);border-color:rgba(201,169,97,.70);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.14),0 10px 14px rgba(0,0,0,.04);opacity:1}
 
-/* Dawning node (the "next" sealed page): a quiet ring (no pulse, no brass dot). */
-.toc-gate + .toc-item--locked.toc-item--dawning::before,
-.toc-item--dawning.toc-item--locked::before{
-  width:var(--toc-node);
-  height:var(--toc-node);
-  left:calc(var(--toc-rule-x) - (var(--toc-node) / 2));
-
-  background:var(--toc-parchment);
-  border-color:rgba(139,0,0,.42);
-  box-shadow:inset 0 0 0 1px rgba(201,169,97,.18),0 0 0 1px rgba(255,255,255,.12);
-
-  opacity:.92;
-}
-
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 2px);transform:translateY(-50%);height:2px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
 .toc-gate::after{content:'✦';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:#8b0000;text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
@@ -416,12 +402,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--locked .toc-entry-key{color:rgba(38,54,72,.40)}
 .toc-item--locked .toc-entry-title{color:rgba(38,54,72,.54)}
 
-/* First sealed entry: a subtle "dawning" lift (tint only). */
-.toc-item--locked.toc-item--dawning .toc-entry-key{color:rgba(38,54,72,.46)}
-.toc-item--locked.toc-item--dawning .toc-entry-title{color:rgba(38,54,72,.66)}
-
 /* -------------------------------------------------
-   Sealed boundary + dawning emphasis
+   Sealed boundary
    ------------------------------------------------- */
 
 /* Sealed region: cool wash behind locked entries AFTER the gate. */
@@ -457,38 +439,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 }
 
 .toc-gate ~ .toc-item--locked .toc-locked-btn > *{position:relative;z-index:1}
-
-/* The "next" sealed entry: clearer, but distinct from the pending lantern wash.
-   Keep it static and hairline-based (no pulsing node, no blurred flame). */
-.toc-gate + .toc-item--locked.toc-item--dawning .toc-locked-btn,
-.toc-item--dawning.toc-item--locked .toc-locked-btn{opacity:.92}
-
-.toc-gate + .toc-item--locked.toc-item--dawning .toc-entry-key,
-.toc-item--dawning.toc-item--locked .toc-entry-key{color:rgba(24,36,52,.60)}
-
-.toc-gate + .toc-item--locked.toc-item--dawning .toc-entry-title,
-.toc-item--dawning.toc-item--locked .toc-entry-title{
-  color:rgba(24,36,52,.78);
-  text-shadow:0 1px 0 rgba(255,255,255,.18);
-
-  background-image:linear-gradient(to right,
-    rgba(139,0,0,0),
-    rgba(139,0,0,.42),
-    rgba(139,0,0,0));
-  background-repeat:no-repeat;
-  background-position:0 calc(100% - .12em);
-  background-size:28% 1px;
-}
-
-.toc-gate + .toc-item--locked.toc-item--dawning .toc-locked-btn::after,
-.toc-item--dawning.toc-item--locked .toc-locked-btn::after{
-  filter:none;
-
-  background:
-    linear-gradient(to right, rgba(255,255,255,.06), rgba(255,255,255,0) 62%);
-
-  opacity:.42;
-}
 
 .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
 .toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
