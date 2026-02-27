@@ -366,7 +366,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(201,169,97,.92) 0 3px,rgba(201,169,97,0) 3.5px),rgba(247,244,238,1);border-color:rgba(201,169,97,.70);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.14),0 10px 14px rgba(0,0,0,.04);opacity:1}
 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
-.toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 2px);transform:translateY(-50%);height:2px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
+.toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 1.5px);transform:translateY(-50%);height:1.5px;border-radius:999px;background:linear-gradient(to right,rgba(139,0,0,1),rgba(139,0,0,.22),rgba(139,0,0,0));opacity:1}
 .toc-gate::after{content:'✦';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:12px;line-height:1;color:#8b0000;text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
 
 .toc-item-btn,.toc-locked-btn{display:block;width:100%;background:none;border:0;padding:var(--toc-item-pad-y) 0 var(--toc-item-pad-y) 1.65rem;margin:0;font:inherit;font-size:1rem;line-height:var(--toc-item-line);text-align:left;white-space:normal;overflow-wrap:anywhere}
