@@ -96,6 +96,15 @@
 
   /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
+
+  /* Lexicon cradle glow (center dock notch): subtle at rest, stronger during engagement. */
+  --lexicon-cradle-glow-rest:
+    inset 0 0 18px rgba(242, 220, 154, 0.06),
+    inset 0 0 34px rgba(201, 169, 97, 0.04);
+
+  --lexicon-cradle-glow-intent:
+    inset 0 0 24px rgba(242, 220, 154, 0.14),
+    inset 0 0 44px rgba(201, 169, 97, 0.10);
 }
 
 /* -------------------------------------------------
@@ -420,6 +429,9 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   backface-visibility:hidden;
   will-change:auto;
   isolation:isolate;
+
+  /* Lexicon cradle glow: default to subtle rest glow. */
+  --lexicon-cradle-glow: var(--lexicon-cradle-glow-rest);
 }
 
 /* Widen the footer dock more so Prev/Next sit further from the center (all breakpoints). */
@@ -520,6 +532,22 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
       rgba(0,0,0,.985) 100%);
 
   opacity:0.96;
+
+  /* Apply the Lexicon cradle glow. */
+  box-shadow: var(--lexicon-cradle-glow, none);
+  transition: box-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Lexicon cradle engagement glow: boost to intent during tap/drag/open-close motion. */
+@supports selector(#navFooter:has(#lexiconToggle.is-tap-opening)){
+  #navFooter:has(#lexiconToggle.is-tap-opening),
+  #navFooter:has(#lexiconToggle.is-tap-closing),
+  #navFooter:has(#lexiconToggle.is-seal-dragging),
+  #navFooter:has(#lexiconToggle.is-nudging),
+  #navFooter:has(#lexiconToggle.is-pulsing),
+  #navFooter:has(#lexiconPanel.is-dragging){
+    --lexicon-cradle-glow: var(--lexicon-cradle-glow-intent);
+  }
 }
 
 #navFooter #lexiconToggle,
