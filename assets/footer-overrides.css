@@ -381,8 +381,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
      (If the seal drops, the cradle should follow so the geometry still reads welded.) */
   --seal-cradle-center-y:1px;
 
-  /* Border trace (cradle dock rim). */
-  --footer-cradle-line:#39332A;
+  /* Border trace (cradle dock rim): black (remove the gray seam at the top edge). */
+  --footer-cradle-line:#000;
 
   /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
   --seal-cradle-shift-y:0px;
