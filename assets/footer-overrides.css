@@ -532,8 +532,9 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
       rgba(255,255,255,0) 18%,
       rgba(255,255,255,0) 82%,
       rgba(0,0,0,.55) 100%),
-    /* Depth body (darker toward the arc floor). */
-    radial-gradient(circle farthest-side at 50% 0,
+    /* Depth body (darker toward the top rim, brighter toward the bottom/floor).
+       Reversed from original: now glows from below like ToC/Mirror sockets. */
+    radial-gradient(circle farthest-side at 50% 100%,
       rgba(0,0,0,.92) 0%,
       rgba(16,16,20,.96) 46%,
       rgba(0,0,0,.985) 100%);
