@@ -381,8 +381,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
      (If the seal drops, the cradle should follow so the geometry still reads welded.) */
   --seal-cradle-center-y:1px;
 
-  /* Border trace (cradle dock rim): black (remove the gray seam at the top edge). */
-  --footer-cradle-line:#000;
+  /* Border trace (cradle dock rim). */
+  --footer-cradle-line:#39332A;
 
   /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
   --seal-cradle-shift-y:0px;
@@ -521,6 +521,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   mask-size:100% 100%;
 
   background:
+    /* Top edge seam (inside cradle): force black without touching the rim trace. */
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.95) 0 1px,
+      rgba(0,0,0,0) 1px 100%),
     /* Border trace (U-shape): MUST be topmost or the depth layers will cover it. */
     radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
       transparent 0 calc(var(--seal-notch-radius) - 2px),
