@@ -870,6 +870,20 @@ html.lexicon-scroll-lock #navFooter{
   }
 }
 
+/* Lexicon seal tab: make the face transparent (glyph-only). */
+#navFooter #lexiconToggle.nav-btn.center::after,
+#navFooter #lexiconToggle.nav-btn.center:hover::after,
+#navFooter #lexiconToggle.nav-btn.center:focus::after,
+#navFooter #lexiconToggle.nav-btn.center:focus-visible::after,
+#navFooter #lexiconToggle.nav-btn.center:active::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection:active::after,
+#navFooter #lexiconToggle.nav-btn.center.is-seal-dragging::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection.is-seal-dragging::after{
+  background-color:transparent !important;
+  background-image:none !important;
+}
+
 /* -------------------------------------------------
    Lexicon weld (open): remove seal backdrop
    ------------------------------------------------- */
