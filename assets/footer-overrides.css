@@ -652,8 +652,9 @@ html.lexicon-scroll-lock #navFooter{
     linear-gradient(to bottom, rgba(72,50,18,0.72) 0%, rgba(10,8,4,0.94) 100%);
 }
 
-/* When the reader reaches the bottom (latched by JS): cool the enabled Next button to neutral obsidian (inverted behavior). */
-#navFooter.is-at-bottom a.nav-next .nav-next-frame::after{
+/* When the reader reaches the bottom (latched by JS): cool the enabled Next button to neutral obsidian (inverted behavior).
+   IMPORTANT: .is-armed must override this, so only apply neutral tone when NOT armed. */
+#navFooter.is-at-bottom a.nav-next:not(.is-armed) .nav-next-frame::after{
   background:
     linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0) 18px),
     linear-gradient(to bottom, rgba(38,40,45,0.76) 0%, rgba(10,10,12,0.90) 100%);
@@ -665,7 +666,8 @@ html.lexicon-scroll-lock #navFooter{
   transform:translateY(-1px) scale(1.01);
 }
 
-/* Armed glow: brass/leaf family by default (inverted behavior). */
+/* Armed glow: brass/leaf family (inverted behavior).
+   IMPORTANT: this rule must have higher specificity than .is-at-bottom overrides. */
 #navFooter a.nav-prev.is-armed .nav-prev-frame::before,
 #navFooter a.nav-next.is-armed .nav-next-frame::before{
   box-shadow:
@@ -674,16 +676,6 @@ html.lexicon-scroll-lock #navFooter{
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 0 0 1px rgba(242, 220, 154, 0.26),
     0 0 22px rgba(218, 184, 86, 0.18);
-}
-
-/* Armed + at-bottom: neutral white glow (inverted behavior). */
-#navFooter.is-at-bottom a.nav-next.is-armed .nav-next-frame::before{
-  box-shadow:
-    inset 0 0 26px rgba(0, 0, 0, 0.96),
-    inset 0 2px 12px rgba(0, 0, 0, 0.62),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 0 0 1px rgba(255, 255, 255, 0.16),
-    0 0 18px rgba(255, 255, 255, 0.12);
 }
 
 /* Second tap (commit): animated feedback on pointer-down (so it reads even if navigation is immediate). */
@@ -734,20 +726,14 @@ html.lexicon-scroll-lock #navFooter{
     opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Armed label: brass/leaf glow by default (inverted behavior). */
+/* Armed label: brass/leaf glow (inverted behavior).
+   IMPORTANT: this rule must have higher specificity than .is-at-bottom overrides. */
 #navFooter a.nav-prev.is-armed .nav-prev-label,
 #navFooter a.nav-next.is-armed .nav-next-label{
   opacity:1;
   text-shadow:
     0 1px 1px rgba(0, 0, 0, 0.96),
     0 0 16px rgba(242, 220, 154, 0.22);
-}
-
-/* Armed label + at-bottom: neutral white glow (inverted behavior). */
-#navFooter.is-at-bottom a.nav-next.is-armed .nav-next-label{
-  text-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.96),
-    0 0 14px rgba(255, 255, 255, 0.18);
 }
 
 #navFooter .nav-next-frame .nav-btn-icon,
