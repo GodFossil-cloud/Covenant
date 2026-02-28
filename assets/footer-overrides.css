@@ -170,6 +170,13 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center::before,
 html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]{box-shadow:none !important}
 
+/* Lexicon DRAG: seal must become glyph-only (no rim/inset) so cradle reads through cleanly. */
+#navFooter #lexiconToggle.nav-btn.center.is-seal-dragging::before,
+#navFooter #lexiconToggle.nav-btn.center.is-nudging::before{
+  border:0 !important;
+  box-shadow:none !important;
+}
+
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.86em !important;position:relative;display:inline-block;z-index:0}
 
