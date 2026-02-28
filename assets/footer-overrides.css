@@ -550,6 +550,11 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   }
 }
 
+/* Fully OPEN (scroll-lock): keep the cradle glow present after the motion completes. */
+html.lexicon-scroll-lock #navFooter{
+  --lexicon-cradle-glow: var(--lexicon-cradle-glow-intent);
+}
+
 #navFooter #lexiconToggle,
 #navFooter #lexiconToggle::before,
 #navFooter #lexiconToggle::after{border-radius:0 0 999px 999px !important}
