@@ -858,27 +858,31 @@ html.lexicon-scroll-lock #navFooter{
   /* Keep the existing fleck texture (selection surface) while pressed/dragging. */
   #navFooter #lexiconToggle.has-selection:active::after,
   #navFooter #lexiconToggle.has-selection.is-seal-dragging::after{
-    background-color:var(--obsidian-0) !important;
-    background-image:
-      radial-gradient(circle at 18% 22%, rgba(242,220,154,0.20) 0 1px, transparent 2px),
-      radial-gradient(circle at 72% 30%, rgba(242,220,154,0.16) 0 1px, transparent 2px),
-      radial-gradient(circle at 40% 78%, rgba(242,220,154,0.14) 0 1px, transparent 2px),
-      radial-gradient(circle at 82% 74%, rgba(242,220,154,0.12) 0 1px, transparent 2px),
-      radial-gradient(120% 120% at 28% 20%, rgba(255,255,255,0.12), rgba(255,255,255,0) 44%),
-      linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.42)),
-      linear-gradient(to bottom, var(--obsidian-2), var(--obsidian-0)) !important;
+    background-color:transparent !important;
+    background-image:none !important;
   }
 }
 
-/* Lexicon seal tab: make the face transparent (glyph-only). */
+/* -------------------------------------------------
+   Lexicon seal face: transparent across ALL states
+   (glyph-only; dock/cradle visible beneath)
+   ------------------------------------------------- */
+
 #navFooter #lexiconToggle.nav-btn.center::after,
 #navFooter #lexiconToggle.nav-btn.center:hover::after,
 #navFooter #lexiconToggle.nav-btn.center:focus::after,
 #navFooter #lexiconToggle.nav-btn.center:focus-visible::after,
 #navFooter #lexiconToggle.nav-btn.center:active::after,
-#navFooter #lexiconToggle.nav-btn.center.has-selection::after,
-#navFooter #lexiconToggle.nav-btn.center.has-selection:active::after,
+#navFooter #lexiconToggle.nav-btn.center.is-nudging::after,
+#navFooter #lexiconToggle.nav-btn.center.is-pulsing::after,
 #navFooter #lexiconToggle.nav-btn.center.is-seal-dragging::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection:hover::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection:focus::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection:focus-visible::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection:active::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection.is-nudging::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection.is-pulsing::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-seal-dragging::after{
   background-color:transparent !important;
   background-image:none !important;
@@ -894,11 +898,4 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
 #navFooter #lexiconToggle[aria-expanded="true"]::after{
   background-color:transparent !important;
   background-image:none !important;
-}
-
-/* Weld during drag (open OR close) */
-#navFooter #lexiconToggle.is-seal-dragging::after,
-#navFooter #lexiconToggle.has-selection.is-seal-dragging::after{
-  background-color: transparent !important;
-  background-image: none !important;
 }
