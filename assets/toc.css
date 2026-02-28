@@ -144,6 +144,15 @@
   --dock-socket-glow-mirror:
     inset 0 0 22px rgba(255,110,130,0.16),
     inset 0 0 36px rgba(190,90,220,0.10);
+
+  /* Resting cradle glow (subtle, always-on). */
+  --dock-socket-glow-toc-rest:
+    inset 0 0 16px rgba(236,246,255,0.10),
+    inset 0 0 30px rgba(150,195,255,0.06);
+
+  --dock-socket-glow-mirror-rest:
+    inset 0 0 16px rgba(255,110,130,0.08),
+    inset 0 0 30px rgba(190,90,220,0.05);
 }
 
 /* iOS Safari: when the sheet is committed open (or opening), a +1px weld keeps the tab from
@@ -529,10 +538,10 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 }
 
 /* Left socket (ToC tab). */
-.nav-seals::before{left:calc(var(--toc-tab-width) / 2 - var(--dock-socket-spread, 0px))}
+.nav-seals::before{left:calc(var(--toc-tab-width) / 2 - var(--dock-socket-spread, 0px));--dock-socket-glow:var(--dock-socket-glow-toc-rest)}
 
 /* Right socket (Mirror tab). */
-.nav-seals::after{left:calc(100% - (var(--toc-tab-width) / 2) + var(--dock-socket-spread, 0px))}
+.nav-seals::after{left:calc(100% - (var(--toc-tab-width) / 2) + var(--dock-socket-spread, 0px));--dock-socket-glow:var(--dock-socket-glow-mirror-rest)}
 
 /* If the Lexicon door is open, keep both sockets quiet but present. */
 html.lexicon-scroll-lock .nav-seals::before,
