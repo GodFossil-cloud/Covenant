@@ -1318,6 +1318,27 @@
     }
   }
 
+  function isPageAtBottom() {
+    try {
+      var footer = document.getElementById('navFooter');
+      if (!footer || !footer.classList) return false;
+      return footer.classList.contains('is-at-bottom');
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function scrollToBottom() {
+    try {
+      var scrollOpts = { top: document.body.scrollHeight, behavior: 'smooth' };
+      window.scrollTo(scrollOpts);
+    } catch (err) {
+      try {
+        window.scrollTo(0, document.body.scrollHeight);
+      } catch (err2) {}
+    }
+  }
+
   (function wireDockNavCloseAll() {
     var armed = null;
     var TAKEOFF_MS = 260;
@@ -1423,6 +1444,8 @@
       var href = link.getAttribute('href');
       if (!href) return;
 
+      var isNext = !!(link.classList && link.classList.contains('nav-next'));
+
       // First click arms. Second click commits.
       if (armed !== link) {
         e.preventDefault();
@@ -1431,6 +1454,12 @@
         clearArmed();
         armed = link;
         try { if (armed.classList) armed.classList.add('is-armed'); } catch (err4) {}
+
+        // If this is Next and page is not at bottom, scroll down automatically.
+        if (isNext && !isPageAtBottom()) {
+          scrollToBottom();
+        }
+
         return;
       }
 
