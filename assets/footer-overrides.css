@@ -667,15 +667,76 @@ html.lexicon-scroll-lock #navFooter{
 }
 
 /* Armed glow: brass/leaf family (inverted behavior).
+   Enhanced +30% intensity with subtle breathing pulse.
    IMPORTANT: this rule must have higher specificity than .is-at-bottom overrides. */
 #navFooter a.nav-prev.is-armed .nav-prev-frame::before,
 #navFooter a.nav-next.is-armed .nav-next-frame::before{
   box-shadow:
     inset 0 0 26px rgba(0, 0, 0, 0.96),
     inset 0 2px 12px rgba(0, 0, 0, 0.62),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 0 0 1px rgba(242, 220, 154, 0.26),
-    0 0 22px rgba(218, 184, 86, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(242, 220, 154, 0.34),
+    0 0 28px rgba(218, 184, 86, 0.24);
+  animation:navArmedGlowBreathe 2.8s ease-in-out infinite;
+}
+
+/* Arrow nudge animation: gentle horizontal shift toward navigation direction. */
+#navFooter a.nav-prev.is-armed .nav-btn-icon--arrow{
+  animation:navArrowNudgeLeft 1.8s ease-in-out infinite;
+}
+
+#navFooter a.nav-next.is-armed .nav-btn-icon--arrow{
+  animation:navArrowNudgeRight 1.8s ease-in-out infinite;
+}
+
+/* Breathing glow animation (subtle pulse on the frame border glow). */
+@keyframes navArmedGlowBreathe{
+  0%, 100%{
+    box-shadow:
+      inset 0 0 26px rgba(0, 0, 0, 0.96),
+      inset 0 2px 12px rgba(0, 0, 0, 0.62),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(242, 220, 154, 0.34),
+      0 0 28px rgba(218, 184, 86, 0.24);
+  }
+  50%{
+    box-shadow:
+      inset 0 0 26px rgba(0, 0, 0, 0.96),
+      inset 0 2px 12px rgba(0, 0, 0, 0.62),
+      inset 0 1px 0 rgba(255, 255, 255, 0.10),
+      0 0 0 1px rgba(242, 220, 154, 0.42),
+      0 0 32px rgba(218, 184, 86, 0.30);
+  }
+}
+
+/* Arrow nudge animations (4px shift in navigation direction). */
+@keyframes navArrowNudgeRight{
+  0%, 100%{ transform:translateX(0px); }
+  50%{ transform:translateX(4px); }
+}
+
+@keyframes navArrowNudgeLeft{
+  0%, 100%{ transform:translateX(0px); }
+  50%{ transform:translateX(-4px); }
+}
+
+/* prefers-reduced-motion: disable animations, keep static enhanced glow. */
+@media (prefers-reduced-motion: reduce){
+  #navFooter a.nav-prev.is-armed .nav-prev-frame::before,
+  #navFooter a.nav-next.is-armed .nav-next-frame::before{
+    animation:none;
+    box-shadow:
+      inset 0 0 26px rgba(0, 0, 0, 0.96),
+      inset 0 2px 12px rgba(0, 0, 0, 0.62),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(242, 220, 154, 0.34),
+      0 0 28px rgba(218, 184, 86, 0.24);
+  }
+
+  #navFooter a.nav-prev.is-armed .nav-btn-icon--arrow,
+  #navFooter a.nav-next.is-armed .nav-btn-icon--arrow{
+    animation:none;
+  }
 }
 
 /* Second tap (commit): animated feedback on pointer-down (so it reads even if navigation is immediate). */
