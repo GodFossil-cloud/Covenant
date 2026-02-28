@@ -660,12 +660,6 @@ html.lexicon-scroll-lock #navFooter{
     linear-gradient(to bottom, rgba(38,40,45,0.76) 0%, rgba(10,10,12,0.90) 100%);
 }
 
-/* Two-tap navigation arming glow (first tap arms; second tap navigates). */
-#navFooter a.nav-prev.is-armed .nav-prev-frame,
-#navFooter a.nav-next.is-armed .nav-next-frame{
-  transform:translateY(-1px) scale(1.01);
-}
-
 /* Armed glow: brass/leaf family (inverted behavior).
    Enhanced +30% intensity with subtle breathing pulse.
    IMPORTANT: this rule must have higher specificity than .is-at-bottom overrides. */
