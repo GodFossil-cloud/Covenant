@@ -538,11 +538,13 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
 html.lexicon-scroll-lock .nav-seals::before,
 html.lexicon-scroll-lock .nav-seals::after{opacity:.45}
 
-/* Socket glow gates (root motion shells). */
+/* Socket glow gates (root motion shells) — keep the cradle gradient alive while open, too. */
 html.toc-opening .nav-seals::before,
+html.toc-open .nav-seals::before,
 html.toc-closing .nav-seals::before{--dock-socket-glow:var(--dock-socket-glow-toc)}
 
 html.reliquary-opening .nav-seals::after,
+html.reliquary-open .nav-seals::after,
 html.reliquary-closing .nav-seals::after,
 html.reliquary-dragging .nav-seals::after{--dock-socket-glow:var(--dock-socket-glow-mirror)}
 
