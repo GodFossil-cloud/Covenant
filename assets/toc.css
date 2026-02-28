@@ -503,7 +503,7 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   box-sizing:border-box;
 
   /* Cut line: U-shape only (no top horizontal rim). */
-  border:1px solid rgba(59,54,43,.92);
+  border:1px solid #39332A;
   border-top:0;
 
   background:
