@@ -122,6 +122,9 @@
      (Lets the top edge fully cover the footer slab hairline in the closed state.) */
   --dock-cradle-h:calc(var(--dock-socket-h) + 0px);
 
+  /* Cradle rim taper: make the side-cradle trace lines pinch into points at the footer top edge. */
+  --dock-cradle-tip:5px;
+
   /* ToC header connector geometry.
      IMPORTANT: notch width must match the *visual* tab width so the opened sheet meets the tab edges cleanly. */
   --toc-notch-w:var(--dock-tab-width-visual);
@@ -499,6 +502,16 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   /* True upward-facing semicircle (open top). */
   border-radius:0 0 var(--dock-socket-r) var(--dock-socket-r);
 
+  /* Rim taper: pinch the open-top corners into points. */
+  clip-path:polygon(
+    0 var(--dock-cradle-tip, 5px),
+    var(--dock-cradle-tip, 5px) 0,
+    calc(100% - var(--dock-cradle-tip, 5px)) 0,
+    100% var(--dock-cradle-tip, 5px),
+    100% 100%,
+    0 100%
+  );
+
   /* Keep the border from changing the socket geometry. */
   box-sizing:border-box;
 
@@ -831,6 +844,8 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --dock-socket-d:calc(var(--dock-tab-width) + 2px);
     --dock-socket-r:calc(var(--dock-socket-d) / 2);
     --dock-socket-h:var(--dock-socket-r);
+
+    --dock-cradle-tip:4px;
   }
 
   .toc-panel{
