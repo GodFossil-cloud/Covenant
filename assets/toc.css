@@ -260,8 +260,8 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   padding-top:8px;
   padding-bottom:0;
 
-  /* Place the handle just to the right of the dock glyph's footprint (while the header is open). */
-  padding-left:calc((var(--toc-notch-w) * 0.5) + (var(--toc-drag-glyph-w) / 2) + var(--toc-drag-glyph-gap, 8px));
+  /* Symmetry: gap (panel-left → glyph-left) == gap (glyph-right → pill-left). */
+  padding-left:var(--toc-notch-w);
 
   -webkit-tap-highlight-color:transparent;
   touch-action:none;
