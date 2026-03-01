@@ -159,3 +159,38 @@ html.reliquary-open .reliquary-archive{display:block}
 
 .lexicon-reliquary-save-btn:focus,
 .lexicon-reliquary-save-btn:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(201,169,97,.32)}
+
+/* Citation label bookmark toggle (beneath Lexicon seal).
+   Uses ::before so lexicon.js can continue owning #citationText's textContent. */
+
+#citationText{
+  cursor:pointer;
+  user-select:none;
+}
+
+#citationText[data-lexicon-key=""]{
+  cursor:default;
+}
+
+#citationText::before{
+  content:"✧";
+  display:inline-block;
+  margin-right:.46em;
+  opacity:.70;
+  transform:scale(1);
+  transition:transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+#citationText[data-lexicon-key=""]::before{
+  opacity:.34;
+}
+
+#citationText.is-bookmarked::before{
+  content:"✦";
+  opacity:.92;
+}
+
+#citationText.bookmark-pulse::before{
+  transform:scale(1.08);
+  opacity:1;
+}
