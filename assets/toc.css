@@ -243,15 +243,18 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 
 .toc-drag-region{
   position:absolute;
-  top:0;
+  top:auto;
+  bottom:0;
   left:0;
   right:0;
   height:22px;
   z-index:10;
   cursor:ns-resize;
   display:flex;
-  align-items:center;
-  justify-content:center;
+  align-items:flex-end;
+  justify-content:flex-start;
+  padding-bottom:6px;
+  padding-left:calc((var(--toc-notch-w) * 0.5) - 24px);
   -webkit-tap-highlight-color:transparent;
   touch-action:none;
   user-select:none;
