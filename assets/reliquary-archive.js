@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.3.3 (hide save control when no selection; toggle save/remove) */
+/*! Covenant Reliquary Archive v0.3.4 (add aria-label hint for Saved state) */
 (function () {
   'use strict';
 
@@ -501,6 +501,10 @@
       labelEl.textContent = String(text || '');
     }
 
+    function setAriaLabel(text) {
+      btn.setAttribute('aria-label', String(text || ''));
+    }
+
     function setMode(mode) {
       btn.classList.remove('is-saved');
       btn.classList.remove('is-removed');
@@ -508,16 +512,19 @@
       if (mode === 'saved') {
         btn.classList.add('is-saved');
         setLabel(savedLabel);
+        setAriaLabel('Saved. Click to remove from Reliquary.');
         return;
       }
 
       if (mode === 'removed') {
         btn.classList.add('is-removed');
         setLabel(removedLabel);
+        setAriaLabel('Removed from Reliquary');
         return;
       }
 
       setLabel(originalLabel);
+      setAriaLabel('Save to Reliquary');
     }
 
     function hideControl() {
@@ -622,7 +629,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.3.3',
+    version: '0.3.4',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
