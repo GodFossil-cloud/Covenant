@@ -30,8 +30,9 @@
   /* Pending wash shade (lamp-shade): a soft light tone that does NOT affect the violet node/underline. */
   --toc-pending-wash-rgb:245,242,255;
 
-  /* ToC header drag pill alignment: approximate glyph width (for left-edge alignment under the dock glyph). */
+  /* ToC header drag pill alignment: approximate glyph width (for offset relative to the dock glyph). */
   --toc-drag-glyph-w:14px;
+  --toc-drag-glyph-gap:8px;
 
   --toc-rule-x:.95rem;
   --toc-node-x-nudge:-0.5px;
@@ -246,18 +247,22 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 
 .toc-drag-region{
   position:absolute;
-  top:auto;
-  bottom:0;
+  top:0;
+  bottom:auto;
   left:0;
   right:0;
-  height:22px;
+  height:20px;
   z-index:10;
   cursor:ns-resize;
   display:flex;
-  align-items:flex-end;
+  align-items:flex-start;
   justify-content:flex-start;
-  padding-bottom:6px;
-  padding-left:calc((var(--toc-notch-w) * 0.5) - (var(--toc-drag-glyph-w) / 2));
+  padding-top:8px;
+  padding-bottom:0;
+
+  /* Place the handle just to the right of the dock glyph's footprint (while the header is open). */
+  padding-left:calc((var(--toc-notch-w) * 0.5) + (var(--toc-drag-glyph-w) / 2) + var(--toc-drag-glyph-gap, 8px));
+
   -webkit-tap-highlight-color:transparent;
   touch-action:none;
   user-select:none;
