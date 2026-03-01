@@ -32,7 +32,7 @@ html.reliquary-open .reliquary-archive{display:block}
   gap:10px;
 
   font-family:'Cormorant Garamond',serif;
-  font-size:1.02rem;
+  font-size:.95rem;
   letter-spacing:.08em;
   line-height:1.25;
   color:var(--reliquary-ink, rgba(245,236,214,.92));
@@ -58,7 +58,7 @@ html.reliquary-open .reliquary-archive{display:block}
 .reliquary-archive .reliquary-archive-count{
   flex:0 0 auto;
   margin-left:auto;
-  font-size:.92rem;
+  font-size:.84rem;
   letter-spacing:.10em;
   color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
   opacity:.85;
@@ -81,7 +81,7 @@ html.reliquary-open .reliquary-archive{display:block}
   color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
 
   font-family:'Crimson Text',serif;
-  font-size:1.0rem;
+  font-size:.95rem;
   line-height:1.55;
 
   cursor:pointer;
@@ -99,7 +99,7 @@ html.reliquary-open .reliquary-archive{display:block}
   margin-top:.25rem;
 
   font-family:'Cormorant Garamond',serif;
-  font-size:.92rem;
+  font-size:.84rem;
   letter-spacing:.10em;
   color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
   opacity:.82;
@@ -109,7 +109,7 @@ html.reliquary-open .reliquary-archive{display:block}
 
 .reliquary-archive-empty{
   font-family:'Cormorant Garamond',serif;
-  font-size:1.0rem;
+  font-size:.95rem;
   letter-spacing:.06em;
   line-height:1.55;
   color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
