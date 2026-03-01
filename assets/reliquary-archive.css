@@ -182,7 +182,7 @@ html.reliquary-open .reliquary-archive{display:block}
 }
 
 #citationText[data-lexicon-key=""]::before{
-  opacity:.34;
+  content:none;
 }
 
 #citationText.is-bookmarked::before{
