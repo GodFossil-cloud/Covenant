@@ -26,9 +26,8 @@ html.reliquary-open .reliquary-archive{display:block}
   padding:.62rem .72rem;
 
   display:flex;
-  flex-wrap:wrap;
-  align-items:flex-start;
-  justify-content:flex-start;
+  align-items:center;
+  justify-content:space-between;
   gap:10px;
 
   font-family:'Cormorant Garamond',serif;
@@ -49,15 +48,12 @@ html.reliquary-open .reliquary-archive{display:block}
 .reliquary-archive .reliquary-archive-page-title{
   flex:1 1 auto;
   min-width:0;
-  white-space:normal;
-  overflow:visible;
-  text-overflow:clip;
-  overflow-wrap:anywhere;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .reliquary-archive .reliquary-archive-count{
   flex:0 0 auto;
-  margin-left:auto;
   font-size:.78rem;
   letter-spacing:.10em;
   color:var(--reliquary-ink-soft, rgba(245,236,214,.74));

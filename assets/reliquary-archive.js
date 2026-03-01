@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.0 (citation label acts as Reliquary bookmark toggle) */
+/*! Covenant Reliquary Archive v0.4.1 (dynamic font-size to fit titles on one line) */
 (function () {
   'use strict';
 
@@ -316,6 +316,53 @@
     return here || '';
   }
 
+  function fitTitlesToSingleLine() {
+    var summaries = doc.querySelectorAll('.reliquary-archive summary');
+    if (!summaries || !summaries.length) return;
+
+    for (var i = 0; i < summaries.length; i++) {
+      var summary = summaries[i];
+      var titleEl = summary.querySelector('.reliquary-archive-page-title');
+      if (!titleEl) continue;
+
+      titleEl.style.fontSize = '';
+      titleEl.style.whiteSpace = 'nowrap';
+
+      var summaryWidth = summary.offsetWidth;
+      var padding = 1.44 * 16;
+      var countEl = summary.querySelector('.reliquary-archive-count');
+      var countWidth = countEl ? countEl.offsetWidth : 0;
+      var gap = 10;
+
+      var availWidth = summaryWidth - padding - countWidth - gap - 4;
+
+      if (availWidth <= 0) {
+        titleEl.style.whiteSpace = '';
+        continue;
+      }
+
+      var startSize = 0.88;
+      var minSize = 0.68;
+      var step = 0.02;
+
+      var currentSize = startSize;
+      titleEl.style.fontSize = currentSize + 'rem';
+
+      var attempts = 0;
+      var maxAttempts = 20;
+
+      while (titleEl.scrollWidth > availWidth && currentSize > minSize && attempts < maxAttempts) {
+        currentSize -= step;
+        titleEl.style.fontSize = currentSize + 'rem';
+        attempts++;
+      }
+
+      if (titleEl.scrollWidth > availWidth) {
+        titleEl.style.whiteSpace = '';
+      }
+    }
+  }
+
   function renderArchive() {
     var host = byId('reliquaryArchive');
     var placeholder = byId('reliquaryPlaceholder');
@@ -398,6 +445,8 @@
         if (currentDetails) currentDetails.open = true;
       }
     } catch (err0) {}
+
+    setTimeout(fitTitlesToSingleLine, 0);
   }
 
   function handleArchiveClick(e) {
@@ -565,7 +614,6 @@
       sync();
     }
 
-    // Capture-phase: override any existing "copy citation" click handler.
     el.addEventListener('click', function (e) {
       if (e && e.preventDefault) e.preventDefault();
       if (e && e.stopImmediatePropagation) e.stopImmediatePropagation();
@@ -596,7 +644,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.0',
+    version: '0.4.1',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
