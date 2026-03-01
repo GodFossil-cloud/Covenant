@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.3.0 (add save button wiring) */
+/*! Covenant Reliquary Archive v0.3.1 (fix save button + placeholder visibility) */
 (function () {
   'use strict';
 
@@ -504,11 +504,28 @@
       } catch (err0) {}
     }
 
+    // CRITICAL FIX: Also watch for Lexicon panel open/close to sync button state.
+    // When Lexicon opens with a pre-selected passage, the button won't enable unless we
+    // trigger an initial check after panel opens.
+    var lexiconPanel = byId('lexiconPanel');
+    if (lexiconPanel) {
+      try {
+        var panelObs = new MutationObserver(function () {
+          var isOpen = lexiconPanel.classList.contains('is-open');
+          if (isOpen) {
+            // Defer state check to let citationText populate first.
+            setTimeout(updateSaveButtonState, 50);
+          }
+        });
+        panelObs.observe(lexiconPanel, { attributes: true, attributeFilter: ['class'] });
+      } catch (err1) {}
+    }
+
     updateSaveButtonState();
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.3.0',
+    version: '0.3.1',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
