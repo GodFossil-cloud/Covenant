@@ -148,5 +148,14 @@ html.reliquary-open .reliquary-archive{display:block}
   opacity:1;
 }
 
+.lexicon-reliquary-save-btn.is-removed{
+  border-color:rgba(176, 86, 74, .42);
+  background:linear-gradient(to bottom, rgba(176, 86, 74, .18), rgba(0,0,0,.30));
+  color:rgba(245,236,214,1);
+  opacity:1;
+}
+
+.lexicon-reliquary-save-btn[hidden]{display:none !important}
+
 .lexicon-reliquary-save-btn:focus,
 .lexicon-reliquary-save-btn:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(201,169,97,.32)}

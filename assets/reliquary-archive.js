@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.3.2 (read raw key from #citationText.dataset.lexiconKey) */
+/*! Covenant Reliquary Archive v0.3.3 (hide save control when no selection; toggle save/remove) */
 (function () {
   'use strict';
 
@@ -98,6 +98,42 @@
     store.items = dedupeItems(store.items.concat([it]));
     writeStore(store);
     return true;
+  }
+
+  function removeItem(href, lexiconKey) {
+    href = basename(href);
+    lexiconKey = String(lexiconKey || '').trim();
+    if (!href || !lexiconKey) return false;
+
+    var store = readStore();
+    var before = Array.isArray(store.items) ? store.items.length : 0;
+
+    var out = [];
+    for (var i = 0; i < store.items.length; i++) {
+      var it = normalizeItem(store.items[i]);
+      if (!it) continue;
+      if (it.href === href && it.lexiconKey === lexiconKey) continue;
+      out.push(it);
+    }
+
+    store.items = dedupeItems(out);
+    writeStore(store);
+
+    return store.items.length !== before;
+  }
+
+  function hasItem(href, lexiconKey) {
+    href = basename(href);
+    lexiconKey = String(lexiconKey || '').trim();
+    if (!href || !lexiconKey) return false;
+
+    var store = readStore();
+    var items = dedupeItems(store.items);
+
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].href === href && items[i].lexiconKey === lexiconKey) return true;
+    }
+    return false;
   }
 
   function setPendingJump(payload) {
@@ -416,7 +452,6 @@
       var cit = byId('citationText');
       if (!cit) return null;
 
-      // CRITICAL FIX: Read raw lexiconKey from dataset attribute (set by lexicon.js).
       var key = (cit.dataset && cit.dataset.lexiconKey) ? String(cit.dataset.lexiconKey).trim() : '';
       if (!key) return null;
 
@@ -447,59 +482,125 @@
 
     var originalLabel = 'Save to Reliquary';
     var savedLabel = 'Saved';
+    var removedLabel = 'Removed from Reliquary';
 
-    var savedTimer = null;
+    var transientTimer = null;
+    var isTransient = false;
 
-    function setSavedState(isSaved) {
-      if (savedTimer) {
-        clearTimeout(savedTimer);
-        savedTimer = null;
+    function clearTransient() {
+      if (transientTimer) {
+        clearTimeout(transientTimer);
+        transientTimer = null;
       }
+      isTransient = false;
+    }
 
+    function setLabel(text) {
       var labelEl = btn.querySelector('.lexicon-reliquary-save-label');
       if (!labelEl) return;
+      labelEl.textContent = String(text || '');
+    }
 
-      if (isSaved) {
+    function setMode(mode) {
+      btn.classList.remove('is-saved');
+      btn.classList.remove('is-removed');
+
+      if (mode === 'saved') {
         btn.classList.add('is-saved');
-        labelEl.textContent = savedLabel;
-        btn.disabled = true;
-
-        savedTimer = setTimeout(function () {
-          btn.classList.remove('is-saved');
-          labelEl.textContent = originalLabel;
-          updateSaveButtonState();
-          savedTimer = null;
-        }, 1200);
-      } else {
-        btn.classList.remove('is-saved');
-        labelEl.textContent = originalLabel;
+        setLabel(savedLabel);
+        return;
       }
+
+      if (mode === 'removed') {
+        btn.classList.add('is-removed');
+        setLabel(removedLabel);
+        return;
+      }
+
+      setLabel(originalLabel);
+    }
+
+    function hideControl() {
+      clearTransient();
+      btn.hidden = true;
+      btn.disabled = true;
+      setMode('save');
+    }
+
+    function showControl() {
+      btn.hidden = false;
+      btn.disabled = false;
     }
 
     function updateSaveButtonState() {
+      if (isTransient) return;
+
       var sel = getCurrentSelection();
-      btn.disabled = !sel;
+      if (!sel) {
+        hideControl();
+        return;
+      }
+
+      showControl();
+
+      if (hasItem(sel.href, sel.lexiconKey)) {
+        setMode('saved');
+      } else {
+        setMode('save');
+      }
     }
 
-    function handleSaveClick() {
+    function handleClick() {
+      if (isTransient) return;
+
       var sel = getCurrentSelection();
-      if (!sel) return;
+      if (!sel) {
+        hideControl();
+        return;
+      }
 
-      var ok = addItem(sel);
-      if (!ok) return;
+      var alreadySaved = hasItem(sel.href, sel.lexiconKey);
 
-      setSavedState(true);
+      if (!alreadySaved) {
+        var ok = addItem(sel);
+        if (!ok) return;
+
+        if (root.classList.contains('reliquary-open')) {
+          renderArchive();
+        }
+
+        updateSaveButtonState();
+        return;
+      }
+
+      var removed = removeItem(sel.href, sel.lexiconKey);
+      if (!removed) {
+        updateSaveButtonState();
+        return;
+      }
 
       if (root.classList.contains('reliquary-open')) {
         renderArchive();
       }
+
+      clearTransient();
+      isTransient = true;
+      setMode('removed');
+
+      transientTimer = setTimeout(function () {
+        clearTransient();
+        updateSaveButtonState();
+      }, 1200);
     }
 
-    btn.addEventListener('click', handleSaveClick);
+    btn.addEventListener('click', function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      if (e && e.stopPropagation) e.stopPropagation();
+      handleClick();
+    });
 
     var citEl = byId('citationText');
     if (citEl) {
-      // Watch for changes to data-lexicon-key attribute (set by lexicon.js).
       try {
         var citObs = new MutationObserver(updateSaveButtonState);
         citObs.observe(citEl, { attributes: true, attributeFilter: ['data-lexicon-key'] });
@@ -510,10 +611,8 @@
     if (lexiconPanel) {
       try {
         var panelObs = new MutationObserver(function () {
-          var isOpen = lexiconPanel.classList.contains('is-open');
-          if (isOpen) {
-            setTimeout(updateSaveButtonState, 50);
-          }
+          var open = lexiconPanel.classList.contains('is-open');
+          if (open) setTimeout(updateSaveButtonState, 50);
         });
         panelObs.observe(lexiconPanel, { attributes: true, attributeFilter: ['class'] });
       } catch (err1) {}
@@ -523,10 +622,12 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.3.2',
+    version: '0.3.3',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
+    removeItem: function (href, lexiconKey) { return removeItem(href, lexiconKey); },
+    hasItem: function (href, lexiconKey) { return hasItem(href, lexiconKey); },
     render: renderArchive,
     setPendingJump: function (href, lexiconKey, openLexicon) {
       setPendingJump({ href: href, lexiconKey: lexiconKey, openLexicon: !!openLexicon });
