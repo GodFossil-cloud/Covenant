@@ -1,10 +1,108 @@
 /* Reliquary Archive (ToC-like page list) — minimal styling only.
    Keep this file small; core Reliquary veil geometry lives in assets/reliquary.css. */
 
-.reliquary-archive {
-  display: none;
+.reliquary-archive{display:none}
+html.reliquary-open .reliquary-archive{display:block}
+
+.reliquary-archive-index{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-html.reliquary-open .reliquary-archive {
-  display: block;
+.reliquary-archive details{
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(201,169,97,.14);
+  border-left:2px solid rgba(201,169,97,.26);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.reliquary-archive details.is-current{border-left-color:rgba(201,169,97,.58)}
+
+.reliquary-archive summary{
+  list-style:none;
+  cursor:pointer;
+  padding:.62rem .72rem;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.02rem;
+  letter-spacing:.08em;
+  line-height:1.25;
+  color:var(--reliquary-ink, rgba(245,236,214,.92));
+
+  background:rgba(0,0,0,.18);
+}
+
+.reliquary-archive summary::-webkit-details-marker{display:none}
+
+.reliquary-archive details[open] summary{
+  background:linear-gradient(to right, rgba(201,169,97,.12), rgba(0,0,0,0));
+}
+
+.reliquary-archive .reliquary-archive-page-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.reliquary-archive .reliquary-archive-count{
+  flex:0 0 auto;
+  font-size:.92rem;
+  letter-spacing:.10em;
+  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
+  opacity:.85;
+}
+
+.reliquary-archive-items{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:.62rem .72rem .74rem;
+}
+
+.reliquary-archive-item{
+  width:100%;
+  text-align:left;
+  border-radius:10px;
+  border:1px solid rgba(201,169,97,.14);
+  background:rgba(0,0,0,.22);
+  padding:.58rem .62rem;
+  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
+
+  font-family:'Crimson Text',serif;
+  font-size:1.0rem;
+  line-height:1.55;
+
+  cursor:pointer;
+}
+
+.reliquary-archive-item:hover{border-color:rgba(201,169,97,.22);background:rgba(0,0,0,.26)}
+
+.reliquary-archive-item:focus,
+.reliquary-archive-item:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(201,169,97,.22)}
+
+.reliquary-archive-item .reliquary-archive-item-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:.25rem;
+
+  font-family:'Cormorant Garamond',serif;
+  font-size:.92rem;
+  letter-spacing:.10em;
+  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
+  opacity:.82;
+}
+
+.reliquary-archive-item .reliquary-archive-item-key{white-space:nowrap;flex:0 0 auto}
+
+.reliquary-archive-empty{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.0rem;
+  letter-spacing:.06em;
+  line-height:1.55;
+  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
+  padding:.20rem .10rem .02rem;
+  opacity:.92;
 }
