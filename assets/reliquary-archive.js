@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.3.4 (add aria-label hint for Saved state) */
+/*! Covenant Reliquary Archive v0.3.5 (aria-label: simplify to 'Remove?') */
 (function () {
   'use strict';
 
@@ -512,7 +512,7 @@
       if (mode === 'saved') {
         btn.classList.add('is-saved');
         setLabel(savedLabel);
-        setAriaLabel('Saved. Click to remove from Reliquary.');
+        setAriaLabel('Remove?');
         return;
       }
 
@@ -629,7 +629,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.3.4',
+    version: '0.3.5',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
