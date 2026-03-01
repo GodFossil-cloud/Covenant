@@ -26,6 +26,12 @@
   <div class="lexicon-panel-body">
     <div id="lexiconDynamicContent"></div>
 
+    <div class="lexicon-reliquary-save" id="lexiconReliquarySave">
+      <button class="lexicon-reliquary-save-btn" id="lexiconReliquarySaveBtn" type="button" disabled aria-label="Save current passage to Reliquary">
+        <span class="lexicon-reliquary-save-label">Save to Reliquary</span>
+      </button>
+    </div>
+
     <a href="{{ '/lexicon.html' | relative_url }}" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
 
     {{ include.glossary | default: "" }}

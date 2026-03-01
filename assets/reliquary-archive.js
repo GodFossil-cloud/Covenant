@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.2.0 (render + cross-page open) */
+/*! Covenant Reliquary Archive v0.3.0 (add save button wiring) */
 (function () {
   'use strict';
 
@@ -194,7 +194,6 @@
 
     try { toggle.click(); } catch (err2) { finish(); }
 
-    // Fallback: do not hang if another subsystem forcibly closes the panel.
     setTimeout(finish, 720);
   }
 
@@ -357,7 +356,6 @@
 
     host.innerHTML = html.join('');
 
-    // Auto-open current page.
     try {
       if (currentHref) {
         var currentDetails = host.querySelector('details[data-reliquary-href="' + currentHref.replace(/"/g, '') + '"]');
@@ -397,7 +395,6 @@
       host.addEventListener('click', handleArchiveClick);
     }
 
-    // Render when Reliquary commits open (not during drag shells).
     var lastOpen = root.classList.contains('reliquary-open');
 
     function sync() {
@@ -414,9 +411,104 @@
     } catch (err0) {}
   }
 
-  // Expose a tiny API (for testing + later UI).
+  function getCurrentSelection() {
+    try {
+      var cit = byId('citationText');
+      if (!cit) return null;
+
+      var key = String(cit.textContent || '').trim();
+      if (!key) return null;
+
+      var el = findSentenceByKey(key);
+      if (!el) return null;
+
+      var quoteAttr = el.getAttribute('data-sentence-text');
+      var quote = quoteAttr ? String(quoteAttr).trim() : '';
+
+      if (!quote) {
+        var textEl = el.querySelector('.subsection-text');
+        if (textEl) quote = String(textEl.textContent || '').replace(/\s+/g, ' ').trim();
+      }
+
+      return {
+        href: getCurrentFile(),
+        lexiconKey: key,
+        quote: quote
+      };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function wireSaveButton() {
+    var btn = byId('lexiconReliquarySaveBtn');
+    if (!btn) return;
+
+    var originalLabel = 'Save to Reliquary';
+    var savedLabel = 'Saved';
+
+    var savedTimer = null;
+
+    function setSavedState(isSaved) {
+      if (savedTimer) {
+        clearTimeout(savedTimer);
+        savedTimer = null;
+      }
+
+      var labelEl = btn.querySelector('.lexicon-reliquary-save-label');
+      if (!labelEl) return;
+
+      if (isSaved) {
+        btn.classList.add('is-saved');
+        labelEl.textContent = savedLabel;
+        btn.disabled = true;
+
+        savedTimer = setTimeout(function () {
+          btn.classList.remove('is-saved');
+          labelEl.textContent = originalLabel;
+          updateSaveButtonState();
+          savedTimer = null;
+        }, 1200);
+      } else {
+        btn.classList.remove('is-saved');
+        labelEl.textContent = originalLabel;
+      }
+    }
+
+    function updateSaveButtonState() {
+      var sel = getCurrentSelection();
+      btn.disabled = !sel;
+    }
+
+    function handleSaveClick() {
+      var sel = getCurrentSelection();
+      if (!sel) return;
+
+      var ok = addItem(sel);
+      if (!ok) return;
+
+      setSavedState(true);
+
+      if (root.classList.contains('reliquary-open')) {
+        renderArchive();
+      }
+    }
+
+    btn.addEventListener('click', handleSaveClick);
+
+    var citEl = byId('citationText');
+    if (citEl) {
+      try {
+        var citObs = new MutationObserver(updateSaveButtonState);
+        citObs.observe(citEl, { childList: true, characterData: true, subtree: true });
+      } catch (err0) {}
+    }
+
+    updateSaveButtonState();
+  }
+
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.2.0',
+    version: '0.3.0',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
@@ -430,10 +522,12 @@
     doc.addEventListener('DOMContentLoaded', function () {
       consumePendingJump();
       wire();
+      wireSaveButton();
     });
   } else {
     consumePendingJump();
     wire();
+    wireSaveButton();
   }
 
 })();
