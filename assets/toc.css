@@ -30,6 +30,9 @@
   /* Pending wash shade (lamp-shade): a soft light tone that does NOT affect the violet node/underline. */
   --toc-pending-wash-rgb:245,242,255;
 
+  /* ToC header drag pill alignment: approximate glyph width (for left-edge alignment under the dock glyph). */
+  --toc-drag-glyph-w:14px;
+
   --toc-rule-x:.95rem;
   --toc-node-x-nudge:-0.5px;
   --toc-node:10px;
@@ -254,7 +257,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   align-items:flex-end;
   justify-content:flex-start;
   padding-bottom:6px;
-  padding-left:calc((var(--toc-notch-w) * 0.5) - 24px);
+  padding-left:calc((var(--toc-notch-w) * 0.5) - (var(--toc-drag-glyph-w) / 2));
   -webkit-tap-highlight-color:transparent;
   touch-action:none;
   user-select:none;
