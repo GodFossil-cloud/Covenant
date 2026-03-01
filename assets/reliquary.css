@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.12 (Notch width matches visual tab) */
+/*! Covenant Reliquary Panel Styles v0.3.13 (Drag pill mirrors ToC placement) */
 
 /* -------------------------------------------------
    Variables
@@ -151,14 +151,21 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 .reliquary-drag-region{
   position:absolute;
   top:0;
+  bottom:auto;
   left:0;
   right:0;
-  height:22px;
+  height:20px;
   z-index:10;
   cursor:ns-resize;
   display:flex;
-  align-items:center;
-  justify-content:center;
+  align-items:flex-start;
+  justify-content:flex-end;
+  padding-top:8px;
+  padding-bottom:0;
+
+  /* Mirror of ToC: keep the pill's right edge just left of the Reliquary glyph/notch area. */
+  padding-right:var(--reliquary-notch-w);
+
   -webkit-tap-highlight-color:transparent;
   touch-action:none;
   user-select:none;
