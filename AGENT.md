@@ -85,6 +85,7 @@ Core runtime files:
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab).
+- `assets/reliquary-archive.js` + `assets/reliquary-archive.css` — Reliquary “saved passages” archive + cross-page replay into Lexicon.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC staged navigation).
 - `assets/textures/` — static texture assets.
 
@@ -194,7 +195,7 @@ Docs:
   - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening pages.
   - Verify ToC header band visually blends with the ToC tab face (no jarring seam).
   - Verify ToC panel reaches the top cleanly on mobile (no ~1px gap).
-  - Verify the binding overlay stops at the ToC gate divider center line.
+  - Verify the binding overlay stops at the gate divider center line.
   - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
 
 - If you change `assets/covenant.css`:

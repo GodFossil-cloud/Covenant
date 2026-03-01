@@ -1,0 +1,10 @@
+/* Reliquary Archive (ToC-like page list) — minimal styling only.
+   Keep this file small; core Reliquary veil geometry lives in assets/reliquary.css. */
+
+.reliquary-archive {
+  display: none;
+}
+
+html.reliquary-open .reliquary-archive {
+  display: block;
+}
