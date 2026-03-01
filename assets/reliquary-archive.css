@@ -24,9 +24,11 @@ html.reliquary-open .reliquary-archive{display:block}
   list-style:none;
   cursor:pointer;
   padding:.62rem .72rem;
+
   display:flex;
-  align-items:baseline;
-  justify-content:space-between;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  justify-content:flex-start;
   gap:10px;
 
   font-family:'Cormorant Garamond',serif;
@@ -44,10 +46,18 @@ html.reliquary-open .reliquary-archive{display:block}
   background:linear-gradient(to right, rgba(201,169,97,.12), rgba(0,0,0,0));
 }
 
-.reliquary-archive .reliquary-archive-page-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reliquary-archive .reliquary-archive-page-title{
+  flex:1 1 auto;
+  min-width:0;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  overflow-wrap:anywhere;
+}
 
 .reliquary-archive .reliquary-archive-count{
   flex:0 0 auto;
+  margin-left:auto;
   font-size:.92rem;
   letter-spacing:.10em;
   color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
