@@ -274,6 +274,36 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 /* Match Reliquary header sizing so both veils feel like the same instrument family. */
 .toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(0,0,0,.62);background:var(--dock-tab-face,#010103)}
 
+/* ToC header title: match the Reliquary/Mirror title formatting exactly.
+   NOTE: This is a pseudo-element so we can avoid touching sacred include structure. */
+.toc-panel-header::before{
+  content:'TABLE OF CONTENTS';
+  position:relative;
+  z-index:1;
+  display:block;
+
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;
+  font-weight:650;
+  letter-spacing:.14em;
+  font-variant-caps:all-small-caps;
+  line-height:1.25;
+
+  color:rgba(245,236,214,.92);
+  text-shadow:0 1px 0 rgba(0,0,0,.72);
+
+  padding-right:1.25rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Connector strip disabled: ToC tab stays anchored in the footer cradle now. */
+html.toc-opening .toc-panel-header::after,
+html.toc-open .toc-panel-header::after,
+html.toc-closing .toc-panel-header::after,
+html.toc-dock-settling .toc-panel-header::after{content:none}
+
 /* Persistent connector strip: visible regardless of root motion classes. */
 .toc-panel-header::after{
   content:'';
