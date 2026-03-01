@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.94 (Drag region spans full header) */
+/*! Covenant ToC Panel Styles v3.1.95 (Pending colors tuned) */
 
 /* -------------------------------------------------
    Variables
@@ -24,11 +24,14 @@
 
   --toc-brass:rgba(201,169,97,1);
 
-  /* Pending/armed color (warm violet). Use rgba(var(--toc-armed-rgb), <alpha>). */
+  /* Pending/armed node color (warm violet). Use rgba(var(--toc-armed-rgb), <alpha>). */
   --toc-armed-rgb:178,110,232;
 
-  /* Pending wash shade (lamp-shade): a soft light tone that does NOT affect the violet node/underline. */
-  --toc-pending-wash-rgb:245,242,255;
+  /* Pending underline color: slightly softer violet than the node. */
+  --toc-armed-underline-rgb:170,132,232;
+
+  /* Pending wash shade (lamp-shade): bolder amber, distinct from the violet node/underline. */
+  --toc-pending-wash-rgb:255,218,130;
 
   /* ToC header drag pill alignment: approximate glyph width (for offset relative to the dock glyph). */
   --toc-drag-glyph-w:14px;
@@ -1048,16 +1051,16 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
    Confirm stage uses :disabled because JS disables the button during nav delay. */
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"]) .toc-entry-title{
   background-image:linear-gradient(to right,
-    rgba(var(--toc-armed-rgb),0),
-    rgba(var(--toc-armed-rgb),.62),
-    rgba(var(--toc-armed-rgb),0));
+    rgba(var(--toc-armed-underline-rgb),0),
+    rgba(var(--toc-armed-underline-rgb),.54),
+    rgba(var(--toc-armed-underline-rgb),0));
   background-repeat:no-repeat;
   background-position:0 calc(100% - .12em);
   background-size:var(--toc-pending-title-underline-w, 44%) 1px;
 
   text-shadow:
     0 1px 0 rgba(255,255,255,.20),
-    0 0 10px rgba(var(--toc-armed-rgb),.12);
+    0 0 10px rgba(var(--toc-armed-underline-rgb),.10);
 
   transition:
     background-size 180ms ease,
@@ -1069,8 +1072,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
   text-shadow:
     0 1px 0 rgba(255,255,255,.22),
-    0 0 14px rgba(var(--toc-armed-rgb),.22),
-    0 0 28px rgba(var(--toc-armed-rgb),.10);
+    0 0 14px rgba(var(--toc-armed-underline-rgb),.18),
+    0 0 28px rgba(var(--toc-armed-underline-rgb),.09);
 }
 
 /* Kill the old underline indicator (baseline + fill). */
