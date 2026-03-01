@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.93 (Pending wash uses soft lamp shade) */
+/*! Covenant ToC Panel Styles v3.1.94 (Drag region spans full header) */
 
 /* -------------------------------------------------
    Variables
@@ -248,10 +248,10 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 .toc-drag-region{
   position:absolute;
   top:0;
-  bottom:auto;
+  bottom:0;
   left:0;
   right:0;
-  height:20px;
+  height:auto;
   z-index:10;
   cursor:ns-resize;
   display:flex;
