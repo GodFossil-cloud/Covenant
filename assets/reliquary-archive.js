@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.3.1 (fix save button + placeholder visibility) */
+/*! Covenant Reliquary Archive v0.3.2 (read raw key from #citationText.dataset.lexiconKey) */
 (function () {
   'use strict';
 
@@ -416,7 +416,8 @@
       var cit = byId('citationText');
       if (!cit) return null;
 
-      var key = String(cit.textContent || '').trim();
+      // CRITICAL FIX: Read raw lexiconKey from dataset attribute (set by lexicon.js).
+      var key = (cit.dataset && cit.dataset.lexiconKey) ? String(cit.dataset.lexiconKey).trim() : '';
       if (!key) return null;
 
       var el = findSentenceByKey(key);
@@ -498,22 +499,19 @@
 
     var citEl = byId('citationText');
     if (citEl) {
+      // Watch for changes to data-lexicon-key attribute (set by lexicon.js).
       try {
         var citObs = new MutationObserver(updateSaveButtonState);
-        citObs.observe(citEl, { childList: true, characterData: true, subtree: true });
+        citObs.observe(citEl, { attributes: true, attributeFilter: ['data-lexicon-key'] });
       } catch (err0) {}
     }
 
-    // CRITICAL FIX: Also watch for Lexicon panel open/close to sync button state.
-    // When Lexicon opens with a pre-selected passage, the button won't enable unless we
-    // trigger an initial check after panel opens.
     var lexiconPanel = byId('lexiconPanel');
     if (lexiconPanel) {
       try {
         var panelObs = new MutationObserver(function () {
           var isOpen = lexiconPanel.classList.contains('is-open');
           if (isOpen) {
-            // Defer state check to let citationText populate first.
             setTimeout(updateSaveButtonState, 50);
           }
         });
@@ -525,7 +523,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.3.1',
+    version: '0.3.2',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,

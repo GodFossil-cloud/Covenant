@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.8 (Seal re-parents into header while open) */
+/*! Covenant Lexicon UI v0.3.9 (expose data-lexicon-key on #citationText for Reliquary save) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.8';
+  window.COVENANT_LEXICON_VERSION = '0.3.9';
 
   var doc = document;
   var root = doc.documentElement;
@@ -925,6 +925,13 @@
     citationText.textContent = newText;
     lastCitationText = newText;
 
+    // CRITICAL: Expose raw lexicon key so Reliquary save button can reliably read it.
+    if (citationText.dataset) {
+      citationText.dataset.lexiconKey = sentenceKey || '';
+    } else {
+      try { citationText.setAttribute('data-lexicon-key', sentenceKey || ''); } catch (err) {}
+    }
+
     if (animClass) {
       void citationText.offsetWidth;
       citationText.classList.add(animClass);
@@ -936,6 +943,13 @@
     var initialText = formatCitation(null);
     citationText.textContent = initialText;
     lastCitationText = initialText;
+
+    // Ensure data-lexicon-key starts empty.
+    if (citationText.dataset) {
+      citationText.dataset.lexiconKey = '';
+    } else {
+      try { citationText.setAttribute('data-lexicon-key', ''); } catch (err) {}
+    }
   }
 
   initializeCitationLabel();
@@ -1026,7 +1040,7 @@
   function focusIntoPanel(preferCloseFocus) {
     if (!panel) return;
 
-    // Avoid the “yellow box” focus ring on pointer-open; keep keyboard access intact.
+    // Avoid the "yellow box" focus ring on pointer-open; keep keyboard access intact.
     if (!preferCloseFocus) return;
 
     var closeBtn = qs('.lexicon-panel-close', panel);
