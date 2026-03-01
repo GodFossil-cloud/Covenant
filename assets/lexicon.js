@@ -1420,6 +1420,29 @@
 
     var dragIntentPulsed = false;
 
+    var sealSettlingTimer = null;
+
+    function clearSealSettling() {
+      if (!lexiconToggle || !lexiconToggle.classList) return;
+      lexiconToggle.classList.remove('is-seal-settling');
+    }
+
+    function markSealSettling(ms) {
+      if (!lexiconToggle || !lexiconToggle.classList) return;
+
+      if (sealSettlingTimer) {
+        window.clearTimeout(sealSettlingTimer);
+        sealSettlingTimer = null;
+      }
+
+      lexiconToggle.classList.add('is-seal-settling');
+
+      sealSettlingTimer = window.setTimeout(function () {
+        try { clearSealSettling(); } catch (err) {}
+        sealSettlingTimer = null;
+      }, Math.max(0, ms || 0) + 80);
+    }
+
     function isMobileSheet() {
       return isBottomSheetMode();
     }
@@ -1469,6 +1492,7 @@
 
     function applyOpenStateFromDrag() {
       clearSealTapClasses();
+      clearSealSettling();
 
       if (!panel.classList.contains('is-open')) {
         panel.classList.add('is-open');
@@ -1521,9 +1545,11 @@
       if (lexOverlay) lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       if (shouldOpen) {
+        clearSealSettling();
         setPanelY(0, false);
         applyOpenStateFromDrag();
       } else {
+        markSealSettling(SNAP_MS);
         currentY = closedY;
         panel.style.transform = 'translateY(' + closedY + 'px)';
         if (lexOverlay) lexOverlay.style.opacity = '0';
@@ -1544,6 +1570,8 @@
       if (!isMobileSheet()) return;
 
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      clearSealSettling();
 
       dragging = true;
       moved = false;

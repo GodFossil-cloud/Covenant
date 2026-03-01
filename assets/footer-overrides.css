@@ -171,8 +171,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center::before,
 html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]{box-shadow:none !important}
 
-/* Lexicon DRAG: seal must become glyph-only (no rim/inset) so cradle reads through cleanly. */
+/* Lexicon DRAG: seal must become glyph-only (no rim/inset) so cradle reads through cleanly.
+   ALSO: during snap-back-to-closed we keep the rim killed for the full settle window. */
 #navFooter #lexiconToggle.nav-btn.center.is-seal-dragging::before,
+#navFooter #lexiconToggle.nav-btn.center.is-seal-settling::before,
 #navFooter #lexiconToggle.nav-btn.center.is-nudging::before{
   border:0 !important;
   box-shadow:none !important;
@@ -971,6 +973,7 @@ html.lexicon-scroll-lock #navFooter{
 #navFooter #lexiconToggle.nav-btn.center.has-selection:active::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-nudging::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-pulsing::after,
+#navFooter #lexiconToggle.nav-btn.center.has-selection.is-seal-dragging::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-sel-dragging::after{
   background-color:transparent !important;
   background-image:none !important;
