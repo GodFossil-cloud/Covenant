@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.4 (bigger titles; allow wrap if needed) */
+/*! Covenant Reliquary Archive v0.4.5 (bigger titles; allow wrap if needed) */
 (function () {
   'use strict';
 
@@ -341,8 +341,8 @@
         continue;
       }
 
-      var startSize = 0.96;
-      var minSize = 0.78;
+      var startSize = 1.04;
+      var minSize = 0.86;
       var step = 0.02;
 
       var currentSize = startSize;
@@ -644,7 +644,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.4',
+    version: '0.4.5',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
