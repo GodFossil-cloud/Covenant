@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.22 */
+/*! Covenant UI Stack v0.3.23 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.22';
+  window.COVENANT_UI_STACK_VERSION = '0.3.23';
 
   var registry = Object.create(null);
   var order = [];
@@ -473,13 +473,17 @@
       try {
         if (dockTouchActive) return true;
 
+        // Only guard during motion shells / drag intent.
+        // When sheets are fully open and stable, shared scroll-lock handles the page
+        // and we must not risk blocking scroll inside nested overflow containers.
         if (root && root.classList) {
           if (root.classList.contains('toc-opening')) return true;
           if (root.classList.contains('toc-closing')) return true;
-          if (root.classList.contains('toc-open')) return true;
+          if (root.classList.contains('toc-dock-settling')) return true;
+          if (root.classList.contains('toc-dock-setting')) return true;
+
           if (root.classList.contains('reliquary-opening')) return true;
           if (root.classList.contains('reliquary-closing')) return true;
-          if (root.classList.contains('reliquary-open')) return true;
           if (root.classList.contains('reliquary-dragging')) return true;
         }
 
@@ -488,13 +492,11 @@
 
         if (tocPanel && tocPanel.classList) {
           if (tocPanel.classList.contains('is-dragging')) return true;
-          if (tocPanel.classList.contains('is-open')) return true;
           if (tocPanel.classList.contains('is-closing')) return true;
         }
 
         if (reliquaryPanel && reliquaryPanel.classList) {
           if (reliquaryPanel.classList.contains('is-dragging')) return true;
-          if (reliquaryPanel.classList.contains('is-open')) return true;
         }
 
         return false;
