@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.40 (Pointerup toggle guard for iOS Safari Mirror tab) */
+/*! Covenant Reliquary UI v0.3.41 (Allow ToC scroll over Reliquary on iOS Safari) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.40';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.41';
 
   var doc = document;
   var root = doc.documentElement;
@@ -341,7 +341,12 @@
 
     iosTouchMoveBlocker = function (e) {
       if (!panel || !panel.classList.contains('is-open')) return;
+
+      // Allow scrolling inside any open panel's scroll body.
       if (closestSafe(e.target, '#reliquaryPanel .reliquary-panel-body')) return;
+      if (closestSafe(e.target, '#tocPanel .toc-panel-body')) return;
+      if (closestSafe(e.target, '#lexiconPanel .lexicon-panel-body')) return;
+
       if (e && e.cancelable) e.preventDefault();
     };
 
