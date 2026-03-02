@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.21 */
+/*! Covenant UI Stack v0.3.22 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.21';
+  window.COVENANT_UI_STACK_VERSION = '0.3.22';
 
   var registry = Object.create(null);
   var order = [];
@@ -354,11 +354,16 @@
     iosTouchMoveBlocker = function (e) {
       if (!scrollLocked) return;
 
+      var target = e && e.target;
       var stackIds = getOpenIds();
-      var topId = stackIds.length ? stackIds[stackIds.length - 1] : '';
-      var entry = topId ? registry[topId] : null;
 
-      if (entryAllowsScroll(entry, e && e.target)) return;
+      // Important: allow scrolling inside *any* open entry's scroll body.
+      // This makes scroll robust against brief stack-order desyncs when two veils overlap.
+      for (var i = stackIds.length - 1; i >= 0; i--) {
+        var id = stackIds[i];
+        var entry = id ? registry[id] : null;
+        if (entryAllowsScroll(entry, target)) return;
+      }
 
       if (e && e.cancelable) e.preventDefault();
     };
