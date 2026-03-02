@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.1 (dynamic font-size to fit titles on one line) */
+/*! Covenant Reliquary Archive v0.4.2 (lower min font-size to 0.56rem for longer titles) */
 (function () {
   'use strict';
 
@@ -342,7 +342,7 @@
       }
 
       var startSize = 0.88;
-      var minSize = 0.68;
+      var minSize = 0.56;
       var step = 0.02;
 
       var currentSize = startSize;
@@ -644,7 +644,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.1',
+    version: '0.4.2',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
