@@ -226,6 +226,10 @@ html.reliquary-open .reliquary-archive{display:block}
    (We render the message via a pseudo-element + data attr.) */
 #citationLabel.is-reliquary-flash{
   isolation:isolate;
+
+  /* Override Covenant footer default: .citation-label { overflow:hidden }.
+     We want the temporary flash to be able to extend past the citation's normal width. */
+  overflow:visible;
 }
 
 #citationLabel.is-reliquary-flash::after{
@@ -241,6 +245,10 @@ html.reliquary-open .reliquary-archive{display:block}
   letter-spacing:.14em;
   line-height:1;
   white-space:nowrap;
+
+  /* A touch of breathing room so edge pixels never look clipped. */
+  padding:.20rem .60rem;
+  box-sizing:border-box;
 
   color:rgba(245,236,214,.92);
   text-shadow:0 1px 0 rgba(0,0,0,.90), 0 0 10px rgba(242,220,154,0.14);
