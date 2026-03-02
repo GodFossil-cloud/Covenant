@@ -173,6 +173,10 @@ html.reliquary-open .reliquary-archive{display:block}
 /* Citation label bookmark toggle (beneath Lexicon seal).
    Uses ::before so lexicon.js can continue owning #citationText's textContent. */
 
+#citationLabel{
+  position:relative;
+}
+
 #citationText{
   cursor:pointer;
   user-select:none;
@@ -182,13 +186,16 @@ html.reliquary-open .reliquary-archive{display:block}
   cursor:default;
 }
 
+/* Covenant glyph-like marks.
+   - ⌁ (uninscribed): "ready / beckoning"
+   - ⌘ (inscribed): "sealed / saved" */
 #citationText::before{
-  content:"✧";
+  content:"⌁";
   display:inline-block;
   margin-right:.46em;
-  opacity:.70;
-  transform:scale(1);
-  transition:transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  opacity:.74;
+  transform:translateY(-0.5px) scale(1);
+  transition:transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 240ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 #citationText[data-lexicon-key=""]::before{
@@ -196,11 +203,59 @@ html.reliquary-open .reliquary-archive{display:block}
 }
 
 #citationText.is-bookmarked::before{
-  content:"✦";
-  opacity:.92;
+  content:"⌘";
+  opacity:.94;
 }
 
 #citationText.bookmark-pulse::before{
-  transform:scale(1.08);
+  transform:translateY(-0.5px) scale(1.10);
   opacity:1;
+}
+
+/* Armed (a passage is selected): invite interaction without looking like a button label. */
+#citationLabel.is-armed #citationText::before{
+  opacity:.88;
+  filter:drop-shadow(0 0 8px rgba(242,220,154,0.12));
+}
+
+#citationLabel.is-armed-wake{
+  text-shadow:0 0 10px rgba(242,220,154,0.10);
+}
+
+/* Momentary consecration/undo flash, without corrupting the underlying citation text.
+   (We render the message via a pseudo-element + data attr.) */
+#citationLabel.is-reliquary-flash{
+  isolation:isolate;
+}
+
+#citationLabel.is-reliquary-flash::after{
+  content:attr(data-reliquary-flash);
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+  z-index:2;
+
+  font-family:'Cormorant Garamond',serif;
+  font-size:.78rem;
+  letter-spacing:.14em;
+  line-height:1;
+  white-space:nowrap;
+
+  color:rgba(245,236,214,.92);
+  text-shadow:0 1px 0 rgba(0,0,0,.90), 0 0 10px rgba(242,220,154,0.14);
+}
+
+#citationLabel.is-reliquary-flash #citationCopy{
+  opacity:.16;
+}
+
+#citationLabel.is-reliquary-saved::after{
+  color:rgba(138,206,182,.94);
+  text-shadow:0 1px 0 rgba(0,0,0,.92), 0 0 12px rgba(138,206,182,0.16);
+}
+
+#citationLabel.is-reliquary-removed::after{
+  color:rgba(224,124,104,.94);
+  text-shadow:0 1px 0 rgba(0,0,0,.92), 0 0 12px rgba(224,124,104,0.14);
 }

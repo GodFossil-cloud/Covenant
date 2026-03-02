@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.5 (bigger titles; allow wrap if needed) */
+/*! Covenant Reliquary Archive v0.4.6 (footer glyph marks; flash feedback) */
 (function () {
   'use strict';
 
@@ -542,6 +542,7 @@
 
   function wireCitationBookmarkToggle() {
     var el = byId('citationText');
+    var label = byId('citationLabel');
     if (!el) return;
 
     hideLegacySaveControl();
@@ -552,6 +553,8 @@
     } catch (err0) {}
 
     var pulseTimer = null;
+    var flashTimer = null;
+    var lastArmed = false;
 
     function pulse() {
       if (pulseTimer) {
@@ -569,7 +572,66 @@
       }, 280);
     }
 
+    function clearFlash() {
+      if (!label) return;
+
+      try {
+        label.classList.remove('is-reliquary-flash', 'is-reliquary-saved', 'is-reliquary-removed');
+        label.removeAttribute('data-reliquary-flash');
+      } catch (err0) {}
+    }
+
+    function flash(msg, kind) {
+      if (!label) return;
+
+      if (flashTimer) {
+        window.clearTimeout(flashTimer);
+        flashTimer = null;
+      }
+
+      clearFlash();
+
+      try {
+        label.setAttribute('data-reliquary-flash', String(msg || ''));
+        label.classList.add('is-reliquary-flash');
+        if (kind === 'saved') label.classList.add('is-reliquary-saved');
+        if (kind === 'removed') label.classList.add('is-reliquary-removed');
+      } catch (err1) {}
+
+      flashTimer = window.setTimeout(function () {
+        try { clearFlash(); } catch (err2) {}
+        flashTimer = null;
+      }, 1050);
+    }
+
+    function setArmedState(isArmed) {
+      if (!label) return;
+
+      var armed = !!isArmed;
+
+      try {
+        label.classList.toggle('is-armed', armed);
+      } catch (err0) {}
+
+      if (armed && !lastArmed) {
+        try {
+          label.classList.add('is-armed-wake');
+          window.setTimeout(function () {
+            try { label.classList.remove('is-armed-wake'); } catch (err2) {}
+          }, 480);
+        } catch (err1) {}
+      }
+
+      if (!armed) {
+        try { label.classList.remove('is-armed-wake'); } catch (err3) {}
+      }
+
+      lastArmed = armed;
+    }
+
     function setStateFromSelection(sel) {
+      setArmedState(!!sel);
+
       if (!sel) {
         el.classList.remove('is-bookmarked');
         try {
@@ -583,7 +645,7 @@
       el.classList.toggle('is-bookmarked', saved);
 
       try {
-        el.setAttribute('aria-label', saved ? 'Remove?' : 'Save to Reliquary');
+        el.setAttribute('aria-label', saved ? 'Remove from Reliquary' : 'Save to Reliquary');
         el.setAttribute('aria-pressed', saved ? 'true' : 'false');
       } catch (err1) {}
     }
@@ -601,10 +663,14 @@
         return;
       }
 
-      if (hasItem(sel.href, sel.lexiconKey)) {
+      var wasSaved = hasItem(sel.href, sel.lexiconKey);
+
+      if (wasSaved) {
         removeItem(sel.href, sel.lexiconKey);
+        flash('REMOVED FROM RELIQUARY', 'removed');
       } else {
         addItem(sel);
+        flash('SAVED TO RELIQUARY', 'saved');
       }
 
       if (root.classList.contains('reliquary-open')) {
@@ -644,7 +710,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.5',
+    version: '0.4.6',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
