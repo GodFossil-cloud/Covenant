@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.9 (expose data-lexicon-key on #citationText for Reliquary save) */
+/*! Covenant Lexicon UI v0.3.10 (honor explicit dock glyph markup) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.9';
+  window.COVENANT_LEXICON_VERSION = '0.3.10';
 
   var doc = document;
   var root = doc.documentElement;
@@ -635,6 +635,12 @@
 
   function setLexiconGlyph() {
     if (!lexiconToggle || !panel) return;
+
+    // If the dock provides explicit idle/active glyph spans, treat that markup as the source of truth.
+    // (Prevents JS from overwriting the curated symbols in _includes/nav-footer.html.)
+    var explicitIdle = qs('.lexicon-glyph--idle', lexiconToggle);
+    var explicitActive = qs('.lexicon-glyph--active', lexiconToggle);
+    if (explicitIdle && explicitActive) return;
 
     var isOpen = panel.classList.contains('is-open');
     var hasSelection = !!currentlySelectedKey;
