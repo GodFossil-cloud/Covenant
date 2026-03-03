@@ -230,6 +230,16 @@
       0 0 18px rgba(242, 220, 154, 0.10);
   }
 
+  /* Saved/Bookmarked: make the label more immediately apparent than the generic "armed" glow.
+     NOTE: keep .is-copied authoritative so the temporary "Copied" pill reads cleanly. */
+  #navFooter #citationLabel.is-armed:not(.is-copied) #citationText.is-bookmarked {
+    color: rgba(255, 215, 122, 0.98);
+    text-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.96),
+      0 0 14px rgba(255, 215, 122, 0.24),
+      0 0 22px rgba(255, 215, 122, 0.14);
+  }
+
   /* Citation status glyph (unsaved vs saved-to-Reliquary).
      reliquary-archive.js toggles:
      - #citationLabel.is-armed when a passage is selected
@@ -249,11 +259,11 @@
 
   #navFooter #citationLabel.is-armed #citationText::before {
     display: inline-block;
-    content: '⌯';
+    content: '܍';
   }
 
   #navFooter #citationLabel.is-armed #citationText.is-bookmarked::before {
-    content: '✮';
+    content: '𖥔';
   }
 
   #navFooter #citationLabel.is-copied #citationText::before {
