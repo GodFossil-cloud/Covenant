@@ -40,7 +40,8 @@
   #navFooter #mirrorToggle,
   #navFooter #lexiconToggle,
   #navFooter .dock-cap,
-  #navFooter .toc-glyph {
+  #navFooter .toc-glyph,
+  #navFooter .lexicon-glyph {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     will-change: auto;
@@ -166,6 +167,9 @@
     line-height: 1 !important;
     margin: 0 !important;
     padding: 0 !important;
+
+    font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', serif;
+    font-variant-emoji: text;
   }
 
   #navFooter #mirrorToggle .toc-glyph {
@@ -191,12 +195,37 @@
 
     /* Baseline seat (external CSS may override). */
     margin-top: calc(-1 * var(--lexicon-seal-top-align, 5px) + 4px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   #navFooter #lexiconToggle,
   #navFooter #lexiconToggle::before,
   #navFooter #lexiconToggle::after {
     border-radius: 0 0 999px 999px !important;
+  }
+
+  /* Lexicon seal glyph swap (idle vs selected).
+     lexicon.js owns the .has-selection class on #lexiconToggle. */
+  #navFooter #lexiconToggle .lexicon-glyph {
+    font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', serif;
+    font-variant-emoji: text;
+    line-height: 1;
+  }
+
+  #navFooter #lexiconToggle .lexicon-glyph--active { display: none; }
+  #navFooter #lexiconToggle.has-selection .lexicon-glyph--idle { display: none; }
+  #navFooter #lexiconToggle.has-selection .lexicon-glyph--active { display: inline-block; }
+
+  /* Citation label: when a passage is armed/selected, let it glow with the seal. */
+  #navFooter #citationLabel.is-armed .citation-text {
+    color: rgba(242, 220, 154, 0.98);
+    text-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.96),
+      0 0 10px rgba(242, 220, 154, 0.18),
+      0 0 18px rgba(242, 220, 154, 0.10);
   }
 
   /* -------------------------------------------------
@@ -269,7 +298,7 @@
       <div class="nav-seals" aria-label="Panels">
         <button class="nav-btn dock-tab" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
           <span class="dock-cap" aria-hidden="true"></span>
-          <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">☰</span>
+          <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">⚘</span>
         </button>
 
         <button
@@ -280,12 +309,13 @@
           aria-expanded="false"
           aria-controls="lexiconPanel"
         >
-          <span class="lexicon-glyph" aria-hidden="true">𖤓</span>
+          <span class="lexicon-glyph lexicon-glyph--idle" aria-hidden="true">𖥠</span>
+          <span class="lexicon-glyph lexicon-glyph--active" aria-hidden="true">𖥔</span>
         </button>
 
         <button class="nav-btn dock-tab" id="mirrorToggle" type="button" aria-label="Open Reliquary" aria-expanded="false" aria-controls="reliquaryPanel">
           <span class="dock-cap" aria-hidden="true"></span>
-          <span class="toc-glyph" aria-hidden="true">⌘</span>
+          <span class="toc-glyph" aria-hidden="true">𖧗</span>
         </button>
       </div>
 
