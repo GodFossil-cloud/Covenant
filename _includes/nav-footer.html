@@ -170,6 +170,8 @@
 
     font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', serif;
     font-variant-emoji: text;
+
+    font-size: 1.05rem !important;
   }
 
   #navFooter #mirrorToggle .toc-glyph {
@@ -178,9 +180,6 @@
 
   #navFooter #tocToggle .toc-glyph {
     transform: translate3d(-50%, -50%, 0) translateY(calc(var(--toc-cap-shift-y, 0px) + var(--toc-glyph-nudge-y, 0px)));
-
-    /* If a glyph font fails, keep the fallback readable. */
-    font-size: 0.88rem !important;
   }
 
   /* -------------------------------------------------
@@ -213,6 +212,9 @@
     font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', serif;
     font-variant-emoji: text;
     line-height: 1;
+
+    /* Tiny seat correction: float the glyph upward a breath. */
+    transform: translateY(-0.5px);
   }
 
   #navFooter #lexiconToggle .lexicon-glyph--active { display: none; }
@@ -226,33 +228,6 @@
       0 1px 1px rgba(0, 0, 0, 0.96),
       0 0 10px rgba(242, 220, 154, 0.18),
       0 0 18px rgba(242, 220, 154, 0.10);
-  }
-
-  /* Citation badge glyph (unsaved vs saved-to-Reliquary).
-     JS should add an "armed" class when there is a current selection,
-     and a saved class when that selection exists in the Reliquary store. */
-  #navFooter #citationCopy::before {
-    content: '';
-    display: inline-block;
-    margin-right: 0;
-    width: 1.05em;
-    text-align: center;
-    font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', serif;
-    font-variant-emoji: text;
-    line-height: 1;
-    opacity: 0.9;
-  }
-
-  #navFooter #citationLabel.is-armed #citationCopy::before {
-    content: '⌯';
-    margin-right: 0.35em;
-  }
-
-  #navFooter #citationLabel.is-armed.is-saved #citationCopy::before,
-  #navFooter #citationLabel.is-armed.is-reliquary-saved #citationCopy::before,
-  #navFooter #citationLabel.is-armed.is-in-reliquary #citationCopy::before,
-  #navFooter #citationCopy.is-saved::before {
-    content: '✮';
   }
 
   /* -------------------------------------------------
