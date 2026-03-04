@@ -32,9 +32,10 @@
         <span class="lexicon-reliquary-save-label">Save to Reliquary</span>
       </button>
     </div>
-
-    <a href="{{ '/lexicon.html' | relative_url }}" target="_blank" rel="noopener" class="lexicon-link">Open Full Lexicon</a>
-
-    {{ include.glossary | default: "" }}
   </div>
+</div>
+
+<!-- Glossary HTML is stashed here (page passes include.glossary) so the Reliquary panel can render it in its Glossary tab. -->
+<div id="covenantGlossaryStash" hidden>
+  {{ include.glossary | default: "" }}
 </div>

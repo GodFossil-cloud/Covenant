@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.41 (Allow ToC scroll over Reliquary on iOS Safari) */
+/*! Covenant Reliquary UI v0.3.42 (Internal tabs: archive + glossary; session remembers last tab) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.41';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.42';
 
   var doc = document;
   var root = doc.documentElement;
@@ -70,6 +70,126 @@
   var dragRegion = byId('reliquaryDragRegion');
 
   if (!panel || !overlay || !toggle) return;
+
+  // ---------------------------
+  // Internal tabs (Archive / Glossary)
+  // ---------------------------
+
+  var TAB_STORE_KEY = 'covenant_reliquary_tab_v1';
+  var tabArchiveBtn = byId('reliquaryTabArchive');
+  var tabGlossaryBtn = byId('reliquaryTabGlossary');
+  var viewArchive = byId('reliquaryViewArchive');
+  var viewGlossary = byId('reliquaryViewGlossary');
+  var glossaryHost = byId('reliquaryGlossary');
+
+  function safeSessionGet(key) {
+    try { return window.sessionStorage.getItem(key); } catch (err) { return null; }
+  }
+
+  function safeSessionSet(key, val) {
+    try { window.sessionStorage.setItem(key, String(val || '')); } catch (err) {}
+  }
+
+  function loadTabPreference() {
+    var v = safeSessionGet(TAB_STORE_KEY);
+    v = String(v || '').trim();
+    if (v === 'glossary') return 'glossary';
+    return 'archive';
+  }
+
+  function saveTabPreference(name) {
+    safeSessionSet(TAB_STORE_KEY, name === 'glossary' ? 'glossary' : 'archive');
+  }
+
+  function ensureGlossaryMounted() {
+    if (!glossaryHost) return;
+    if (glossaryHost.getAttribute('data-mounted') === '1') return;
+
+    var stash = byId('covenantGlossaryStash');
+    var html = '';
+
+    try {
+      html = stash ? String(stash.innerHTML || '') : '';
+    } catch (err0) {
+      html = '';
+    }
+
+    html = String(html || '').trim();
+
+    if (html) {
+      glossaryHost.innerHTML = html;
+    } else {
+      glossaryHost.innerHTML = '<div class="reliquary-archive-empty">No glossary terms on this page.</div>';
+    }
+
+    try { glossaryHost.setAttribute('data-mounted', '1'); } catch (err1) {}
+  }
+
+  function setActiveTab(name, focusTab) {
+    var tab = (name === 'glossary') ? 'glossary' : 'archive';
+
+    if (tab === 'glossary') ensureGlossaryMounted();
+
+    if (tabArchiveBtn) {
+      tabArchiveBtn.setAttribute('aria-selected', tab === 'archive' ? 'true' : 'false');
+      tabArchiveBtn.tabIndex = (tab === 'archive') ? 0 : -1;
+    }
+
+    if (tabGlossaryBtn) {
+      tabGlossaryBtn.setAttribute('aria-selected', tab === 'glossary' ? 'true' : 'false');
+      tabGlossaryBtn.tabIndex = (tab === 'glossary') ? 0 : -1;
+    }
+
+    if (viewArchive) {
+      if (tab === 'archive') viewArchive.removeAttribute('hidden');
+      else viewArchive.setAttribute('hidden', '');
+    }
+
+    if (viewGlossary) {
+      if (tab === 'glossary') viewGlossary.removeAttribute('hidden');
+      else viewGlossary.setAttribute('hidden', '');
+    }
+
+    saveTabPreference(tab);
+
+    if (focusTab) {
+      var target = (tab === 'archive') ? tabArchiveBtn : tabGlossaryBtn;
+      if (target && target.focus) target.focus();
+    }
+  }
+
+  function syncTabsOnOpen() {
+    if (!tabArchiveBtn && !tabGlossaryBtn) return;
+    setActiveTab(loadTabPreference(), false);
+  }
+
+  if (tabArchiveBtn) {
+    tabArchiveBtn.addEventListener('click', function (e) {
+      stopEvent(e);
+      setActiveTab('archive', false);
+    });
+  }
+
+  if (tabGlossaryBtn) {
+    tabGlossaryBtn.addEventListener('click', function (e) {
+      stopEvent(e);
+      setActiveTab('glossary', false);
+    });
+  }
+
+  // Optional: left/right arrow switching when focus is on a tab.
+  panel.addEventListener('keydown', function (e) {
+    if (!e) return;
+    var k = e.key;
+    if (k !== 'ArrowLeft' && k !== 'ArrowRight') return;
+
+    var active = doc.activeElement;
+    if (active !== tabArchiveBtn && active !== tabGlossaryBtn) return;
+
+    stopEvent(e);
+    if (k === 'ArrowLeft') setActiveTab('archive', true);
+    else setActiveTab('glossary', true);
+  });
 
   // Optional: coordinated UI stack (true surface layering across panels).
   var UI_STACK_ID = 'reliquary';
@@ -492,10 +612,6 @@
   function openReliquaryShellForDrag() {
     focusReturnEl = toggle;
 
-    // IMPORTANT: during drag-open we intentionally do NOT set html.reliquary-open yet.
-    // That class is reserved for committed-open state so the Lexicon seal can re-enable
-    // immediately when a drag-open is cancelled.
-
     panel.classList.add('is-open');
     overlay.classList.add('is-open');
 
@@ -506,10 +622,9 @@
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Close Reliquary');
 
-    // During drag-open shell, avoid flipping scroll-lock classes/overflow.
-    // On iOS Safari this can manifest as a ~1px fixed dock hop on the first drag frame.
-    // We still prevent stray touch scrolling outside the panel body.
     if (isIOS) enableIOSTouchScrollLock();
+
+    syncTabsOnOpen();
 
     noteOpen();
   }
@@ -529,9 +644,9 @@
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Close Reliquary');
 
-    // No local overflow/fixed-body scroll lock in this build (ui-stack owns shared lock).
-    // For iOS, we still block stray touch scrolls outside the panel body.
     if (isIOS) enableIOSTouchScrollLock();
+
+    syncTabsOnOpen();
 
     enableFocusTrap();
 
@@ -578,14 +693,12 @@
       return;
     }
 
-    // Clear any residual inline snap styles.
     panel.style.transform = '';
     panel.style.opacity = '';
     panel.style.transition = '';
     overlay.style.opacity = '';
     overlay.style.transition = '';
 
-    // Defensive cleanup: if a pointer-cancel left the drag class behind, it can suppress transitions.
     try { toggle.classList.remove('is-reliquary-dragging'); } catch (err0) {}
 
     openReliquaryImmediately();
@@ -599,8 +712,6 @@
 
     positionPanel();
 
-    // If the user taps Mirror during ToC/Reliquary dock settling, CSS will disable transitions.
-    // Force transition for this snap so the Mirror tab rides instead of teleporting.
     var isSettling = false;
     try {
       isSettling = !!(root && root.classList && (root.classList.contains('toc-dock-settling') || root.classList.contains('reliquary-dock-settling')));
@@ -612,8 +723,6 @@
       forceMirrorTabTransitionForTapOpen(snapMs, snapEase);
     }
 
-    // Tap-open can start from a slightly sunk closed position for the sheet, but the dock tab should
-    // remain seated and never carry below its true rest position.
     var closedY = computePanelClosedY(true);
     var closedYForTab = computePanelClosedY(false);
 
@@ -628,7 +737,6 @@
     panel.style.opacity = '1';
     setPanelTranslateY(closedY);
 
-    // Seed tab at closed, then weld it upward with the same snap timing.
     setMirrorTabDragOffset(0);
 
     raf(function () {
@@ -675,7 +783,6 @@
 
     tapAnimating = true;
 
-    // Tap-close should return to the true seated closed position (no sink below dock).
     var closedY = computePanelClosedY(false);
     var closedYForTab = closedY;
 
@@ -687,7 +794,6 @@
 
     setPanelTranslateY(openLift);
 
-    // Ensure the tab begins in its open welded position.
     setMirrorTabDragOffset(openLift - closedYForTab);
 
     raf(function () {
@@ -697,7 +803,6 @@
       setPanelTranslateY(closedY);
       overlay.style.opacity = '0';
 
-      // Tab returns to its dock seat.
       setMirrorTabDragOffset(0);
 
       setTimeout(function () {
@@ -798,7 +903,6 @@
     var panelHBase = 0;
     var openLiftPx = 0;
 
-    // iOS Safari: taps often include a few pixels of jitter; treat touch as touch, not drag.
     var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
@@ -852,8 +956,6 @@
       panel.style.opacity = '1';
       overlay.style.opacity = String(progress);
 
-      // Lexicon-style carry: the dock tab rides with the sheet.
-      // IMPORTANT: do not carry below the dock seat during sink/settle frames.
       var tabOffset = (y - closedY);
       if (tabOffset > 0) tabOffset = 0;
       setMirrorTabDragOffset(tabOffset);
@@ -862,13 +964,11 @@
     function applyOpenStateFromDrag() {
       if (!panel || !overlay) return;
 
-      // Commit full open state (including html.reliquary-open + focus trap).
       openReliquaryImmediately();
 
       root.classList.remove('reliquary-closing');
       root.classList.remove('reliquary-dock-settling');
 
-      // Keep tab welded in the committed-open position.
       setMirrorTabDragOffset(openLiftPx - closedY);
 
       setTimeout(focusIntoPanel, 0);
@@ -929,7 +1029,6 @@
 
       positionPanel();
 
-      // ToC parity: snap closed to the true seat (no sink below dock).
       var targetY = closedY;
       applyDragFrame(targetY, false);
 
@@ -957,7 +1056,6 @@
       var shouldOpen = false;
       var baseH = panelHBase || closedY || 1;
 
-      // Keep compositor promotion through the snap transition.
       scheduleDisableDragWillChange(SNAP_MS + 140);
 
       if (startWasOpen) {
@@ -983,8 +1081,6 @@
         if (startWasOpen) {
           snapCloseFromOpen();
         } else {
-          // IMPORTANT: cancel-open snap-back should behave like a close (not "opening") so
-          // root class cleanup cannot re-target the dock tab by 1px at the last frame.
           root.classList.add('reliquary-closing');
           root.classList.remove('reliquary-opening');
           root.classList.remove('reliquary-dock-settling');
@@ -1278,10 +1374,8 @@
     if (e.defaultPrevented) return;
     if (tapAnimating) return;
 
-    // Mouse path stays on click (prevents double-toggle on desktop).
     if (e.pointerType === 'mouse') return;
 
-    // If a drag just occurred, do not treat this as a tap toggle.
     if (window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED) return;
     if (panel && panel.classList && panel.classList.contains('is-dragging')) return;
 
