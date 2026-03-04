@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.15 (Header tabs; drag region top-strip) */
+/*! Covenant Reliquary Panel Styles v0.3.16 (Header tabs only; remove header title) */
 
 /* -------------------------------------------------
    Variables
@@ -20,21 +20,11 @@
 
   --reliquary-brass:rgba(201,169,97,1);
 
-  /* Corner socket geometry: used for width + seating math (even if the panel corner is not clipped).
-     IMPORTANT: notch width must match the *visual* tab width so the opened sheet meets the tab edges cleanly. */
   --reliquary-notch-w:var(--dock-tab-width-visual, var(--dock-tab-width, var(--nav-pill-width,56px)));
-
-  /* Notch depth (used for seating math). */
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);
-
-  /* Clip-path antialias seam shim (legacy token; clip is currently disabled). */
   --reliquary-notch-h-clip:calc(var(--reliquary-notch-h) - 1px);
 
-  /* Mechanical bite: push the tab into the notch floor to eliminate any true gap (independent of notch depth). */
   --reliquary-seat-overlap:0px;
-
-  /* Seat welding: JS seats the tab box using (seat-dy + seat-overlap).
-     Tune so the tab TOP edge meets the panel TOP edge; notch/cap remain visual. */
   --reliquary-seat-dy:calc(var(--dock-tab-height) - var(--reliquary-seat-overlap));
 }
 
@@ -132,7 +122,6 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
    Drag handle region (sheet-style)
    ------------------------------------------------- */
 
-/* IMPORTANT: the drag region is now a top-strip so header tabs remain clickable. */
 .reliquary-drag-region{
   position:absolute;
   top:0;
@@ -171,7 +160,7 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 
 .reliquary-panel-header{
   position:relative;
-  padding:.95rem 1.25rem .86rem;
+  padding:.90rem 1.25rem .82rem;
   border-bottom:1px solid rgba(201,169,97,.14);
   background:var(--dock-tab-face,#010103);
 }
@@ -180,23 +169,6 @@ html.reliquary-opening .reliquary-panel-header::after,
 html.reliquary-open .reliquary-panel-header::after,
 html.reliquary-closing .reliquary-panel-header::after,
 html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
-
-.reliquary-produced-title{
-  position:relative;
-  z-index:1;
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.05rem;
-  font-weight:650;
-  letter-spacing:.14em;
-  font-variant-caps:all-small-caps;
-  line-height:1.25;
-  color:var(--reliquary-ink);
-  text-shadow:0 1px 0 rgba(0,0,0,.72);
-  padding-right:1.25rem;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
 
 .reliquary-panel-body{
   flex:1;
@@ -216,7 +188,7 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   z-index:11;
   display:flex;
   gap:.65rem;
-  margin-top:.55rem;
+  margin-top:0;
 }
 
 #reliquaryPanel .reliquary-tab{
@@ -249,7 +221,6 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 
 #reliquaryPanel .reliquary-glossary{margin-top:.15rem}
 
-/* The glossary HTML comes from journey pages (via lexicon-panel include stashing). */
 #reliquaryPanel .lexicon-glossary-footer{
   padding:.95rem .95rem .90rem;
   border-radius:10px;
@@ -261,7 +232,6 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 #reliquaryPanel .lexicon-term-list{margin:0;padding-left:1.15rem}
 #reliquaryPanel .lexicon-term-ref{color:rgba(201,169,97,.86)}
 
-/* ToC footer-link style, tuned for Reliquary ink on obsidian. */
 #reliquaryPanel .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(245,236,214,.16)}
 #reliquaryPanel .toc-annex-link{color:rgba(245,236,214,.74)}
 #reliquaryPanel .toc-annex-link:hover,
