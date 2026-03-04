@@ -233,11 +233,21 @@
   /* Saved/Bookmarked: make the label more immediately apparent than the generic "armed" glow.
      NOTE: keep .is-copied authoritative so the temporary "Copied" pill reads cleanly. */
   #navFooter #citationLabel.is-armed:not(.is-copied) #citationText.is-bookmarked {
-    color: rgba(255, 215, 122, 0.98);
+    display: inline-block;
+    color: rgba(255, 238, 196, 0.995);
     text-shadow:
-      0 1px 1px rgba(0, 0, 0, 0.96),
-      0 0 14px rgba(255, 215, 122, 0.24),
-      0 0 22px rgba(255, 215, 122, 0.14);
+      0 1px 1px rgba(0, 0, 0, 0.98),
+      0 0 16px rgba(255, 215, 122, 0.30),
+      0 0 26px rgba(255, 215, 122, 0.18);
+
+    background: rgba(0, 0, 0, 0.58);
+    border: 1px solid rgba(255, 215, 122, 0.34);
+    border-radius: 999px;
+    padding: 2px 8px 3px;
+  }
+
+  #navFooter #citationLabel.is-armed:not(.is-copied) #citationText.is-bookmarked::before {
+    opacity: 1;
   }
 
   /* Citation status glyph (unsaved vs saved-to-Reliquary).
@@ -263,7 +273,7 @@
   }
 
   #navFooter #citationLabel.is-armed #citationText.is-bookmarked::before {
-    content: '✫';
+    content: '✦';
   }
 
   #navFooter #citationLabel.is-copied #citationText::before {
