@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.12 (mobile tap-open accounts for dock obscuring on iOS Safari) */
+/*! Covenant Lexicon UI v0.3.13 (mobile tap-open accounts for dock obscuring on iOS Safari; body bottom inset keeps end-of-panel scrollable) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.12';
+  window.COVENANT_LEXICON_VERSION = '0.3.13';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1075,6 +1075,30 @@
     return isFinite(n) ? Math.max(0, Math.round(n)) : 0;
   }
 
+  function clearLexiconBodyDockInset() {
+    if (!panel) return;
+    var body = qs('.lexicon-panel-body', panel);
+    if (!body) return;
+    body.style.paddingBottom = '';
+    body.style.scrollPaddingBottom = '';
+  }
+
+  function applyLexiconBodyDockInset(dockObscurePx) {
+    if (!panel) return;
+    var body = qs('.lexicon-panel-body', panel);
+    if (!body) return;
+
+    if (!isBottomSheetMode() || !panel.classList.contains('is-open')) {
+      clearLexiconBodyDockInset();
+      return;
+    }
+
+    // Give the scrollable body enough tail-room to lift the last lines above the dock.
+    var inset = Math.max(0, Math.round((dockObscurePx || 0) + 24));
+    body.style.paddingBottom = inset + 'px';
+    body.style.scrollPaddingBottom = inset + 'px';
+  }
+
   function measureLexiconContentHeight() {
     if (!panel) return 0;
 
@@ -1151,6 +1175,7 @@
       lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
       applyMobileRestingY(openY, closedY, false);
+      applyLexiconBodyDockInset(dockObscurePx);
 
       setTimeout(function () {
         try { panel.style.transition = ''; } catch (err0) {}
@@ -1248,6 +1273,7 @@
 
     clearActiveTooltip();
     resetPanelInlineMotion();
+    clearLexiconBodyDockInset();
 
     panel.classList.remove('is-open');
     lexOverlay.classList.remove('is-open');
@@ -1653,6 +1679,8 @@
         bringSelfToFront();
       }
 
+      applyLexiconBodyDockInset(getDockObscurePxSafe());
+
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () { setSealToOpenPosition(); storePanelY(0); });
     }
@@ -1672,6 +1700,7 @@
         noteClose();
         clearStackZIndex();
       }
+      clearLexiconBodyDockInset();
       clearSealDragOffset();
       storePanelY(closedY);
     }
