@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.13 (mobile tap-open accounts for dock obscuring on iOS Safari; body bottom inset keeps end-of-panel scrollable) */
+/*! Covenant Lexicon UI v0.3.14 (mobile half-open uses dock-aware body sizing so panel scroll works without fully opening; tap-open accounts for dock obscuring on iOS Safari) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.13';
+  window.COVENANT_LEXICON_VERSION = '0.3.14';
 
   var doc = document;
   var root = doc.documentElement;
@@ -972,6 +972,9 @@
       lexOverlay.style.opacity = '';
       lexOverlay.style.transition = '';
     }
+
+    // If we were in bottom-sheet partial-open sizing, clear it so desktop/future opens are clean.
+    clearLexiconBodySizing();
   }
 
   function getSeatNudge() {
@@ -1099,6 +1102,45 @@
     body.style.scrollPaddingBottom = inset + 'px';
   }
 
+  function clearLexiconBodySizing() {
+    if (!panel) return;
+    var body = qs('.lexicon-panel-body', panel);
+    if (!body) return;
+    body.style.height = '';
+    body.style.maxHeight = '';
+  }
+
+  function applyLexiconBodySizingForY(y, dockObscurePx) {
+    if (!panel) return;
+    var body = qs('.lexicon-panel-body', panel);
+    if (!body) return;
+
+    if (!isBottomSheetMode() || !panel.classList.contains('is-open')) {
+      clearLexiconBodySizing();
+      return;
+    }
+
+    var header = qs('.lexicon-panel-header', panel);
+    var headerH = 0;
+    try { headerH = header ? (header.getBoundingClientRect().height || 0) : 0; } catch (err0) { headerH = 0; }
+
+    var vh = getViewportHeightSafe();
+    if (typeof dockObscurePx !== 'number') dockObscurePx = getDockObscurePxSafe();
+
+    var dockTop = Math.max(0, Math.round(vh - dockObscurePx));
+    var yPx = Math.max(0, Math.round(y || 0));
+
+    // Visible sheet height above the dock, minus the header.
+    var avail = dockTop - yPx - Math.round(headerH);
+
+    // Minimum keeps the body stable when the sheet is near-closed.
+    var MIN_BODY_H = 140;
+    var bodyH = Math.max(MIN_BODY_H, Math.round(avail));
+
+    body.style.height = bodyH + 'px';
+    body.style.maxHeight = bodyH + 'px';
+  }
+
   function measureLexiconContentHeight() {
     if (!panel) return 0;
 
@@ -1123,6 +1165,9 @@
     closedY = Math.max(1, Math.round(closedY || 1));
 
     panel.style.transform = 'translateY(' + y + 'px)';
+
+    var dockObscurePx = getDockObscurePxSafe();
+    applyLexiconBodySizingForY(y, dockObscurePx);
 
     var progress = 1 - (y / closedY);
     if (progress < 0) progress = 0;
@@ -1274,6 +1319,7 @@
     clearActiveTooltip();
     resetPanelInlineMotion();
     clearLexiconBodyDockInset();
+    clearLexiconBodySizing();
 
     panel.classList.remove('is-open');
     lexOverlay.classList.remove('is-open');
@@ -1659,6 +1705,10 @@
       if (lexOverlay) lexOverlay.style.opacity = String(progress);
 
       storePanelY(y);
+
+      // Critical: in bottom-sheet mode, translating the full-height sheet doesn't change layout.
+      // Explicit body sizing ensures the internal scroll viewport matches what is visible above the dock.
+      applyLexiconBodySizingForY(y, getDockObscurePxSafeLocal());
     }
 
     function applyOpenStateFromDrag() {
@@ -1701,6 +1751,7 @@
         clearStackZIndex();
       }
       clearLexiconBodyDockInset();
+      clearLexiconBodySizing();
       clearSealDragOffset();
       storePanelY(closedY);
     }
