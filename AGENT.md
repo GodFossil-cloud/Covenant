@@ -82,7 +82,7 @@ Core runtime files:
 - `assets/covenant.css` — sacred visual system (CSS guard applies).
 - `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges, including citation label styling beneath the Lexicon seal).
 - `assets/journey.js` — journey definitions + helpers.
-- `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
+- `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules. Note: on mobile, tap-open rests at content height (capped around ~60% of available height above the dock), and the seal drag can still open the sheet fully.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab). Note: Reliquary uses internal header tabs (Reliquary/Glossary); the drag surface is the full header (slop-based so taps still click), and the legacy drag-pill is hidden.
 - `assets/reliquary-archive.js` + `assets/reliquary-archive.css` — Reliquary “saved passages” archive + cross-page replay into Lexicon.

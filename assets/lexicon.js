@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.10 (honor explicit dock glyph markup) */
+/*! Covenant Lexicon UI v0.3.11 (mobile tap opens to content height) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.10';
+  window.COVENANT_LEXICON_VERSION = '0.3.11';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1033,6 +1033,127 @@
     clearSealDragOffset();
   }
 
+  function readStoredPanelY() {
+    if (!panel) return null;
+    var raw = '';
+    try {
+      raw = panel.getAttribute('data-lexicon-y') || '';
+    } catch (err) {
+      raw = '';
+    }
+    var n = parseFloat(String(raw).trim());
+    return isFinite(n) ? n : null;
+  }
+
+  function storePanelY(y) {
+    if (!panel) return;
+    try { panel.setAttribute('data-lexicon-y', String(Math.round(y))); } catch (err) {}
+  }
+
+  function getViewportHeightSafe() {
+    try {
+      if (window.visualViewport && typeof window.visualViewport.height === 'number' && window.visualViewport.height > 0) {
+        return window.visualViewport.height;
+      }
+    } catch (err) {}
+    return window.innerHeight || 0;
+  }
+
+  function getFooterHeightSafe() {
+    if (navFooter) {
+      var r = navFooter.getBoundingClientRect();
+      if (r && r.height) return r.height;
+    }
+
+    var val = getCssVar('--footer-total-height');
+    var n = parseFloat(val);
+    return isFinite(n) ? n : 0;
+  }
+
+  function measureLexiconContentHeight() {
+    if (!panel) return 0;
+
+    var header = qs('.lexicon-panel-header', panel);
+    var body = qs('.lexicon-panel-body', panel);
+
+    var headerH = 0;
+    var bodyH = 0;
+
+    try { headerH = header ? (header.getBoundingClientRect().height || 0) : 0; } catch (err0) { headerH = 0; }
+    try { bodyH = body ? (body.scrollHeight || 0) : 0; } catch (err1) { bodyH = 0; }
+
+    return Math.max(0, Math.round(headerH + bodyH + 10));
+  }
+
+  function applyMobileRestingY(y, closedY, sealDragging) {
+    if (!panel || !lexOverlay) return;
+
+    if (typeof sealDragging !== 'boolean') sealDragging = false;
+
+    y = Math.round(y);
+    closedY = Math.max(1, Math.round(closedY || 1));
+
+    panel.style.transform = 'translateY(' + y + 'px)';
+
+    var progress = 1 - (y / closedY);
+    if (progress < 0) progress = 0;
+    if (progress > 1) progress = 1;
+
+    var seatNudge = getSeatNudge();
+    var openDrop = (isIOS ? 1 : 0) * progress;
+    var sealOffset = (y - closedY) + (seatNudge * progress) + openDrop;
+
+    setSealDragOffset(sealOffset, sealDragging);
+
+    lexOverlay.style.opacity = String(progress);
+
+    storePanelY(y);
+  }
+
+  function mobileTapOpenToContentHeight() {
+    if (!panel || !lexOverlay) return;
+    if (!isBottomSheetMode()) return;
+
+    var footerH = getFooterHeightSafe();
+    var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
+
+    var rect = panel.getBoundingClientRect();
+    var panelH = (rect && rect.height) ? rect.height : 1;
+
+    var closedY = Math.max(1, Math.round(panelH - (footerH + peek)));
+
+    var contentH = measureLexiconContentHeight();
+    var availAboveFooter = Math.max(180, Math.round(getViewportHeightSafe() - footerH));
+    var capH = Math.round(availAboveFooter * 0.60);
+
+    var desired = Math.min(contentH, capH);
+
+    var openY = Math.round(panelH - (footerH + desired));
+    if (openY < 0) openY = 0;
+    if (openY > closedY) openY = closedY;
+
+    var SNAP_MS = getCssVarNumber('--lexicon-snap-duration', 420);
+    var SNAP_EASE = getCssVarString('--lexicon-snap-ease', 'cubic-bezier(0.22, 0.61, 0.36, 1)');
+
+    panel.style.transition = 'none';
+    lexOverlay.style.transition = 'none';
+
+    applyMobileRestingY(closedY, closedY, false);
+
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+    raf(function () {
+      panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
+      lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
+
+      applyMobileRestingY(openY, closedY, false);
+
+      setTimeout(function () {
+        try { panel.style.transition = ''; } catch (err0) {}
+        try { lexOverlay.style.transition = ''; } catch (err1) {}
+      }, SNAP_MS + 30);
+    });
+  }
+
   function isKeyboardIntentEvent(e) {
     // In most browsers, keyboard activation of a button produces a click with detail === 0.
     try {
@@ -1097,14 +1218,6 @@
     if (!bottomSheet) moveSealIntoHeader();
     else restoreSealToDock();
 
-    if (bottomSheet) {
-      // iOS Safari: commit the seal transform BEFORE the sheet transition begins.
-      setSealToOpenPosition();
-
-      try { if (lexiconToggle) void lexiconToggle.offsetWidth; } catch (err0) {}
-      try { if (panel) void panel.offsetWidth; } catch (err1) {}
-    }
-
     panel.classList.add('is-open');
     lexOverlay.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -1117,9 +1230,8 @@
     noteOpen();
 
     if (bottomSheet) {
-      // Correct next frame in case any layout-driven values changed.
-      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () { setSealToOpenPosition(); });
+      // Mobile: tap-open rests at content height (cap ~60%); user may still drag fully open.
+      mobileTapOpenToContentHeight();
     }
 
     var preferCloseFocus = isKeyboardIntentEvent(openEvent);
@@ -1424,6 +1536,7 @@
 
     var closedY = 0;
     var currentY = 0;
+    var startPanelY = 0;
 
     var MOVE_SLOP = 6;
 
@@ -1471,7 +1584,7 @@
       return getCssVarNumber('--lexicon-panel-closed-peek', 0);
     }
 
-    function getFooterHeightSafe() {
+    function getFooterHeightSafeLocal() {
       if (navFooter) {
         var r = navFooter.getBoundingClientRect();
         if (r && r.height) return r.height;
@@ -1485,7 +1598,7 @@
     function computeClosedY() {
       var rect = panel.getBoundingClientRect();
       var panelH = (rect && rect.height) ? rect.height : 1;
-      var footerH = getFooterHeightSafe();
+      var footerH = getFooterHeightSafeLocal();
       var peek = getClosedPeek();
       closedY = Math.max(1, panelH - (footerH + peek));
     }
@@ -1508,6 +1621,8 @@
       setSealDragOffset(sealOffset, sealDragging);
 
       if (lexOverlay) lexOverlay.style.opacity = String(progress);
+
+      storePanelY(y);
     }
 
     function applyOpenStateFromDrag() {
@@ -1529,7 +1644,7 @@
       }
 
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () { setSealToOpenPosition(); });
+      raf(function () { setSealToOpenPosition(); storePanelY(0); });
     }
 
     function applyClosedStateFromDrag() {
@@ -1548,6 +1663,7 @@
         clearStackZIndex();
       }
       clearSealDragOffset();
+      storePanelY(closedY);
     }
 
     function snap() {
@@ -1606,11 +1722,21 @@
       startWasOpen = panel.classList.contains('is-open');
 
       computeClosedY();
-      currentY = startWasOpen ? 0 : closedY;
+
+      var stored = startWasOpen ? readStoredPanelY() : null;
+      if (!isFinite(stored)) stored = 0;
+      if (stored < 0) stored = 0;
+      if (stored > closedY) stored = closedY;
+
+      startPanelY = startWasOpen ? stored : closedY;
+      currentY = startPanelY;
 
       panel.classList.add('is-dragging');
       panel.style.transition = 'none';
       if (lexOverlay) lexOverlay.style.transition = 'none';
+
+      panel.style.transform = 'translateY(' + currentY + 'px)';
+      setPanelY(currentY, true);
 
       lexiconToggle.setPointerCapture(e.pointerId);
       e.preventDefault();
@@ -1638,7 +1764,7 @@
       lastY = e.clientY;
       lastT = now;
 
-      var base = startWasOpen ? 0 : closedY;
+      var base = startWasOpen ? startPanelY : closedY;
       var targetY = base + deltaY;
       if (targetY < 0) targetY = 0;
       if (targetY > closedY) targetY = closedY;
