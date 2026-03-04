@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.42 (Internal tabs: archive + glossary; session remembers last tab) */
+/*! Covenant Reliquary UI v0.3.43 (Focus panel on open; avoid tab focus ring flash) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.42';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.43';
 
   var doc = document;
   var root = doc.documentElement;
@@ -177,7 +177,6 @@
     });
   }
 
-  // Optional: left/right arrow switching when focus is on a tab.
   panel.addEventListener('keydown', function (e) {
     if (!e) return;
     var k = e.key;
@@ -236,7 +235,6 @@
     function closeFromStack() {
       if (!panel || !panel.classList || !panel.classList.contains('is-open')) return;
 
-      // Stack-driven closes should be polite (no focus steal), but also robust against mid-animation.
       if (tapAnimating) {
         closeReliquaryImmediately(false);
         return;
@@ -249,16 +247,12 @@
       stack.register({
         id: UI_STACK_ID,
         priority: 20,
-
-        // Participate in shared scroll lock.
         useSharedScrollLock: true,
         allowScrollSelector: '#reliquaryPanel .reliquary-panel-body',
-
         isOpen: function () {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
         requestClose: closeFromStack,
-
         setInert: function (isInert) {
           try {
             var asleep = !!isInert;
@@ -273,14 +267,12 @@
             }
           } catch (err2) {}
         },
-
         setActive: function (isActive) {
           try {
             if (isActive) enableFocusTrap();
             else disableFocusTrap();
           } catch (err3) {}
         },
-
         setZIndex: function (baseZ) {
           try {
             if (overlay) overlay.style.zIndex = String(baseZ);
@@ -321,14 +313,9 @@
 
   function clearMirrorTabDragOffset() {
     if (!toggle) return;
-
-    // Pin carry to 0px (do not remove). Removing the property can cause a last-frame
-    // compositor re-evaluation where the tab briefly re-targets its transform.
     toggle.style.setProperty('--mirror-tab-drag-y', '0px');
   }
 
-  // Drag perf hint: pre-promote the moving layers only while dragging/snapping.
-  // (We keep it scoped to drag so the compositor doesn't hold extra layers while idle.)
   var dragWillChangeRestore = null;
   var dragWillChangeTimer = null;
 
@@ -391,9 +378,6 @@
     }, delay);
   }
 
-  // iOS Safari: the dock settling window disables transitions on the Mirror tab (toc.css + reliquary.css).
-  // If the user taps Mirror during that window, the welded carry offset can apply with no transition,
-  // which reads as a "teleport". Force an inline transition (with !important) for the tap-open snap.
   var mirrorTransitionRestore = null;
 
   function forceMirrorTabTransitionForTapOpen(ms, ease) {
@@ -431,11 +415,8 @@
   var focusTrapEnabled = false;
   var focusTrapHandler = null;
 
-  // Tap-open/close animation guard.
   var tapAnimating = false;
 
-  // iOS Safari: tap→click synthesis can be suppressed after micro-jitter; allow a pointerup toggle
-  // and ignore the trailing click if it fires.
   var ignoreMirrorToggleClickUntil = 0;
   var IGNORE_MIRROR_TOGGLE_CLICK_MS = 650;
 
@@ -462,7 +443,6 @@
     iosTouchMoveBlocker = function (e) {
       if (!panel || !panel.classList.contains('is-open')) return;
 
-      // Allow scrolling inside any open panel's scroll body.
       if (closestSafe(e.target, '#reliquaryPanel .reliquary-panel-body')) return;
       if (closestSafe(e.target, '#tocPanel .toc-panel-body')) return;
       if (closestSafe(e.target, '#lexiconPanel .lexicon-panel-body')) return;
@@ -480,7 +460,6 @@
   }
 
   function clearLegacyLocalScrollLockArtifacts() {
-    // Legacy cleanup only (no overflow / fixed-body lock remains in this build).
     try { root.classList.remove('reliquary-scroll-lock'); } catch (err1) {}
     try { if (doc.body) doc.body.classList.remove('reliquary-scroll-lock'); } catch (err2) {}
   }
@@ -546,7 +525,11 @@
   }
 
   function focusIntoPanel() {
-    var target = (panel ? panel.querySelector('button:not([disabled]), a[href], textarea, input, select, [tabindex]:not([tabindex="-1"])') : null);
+    if (!panel) return;
+
+    var body = panel.querySelector('.reliquary-panel-body');
+    var target = body ? body.querySelector('button:not([disabled]), a[href], textarea, input, select, [tabindex]:not([tabindex="-1"])') : null;
+
     if (target && target.focus) target.focus();
     else if (panel && panel.focus) panel.focus();
   }
@@ -880,7 +863,7 @@
     var dragging = false;
     var moved = false;
     var pointerId = null;
-    var dragSource = null; // 'seal' or 'handle'
+    var dragSource = null;
 
     var sealPrimed = false;
     var sealPointerId = null;
