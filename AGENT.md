@@ -87,7 +87,11 @@ Core runtime files:
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab).
 - `assets/reliquary-archive.js` + `assets/reliquary-archive.css` — Reliquary “saved passages” archive + cross-page replay into Lexicon.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC staged navigation).
-- `assets/textures/` — static texture assets.
+
+Glossary plumbing notes:
+- Journey pages pass a captured glossary HTML block into `_includes/lexicon-panel.html` via `glossary=...`.
+- `_includes/lexicon-panel.html` stashes that HTML in a hidden `#covenantGlossaryStash`.
+- The Reliquary panel’s “Glossary” tab mounts `#covenantGlossaryStash` into `#reliquaryGlossary` at runtime.
 
 Notes:
 - Note (ToC CSS): Keep all ToC-related styling (including any motion/mask fixes) inside `assets/toc.css`; do not split ToC fixes into extra stylesheets.

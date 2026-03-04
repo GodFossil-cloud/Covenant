@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.14 (Drag region spans full header) */
+/*! Covenant Reliquary Panel Styles v0.3.15 (Header tabs; drag region top-strip) */
 
 /* -------------------------------------------------
    Variables
@@ -42,19 +42,10 @@
    State gates
    ------------------------------------------------- */
 
-/* When Reliquary is committed open (or closing), keep the Lexicon gate closed.
-   During drag-open we dim via html.reliquary-dragging so a cancelled drag re-enables immediately on release.
-
-   NOTE (iOS Safari): avoid `filter` on footer elements during panel drag/open/close.
-   Filters often trigger compositor re-rasterization and can manifest as a ~1px fixed dock hop. */
 html.reliquary-open #lexiconToggle,
 html.reliquary-closing #lexiconToggle,
 html.reliquary-dragging #lexiconToggle{opacity:.28}
 
-/* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
-   Avoid toggling dock/toggle z-index during reliquary-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
-
-/* During settle, ignore hover/pointer churn while the tab is sliding into place (desktop fine pointers only). */
 @media (hover: hover) and (pointer: fine){html.reliquary-closing #mirrorToggle{pointer-events:none}}
 
 /* -------------------------------------------------
@@ -62,15 +53,12 @@ html.reliquary-dragging #lexiconToggle{opacity:.28}
    ------------------------------------------------- */
 
 html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
-
-/* During dock settling, keep the mirror tab transitionless so final carry cleanup cannot read as a last-frame snap. */
 html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 
 /* -------------------------------------------------
    Modal veil
    ------------------------------------------------- */
 
-/* Do not cover the footer; the dock stays sovereign. */
 .reliquary-overlay{
   position:fixed;
   inset:0 0 var(--reliquary-footer-reserved, var(--footer-total-height)) 0;
@@ -107,7 +95,6 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
   border-top-color:var(--dock-tab-face,#010103);
   box-shadow:0 26px 70px rgba(0,0,0,.40),0 10px 26px rgba(0,0,0,.22),inset 0 18px 22px -22px rgba(255,255,255,.08);
 
-  /* Sharp 90° corner (upper-right) */
   border-radius:0;
   z-index:1501;
 
@@ -122,7 +109,6 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
   flex-direction:column;
   overflow:hidden;
 
-  /* iOS/Safari: prevent first-open focus ring from painting a blue trace around the panel. */
   -webkit-tap-highlight-color:transparent;
   outline:none;
 }
@@ -136,8 +122,6 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 .reliquary-panel[aria-hidden="true"]{pointer-events:none}
 .reliquary-panel[aria-hidden="false"]{pointer-events:auto}
 
-/* When the Reliquary is open, follow the Mirror tab's cradle nudge by shifting the panel (not the tab).
-   This preserves dock socket alignment while eliminating the outer-edge 1px overhang on the sheet. */
 @media (min-width:601px){
   html.reliquary-opening .reliquary-panel,
   html.reliquary-open .reliquary-panel,
@@ -148,13 +132,14 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
    Drag handle region (sheet-style)
    ------------------------------------------------- */
 
+/* IMPORTANT: the drag region is now a top-strip so header tabs remain clickable. */
 .reliquary-drag-region{
   position:absolute;
   top:0;
-  bottom:0;
   left:0;
   right:0;
-  height:auto;
+  bottom:auto;
+  height:46px;
   z-index:10;
   cursor:ns-resize;
   display:flex;
@@ -163,7 +148,6 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
   padding-top:8px;
   padding-bottom:0;
 
-  /* Mirror of ToC: keep the pill's right edge just left of the Reliquary glyph/notch area. */
   padding-right:var(--reliquary-notch-w);
 
   -webkit-tap-highlight-color:transparent;
@@ -187,12 +171,11 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 
 .reliquary-panel-header{
   position:relative;
-  padding:.95rem 1.25rem .78rem;
+  padding:.95rem 1.25rem .86rem;
   border-bottom:1px solid rgba(201,169,97,.14);
   background:var(--dock-tab-face,#010103);
 }
 
-/* Connector strip disabled: Mirror tab stays anchored in the footer cradle now. */
 html.reliquary-opening .reliquary-panel-header::after,
 html.reliquary-open .reliquary-panel-header::after,
 html.reliquary-closing .reliquary-panel-header::after,
@@ -224,6 +207,67 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   overscroll-behavior:contain;
 }
 
+/* -------------------------------------------------
+   Internal tabs (header)
+   ------------------------------------------------- */
+
+#reliquaryPanel .reliquary-tabs{
+  position:relative;
+  z-index:11;
+  display:flex;
+  gap:.65rem;
+  margin-top:.55rem;
+}
+
+#reliquaryPanel .reliquary-tab{
+  appearance:none;
+  background:transparent;
+  border:1px solid rgba(245,236,214,.22);
+  border-radius:999px;
+  padding:.40rem .72rem;
+  font-family:'Cormorant Garamond',serif;
+  font-size:.95rem;
+  font-weight:650;
+  letter-spacing:.14em;
+  font-variant-caps:all-small-caps;
+  line-height:1.1;
+  color:rgba(245,236,214,.70);
+  cursor:pointer;
+}
+
+#reliquaryPanel .reliquary-tab[aria-selected="true"]{
+  border-color:rgba(201,169,97,.56);
+  background:rgba(255,255,255,.06);
+  color:rgba(245,236,214,.92);
+}
+
+#reliquaryPanel .reliquary-tab:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
+
+/* -------------------------------------------------
+   Glossary view
+   ------------------------------------------------- */
+
+#reliquaryPanel .reliquary-glossary{margin-top:.15rem}
+
+/* The glossary HTML comes from journey pages (via lexicon-panel include stashing). */
+#reliquaryPanel .lexicon-glossary-footer{
+  padding:.95rem .95rem .90rem;
+  border-radius:10px;
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(201,169,97,.14);
+}
+
+#reliquaryPanel .lexicon-glossary-footer h3{margin:.1rem 0 .6rem;color:rgba(245,236,214,.90)}
+#reliquaryPanel .lexicon-term-list{margin:0;padding-left:1.15rem}
+#reliquaryPanel .lexicon-term-ref{color:rgba(201,169,97,.86)}
+
+/* ToC footer-link style, tuned for Reliquary ink on obsidian. */
+#reliquaryPanel .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(245,236,214,.16)}
+#reliquaryPanel .toc-annex-link{color:rgba(245,236,214,.74)}
+#reliquaryPanel .toc-annex-link:hover,
+#reliquaryPanel .toc-annex-link:focus-visible{color:rgba(245,236,214,.94);text-decoration-color:rgba(201,169,97,.44)}
+#reliquaryPanel .toc-annex-sigil{color:rgba(201,169,97,.72)}
+
 .reliquary-placeholder{
   font-family:'Cormorant Garamond',serif;
   font-size:1.02rem;
@@ -252,7 +296,6 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
    ------------------------------------------------- */
 
 @media (max-width:600px){
-  /* On mobile, overbite a little deeper to prevent iOS/Safari seams reading as a true see-through gap. */
   :root{--reliquary-seat-overlap:15px}
 
   .reliquary-panel{
@@ -260,13 +303,9 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
     left:0;
     right:var(--reliquary-panel-right, 0px);
     width:auto;
-
-    /* Sharp 90° corner (upper-right) */
     border-radius:0;
   }
 
-  /* Mobile Safari: the Mirror tab's decorative cap can extend ~1px beyond the button's rect.
-     When open, bias the sheet right by 1px so the outer edge never reads "overhanging". */
   html.reliquary-opening .reliquary-panel,
   html.reliquary-open .reliquary-panel,
   html.reliquary-closing .reliquary-panel{right:max(0px, calc(var(--reliquary-panel-right, 0px) - 1px))}
@@ -277,7 +316,6 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
    ------------------------------------------------- */
 
 :root{
-  /* “Between” violet and red: a wine-magenta glow. */
   --mirror-glyph-rest-color:rgba(230,172,182,0.72);
 
   --mirror-glyph-intent-color:rgba(255,214,220,0.94);
@@ -331,7 +369,6 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
     transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Glow only during motion/drag (not while fully open). */
 html.reliquary-opening #navFooter #mirrorToggle .toc-glyph,
 html.reliquary-closing #navFooter #mirrorToggle .toc-glyph,
 html.reliquary-dragging #navFooter #mirrorToggle .toc-glyph,

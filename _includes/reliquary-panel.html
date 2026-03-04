@@ -14,25 +14,24 @@
     <div class="reliquary-produced" aria-live="polite" aria-atomic="true">
       <div class="reliquary-produced-title" id="reliquaryProducedTitle" role="heading" aria-level="2">Reliquary</div>
     </div>
-  </div>
 
-  <div class="reliquary-panel-body">
     <!-- Internal tabs (session remembers last view; default = Reliquary). -->
     <div class="reliquary-tabs" role="tablist" aria-label="Reliquary tabs">
       <button type="button" class="reliquary-tab" id="reliquaryTabArchive" role="tab" aria-selected="true" aria-controls="reliquaryViewArchive" tabindex="0">Reliquary</button>
       <button type="button" class="reliquary-tab" id="reliquaryTabGlossary" role="tab" aria-selected="false" aria-controls="reliquaryViewGlossary" tabindex="-1">Glossary</button>
     </div>
+  </div>
 
+  <div class="reliquary-panel-body">
     <section class="reliquary-view" id="reliquaryViewArchive" role="tabpanel" aria-labelledby="reliquaryTabArchive">
       <div class="reliquary-archive" id="reliquaryArchive" aria-label="Saved passages"></div>
-
       <div class="reliquary-placeholder" id="reliquaryPlaceholder" role="note"></div>
     </section>
 
     <section class="reliquary-view" id="reliquaryViewGlossary" role="tabpanel" aria-labelledby="reliquaryTabGlossary" hidden>
       <div class="reliquary-glossary" id="reliquaryGlossary" aria-label="Glossary terms on this page"></div>
 
-      <!-- Match the ToC panel's footer-link style (toc.css). -->
+      <!-- Match the ToC panel's footer-link style (toc.css), tuned for Reliquary ink. -->
       <div class="toc-annex">
         <a class="toc-annex-link" href="{{ '/lexicon.html' | relative_url }}" target="_blank" rel="noopener">
           <span class="toc-annex-sigil" aria-hidden="true">✦</span>
@@ -48,20 +47,3 @@
     </noscript>
   </div>
 </div>
-
-<style>
-  /* Reliquary internal tabs: light touch, sacred, minimal. */
-  #reliquaryPanel .reliquary-tabs{display:flex;gap:.65rem;padding:.90rem 1.35rem 0}
-  #reliquaryPanel .reliquary-tab{appearance:none;background:transparent;border:1px solid rgba(44,62,80,.18);border-radius:999px;padding:.40rem .70rem;font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:650;letter-spacing:.14em;font-variant-caps:all-small-caps;line-height:1.1;color:rgba(44,62,80,.78);cursor:pointer}
-  #reliquaryPanel .reliquary-tab[aria-selected="true"]{border-color:rgba(139,115,85,.46);background:rgba(255,255,255,.35);color:rgba(44,62,80,.92)}
-  #reliquaryPanel .reliquary-tab:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
-
-  #reliquaryPanel .reliquary-view{padding:1.05rem 1.35rem 1.15rem}
-  /* Prevent double-padding if existing Reliquary CSS already pads .reliquary-panel-body children. */
-  #reliquaryPanel .reliquary-panel-body > .reliquary-archive,
-  #reliquaryPanel .reliquary-panel-body > .reliquary-placeholder{padding-left:0;padding-right:0}
-
-  /* Glossary tab spacing harmony with existing glossary footer markup. */
-  #reliquaryPanel .reliquary-glossary h3{margin:.2rem 0 .6rem}
-  #reliquaryPanel .reliquary-glossary .lexicon-term-list{margin:0;padding-left:1.15rem}
-</style>
