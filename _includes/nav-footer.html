@@ -230,6 +230,15 @@
       0 0 18px rgba(242, 220, 154, 0.10);
   }
 
+  /* Unsaved (armed, not bookmarked): add a softer border so the label still reads as a stateful token. */
+  #navFooter #citationLabel.is-armed:not(.is-copied) #citationText:not(.is-bookmarked) {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.52);
+    border: 1px solid rgba(242, 220, 154, 0.24);
+    border-radius: 999px;
+    padding: 2px 8px 3px;
+  }
+
   /* Saved/Bookmarked: make the label more immediately apparent than the generic "armed" glow.
      NOTE: keep .is-copied authoritative so the temporary "Copied" pill reads cleanly. */
   #navFooter #citationLabel.is-armed:not(.is-copied) #citationText.is-bookmarked {
@@ -269,7 +278,7 @@
 
   #navFooter #citationLabel.is-armed #citationText::before {
     display: inline-block;
-    content: '܍';
+    content: '✧';
   }
 
   #navFooter #citationLabel.is-armed #citationText.is-bookmarked::before {
