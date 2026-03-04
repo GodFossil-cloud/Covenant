@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.43 (Focus panel on open; avoid tab focus ring flash) */
+/*! Covenant Reliquary UI v0.3.44 (Header is drag surface; hide drag pill) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.43';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.44';
 
   var doc = document;
   var root = doc.documentElement;
@@ -68,6 +68,7 @@
   var overlay = byId('reliquaryOverlay');
   var toggle = byId('mirrorToggle');
   var dragRegion = byId('reliquaryDragRegion');
+  var header = panel ? panel.querySelector('.reliquary-panel-header') : null;
 
   if (!panel || !overlay || !toggle) return;
 
@@ -165,6 +166,10 @@
 
   if (tabArchiveBtn) {
     tabArchiveBtn.addEventListener('click', function (e) {
+      if (window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED) {
+        stopEvent(e);
+        return;
+      }
       stopEvent(e);
       setActiveTab('archive', false);
     });
@@ -172,6 +177,10 @@
 
   if (tabGlossaryBtn) {
     tabGlossaryBtn.addEventListener('click', function (e) {
+      if (window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED) {
+        stopEvent(e);
+        return;
+      }
       stopEvent(e);
       setActiveTab('glossary', false);
     });
@@ -860,6 +869,8 @@
     if (!panel || !overlay || !toggle) return;
     if (!window.PointerEvent) return;
 
+    var handleSurface = header || dragRegion;
+
     var dragging = false;
     var moved = false;
     var pointerId = null;
@@ -1162,7 +1173,7 @@
 
       applyDragFrame(currentY, true);
 
-      var captureTarget = (source === 'seal') ? toggle : dragRegion;
+      var captureTarget = (source === 'seal') ? toggle : handleSurface;
       if (captureTarget && captureTarget.setPointerCapture) {
         try { captureTarget.setPointerCapture(e.pointerId); } catch (err) {}
       }
@@ -1216,7 +1227,7 @@
       }
 
       if (e) {
-        var captureTarget = (dragSource === 'seal') ? toggle : dragRegion;
+        var captureTarget = (dragSource === 'seal') ? toggle : handleSurface;
         if (captureTarget && captureTarget.hasPointerCapture && captureTarget.hasPointerCapture(e.pointerId)) {
           try { captureTarget.releasePointerCapture(e.pointerId); } catch (err) {}
         }
@@ -1231,9 +1242,9 @@
     }
 
     function releaseHandleCapture(e) {
-      if (!e || !dragRegion) return;
-      if (dragRegion && dragRegion.hasPointerCapture && dragRegion.hasPointerCapture(e.pointerId)) {
-        try { dragRegion.releasePointerCapture(e.pointerId); } catch (err) {}
+      if (!e || !handleSurface) return;
+      if (handleSurface && handleSurface.hasPointerCapture && handleSurface.hasPointerCapture(e.pointerId)) {
+        try { handleSurface.releasePointerCapture(e.pointerId); } catch (err) {}
       }
     }
 
@@ -1289,10 +1300,11 @@
       endDrag(e);
     });
 
-    if (dragRegion) {
-      dragRegion.addEventListener('pointerdown', function (e) {
+    if (handleSurface) {
+      handleSurface.addEventListener('pointerdown', function (e) {
         if (tapAnimating) return;
         if (!panel.classList.contains('is-open')) return;
+        if (!isTopmostForDismiss()) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
 
         handlePrimed = true;
@@ -1302,12 +1314,12 @@
         MOVE_SLOP = computeMoveSlop(e.pointerType);
         OPEN_RATIO = computeOpenRatio(e.pointerType);
 
-        if (dragRegion && dragRegion.setPointerCapture) {
-          try { dragRegion.setPointerCapture(e.pointerId); } catch (err) {}
+        if (handleSurface && handleSurface.setPointerCapture) {
+          try { handleSurface.setPointerCapture(e.pointerId); } catch (err) {}
         }
       });
 
-      dragRegion.addEventListener('pointermove', function (e) {
+      handleSurface.addEventListener('pointermove', function (e) {
         if (dragging) {
           moveDrag(e);
           return;
@@ -1326,21 +1338,21 @@
         moveDrag(e);
       });
 
-      dragRegion.addEventListener('pointerup', function (e) {
+      handleSurface.addEventListener('pointerup', function (e) {
         if (handlePrimed) releaseHandleCapture(e);
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
       });
 
-      dragRegion.addEventListener('pointercancel', function (e) {
+      handleSurface.addEventListener('pointercancel', function (e) {
         if (handlePrimed) releaseHandleCapture(e);
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
       });
 
-      dragRegion.addEventListener('lostpointercapture', function (e) {
+      handleSurface.addEventListener('lostpointercapture', function (e) {
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);

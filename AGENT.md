@@ -84,7 +84,7 @@ Core runtime files:
 - `assets/journey.js` — journey definitions + helpers.
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
-- `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab). Note: Reliquary uses internal header tabs (Reliquary/Glossary); the drag region is a top-strip so tabs remain clickable.
+- `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab). Note: Reliquary uses internal header tabs (Reliquary/Glossary); the drag surface is the full header (slop-based so taps still click), and the legacy drag-pill is hidden.
 - `assets/reliquary-archive.js` + `assets/reliquary-archive.css` — Reliquary “saved passages” archive + cross-page replay into Lexicon.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC staged navigation).
 

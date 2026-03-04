@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.16 (Header tabs only; remove header title) */
+/*! Covenant Reliquary Panel Styles v0.3.17 (Header drag surface; drag pill hidden) */
 
 /* -------------------------------------------------
    Variables
@@ -119,40 +119,10 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 }
 
 /* -------------------------------------------------
-   Drag handle region (sheet-style)
+   Legacy drag-pill element (kept for ID coupling; hidden)
    ------------------------------------------------- */
 
-.reliquary-drag-region{
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:auto;
-  height:46px;
-  z-index:10;
-  cursor:ns-resize;
-  display:flex;
-  align-items:flex-start;
-  justify-content:flex-end;
-  padding-top:8px;
-  padding-bottom:0;
-
-  padding-right:var(--reliquary-notch-w);
-
-  -webkit-tap-highlight-color:transparent;
-  touch-action:none;
-  user-select:none;
-  -webkit-user-select:none;
-}
-
-.reliquary-drag-region::before{
-  content:'';
-  width:48px;
-  height:4px;
-  border-radius:999px;
-  background:rgba(201,169,97,.22);
-  box-shadow:0 0px 0 rgba(0,0,0,.35);
-}
+.reliquary-drag-region{display:none}
 
 /* -------------------------------------------------
    Header + body
@@ -163,6 +133,12 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
   padding:.90rem 1.25rem .82rem;
   border-bottom:1px solid rgba(201,169,97,.14);
   background:var(--dock-tab-face,#010103);
+
+  cursor:ns-resize;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
 }
 
 html.reliquary-opening .reliquary-panel-header::after,
