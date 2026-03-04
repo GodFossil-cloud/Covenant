@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.11 (mobile tap opens to content height) */
+/*! Covenant Lexicon UI v0.3.12 (mobile tap-open accounts for dock obscuring on iOS Safari) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.11';
+  window.COVENANT_LEXICON_VERSION = '0.3.12';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1059,15 +1059,20 @@
     return window.innerHeight || 0;
   }
 
-  function getFooterHeightSafe() {
+  function getDockObscurePxSafe() {
+    var vh = getViewportHeightSafe();
+
     if (navFooter) {
-      var r = navFooter.getBoundingClientRect();
-      if (r && r.height) return r.height;
+      try {
+        var r = navFooter.getBoundingClientRect();
+        if (r && isFinite(r.top)) return Math.max(0, Math.round(vh - r.top));
+        if (r && r.height) return Math.max(0, Math.round(r.height));
+      } catch (err0) {}
     }
 
     var val = getCssVar('--footer-total-height');
     var n = parseFloat(val);
-    return isFinite(n) ? n : 0;
+    return isFinite(n) ? Math.max(0, Math.round(n)) : 0;
   }
 
   function measureLexiconContentHeight() {
@@ -1114,21 +1119,21 @@
     if (!panel || !lexOverlay) return;
     if (!isBottomSheetMode()) return;
 
-    var footerH = getFooterHeightSafe();
+    var dockObscurePx = getDockObscurePxSafe();
     var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
 
     var rect = panel.getBoundingClientRect();
     var panelH = (rect && rect.height) ? rect.height : 1;
 
-    var closedY = Math.max(1, Math.round(panelH - (footerH + peek)));
+    var closedY = Math.max(1, Math.round(panelH - (dockObscurePx + peek)));
 
     var contentH = measureLexiconContentHeight();
-    var availAboveFooter = Math.max(180, Math.round(getViewportHeightSafe() - footerH));
-    var capH = Math.round(availAboveFooter * 0.60);
+    var availAboveDock = Math.max(180, Math.round(getViewportHeightSafe() - dockObscurePx));
+    var capH = Math.round(availAboveDock * 0.60);
 
     var desired = Math.min(contentH, capH);
 
-    var openY = Math.round(panelH - (footerH + desired));
+    var openY = Math.round(panelH - (dockObscurePx + desired));
     if (openY < 0) openY = 0;
     if (openY > closedY) openY = closedY;
 
@@ -1584,23 +1589,28 @@
       return getCssVarNumber('--lexicon-panel-closed-peek', 0);
     }
 
-    function getFooterHeightSafeLocal() {
+    function getDockObscurePxSafeLocal() {
+      var vh = getViewportHeightSafe();
+
       if (navFooter) {
-        var r = navFooter.getBoundingClientRect();
-        if (r && r.height) return r.height;
+        try {
+          var r = navFooter.getBoundingClientRect();
+          if (r && isFinite(r.top)) return Math.max(0, Math.round(vh - r.top));
+          if (r && r.height) return Math.max(0, Math.round(r.height));
+        } catch (err0) {}
       }
 
       var val = getCssVar('--footer-total-height');
       var n = parseFloat(val);
-      return isFinite(n) ? n : 0;
+      return isFinite(n) ? Math.max(0, Math.round(n)) : 0;
     }
 
     function computeClosedY() {
       var rect = panel.getBoundingClientRect();
       var panelH = (rect && rect.height) ? rect.height : 1;
-      var footerH = getFooterHeightSafeLocal();
+      var dockObscurePx = getDockObscurePxSafeLocal();
       var peek = getClosedPeek();
-      closedY = Math.max(1, panelH - (footerH + peek));
+      closedY = Math.max(1, panelH - (dockObscurePx + peek));
     }
 
     function setPanelY(y, sealDragging) {
