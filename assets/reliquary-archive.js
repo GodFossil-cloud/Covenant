@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.6 (footer glyph marks; flash feedback) */
+/*! Covenant Reliquary Archive v0.4.7 (footer glyph marks; Lexicon save toggle; no flash text) */
 (function () {
   'use strict';
 
@@ -525,27 +525,20 @@
     }
   }
 
-  function hideLegacySaveControl() {
-    var btn = byId('lexiconReliquarySaveBtn');
-    if (btn) {
-      try { btn.hidden = true; } catch (err0) {}
-      try { btn.disabled = true; } catch (err1) {}
-      try { btn.style.display = 'none'; } catch (err2) {}
-    }
-
-    var wrap = doc.querySelector('.lexicon-reliquary-save');
-    if (wrap) {
-      try { wrap.hidden = true; } catch (err3) {}
-      try { wrap.style.display = 'none'; } catch (err4) {}
-    }
-  }
-
   function wireCitationBookmarkToggle() {
     var el = byId('citationText');
     var label = byId('citationLabel');
     if (!el) return;
 
-    hideLegacySaveControl();
+    var lexWrap = byId('lexiconReliquarySave');
+    var lexBtn = byId('lexiconReliquarySaveBtn');
+    var lexGlyph = null;
+    var lexLabel = null;
+
+    if (lexBtn) {
+      lexGlyph = lexBtn.querySelector('.lexicon-reliquary-save-glyph');
+      lexLabel = lexBtn.querySelector('.lexicon-reliquary-save-label');
+    }
 
     try {
       el.setAttribute('role', 'button');
@@ -553,7 +546,6 @@
     } catch (err0) {}
 
     var pulseTimer = null;
-    var flashTimer = null;
     var lastArmed = false;
 
     function pulse() {
@@ -570,38 +562,6 @@
         try { el.classList.remove('bookmark-pulse'); } catch (err2) {}
         pulseTimer = null;
       }, 280);
-    }
-
-    function clearFlash() {
-      if (!label) return;
-
-      try {
-        label.classList.remove('is-reliquary-flash', 'is-reliquary-saved', 'is-reliquary-removed');
-        label.removeAttribute('data-reliquary-flash');
-      } catch (err0) {}
-    }
-
-    function flash(msg, kind) {
-      if (!label) return;
-
-      if (flashTimer) {
-        window.clearTimeout(flashTimer);
-        flashTimer = null;
-      }
-
-      clearFlash();
-
-      try {
-        label.setAttribute('data-reliquary-flash', String(msg || ''));
-        label.classList.add('is-reliquary-flash');
-        if (kind === 'saved') label.classList.add('is-reliquary-saved');
-        if (kind === 'removed') label.classList.add('is-reliquary-removed');
-      } catch (err1) {}
-
-      flashTimer = window.setTimeout(function () {
-        try { clearFlash(); } catch (err2) {}
-        flashTimer = null;
-      }, 1050);
     }
 
     function setArmedState(isArmed) {
@@ -629,6 +589,29 @@
       lastArmed = armed;
     }
 
+    function setLexiconSaveState(sel, saved) {
+      if (!lexWrap || !lexBtn) return;
+
+      if (!sel) {
+        try { lexWrap.hidden = true; } catch (e0) {}
+        try { lexBtn.disabled = true; } catch (e1) {}
+        try { lexBtn.setAttribute('aria-pressed', 'false'); } catch (e2) {}
+        return;
+      }
+
+      try { lexWrap.hidden = false; } catch (e3) {}
+      try { lexBtn.disabled = false; } catch (e4) {}
+
+      var isSaved = !!saved;
+      var labelText = isSaved ? 'Remove from Reliquary' : 'Save to Reliquary';
+
+      if (lexLabel) lexLabel.textContent = labelText;
+      if (lexGlyph) lexGlyph.textContent = isSaved ? '✦' : '✧';
+
+      try { lexBtn.setAttribute('aria-label', labelText); } catch (e5) {}
+      try { lexBtn.setAttribute('aria-pressed', isSaved ? 'true' : 'false'); } catch (e6) {}
+    }
+
     function setStateFromSelection(sel) {
       setArmedState(!!sel);
 
@@ -638,6 +621,8 @@
           el.setAttribute('aria-label', 'Select a passage to mark');
           el.setAttribute('aria-pressed', 'false');
         } catch (err0) {}
+
+        setLexiconSaveState(null, false);
         return;
       }
 
@@ -648,15 +633,16 @@
         el.setAttribute('aria-label', saved ? 'Remove from Reliquary' : 'Save to Reliquary');
         el.setAttribute('aria-pressed', saved ? 'true' : 'false');
       } catch (err1) {}
+
+      setLexiconSaveState(sel, saved);
     }
 
     function sync() {
       setStateFromSelection(getCurrentSelection());
     }
 
-    function toggleNow() {
+    function toggleSelection() {
       var sel = getCurrentSelection();
-      pulse();
 
       if (!sel) {
         sync();
@@ -667,10 +653,8 @@
 
       if (wasSaved) {
         removeItem(sel.href, sel.lexiconKey);
-        flash('REMOVED FROM RELIQUARY', 'removed');
       } else {
         addItem(sel);
-        flash('SAVED TO RELIQUARY', 'saved');
       }
 
       if (root.classList.contains('reliquary-open')) {
@@ -684,7 +668,8 @@
       if (e && e.preventDefault) e.preventDefault();
       if (e && e.stopImmediatePropagation) e.stopImmediatePropagation();
       if (e && e.stopPropagation) e.stopPropagation();
-      toggleNow();
+      pulse();
+      toggleSelection();
     }, true);
 
     el.addEventListener('keydown', function (e) {
@@ -693,8 +678,25 @@
       if (e && e.preventDefault) e.preventDefault();
       if (e && e.stopImmediatePropagation) e.stopImmediatePropagation();
       if (e && e.stopPropagation) e.stopPropagation();
-      toggleNow();
+      pulse();
+      toggleSelection();
     }, true);
+
+    if (lexBtn) {
+      lexBtn.addEventListener('click', function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        toggleSelection();
+      });
+
+      lexBtn.addEventListener('keydown', function (e) {
+        var k = e && e.key;
+        if (k !== 'Enter' && k !== ' ') return;
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        toggleSelection();
+      });
+    }
 
     try {
       var obs = new MutationObserver(sync);
@@ -710,7 +712,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.6',
+    version: '0.4.7',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
