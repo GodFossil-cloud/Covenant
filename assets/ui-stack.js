@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.23 */
+/*! Covenant UI Stack v0.3.24 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.23';
+  window.COVENANT_UI_STACK_VERSION = '0.3.24';
 
   var registry = Object.create(null);
   var order = [];
@@ -717,7 +717,33 @@
 
       if (id === 'lexicon') {
         var lex = document.getElementById('lexiconPanel');
-        return !!(lex && lex.classList && lex.classList.contains('is-open'));
+        if (!lex || !lex.classList || !lex.classList.contains('is-open')) return false;
+
+        // During seal-drag, keep the page stable.
+        if (lex.classList.contains('is-dragging')) return true;
+
+        // Mobile bottom-sheet: treat the mid-rest (nonzero stored Y) as non-modal.
+        // The sheet can be "open" while resting mid (with translateY + scrim), but we do not
+        // want the shared scroll lock to engage in that state.
+        var isBottomSheet = false;
+        try {
+          isBottomSheet = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+        } catch (errBS) {
+          isBottomSheet = false;
+        }
+
+        if (isBottomSheet) {
+          var y = NaN;
+          try {
+            y = parseFloat(String(lex.getAttribute('data-lexicon-y') || '').trim());
+          } catch (errY) {
+            y = NaN;
+          }
+
+          if (isFinite(y) && y > 2) return false;
+        }
+
+        return true;
       }
     } catch (err0) {}
 
