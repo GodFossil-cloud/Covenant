@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.24 */
+/*! Covenant UI Stack v0.3.25 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.24';
+  window.COVENANT_UI_STACK_VERSION = '0.3.25';
 
   var registry = Object.create(null);
   var order = [];
@@ -1123,8 +1123,10 @@
 
         var observer = new MutationObserver(function () { schedule(); });
 
+        // Also observe Lexicon mid-rest (`data-lexicon-y`) so scroll lock releases immediately
+        // when the sheet settles into its non-modal halfway state.
         for (var i = 0; i < targets.length; i++) {
-          observer.observe(targets[i], { attributes: true, attributeFilter: ['class'] });
+          observer.observe(targets[i], { attributes: true, attributeFilter: ['class', 'data-lexicon-y'] });
         }
       } catch (err2) {}
 

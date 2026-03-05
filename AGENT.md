@@ -113,7 +113,7 @@ Notes:
 - Note (iOS dock tabs): Avoid 1px `:active` press-jumps on `#tocToggle`/`#mirrorToggle`; it reads like the iOS Safari dock hop.
 - Note (iOS ToC taps): The ToC seal uses a larger touch slop than the handle-drag region so taps stay taps on iOS Safari.
 - Note (ToC/Reliquary handle taps): The handle-drag regions should prime on pointerdown and only begin drag after slop, so a tap cannot desync the dock tab from its panel.
-- Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
+- Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes and Lexicon `data-lexicon-y` so lock timing can follow motion classes and Lexicon mid-rest.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
 - Note (ToC deliberate confirm): Deliberate confirm lives on the staged/pending ToC entry itself (click again on the pending item). There is no dedicated header confirm button.
