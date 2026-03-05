@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.14 (mobile half-open uses dock-aware body sizing so panel scroll works without fully opening; tap-open accounts for dock obscuring on iOS Safari) */
+/*! Covenant Lexicon UI v0.3.15 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.14';
+  window.COVENANT_LEXICON_VERSION = '0.3.15';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1612,8 +1612,12 @@
     var startWasOpen = false;
 
     var closedY = 0;
+    var midY = null;
     var currentY = 0;
     var startPanelY = 0;
+
+    var panelHCache = 1;
+    var dockObscurePxCache = 0;
 
     var MOVE_SLOP = 6;
 
@@ -1679,10 +1683,26 @@
 
     function computeClosedY() {
       var rect = panel.getBoundingClientRect();
-      var panelH = (rect && rect.height) ? rect.height : 1;
-      var dockObscurePx = getDockObscurePxSafeLocal();
+      panelHCache = (rect && rect.height) ? rect.height : 1;
+      dockObscurePxCache = getDockObscurePxSafeLocal();
       var peek = getClosedPeek();
-      closedY = Math.max(1, panelH - (dockObscurePx + peek));
+      closedY = Math.max(1, panelHCache - (dockObscurePxCache + peek));
+    }
+
+    function computeMidY() {
+      var contentH = measureLexiconContentHeight();
+      var availAboveDock = Math.max(180, Math.round(getViewportHeightSafe() - dockObscurePxCache));
+      var capH = Math.round(availAboveDock * 0.60);
+      var desired = Math.min(contentH, capH);
+
+      var y = Math.round(panelHCache - (dockObscurePxCache + desired));
+      if (y < 0) y = 0;
+      if (y > closedY) y = closedY;
+
+      if (Math.abs(y) < 12) return null;
+      if (Math.abs(y - closedY) < 12) return null;
+
+      return y;
     }
 
     function setPanelY(y, sealDragging) {
@@ -1711,7 +1731,7 @@
       applyLexiconBodySizingForY(y, getDockObscurePxSafeLocal());
     }
 
-    function applyOpenStateFromDrag() {
+    function ensureOpenShellFromDrag() {
       clearSealTapClasses();
       clearSealSettling();
 
@@ -1730,7 +1750,9 @@
       }
 
       applyLexiconBodyDockInset(getDockObscurePxSafe());
+    }
 
+    function finalizeFullyOpenFromDrag() {
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () { setSealToOpenPosition(); storePanelY(0); });
     }
@@ -1757,37 +1779,72 @@
     }
 
     function snap() {
-      var shouldOpen = false;
+      var openY = 0;
+      var targetY = null;
+
+      var mid = (typeof midY === 'number' && isFinite(midY)) ? Math.round(midY) : null;
+      var closed = Math.max(1, Math.round(closedY || 1));
 
       if (startWasOpen) {
         var dragDown = currentY - 0;
-        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > closedY * CLOSE_RATIO);
+        if (velocity > CLOSE_VELOCITY || dragDown > closed * CLOSE_RATIO) {
+          targetY = closed;
+        }
       } else {
-        var dragUp = closedY - currentY;
-        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > closedY * OPEN_RATIO);
+        var dragUp = closed - currentY;
+        if (velocity < OPEN_VELOCITY || dragUp > closed * OPEN_RATIO) {
+          targetY = openY;
+        }
+      }
+
+      if (targetY === null) {
+        if (velocity < OPEN_VELOCITY) targetY = openY;
+        else if (velocity > CLOSE_VELOCITY) targetY = closed;
+        else {
+          var candidates = [openY, closed];
+          if (mid !== null) candidates.splice(1, 0, mid);
+
+          targetY = candidates[0];
+          var bestDist = Math.abs(currentY - targetY);
+          for (var i = 1; i < candidates.length; i++) {
+            var d = Math.abs(currentY - candidates[i]);
+            if (d < bestDist) {
+              bestDist = d;
+              targetY = candidates[i];
+            }
+          }
+        }
       }
 
       panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
       if (lexOverlay) lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
-      if (shouldOpen) {
-        clearSealSettling();
-        setPanelY(0, false);
-        applyOpenStateFromDrag();
-      } else {
+      if (targetY === closed) {
         markSealSettling(SNAP_MS);
-        currentY = closedY;
-        panel.style.transform = 'translateY(' + closedY + 'px)';
+        currentY = closed;
+        panel.style.transform = 'translateY(' + closed + 'px)';
         if (lexOverlay) lexOverlay.style.opacity = '0';
         applyClosedStateFromDrag();
+      } else {
+        ensureOpenShellFromDrag();
+
+        if (targetY === openY) {
+          setPanelY(openY, false);
+          finalizeFullyOpenFromDrag();
+        } else {
+          applyMobileRestingY(targetY, closed, false);
+        }
       }
 
       setTimeout(function () {
-        panel.style.transform = '';
         panel.style.transition = '';
-        if (lexOverlay) {
-          lexOverlay.style.opacity = '';
-          lexOverlay.style.transition = '';
+        if (lexOverlay) lexOverlay.style.transition = '';
+
+        // Only the canonical end-states clear inline transforms.
+        // The mid resting state intentionally keeps translateY + opacity.
+        if (targetY === closed || targetY === openY) {
+          panel.style.transform = '';
+          if (lexOverlay) lexOverlay.style.opacity = '';
         }
       }, SNAP_MS + 20);
     }
@@ -1812,6 +1869,7 @@
       startWasOpen = panel.classList.contains('is-open');
 
       computeClosedY();
+      midY = computeMidY();
 
       var stored = startWasOpen ? readStoredPanelY() : null;
       if (!isFinite(stored)) stored = 0;
