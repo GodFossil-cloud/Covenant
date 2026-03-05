@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.16 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.17 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.16';
+  window.COVENANT_LEXICON_VERSION = '0.3.17';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1059,9 +1059,16 @@
   }
 
   function getViewportHeightSafe() {
+    // iOS Safari: for mid-rest spacer math, we must use layout-viewport coordinates
+    // so our "viewport height" is compatible with getBoundingClientRect().top.
+    // visualViewport.offsetTop shifts when Safari UI bars expand/condense.
     try {
       if (window.visualViewport && typeof window.visualViewport.height === 'number' && window.visualViewport.height > 0) {
-        return window.visualViewport.height;
+        var vv = window.visualViewport;
+        var h = vv.height;
+        var off = (typeof vv.offsetTop === 'number' && isFinite(vv.offsetTop)) ? vv.offsetTop : 0;
+        var sum = h + off;
+        return (sum > 0) ? sum : h;
       }
     } catch (err) {}
     return window.innerHeight || 0;
@@ -1195,6 +1202,63 @@
 
     storePanelY(y);
   }
+
+  // iOS Safari: while resting mid, the page behind can scroll.
+  // When the Safari URL/address bar condenses/expands at scroll extremes, the fixed dock re-seats,
+  // but the mid-rest translateY can drift in relation to the dock unless we resync against the
+  // current visualViewport geometry.
+  var iosMidRestSyncRaf = null;
+
+  function scheduleIOSMidRestViewportResync() {
+    if (!isIOS) return;
+    if (!isBottomSheetMode()) return;
+    if (!panel || !panel.classList.contains('is-open')) return;
+    if (panel.classList.contains('is-dragging')) return;
+
+    var storedY = readStoredPanelY();
+    if (!(typeof storedY === 'number' && isFinite(storedY))) return;
+
+    // Only the mid-rest state needs this; fully open clears transforms after snap.
+    if (storedY <= MID_REST_NON_MODAL_PX) return;
+
+    if (iosMidRestSyncRaf) return;
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+
+    iosMidRestSyncRaf = raf(function () {
+      iosMidRestSyncRaf = null;
+
+      try {
+        var dockObscurePx = getDockObscurePxSafe();
+        var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
+
+        var rect = panel.getBoundingClientRect();
+        var panelH = (rect && rect.height) ? rect.height : 1;
+        var closedY = Math.max(1, Math.round(panelH - (dockObscurePx + peek)));
+
+        var y = Math.round(storedY);
+        if (y < 0) y = 0;
+        if (y > closedY) y = closedY;
+
+        applyMobileRestingY(y, closedY, false);
+        applyLexiconBodyDockInset(dockObscurePx);
+      } catch (err) {}
+    });
+  }
+
+  (function initIOSMidRestViewportResync() {
+    if (!isIOS) return;
+
+    try {
+      if (window.visualViewport && window.visualViewport.addEventListener) {
+        window.visualViewport.addEventListener('resize', scheduleIOSMidRestViewportResync, { passive: true });
+        window.visualViewport.addEventListener('scroll', scheduleIOSMidRestViewportResync, { passive: true });
+      }
+    } catch (err0) {}
+
+    // Fallbacks: some Safari versions are picky about vv listeners.
+    try { window.addEventListener('orientationchange', function () { setTimeout(scheduleIOSMidRestViewportResync, 50); }); } catch (err1) {}
+    try { window.addEventListener('resize', scheduleIOSMidRestViewportResync, { passive: true }); } catch (err2) {}
+  })();
 
   function mobileTapOpenToContentHeight() {
     if (!panel || !lexOverlay) return;
