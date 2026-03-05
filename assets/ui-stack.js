@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.25 */
+/*! Covenant UI Stack v0.3.26 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.25';
+  window.COVENANT_UI_STACK_VERSION = '0.3.26';
 
   var registry = Object.create(null);
   var order = [];
@@ -23,6 +23,119 @@
   var prevHtmlOverflow = '';
   var prevBodyOverflow = '';
   var prevBodyPaddingRight = '';
+
+  // Lexicon mid-rest page spacer (mobile bottom-sheet).
+  // When Lexicon is open but resting mid (non-modal), the page behind it should remain scrollable
+  // AND be able to scroll far enough that the last lines can rise fully into the window above the sheet.
+  var lexiconMidRestSpacerEl = null;
+
+  function getViewportHeightSafe() {
+    try {
+      if (window.visualViewport && typeof window.visualViewport.height === 'number' && window.visualViewport.height > 0) {
+        return window.visualViewport.height;
+      }
+    } catch (err) {}
+    return window.innerHeight || 0;
+  }
+
+  function getDockObscurePxSafe(vh) {
+    if (typeof vh !== 'number') vh = getViewportHeightSafe();
+
+    try {
+      var footer = document.querySelector('.nav-footer');
+      if (footer && footer.getBoundingClientRect) {
+        var r = footer.getBoundingClientRect();
+        if (r && isFinite(r.top)) return Math.max(0, Math.round(vh - r.top));
+        if (r && r.height) return Math.max(0, Math.round(r.height));
+      }
+    } catch (err0) {}
+
+    return 0;
+  }
+
+  function ensureLexiconMidRestSpacerEl() {
+    if (lexiconMidRestSpacerEl) return lexiconMidRestSpacerEl;
+
+    try {
+      var el = document.createElement('div');
+      el.id = 'lexiconMidRestSpacer';
+      el.setAttribute('aria-hidden', 'true');
+      el.style.width = '1px';
+      el.style.height = '0px';
+      el.style.pointerEvents = 'none';
+      el.style.opacity = '0';
+
+      var host = document.querySelector('.container') || document.body || document.documentElement;
+      if (host && host.appendChild) host.appendChild(el);
+      lexiconMidRestSpacerEl = el;
+    } catch (err1) {
+      lexiconMidRestSpacerEl = null;
+    }
+
+    return lexiconMidRestSpacerEl;
+  }
+
+  function setLexiconMidRestSpacerPx(px) {
+    px = Math.max(0, Math.round(px || 0));
+
+    var el = ensureLexiconMidRestSpacerEl();
+    if (!el || !el.style) return;
+
+    var next = px ? (px + 'px') : '0px';
+    if (el.style.height === next) return;
+
+    el.style.height = next;
+  }
+
+  function computeLexiconMidRestSpacerPx() {
+    var lex = document.getElementById('lexiconPanel');
+    if (!lex || !lex.classList || !lex.classList.contains('is-open')) return 0;
+
+    // Do not inject spacer while the user is dragging the sheet.
+    if (lex.classList.contains('is-dragging')) return 0;
+
+    // Bottom-sheet mode only.
+    var isBottomSheet = false;
+    try {
+      isBottomSheet = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    } catch (errBS) {
+      isBottomSheet = false;
+    }
+    if (!isBottomSheet) return 0;
+
+    // Mid-rest signature.
+    var y = NaN;
+    try {
+      y = parseFloat(String(lex.getAttribute('data-lexicon-y') || '').trim());
+    } catch (errY) {
+      y = NaN;
+    }
+    if (!isFinite(y) || y <= 2) return 0;
+
+    // How much of the viewport is covered by the Lexicon sheet.
+    var vh = getViewportHeightSafe();
+    var rect = null;
+    try { rect = lex.getBoundingClientRect ? lex.getBoundingClientRect() : null; } catch (errR) { rect = null; }
+    if (!rect || !isFinite(rect.top)) return 0;
+
+    var obstruction = Math.max(0, Math.round(vh - rect.top));
+
+    // Subtract the dock's own persistent overlay height; pages already account for the dock.
+    var dock = getDockObscurePxSafe(vh);
+
+    var extra = Math.max(0, obstruction - dock);
+
+    // A small breath so the last line isn't kissing the sheet edge.
+    if (extra) extra += 24;
+
+    return extra;
+  }
+
+  function syncLexiconMidRestSpacer() {
+    try {
+      setLexiconMidRestSpacerPx(computeLexiconMidRestSpacerPx());
+    } catch (err) {}
+  }
 
   // Lexicon gating: Lexicon may open only if it is opened first.
   // If Lexicon is closed and ToC or Reliquary is open, the Lexicon toggle is "locked":
@@ -765,6 +878,9 @@
   }
 
   function syncScrollLockFromIds(ids) {
+    // Always update the Lexicon mid-rest spacer (even when scroll lock is off).
+    syncLexiconMidRestSpacer();
+
     // If no open surface opts in, the shared lock should be off.
     if (ids && ids.length && shouldUseSharedScrollLock(ids)) {
       lockBodyScroll();
