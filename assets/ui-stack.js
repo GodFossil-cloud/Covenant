@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.26 */
+/*! Covenant UI Stack v0.3.27 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.26';
+  window.COVENANT_UI_STACK_VERSION = '0.3.27';
 
   var registry = Object.create(null);
   var order = [];
@@ -29,13 +29,34 @@
   // AND be able to scroll far enough that the last lines can rise fully into the window above the sheet.
   var lexiconMidRestSpacerEl = null;
 
+  // IMPORTANT:
+  // - getBoundingClientRect() top values are in the *layout viewport* coordinate space.
+  // - On iOS Safari, visualViewport.height alone is not in that same space when the URL bar is present.
+  // - Use visualViewport.offsetTop + visualViewport.height as the "bottom" in layout coordinates.
   function getViewportHeightSafe() {
     try {
-      if (window.visualViewport && typeof window.visualViewport.height === 'number' && window.visualViewport.height > 0) {
-        return window.visualViewport.height;
+      if (
+        window.visualViewport
+        && typeof window.visualViewport.height === 'number'
+        && window.visualViewport.height > 0
+        && typeof window.visualViewport.offsetTop === 'number'
+        && window.visualViewport.offsetTop >= 0
+      ) {
+        return window.visualViewport.height + window.visualViewport.offsetTop;
       }
     } catch (err) {}
-    return window.innerHeight || 0;
+
+    try {
+      var ih = window.innerHeight || 0;
+      if (ih > 0) return ih;
+    } catch (err2) {}
+
+    try {
+      var ch = (document.documentElement && document.documentElement.clientHeight) ? document.documentElement.clientHeight : 0;
+      if (ch > 0) return ch;
+    } catch (err3) {}
+
+    return 0;
   }
 
   function getDockObscurePxSafe(vh) {
@@ -65,7 +86,8 @@
       el.style.pointerEvents = 'none';
       el.style.opacity = '0';
 
-      var host = document.querySelector('.container') || document.body || document.documentElement;
+      // Append directly to body so it always contributes to the page scroll height.
+      var host = document.body || document.documentElement;
       if (host && host.appendChild) host.appendChild(el);
       lexiconMidRestSpacerEl = el;
     } catch (err1) {
@@ -113,6 +135,7 @@
     if (!isFinite(y) || y <= 2) return 0;
 
     // How much of the viewport is covered by the Lexicon sheet.
+    // NOTE: use layout-viewport bottom so rect.top math matches on iOS Safari.
     var vh = getViewportHeightSafe();
     var rect = null;
     try { rect = lex.getBoundingClientRect ? lex.getBoundingClientRect() : null; } catch (errR) { rect = null; }
@@ -126,7 +149,7 @@
     var extra = Math.max(0, obstruction - dock);
 
     // A small breath so the last line isn't kissing the sheet edge.
-    if (extra) extra += 24;
+    if (extra) extra += 40;
 
     return extra;
   }

@@ -88,6 +88,9 @@ Core runtime files:
 - `assets/reliquary-archive.js` + `assets/reliquary-archive.css` — Reliquary “saved passages” archive + cross-page replay into Lexicon.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC staged navigation).
 
+UI-stack notes (Lexicon mid-rest spacer):
+- The mid-rest spacer calculation must use layout-viewport coordinates on iOS Safari; use `visualViewport.offsetTop + visualViewport.height` (not `visualViewport.height` alone) so it matches `getBoundingClientRect()` `top` values.
+
 Glossary plumbing notes:
 - Journey pages pass a captured glossary HTML block into `_includes/lexicon-panel.html` via `glossary=...`.
 - `_includes/lexicon-panel.html` stashes that HTML in a hidden `#covenantGlossaryStash`.
