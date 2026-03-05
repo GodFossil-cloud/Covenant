@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.27 */
+/*! Covenant UI Stack v0.3.28 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.27';
+  window.COVENANT_UI_STACK_VERSION = '0.3.28';
 
   var registry = Object.create(null);
   var order = [];
@@ -34,6 +34,20 @@
   // - On iOS Safari, visualViewport.height alone is not in that same space when the URL bar is present.
   // - Use visualViewport.offsetTop + visualViewport.height as the "bottom" in layout coordinates.
   function getViewportHeightSafe() {
+    var best = 0;
+
+    // Layout viewport candidates.
+    try {
+      var ih = window.innerHeight || 0;
+      if (ih > 0) best = Math.max(best, ih);
+    } catch (err0) {}
+
+    try {
+      var ch = (document.documentElement && document.documentElement.clientHeight) ? document.documentElement.clientHeight : 0;
+      if (ch > 0) best = Math.max(best, ch);
+    } catch (err1) {}
+
+    // Visual viewport bottom expressed in layout-viewport coordinates.
     try {
       if (
         window.visualViewport
@@ -42,21 +56,12 @@
         && typeof window.visualViewport.offsetTop === 'number'
         && window.visualViewport.offsetTop >= 0
       ) {
-        return window.visualViewport.height + window.visualViewport.offsetTop;
+        var vvBottom = window.visualViewport.height + window.visualViewport.offsetTop;
+        if (vvBottom > 0) best = Math.max(best, vvBottom);
       }
-    } catch (err) {}
-
-    try {
-      var ih = window.innerHeight || 0;
-      if (ih > 0) return ih;
     } catch (err2) {}
 
-    try {
-      var ch = (document.documentElement && document.documentElement.clientHeight) ? document.documentElement.clientHeight : 0;
-      if (ch > 0) return ch;
-    } catch (err3) {}
-
-    return 0;
+    return best;
   }
 
   function getDockObscurePxSafe(vh) {
@@ -159,6 +164,36 @@
       setLexiconMidRestSpacerPx(computeLexiconMidRestSpacerPx());
     } catch (err) {}
   }
+
+  // iOS Safari: the URL bar collapsing/expanding changes visualViewport metrics without necessarily
+  // producing DOM mutations; keep the mid-rest spacer in sync so the page behind the sheet can
+  // still scroll to its true end.
+  (function wireLexiconMidRestSpacerViewportSync() {
+    var pending = false;
+
+    function schedule() {
+      if (pending) return;
+      pending = true;
+
+      var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
+
+      raf(function () {
+        pending = false;
+        try { syncLexiconMidRestSpacer(); } catch (err) {}
+      });
+    }
+
+    try {
+      if (window.visualViewport && window.visualViewport.addEventListener) {
+        window.visualViewport.addEventListener('resize', schedule);
+        window.visualViewport.addEventListener('scroll', schedule);
+      }
+    } catch (err0) {}
+
+    try { window.addEventListener('resize', schedule); } catch (err1) {}
+    try { window.addEventListener('orientationchange', schedule); } catch (err2) {}
+    try { window.addEventListener('pageshow', schedule); } catch (err3) {}
+  })();
 
   // Lexicon gating: Lexicon may open only if it is opened first.
   // If Lexicon is closed and ToC or Reliquary is open, the Lexicon toggle is "locked":

@@ -90,6 +90,7 @@ Core runtime files:
 
 UI-stack notes (Lexicon mid-rest spacer):
 - The mid-rest spacer calculation must use layout-viewport coordinates on iOS Safari; use `visualViewport.offsetTop + visualViewport.height` (not `visualViewport.height` alone) so it matches `getBoundingClientRect()` `top` values.
+- Also resync the mid-rest spacer on `visualViewport` resize/scroll and orientation changes; iOS Safari URL bar changes can otherwise truncate behind-the-sheet scrolling.
 
 Glossary plumbing notes:
 - Journey pages pass a captured glossary HTML block into `_includes/lexicon-panel.html` via `glossary=...`.
