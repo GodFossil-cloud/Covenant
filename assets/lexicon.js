@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.15 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.16 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.15';
+  window.COVENANT_LEXICON_VERSION = '0.3.16';
 
   var doc = document;
   var root = doc.documentElement;
@@ -361,6 +361,10 @@
 
   var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
   function isBottomSheetMode() { return !!(bottomSheetMql && bottomSheetMql.matches); }
+
+  // When the bottom sheet is resting mid (partially open), we want the page behind to remain interactive.
+  // y > 2 matches ui-stack's scroll-lock gating threshold.
+  var MID_REST_NON_MODAL_PX = 2;
 
   var isIOS = (function () {
     try {
@@ -971,6 +975,7 @@
     if (lexOverlay) {
       lexOverlay.style.opacity = '';
       lexOverlay.style.transition = '';
+      lexOverlay.style.pointerEvents = '';
     }
 
     // If we were in bottom-sheet partial-open sizing, clear it so desktop/future opens are clean.
@@ -1179,7 +1184,14 @@
 
     setSealDragOffset(sealOffset, sealDragging);
 
-    lexOverlay.style.opacity = String(progress);
+    // Mid-rest: page should remain interactive; disable scrim + dismiss overlay.
+    if (isBottomSheetMode() && !sealDragging && y > MID_REST_NON_MODAL_PX) {
+      lexOverlay.style.opacity = '0';
+      lexOverlay.style.pointerEvents = 'none';
+    } else {
+      lexOverlay.style.opacity = String(progress);
+      lexOverlay.style.pointerEvents = '';
+    }
 
     storePanelY(y);
   }
@@ -1722,7 +1734,15 @@
 
       setSealDragOffset(sealOffset, sealDragging);
 
-      if (lexOverlay) lexOverlay.style.opacity = String(progress);
+      if (lexOverlay) {
+        if (isBottomSheetMode() && !sealDragging && y > MID_REST_NON_MODAL_PX) {
+          lexOverlay.style.opacity = '0';
+          lexOverlay.style.pointerEvents = 'none';
+        } else {
+          lexOverlay.style.opacity = String(progress);
+          lexOverlay.style.pointerEvents = '';
+        }
+      }
 
       storePanelY(y);
 
@@ -1772,6 +1792,11 @@
         noteClose();
         clearStackZIndex();
       }
+
+      try {
+        if (lexOverlay) lexOverlay.style.pointerEvents = '';
+      } catch (err0) {}
+
       clearLexiconBodyDockInset();
       clearLexiconBodySizing();
       clearSealDragOffset();
@@ -1823,7 +1848,10 @@
         markSealSettling(SNAP_MS);
         currentY = closed;
         panel.style.transform = 'translateY(' + closed + 'px)';
-        if (lexOverlay) lexOverlay.style.opacity = '0';
+        if (lexOverlay) {
+          lexOverlay.style.opacity = '0';
+          lexOverlay.style.pointerEvents = '';
+        }
         applyClosedStateFromDrag();
       } else {
         ensureOpenShellFromDrag();
