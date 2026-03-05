@@ -432,7 +432,10 @@
     if (mobile) {
       // Anchor with top+bottom so the top edge is truly flush (or safe-area flush) with the viewport.
       // This avoids fractional height rounding leaving a hairline gap at the very top.
-      tocPanel.style.top = topPad + 'px';
+      var top = topPad;
+      if (top <= 0.5) top = -1;
+
+      tocPanel.style.top = top + 'px';
       tocPanel.style.bottom = bottom + 'px';
       tocPanel.style.height = 'auto';
       tocPanel.style.maxHeight = 'none';
