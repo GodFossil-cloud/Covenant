@@ -267,6 +267,7 @@
     try {
       ensureHeaderLayout();
       sealSlot.appendChild(lexiconToggle);
+      lexiconToggle.classList.remove('is-pulsing', 'is-nudging', 'is-tap-opening', 'is-tap-closing', 'is-seal-dragging', 'is-seal-settling');
       lexiconToggle.classList.add('is-seal-in-header');
       lexiconToggle.style.transform = 'none';
       lexiconToggle.style.margin = '0 8px 0 0';
@@ -1122,10 +1123,20 @@
     y = Math.round(y);
     closedY = Math.max(1, Math.round(closedY || 1));
 
-    panel.style.transform = 'translateY(' + y + 'px)';
+    var stableOpen = (!sealDragging && (snapState === 'open' || y <= MID_REST_NON_MODAL_PX));
+    panel.style.transform = 'translateY(' + (stableOpen ? 0 : y) + 'px)';
 
     var dockObscurePx = getDockObscurePxSafe();
-    applyLexiconBodySizingForY(y, dockObscurePx);
+    applyLexiconBodySizingForY(stableOpen ? 0 : y, dockObscurePx);
+
+    if (stableOpen) {
+      setSealToOpenPosition();
+      lexOverlay.style.opacity = '1';
+      lexOverlay.style.pointerEvents = '';
+      storePanelY(0);
+      storePanelSnap('open');
+      return;
+    }
 
     var progress = 1 - (y / closedY);
     if (progress < 0) progress = 0;
@@ -1171,6 +1182,20 @@
         if (storedSnap === 'closed') return;
 
         var dockObscurePx = getDockObscurePxSafe();
+        if (storedSnap === 'open') {
+          panel.style.transform = 'translateY(0px)';
+          applyLexiconBodySizingForY(0, dockObscurePx);
+          applyLexiconBodyDockInset(dockObscurePx);
+          setSealToOpenPosition();
+          if (lexOverlay) {
+            lexOverlay.style.opacity = '1';
+            lexOverlay.style.pointerEvents = '';
+          }
+          storePanelY(0);
+          storePanelSnap('open');
+          return;
+        }
+
         var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
         var rect = panel.getBoundingClientRect();
         var panelH = (rect && rect.height) ? rect.height : 1;
