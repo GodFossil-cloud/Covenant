@@ -43,7 +43,8 @@ html body #lexiconToggle{
   opacity:1;
   --lexicon-stack-cover-y:0px;
 
-  will-change:transform, opacity;
+  /* Keep covered motion on the same 2D path as the footer seal to avoid iOS rubber-band detaches. */
+  will-change:opacity;
 
   /* IMPORTANT: beat the max-width:600px #lexiconToggle transition in assets/covenant.css. */
   transition:
@@ -77,8 +78,8 @@ html body #lexiconToggle.is-ui-stack-covered{
   /* Delay opacity on cover so the motion reads before the fade. */
   transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
 
-  -webkit-transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
-  transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
+  -webkit-transform:translateY(var(--lexicon-stack-cover-y, 0px)) !important;
+  transform:translateY(var(--lexicon-stack-cover-y, 0px)) !important;
 }
 
 /* Footer case (mobile): keep the existing drag math from assets/footer-overrides.css and
@@ -97,17 +98,9 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered{
   /* Let the travel be seen before we fade away. */
   transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
 
-  -webkit-transform:translate3d(
-    0,
-    calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px),
-    0
-  ) !important;
+  -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
 
-  transform:translate3d(
-    0,
-    calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px),
-    0
-  ) !important;
+  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -115,7 +108,7 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered{
 
   html body #lexiconToggle.is-ui-stack-covered{
     opacity:0 !important;
-    -webkit-transform:translate3d(0, 0, 0) !important;
-    transform:translate3d(0, 0, 0) !important;
+    -webkit-transform:translateY(0) !important;
+    transform:translateY(0) !important;
   }
 }
