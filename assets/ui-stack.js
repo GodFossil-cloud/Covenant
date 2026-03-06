@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.28 */
+/*! Covenant UI Stack v0.3.29 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.28';
+  window.COVENANT_UI_STACK_VERSION = '0.3.29';
 
   var registry = Object.create(null);
   var order = [];
@@ -745,6 +745,158 @@
       wireOnElements();
     }
 
+  })();
+
+  // -------------------------------------------------
+  // iOS Lexicon mid-rest boundary overscroll guard
+  // Prevent page-edge rubber-band while the Lexicon rests half-open.
+  // This keeps the sheet/footer seam and the Lexicon seal visually welded together on Safari.
+  // -------------------------------------------------
+
+  (function wireIOSLexiconMidRestBoundaryGuard() {
+    if (!isIOS) return;
+
+    var touchId = null;
+    var lastY = 0;
+    var active = false;
+    var EPS = 2;
+
+    function isBottomSheet() {
+      try {
+        return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function getLexiconMidRestY() {
+      var lex = document.getElementById('lexiconPanel');
+      if (!lex || !lex.classList || !lex.classList.contains('is-open')) return NaN;
+      if (lex.classList.contains('is-dragging')) return NaN;
+
+      try {
+        return parseFloat(String(lex.getAttribute('data-lexicon-y') || '').trim());
+      } catch (err) {
+        return NaN;
+      }
+    }
+
+    function isGuardActiveForTarget(target) {
+      if (!isBottomSheet()) return false;
+      if (closestSafe(target, '#lexiconPanel .lexicon-panel-body')) return false;
+
+      var y = getLexiconMidRestY();
+      return !!(isFinite(y) && y > 2);
+    }
+
+    function readTouchById(e, id) {
+      try {
+        if (!e) return null;
+        var list = (e.touches && e.touches.length) ? e.touches : ((e.changedTouches && e.changedTouches.length) ? e.changedTouches : null);
+        if (!list) return null;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i] && list[i].identifier === id) return list[i];
+        }
+      } catch (err) {}
+      return null;
+    }
+
+    function clearSession() {
+      active = false;
+      touchId = null;
+      lastY = 0;
+    }
+
+    function getPageScrollState() {
+      var el = document.scrollingElement || document.documentElement || document.body;
+      var top = 0;
+      var max = 0;
+
+      if (!el) return { top: 0, max: 0 };
+
+      try {
+        top = window.pageYOffset;
+        if (!isFinite(top)) top = el.scrollTop || 0;
+      } catch (err0) {
+        top = 0;
+      }
+
+      try {
+        var viewportH = getViewportHeightSafe();
+        var clientH = el.clientHeight || 0;
+        var basisH = viewportH > 0 ? viewportH : clientH;
+        max = Math.max(0, (el.scrollHeight || 0) - basisH);
+      } catch (err1) {
+        max = 0;
+      }
+
+      return { top: top, max: max };
+    }
+
+    function wouldRubberBand(deltaY) {
+      var state = getPageScrollState();
+      if (deltaY > 0 && state.top <= EPS) return true;
+      if (deltaY < 0 && state.top >= (state.max - EPS)) return true;
+      return false;
+    }
+
+    document.addEventListener('touchstart', function (e) {
+      if (!isGuardActiveForTarget(e && e.target)) {
+        clearSession();
+        return;
+      }
+
+      try {
+        if (!e || !e.changedTouches || !e.changedTouches.length) {
+          clearSession();
+          return;
+        }
+
+        var t = e.changedTouches[0];
+        if (!t) {
+          clearSession();
+          return;
+        }
+
+        active = true;
+        touchId = t.identifier;
+        lastY = t.clientY;
+      } catch (err) {
+        clearSession();
+      }
+    }, { capture: true, passive: true });
+
+    document.addEventListener('touchmove', function (e) {
+      if (!active) return;
+      if (!isGuardActiveForTarget(e && e.target)) {
+        clearSession();
+        return;
+      }
+
+      var t = readTouchById(e, touchId);
+      if (!t) return;
+
+      var deltaY = t.clientY - lastY;
+      if (Math.abs(deltaY) < 2) return;
+
+      if (wouldRubberBand(deltaY)) {
+        if (e && e.cancelable) e.preventDefault();
+        return;
+      }
+
+      lastY = t.clientY;
+    }, { capture: true, passive: false });
+
+    document.addEventListener('touchend', function (e) {
+      if (!active) return;
+      if (!e || touchId == null) {
+        clearSession();
+        return;
+      }
+      if (readTouchById(e, touchId)) clearSession();
+    }, { capture: true, passive: true });
+
+    document.addEventListener('touchcancel', clearSession, { capture: true, passive: true });
   })();
 
   function computeScrollbarWidth() {
