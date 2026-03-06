@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.19 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.20 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.19';
+  window.COVENANT_LEXICON_VERSION = '0.3.20';
 
   var doc = document;
   var root = doc.documentElement;
@@ -903,9 +903,18 @@
     return getCssVarNumber('--seal-seat-nudge-closed', 0);
   }
 
+  function shouldAnchorSealToDock() {
+    return !!(isIOS && isBottomSheetMode());
+  }
+
   function setSealDragOffset(px, draggingNow) {
     if (!lexiconToggle) return;
     if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
+
+    if (shouldAnchorSealToDock()) {
+      clearSealDragOffset();
+      return;
+    }
 
     if (sealClearTimer) {
       window.clearTimeout(sealClearTimer);
@@ -931,6 +940,11 @@
   function setSealToOpenPosition() {
     if (!lexiconToggle) return;
     if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
+
+    if (shouldAnchorSealToDock()) {
+      clearSealDragOffset();
+      return;
+    }
 
     var OPEN_DROP_PX = isIOS ? 1 : 0;
     var unit = supportsDVH() ? '100dvh' : '100vh';
