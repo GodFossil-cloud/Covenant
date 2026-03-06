@@ -381,7 +381,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 
   /* Cradle seat (circle center y, relative to footer top): keep it tracking the seal seat.
      (If the seal drops, the cradle should follow so the geometry still reads welded.) */
-  --seal-cradle-center-y:1px;
+  --seal-cradle-center-y:0px;
 
   /* Border trace (cradle dock rim). */
   --footer-cradle-line:#39332A;
