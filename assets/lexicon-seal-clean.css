@@ -7,26 +7,27 @@
    - Do not interfere with weld/open/drag rules that intentionally make the seal backdrop transparent.
 */
 
-/* Selected + CLOSED (resting and interaction): always a clean face (no fleck stack). */
-#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-seal-dragging)::after{
+/* Selected while NOT fully open: keep a clean face (no fleck stack).
+   Full-open truth is html.lexicon-scroll-lock; do not key this off aria-expanded,
+   because mobile mid-rest also carries aria-expanded="true". */
+html:not(.lexicon-scroll-lock) #navFooter #lexiconToggle.has-selection:not(.is-seal-dragging)::after{
   background-color:var(--lexicon-seal-face, #08090b) !important;
   background-image:none !important;
 }
 
 /* Fully OPEN: keep seal backdrop welded/empty even while pressed.
-   (Prevents touch/coarse-pointer :active rules from reintroducing flecks.) */
+   Only the committed full-open class should drive this state. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle:active::after,
-html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
-#navFooter #lexiconToggle[aria-expanded="true"]:active::after,
-#navFooter #lexiconToggle.has-selection[aria-expanded="true"]:active::after{
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after{
   background-color:transparent !important;
   background-image:none !important;
 }
 
 /* Mobile rim guard: prevent a 1px gold/yellow underside hairline from flashing during drag-release
-   (when .is-seal-dragging has just dropped but the seal is still settling back into the cradle). */
+   (when .is-seal-dragging has just dropped but the seal is still settling back into the cradle).
+   Again, do not use aria-expanded here; mid-rest is not the welded full-open state. */
 @media (hover: none), (pointer: coarse){
-  #navFooter #lexiconToggle.nav-btn.center:not([aria-expanded="true"]):not(.is-seal-dragging):not(.is-nudging)::before{
+  html:not(.lexicon-scroll-lock) #navFooter #lexiconToggle.nav-btn.center:not(.is-seal-dragging):not(.is-nudging)::before{
     border-color:rgba(0,0,0,0.72) !important;
     box-shadow:
       inset 0 0 18px rgba(0,0,0,0.84),
