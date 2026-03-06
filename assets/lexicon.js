@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.22 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.23 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.22';
+  window.COVENANT_LEXICON_VERSION = '0.3.23';
 
   var doc = document;
   var root = doc.documentElement;
@@ -325,6 +325,9 @@
   var currentlyActiveTooltip = null;
   var focusReturnEl = null;
   var scrollLockY = 0;
+  var localBodyScrollLocked = false;
+  var iosViewportFrozen = false;
+  var iosFrozenBodyStyles = null;
 
   var mobileGlyphMql = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)') : null;
   var isMobileGlyphMode = !!(mobileGlyphMql && mobileGlyphMql.matches);
@@ -375,12 +378,73 @@
     iosTouchMoveBlocker = null;
   }
 
-  function lockBodyScroll() {
-    if (!shouldUseLocalScrollLock()) return;
-    if (root.classList.contains('lexicon-scroll-lock')) return;
+  function shouldTreatLexiconAsFullyOpen() {
+    if (!panel || !panel.classList || !panel.classList.contains('is-open')) return false;
+    if (!isBottomSheetMode()) return true;
+
+    var snap = readStoredPanelSnap();
+    if (snap === 'open') return true;
+
+    var y = readStoredPanelY();
+    return (typeof y === 'number' && isFinite(y) && y <= MID_REST_NON_MODAL_PX);
+  }
+
+  function freezeIOSViewportForLexicon() {
+    if (!isIOS || iosViewportFrozen || !doc.body) return;
+
+    iosFrozenBodyStyles = {
+      position: doc.body.style.position || '',
+      top: doc.body.style.top || '',
+      left: doc.body.style.left || '',
+      right: doc.body.style.right || '',
+      width: doc.body.style.width || '',
+      overflow: doc.body.style.overflow || ''
+    };
 
     scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
-    root.classList.add('lexicon-scroll-lock');
+    doc.body.style.position = 'fixed';
+    doc.body.style.top = (-scrollLockY) + 'px';
+    doc.body.style.left = '0';
+    doc.body.style.right = '0';
+    doc.body.style.width = '100%';
+    doc.body.style.overflow = 'hidden';
+    iosViewportFrozen = true;
+  }
+
+  function unfreezeIOSViewportForLexicon() {
+    if (!iosViewportFrozen || !doc.body) return;
+
+    var restoreY = Math.round(scrollLockY || 0);
+    var previous = iosFrozenBodyStyles || {};
+
+    doc.body.style.position = previous.position || '';
+    doc.body.style.top = previous.top || '';
+    doc.body.style.left = previous.left || '';
+    doc.body.style.right = previous.right || '';
+    doc.body.style.width = previous.width || '';
+    doc.body.style.overflow = previous.overflow || '';
+
+    iosFrozenBodyStyles = null;
+    iosViewportFrozen = false;
+    window.scrollTo(0, restoreY);
+  }
+
+  function syncLexiconFullOpenState(forceState) {
+    var shouldLock = (typeof forceState === 'boolean') ? forceState : shouldTreatLexiconAsFullyOpen();
+
+    root.classList.toggle('lexicon-scroll-lock', !!shouldLock);
+
+    if (!isIOS) return;
+    if (shouldLock) freezeIOSViewportForLexicon();
+    else unfreezeIOSViewportForLexicon();
+  }
+
+  function lockBodyScroll() {
+    if (!shouldUseLocalScrollLock()) return;
+    if (localBodyScrollLocked) return;
+
+    scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
+    localBodyScrollLocked = true;
 
     if (isIOS) {
       enableIOSTouchScrollLock();
@@ -392,12 +456,13 @@
 
   function unlockBodyScroll() {
     if (!shouldUseLocalScrollLock()) return;
-    if (!root.classList.contains('lexicon-scroll-lock')) return;
+    if (!localBodyScrollLocked) return;
 
-    root.classList.remove('lexicon-scroll-lock');
+    localBodyScrollLocked = false;
 
     if (isIOS) {
       disableIOSTouchScrollLock();
+      if (!iosViewportFrozen) window.scrollTo(0, scrollLockY);
       return;
     }
 
@@ -1135,6 +1200,7 @@
       lexOverlay.style.pointerEvents = '';
       storePanelY(0);
       storePanelSnap('open');
+      syncLexiconFullOpenState(true);
       return;
     }
 
@@ -1158,6 +1224,7 @@
 
     storePanelY(y);
     storePanelSnap(snapState || derivePanelSnap(y, closedY));
+    syncLexiconFullOpenState(false);
   }
 
   var iosMidRestSyncRaf = null;
@@ -1193,6 +1260,7 @@
           }
           storePanelY(0);
           storePanelSnap('open');
+          syncLexiconFullOpenState(true);
           return;
         }
 
@@ -1340,7 +1408,12 @@
     setLexiconGlyph();
     noteOpen();
 
-    if (bottomSheet) mobileTapOpenToContentHeight();
+    if (bottomSheet) {
+      syncLexiconFullOpenState(false);
+      mobileTapOpenToContentHeight();
+    } else {
+      syncLexiconFullOpenState(true);
+    }
 
     var preferCloseFocus = isKeyboardIntentEvent(openEvent);
     setTimeout(function () { focusIntoPanel(preferCloseFocus); }, 0);
@@ -1366,6 +1439,7 @@
     }
 
     unlockBodyScroll();
+    syncLexiconFullOpenState(false);
     setLexiconGlyph();
     noteClose();
     clearStackZIndex();
@@ -1750,6 +1824,7 @@
         bringSelfToFront();
       }
 
+      syncLexiconFullOpenState(false);
       applyLexiconBodyDockInset(getDockObscurePxSafe());
     }
 
@@ -1786,6 +1861,7 @@
       clearSealDragOffset();
       storePanelY(closedY);
       storePanelSnap('closed');
+      syncLexiconFullOpenState(false);
     }
 
     function snap() {
