@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.18 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.19 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.18';
+  window.COVENANT_LEXICON_VERSION = '0.3.19';
 
   var doc = document;
   var root = doc.documentElement;
@@ -62,13 +62,6 @@
   var sentenceExplanations = pageConfig.sentenceExplanations || {};
   var logPrefix = pageId ? ('[Covenant Lexicon / ' + pageId + ']') : '[Covenant Lexicon]';
 
-  // ----------------------------------------------------------
-  // Covenant Journey Header Standardization
-  // ----------------------------------------------------------
-  // Policy: Invocation → XII use the compact header style.
-  // This ensures Foundation/Declaration and Articles II–X conform
-  // without having to hand-edit each page during migration.
-  // (rituals.html is intentionally excluded.)
   function applyJourneyCompactHeader() {
     var ids = {
       invocation: true,
@@ -118,7 +111,6 @@
 
   var citationText = byId('citationText');
 
-  // Optional: coordinated UI stack (true surface layering across panels).
   var UI_STACK_ID = 'lexicon';
   var uiRegistered = false;
 
@@ -169,19 +161,14 @@
       stack.register({
         id: UI_STACK_ID,
         priority: 40,
-
-        // Participate in shared scroll lock.
         useSharedScrollLock: true,
         allowScrollSelector: '#lexiconPanel .lexicon-panel-body',
-
         isOpen: function () {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
-
         requestClose: function () {
           if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
         },
-
         setInert: function (isInert) {
           try {
             var asleep = !!isInert;
@@ -196,7 +183,6 @@
             }
           } catch (err2) {}
         },
-
         setZIndex: function (baseZ) {
           try {
             if (lexOverlay) lexOverlay.style.zIndex = String(baseZ);
@@ -229,16 +215,10 @@
   }
 
   function clearStackZIndex() {
-    // Important: when Lexicon closes back to its "peek" state, it must not keep the
-    // last UI-stack inline z-index from its open state; otherwise it can sit above
-    // ToC/Reliquary tabs after an open→close cycle.
     try { if (lexOverlay) lexOverlay.style.zIndex = ''; } catch (err1) {}
     try { if (panel) panel.style.zIndex = ''; } catch (err2) {}
   }
 
-  // ----------------------------------------
-  // Seal re-parenting (desktop/tablet only)
-  // ----------------------------------------
   var sealSlot = byId('lexiconSealSlot');
   var headerText = byId('lexiconHeaderText');
   var sealDockParent = null;
@@ -280,23 +260,17 @@
     sealDockParent = lexiconToggle.parentNode;
     if (!sealDockParent) return;
 
-    // Maintain footer geometry: leave a placeholder where the seal lived.
     try {
       sealDockParent.insertBefore(ensureSealDockPlaceholder(), lexiconToggle);
     } catch (err0) {}
 
-    // Move the live button into the panel header.
     try {
       ensureHeaderLayout();
       sealSlot.appendChild(lexiconToggle);
-
-      // When the seal is in the header, it must behave as a static emblem,
-      // not as the mobile bottom-sheet drag handle.
       lexiconToggle.classList.add('is-seal-in-header');
       lexiconToggle.style.transform = 'none';
       lexiconToggle.style.margin = '0 8px 0 0';
       lexiconToggle.style.removeProperty('--seal-drag-y');
-
       sealIsInHeader = true;
     } catch (err1) {}
   }
@@ -317,16 +291,12 @@
       lexiconToggle.classList.remove('is-seal-in-header');
       lexiconToggle.style.transform = '';
       lexiconToggle.style.margin = '';
-
       sealDockPlaceholder = null;
       sealIsInHeader = false;
     } catch (err2) {}
   }
 
   var sealClearTimer = null;
-
-  // Policy: On mobile bottom-sheet, the panel should ONLY be dragged down from the footer seal.
-  // The top drag handle is kept in markup for compatibility, but disabled here.
   var ENABLE_PANEL_HANDLE_DRAG = false;
   if (dragRegion && !ENABLE_PANEL_HANDLE_DRAG) {
     dragRegion.style.display = 'none';
@@ -341,7 +311,6 @@
   }
 
   var defaultOverviewHTML = pageConfig.defaultOverviewHTML || (dynamicContent ? dynamicContent.innerHTML : '');
-
   if (dynamicContent && pageConfig.defaultOverviewHTML) {
     dynamicContent.innerHTML = pageConfig.defaultOverviewHTML;
   }
@@ -362,8 +331,6 @@
   var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
   function isBottomSheetMode() { return !!(bottomSheetMql && bottomSheetMql.matches); }
 
-  // When the bottom sheet is resting mid (partially open), we want the page behind to remain interactive.
-  // y > 2 matches ui-stack's scroll-lock gating threshold.
   var MID_REST_NON_MODAL_PX = 2;
 
   var isIOS = (function () {
@@ -409,29 +376,21 @@
 
   function lockBodyScroll() {
     if (!shouldUseLocalScrollLock()) return;
-
     if (root.classList.contains('lexicon-scroll-lock')) return;
 
-    // Round to avoid feeding fractional scroll offsets back into layout.
     scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
-
-    // Keep footer dock sovereign above the Lexicon overlay/panel.
     root.classList.add('lexicon-scroll-lock');
 
-    // iOS Safari: toggling overflow hidden can nudge visualViewport and tick fixed docks by ~1px.
-    // Local lock on iOS uses only the touchmove blocker.
     if (isIOS) {
       enableIOSTouchScrollLock();
       return;
     }
 
-    // Overflow-only scroll lock (non-iOS).
     try { doc.body.style.overflow = 'hidden'; } catch (err) {}
   }
 
   function unlockBodyScroll() {
     if (!shouldUseLocalScrollLock()) return;
-
     if (!root.classList.contains('lexicon-scroll-lock')) return;
 
     root.classList.remove('lexicon-scroll-lock');
@@ -499,23 +458,15 @@
     }
   }
 
-  // ----------------------------------------
-  // Seal interaction feedback (pulse + nudge)
-  // ----------------------------------------
   var sealPulseTimer = null;
   var sealNudgeTimer = null;
-
-  // Tap/open glow management (distinct from drag).
   var sealTapClassTimer = null;
 
   function getNavPulseDurationMs() {
-    // CSS var is typically like "520ms"; parseFloat yields 520.
     return getCssVarNumber('--nav-pulse-duration', 520);
   }
 
   function getLexiconTapMotionMs() {
-    // Align tap open/close class lifetime to the same snap timing used by the bottom sheet.
-    // (Keeps intent glow present through the open/close transition even after aria flips.)
     return getCssVarNumber('--lexicon-snap-duration', 420);
   }
 
@@ -586,9 +537,6 @@
     }, 140);
   }
 
-  // ----------------------------------------
-  // Lexicon toggle glyph management
-  // ----------------------------------------
   var lexiconHovering = false;
   var LEX_GLYPHS = {
     default: '𖤓',
@@ -633,15 +581,12 @@
 
     midOuter.appendChild(midInner);
     target.appendChild(midOuter);
-
     target.appendChild(doc.createTextNode(right));
   }
 
   function setLexiconGlyph() {
     if (!lexiconToggle || !panel) return;
 
-    // If the dock provides explicit idle/active glyph spans, treat that markup as the source of truth.
-    // (Prevents JS from overwriting the curated symbols in _includes/nav-footer.html.)
     var explicitIdle = qs('.lexicon-glyph--idle', lexiconToggle);
     var explicitActive = qs('.lexicon-glyph--active', lexiconToggle);
     if (explicitIdle && explicitActive) return;
@@ -687,18 +632,12 @@
     setLexiconGlyph();
   }
 
-  // ----------------------------------------
-  // Mode label
-  // ----------------------------------------
   var modeEl = byId('lexiconModeLabel') || qs('.lexicon-panel-mode');
   function setModeLabel() {
     if (!pageConfig.modeLabel || !modeEl) return;
     modeEl.textContent = pageConfig.modeLabel;
   }
 
-  // ----------------------------------------
-  // Sentence key validation
-  // ----------------------------------------
   function resolveKeyPattern() {
     var fallback = /^[IVX]+\.[0-9]+$/;
 
@@ -724,7 +663,6 @@
     var duplicates = Object.create(null);
     var missingCount = 0;
     var nonstandard = Object.create(null);
-
     var pattern = resolveKeyPattern();
 
     for (var i = 0; i < nodes.length; i++) {
@@ -750,9 +688,6 @@
     }
   }
 
-  // ----------------------------------------
-  // Intro sequencing
-  // ----------------------------------------
   function applyIntroOverrides() {
     var intro = pageConfig.intro;
     if (!intro || typeof intro !== 'object') return;
@@ -806,7 +741,6 @@
 
       setTimeout(function () {
         if (container) container.classList.add('fade-in');
-
         if (panel) panel.classList.add('fade-in');
 
         setTimeout(function () {
@@ -821,16 +755,11 @@
     }, introDelays.iconToOverlayDelay);
   }, introDelays.startDelay);
 
-  // ========================================
-  // Citation Label Management
-  // ========================================
   var lastCitationText = '';
-
   var UNICODE_ROMAN_ARTICLE = {
     'I': 'Ⅰ', 'II': 'Ⅱ', 'III': 'Ⅲ', 'IV': 'Ⅳ', 'V': 'Ⅴ', 'VI': 'Ⅵ',
     'VII': 'Ⅶ', 'VIII': 'Ⅷ', 'IX': 'Ⅸ', 'X': 'Ⅹ', 'XI': 'Ⅺ', 'XII': 'Ⅻ'
   };
-
   var UNICODE_ROMAN_NUM = ['', 'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'];
 
   function romanAsciiToUnicode(roman) {
@@ -879,14 +808,11 @@
     if (sentenceKey) {
       if (isArticlePage) {
         var m = String(sentenceKey).match(/^([IVX]+)\.(\d+)(?:\.([A-Za-z\u24B6-\u24CF]))?$/);
-
         var articleAscii = m ? m[1] : pageConfig.pageId;
         var sectionNum = m ? m[2] : null;
         var subpart = m ? m[3] : null;
-
         var articleUnicode = romanAsciiToUnicode(articleAscii);
         var sectionUnicode = sectionNum ? intToUnicodeRoman(sectionNum) : String(sentenceKey);
-
         var out = 'Article ' + articleUnicode + ', §.' + sectionUnicode;
         if (subpart) out += '.' + latinToCircled(subpart);
         return out;
@@ -906,12 +832,10 @@
     }
 
     var pageLabel = pageConfig.citationLabel || pageConfig.sectionLabel || pageConfig.pageId || '';
-
     if (pageConfig.pageId === 'invocation') return 'Invocation and Preamble';
     if (pageConfig.pageId === 'foundation') return 'Foundation';
     if (pageConfig.pageId === 'declaration') return 'Declaration';
     if (pageConfig.pageId && pageConfig.pageId.match(/^[IVX]+$/)) return 'Article ' + romanAsciiToUnicode(pageConfig.pageId);
-
     return pageLabel;
   }
 
@@ -923,7 +847,6 @@
 
     var isToSelection = !!sentenceKey;
     var wasSelection = !!fromSelection;
-
     citationText.classList.remove('slide-up', 'slide-up-dramatic', 'slide-down');
 
     var animClass;
@@ -935,7 +858,6 @@
     citationText.textContent = newText;
     lastCitationText = newText;
 
-    // CRITICAL: Expose raw lexicon key so Reliquary save button can reliably read it.
     if (citationText.dataset) {
       citationText.dataset.lexiconKey = sentenceKey || '';
     } else {
@@ -954,7 +876,6 @@
     citationText.textContent = initialText;
     lastCitationText = initialText;
 
-    // Ensure data-lexicon-key starts empty.
     if (citationText.dataset) {
       citationText.dataset.lexiconKey = '';
     } else {
@@ -964,9 +885,6 @@
 
   initializeCitationLabel();
 
-  // ========================================
-  // Panel open/close + content rendering
-  // ========================================
   function resetPanelInlineMotion() {
     if (!panel) return;
     panel.classList.remove('is-dragging');
@@ -977,8 +895,6 @@
       lexOverlay.style.transition = '';
       lexOverlay.style.pointerEvents = '';
     }
-
-    // If we were in bottom-sheet partial-open sizing, clear it so desktop/future opens are clean.
     clearLexiconBodySizing();
   }
 
@@ -1016,11 +932,6 @@
     if (!lexiconToggle) return;
     if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
 
-    // iOS Safari: when the seal's travel is computed in JS px, it can desync slightly from
-    // the panel's own viewport-based transition (reads like the seal is being "dragged").
-    // Use a viewport-unit expression so seal + sheet resolve in the same coordinate space.
-    // The transform subtracts --seal-seat-nudge, so we add it here to keep the open position
-    // independent of the seating nudge.
     var OPEN_DROP_PX = isIOS ? 1 : 0;
     var unit = supportsDVH() ? '100dvh' : '100vh';
 
@@ -1059,9 +970,6 @@
   }
 
   function getViewportHeightSafe() {
-    // iOS Safari: for mid-rest spacer math, we must use layout-viewport coordinates
-    // so our "viewport height" is compatible with getBoundingClientRect().top.
-    // visualViewport.offsetTop shifts when Safari UI bars expand/condense.
     try {
       if (window.visualViewport && typeof window.visualViewport.height === 'number' && window.visualViewport.height > 0) {
         var vv = window.visualViewport;
@@ -1108,7 +1016,6 @@
       return;
     }
 
-    // Give the scrollable body enough tail-room to lift the last lines above the dock.
     var inset = Math.max(0, Math.round((dockObscurePx || 0) + 24));
     body.style.paddingBottom = inset + 'px';
     body.style.scrollPaddingBottom = inset + 'px';
@@ -1141,11 +1048,7 @@
 
     var dockTop = Math.max(0, Math.round(vh - dockObscurePx));
     var yPx = Math.max(0, Math.round(y || 0));
-
-    // Visible sheet height above the dock, minus the header.
     var avail = dockTop - yPx - Math.round(headerH);
-
-    // Minimum keeps the body stable when the sheet is near-closed.
     var MIN_BODY_H = 140;
     var bodyH = Math.max(MIN_BODY_H, Math.round(avail));
 
@@ -1191,7 +1094,6 @@
 
     setSealDragOffset(sealOffset, sealDragging);
 
-    // Mid-rest: page should remain interactive; disable scrim + dismiss overlay.
     if (isBottomSheetMode() && !sealDragging && y > MID_REST_NON_MODAL_PX) {
       lexOverlay.style.opacity = '0';
       lexOverlay.style.pointerEvents = 'none';
@@ -1203,10 +1105,6 @@
     storePanelY(y);
   }
 
-  // iOS Safari: while resting mid, the page behind can scroll.
-  // When the Safari URL/address bar condenses/expands at scroll extremes, the fixed dock re-seats,
-  // but the mid-rest translateY can drift in relation to the dock unless we resync against the
-  // current visualViewport geometry.
   var iosMidRestSyncRaf = null;
 
   function scheduleIOSMidRestViewportResync() {
@@ -1217,20 +1115,16 @@
 
     var storedY = readStoredPanelY();
     if (!(typeof storedY === 'number' && isFinite(storedY))) return;
-
-    // Only the mid-rest state needs this; fully open clears transforms after snap.
     if (storedY <= MID_REST_NON_MODAL_PX) return;
-
     if (iosMidRestSyncRaf) return;
-    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
 
+    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     iosMidRestSyncRaf = raf(function () {
       iosMidRestSyncRaf = null;
 
       try {
         var dockObscurePx = getDockObscurePxSafe();
         var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
-
         var rect = panel.getBoundingClientRect();
         var panelH = (rect && rect.height) ? rect.height : 1;
         var closedY = Math.max(1, Math.round(panelH - (dockObscurePx + peek)));
@@ -1255,7 +1149,6 @@
       }
     } catch (err0) {}
 
-    // Fallbacks: some Safari versions are picky about vv listeners.
     try { window.addEventListener('orientationchange', function () { setTimeout(scheduleIOSMidRestViewportResync, 50); }); } catch (err1) {}
     try { window.addEventListener('resize', scheduleIOSMidRestViewportResync, { passive: true }); } catch (err2) {}
     try { window.addEventListener('scroll', scheduleIOSMidRestViewportResync, { passive: true }); } catch (err3) {}
@@ -1268,16 +1161,13 @@
 
     var dockObscurePx = getDockObscurePxSafe();
     var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
-
     var rect = panel.getBoundingClientRect();
     var panelH = (rect && rect.height) ? rect.height : 1;
-
     var closedY = Math.max(1, Math.round(panelH - (dockObscurePx + peek)));
 
     var contentH = measureLexiconContentHeight();
     var availAboveDock = Math.max(180, Math.round(getViewportHeightSafe() - dockObscurePx));
     var capH = Math.round(availAboveDock * 0.60);
-
     var desired = Math.min(contentH, capH);
 
     var openY = Math.round(panelH - (dockObscurePx + desired));
@@ -1289,14 +1179,12 @@
 
     panel.style.transition = 'none';
     lexOverlay.style.transition = 'none';
-
     applyMobileRestingY(closedY, closedY, false);
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
       panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
       lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
-
       applyMobileRestingY(openY, closedY, false);
       applyLexiconBodyDockInset(dockObscurePx);
 
@@ -1308,7 +1196,6 @@
   }
 
   function isKeyboardIntentEvent(e) {
-    // In most browsers, keyboard activation of a button produces a click with detail === 0.
     try {
       if (!e) return false;
       if (e.type === 'click' && typeof e.detail === 'number' && e.detail === 0) return true;
@@ -1319,8 +1206,6 @@
 
   function focusIntoPanel(preferCloseFocus) {
     if (!panel) return;
-
-    // Avoid the "yellow box" focus ring on pointer-open; keep keyboard access intact.
     if (!preferCloseFocus) return;
 
     var closeBtn = qs('.lexicon-panel-close', panel);
@@ -1347,11 +1232,9 @@
     }
 
     var safeSentence = escapeHtml(sentenceText);
-
     dynamicContent.style.opacity = '0';
     setTimeout(function () {
-      dynamicContent.innerHTML =
-        '<div class="lexicon-sentence-quote">"' + safeSentence + '"</div><p>' + explanation + '</p>';
+      dynamicContent.innerHTML = '<div class="lexicon-sentence-quote">"' + safeSentence + '"</div><p>' + explanation + '</p>';
       dynamicContent.style.opacity = '1';
     }, 150);
   }
@@ -1361,13 +1244,9 @@
 
     clearActiveTooltip();
     resetPanelInlineMotion();
-
     focusReturnEl = lexiconToggle;
 
     var bottomSheet = isBottomSheetMode();
-
-    // Desktop/tablet: move seal into the Lexicon header so it is correctly covered by higher UI-stack panels.
-    // Mobile bottom-sheet: keep the seal in the dock as the drag handle.
     if (!bottomSheet) moveSealIntoHeader();
     else restoreSealToDock();
 
@@ -1379,13 +1258,9 @@
 
     lockBodyScroll();
     setLexiconGlyph();
-
     noteOpen();
 
-    if (bottomSheet) {
-      // Mobile: tap-open rests at content height (cap ~60%); user may still drag fully open.
-      mobileTapOpenToContentHeight();
-    }
+    if (bottomSheet) mobileTapOpenToContentHeight();
 
     var preferCloseFocus = isKeyboardIntentEvent(openEvent);
     setTimeout(function () { focusIntoPanel(preferCloseFocus); }, 0);
@@ -1409,11 +1284,9 @@
 
     unlockBodyScroll();
     setLexiconGlyph();
-
     noteClose();
     clearStackZIndex();
 
-    // Desktop/tablet: return the seal to the dock after close.
     if (!isBottomSheetMode()) restoreSealToDock();
 
     setTimeout(function () {
@@ -1426,13 +1299,9 @@
   function openFromToggleIntent(e) {
     if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
     else renderOverview();
-
     openPanel(e);
   }
 
-  // ========================================
-  // Initialization / event wiring
-  // ========================================
   validateSentenceKeys();
   registerWithUIStack();
 
@@ -1444,13 +1313,11 @@
       lexiconToggle.addEventListener('pointerenter', function () { lexiconHovering = true; setLexiconGlyph(); });
       lexiconToggle.addEventListener('mouseenter', function () { lexiconHovering = true; setLexiconGlyph(); });
       lexiconToggle.addEventListener('focus', function () { lexiconHovering = true; setLexiconGlyph(); });
-
       lexiconToggle.addEventListener('pointerleave', function () { lexiconHovering = false; setLexiconGlyph(); });
       lexiconToggle.addEventListener('mouseleave', function () { lexiconHovering = false; setLexiconGlyph(); });
       lexiconToggle.addEventListener('blur', function () { lexiconHovering = false; setLexiconGlyph(); });
     }
 
-    // Intent feedback for activation/drag/keyboard intent (not hover).
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
       triggerSealNudge();
@@ -1477,17 +1344,12 @@
           return;
         }
 
-        // Keep the bright halo present through the close transition (tap path only).
         markSealTapClosing();
         closePanel();
         return;
       }
 
-      // iOS Safari: avoid running the heavy filter-based pulse at the same moment as the
-      // bottom-sheet transform transition; it can cause the seal layer to lag behind.
       if (!(isIOS && isBottomSheetMode())) triggerSealPulse();
-
-      // Tap-to-open flash (distinct from drag).
       markSealTapOpening();
       openFromToggleIntent(e);
     });
@@ -1534,7 +1396,6 @@
     });
   }
 
-  // ---- Glossary Terms: two-tap on touch ----
   (function initGlossaryTwoTap() {
     var terms = qsa('.glossary-term');
     if (!terms || !terms.length) return;
@@ -1551,7 +1412,6 @@
       (function (term) {
         term.addEventListener('click', function (e) {
           if (!isTouchLikeEvent(e)) return;
-
           if (currentlyActiveTooltip !== term) {
             stopEvent(e);
             clearActiveTooltip();
@@ -1564,7 +1424,6 @@
     }
   })();
 
-  // ---- Subpart Selection (Ⓐ/Ⓑ/Ⓒ...) ----
   (function initSubpartSelection() {
     var subparts = qsa('.sentence.has-subparts .subpart');
     if (!subparts || !subparts.length) return;
@@ -1588,7 +1447,6 @@
           var key = baseKey + '.' + letter;
           var quoteEl = qs('.subpart-content', subpart) || subpart;
           var quoteText = normalizeWhitespace(quoteEl.textContent);
-
           var hadPreviousSelection = !!currentlySelectedKey;
           var isSameSelection = (currentlySelectedKey === key);
 
@@ -1608,14 +1466,11 @@
 
           sentence.classList.add('is-selected');
           currentlySelectedSentence = sentence;
-
           subpart.classList.add('is-subpart-selected');
           currentlySelectedSubpart = subpart;
-
           currentlySelectedKey = key;
           currentlySelectedFallbackKey = baseKey;
           currentlySelectedQuoteText = quoteText;
-
           updateLexiconButtonState();
           updateCitationLabel(key, hadPreviousSelection);
           renderSentenceExplanation(key, quoteText, baseKey);
@@ -1624,7 +1479,6 @@
     }
   })();
 
-  // ---- Sentence Selection ----
   (function initSentenceSelection() {
     var sentences = qsa('.sentence');
     if (!sentences || !sentences.length) return;
@@ -1633,7 +1487,6 @@
       (function (sentence) {
         sentence.addEventListener('click', function (e) {
           if (closestSafe(e && e.target, '.subpart')) return;
-
           clearActiveTooltip();
 
           var wasSelected = sentence.classList.contains('is-selected');
@@ -1660,11 +1513,9 @@
           var key = sentence.dataset.lexiconKey;
           var text = sentence.dataset.sentenceText || sentence.textContent.replace(/^[0-9]+\.\s*/, '');
           text = normalizeWhitespace(text);
-
           currentlySelectedKey = key;
           currentlySelectedQuoteText = text;
           currentlySelectedFallbackKey = null;
-
           updateLexiconButtonState();
           updateCitationLabel(key, hadPreviousSelection);
           renderSentenceExplanation(key, text);
@@ -1673,7 +1524,6 @@
     }
   })();
 
-  // ---- Mobile seal drag -> drag panel open/close (bottom sheet) ----
   (function initMobileSealDrag() {
     if (!lexiconToggle || !panel || !lexOverlay) return;
     if (!window.PointerEvent) return;
@@ -1681,37 +1531,27 @@
     var dragging = false;
     var moved = false;
     var pointerId = null;
-
     var startY = 0;
     var lastY = 0;
     var lastT = 0;
     var velocity = 0;
-
     var startWasOpen = false;
-
     var closedY = 0;
     var midY = null;
     var currentY = 0;
     var startPanelY = 0;
-
     var panelHCache = 1;
     var dockObscurePxCache = 0;
-
     var MOVE_SLOP = 6;
-
     var OPEN_VELOCITY = -0.85;
     var OPEN_RATIO = 0.38;
-
     var CLOSE_VELOCITY = 0.85;
     var CLOSE_RATIO = 0.28;
-
     var SNAP_MS = getCssVarNumber('--lexicon-snap-duration', 420);
     var SNAP_EASE = getCssVarString('--lexicon-snap-ease', 'cubic-bezier(0.22, 0.61, 0.36, 1)');
 
     window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
-
     var dragIntentPulsed = false;
-
     var sealSettlingTimer = null;
 
     function clearSealSettling() {
@@ -1728,7 +1568,6 @@
       }
 
       lexiconToggle.classList.add('is-seal-settling');
-
       sealSettlingTimer = window.setTimeout(function () {
         try { clearSealSettling(); } catch (err) {}
         sealSettlingTimer = null;
@@ -1776,10 +1615,8 @@
       var y = Math.round(panelHCache - (dockObscurePxCache + desired));
       if (y < 0) y = 0;
       if (y > closedY) y = closedY;
-
       if (Math.abs(y) < 12) return null;
       if (Math.abs(y - closedY) < 12) return null;
-
       return y;
     }
 
@@ -1810,11 +1647,7 @@
         }
       }
 
-      storePanelY(y);
-
-      // Critical: in bottom-sheet mode, translating the full-height sheet doesn't change layout.
-      // Explicit body sizing ensures the internal scroll viewport matches what is visible above the dock.
-      applyLexiconBodySizingForY(y, getDockObscurePxSafeLocal());
+      // Live drag stays transform-only; body sizing + stored state are committed on snap.
     }
 
     function ensureOpenShellFromDrag() {
@@ -1829,7 +1662,6 @@
         lexiconToggle.setAttribute('aria-expanded', 'true');
         lockBodyScroll();
         setLexiconGlyph();
-
         noteOpen();
       } else {
         bringSelfToFront();
@@ -1840,7 +1672,13 @@
 
     function finalizeFullyOpenFromDrag() {
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () { setSealToOpenPosition(); storePanelY(0); });
+      raf(function () {
+        var dockObscurePx = getDockObscurePxSafe();
+        applyLexiconBodySizingForY(0, dockObscurePx);
+        applyLexiconBodyDockInset(dockObscurePx);
+        setSealToOpenPosition();
+        storePanelY(0);
+      });
     }
 
     function applyClosedStateFromDrag() {
@@ -1854,7 +1692,6 @@
         lexiconToggle.setAttribute('aria-expanded', 'false');
         unlockBodyScroll();
         setLexiconGlyph();
-
         noteClose();
         clearStackZIndex();
       }
@@ -1872,20 +1709,15 @@
     function snap() {
       var openY = 0;
       var targetY = null;
-
       var mid = (typeof midY === 'number' && isFinite(midY)) ? Math.round(midY) : null;
       var closed = Math.max(1, Math.round(closedY || 1));
 
       if (startWasOpen) {
         var dragDown = currentY - 0;
-        if (velocity > CLOSE_VELOCITY || dragDown > closed * CLOSE_RATIO) {
-          targetY = closed;
-        }
+        if (velocity > CLOSE_VELOCITY || dragDown > closed * CLOSE_RATIO) targetY = closed;
       } else {
         var dragUp = closed - currentY;
-        if (velocity < OPEN_VELOCITY || dragUp > closed * OPEN_RATIO) {
-          targetY = openY;
-        }
+        if (velocity < OPEN_VELOCITY || dragUp > closed * OPEN_RATIO) targetY = openY;
       }
 
       if (targetY === null) {
@@ -1894,7 +1726,6 @@
         else {
           var candidates = [openY, closed];
           if (mid !== null) candidates.splice(1, 0, mid);
-
           targetY = candidates[0];
           var bestDist = Math.abs(currentY - targetY);
           for (var i = 1; i < candidates.length; i++) {
@@ -1933,9 +1764,6 @@
       setTimeout(function () {
         panel.style.transition = '';
         if (lexOverlay) lexOverlay.style.transition = '';
-
-        // Only the canonical end-states clear inline transforms.
-        // The mid resting state intentionally keeps translateY + opacity.
         if (targetY === closed || targetY === openY) {
           panel.style.transform = '';
           if (lexOverlay) lexOverlay.style.opacity = '';
@@ -1945,21 +1773,17 @@
 
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (!isMobileSheet()) return;
-
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
       clearSealSettling();
-
       dragging = true;
       moved = false;
       dragIntentPulsed = false;
       pointerId = e.pointerId;
-
       startY = e.clientY;
       lastY = startY;
       lastT = Date.now();
       velocity = 0;
-
       startWasOpen = panel.classList.contains('is-open');
 
       computeClosedY();
@@ -1976,7 +1800,6 @@
       panel.classList.add('is-dragging');
       panel.style.transition = 'none';
       if (lexOverlay) lexOverlay.style.transition = 'none';
-
       panel.style.transform = 'translateY(' + currentY + 'px)';
       setPanelY(currentY, true);
 
@@ -1991,7 +1814,6 @@
       if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
         moved = true;
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
-
         if (!dragIntentPulsed) {
           dragIntentPulsed = true;
           triggerSealNudge();
@@ -2002,7 +1824,6 @@
       var now = Date.now();
       var dt = now - lastT;
       if (dt > 0) velocity = (e.clientY - lastY) / dt;
-
       lastY = e.clientY;
       lastT = now;
 
