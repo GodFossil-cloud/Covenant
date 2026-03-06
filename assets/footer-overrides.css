@@ -593,9 +593,9 @@ html.lexicon-scroll-lock #navFooter{
   will-change:auto;
   transform-style:flat;
 
-  /* Preserve drag math (lexicon.js drives --seal-drag-y) while staying on the dock's raster path. */
-  -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
-  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
+  /* Preserve drag math (lexicon.js drives --seal-drag-y) while letting the shared sheet path own the vertical carry. */
+  -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;
+  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;
 
   width:var(--lexicon-seal-w);
   height:var(--lexicon-seal-h);
