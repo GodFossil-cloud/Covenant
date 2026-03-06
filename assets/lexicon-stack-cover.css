@@ -11,6 +11,8 @@
      `--seal-drag-y` (set inline by lexicon.js).
    - If we fade to 0 immediately, the motion becomes imperceptible.
      So we intentionally delay opacity slightly on cover so the travel reads.
+   - During live seal-drag, transform transition must be disabled or Safari will
+     visually trail the seal behind the finger and make the dock/sheet weld read broken.
 */
 
 :root{
@@ -60,6 +62,19 @@ html body #lexiconToggle{
     !important;
 }
 
+/* Live drag must be immediate on iOS Safari.
+   Keep opacity transitions available, but remove transform easing while the finger is down. */
+html body #lexiconToggle.is-seal-dragging{
+  will-change:transform, opacity;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease,
+    filter 0.2s ease,
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+  transition-delay:0ms !important;
+}
+
 /* Covered: fade, disable interaction. */
 html body #lexiconToggle.is-ui-stack-covered{
   /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
@@ -101,6 +116,16 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered{
   -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
 
   transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
+}
+
+/* Footer/mobile specificity: while dragging, keep the exact same transform path,
+   but without any transform transition lag. */
+html body #navFooter #lexiconToggle.is-seal-dragging{
+  will-change:transform, opacity;
+  transition:
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+  transition-delay:0ms !important;
 }
 
 @media (prefers-reduced-motion: reduce){
