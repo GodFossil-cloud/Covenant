@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.20 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.21 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.20';
+  window.COVENANT_LEXICON_VERSION = '0.3.21';
 
   var doc = document;
   var root = doc.documentElement;
@@ -904,7 +904,9 @@
   }
 
   function shouldAnchorSealToDock() {
-    return !!(isIOS && isBottomSheetMode());
+    // Keep the mobile seal on the same geometry path as the sheet.
+    // The iOS-only dock anchoring shortcut pinned the seal in its cradle.
+    return false;
   }
 
   function setSealDragOffset(px, draggingNow) {
