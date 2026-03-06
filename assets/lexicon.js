@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.21 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.22 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.21';
+  window.COVENANT_LEXICON_VERSION = '0.3.22';
 
   var doc = document;
   var root = doc.documentElement;
@@ -985,6 +985,33 @@
     try { panel.setAttribute('data-lexicon-y', String(Math.round(y))); } catch (err) {}
   }
 
+  function readStoredPanelSnap() {
+    if (!panel) return null;
+    try {
+      var raw = String(panel.getAttribute('data-lexicon-snap') || '').trim();
+      if (raw === 'open' || raw === 'mid' || raw === 'closed') return raw;
+    } catch (err) {}
+    return null;
+  }
+
+  function storePanelSnap(state) {
+    if (!panel) return;
+    try {
+      var next = String(state || '').trim();
+      if (next === 'open' || next === 'mid' || next === 'closed') panel.setAttribute('data-lexicon-snap', next);
+      else panel.removeAttribute('data-lexicon-snap');
+    } catch (err) {}
+  }
+
+  function derivePanelSnap(y, closedY) {
+    if (!(typeof y === 'number' && isFinite(y))) return null;
+    var closed = Math.max(1, Math.round(closedY || 1));
+    var current = Math.round(y);
+    if (current <= MID_REST_NON_MODAL_PX) return 'open';
+    if (Math.abs(current - closed) <= 1) return 'closed';
+    return 'mid';
+  }
+
   function getViewportHeightSafe() {
     try {
       if (window.visualViewport && typeof window.visualViewport.height === 'number' && window.visualViewport.height > 0) {
@@ -1087,7 +1114,7 @@
     return Math.max(0, Math.round(headerH + bodyH + 10));
   }
 
-  function applyMobileRestingY(y, closedY, sealDragging) {
+  function applyMobileRestingY(y, closedY, sealDragging, snapState) {
     if (!panel || !lexOverlay) return;
 
     if (typeof sealDragging !== 'boolean') sealDragging = false;
@@ -1119,6 +1146,7 @@
     }
 
     storePanelY(y);
+    storePanelSnap(snapState || derivePanelSnap(y, closedY));
   }
 
   var iosMidRestSyncRaf = null;
@@ -1131,7 +1159,6 @@
 
     var storedY = readStoredPanelY();
     if (!(typeof storedY === 'number' && isFinite(storedY))) return;
-    if (storedY <= MID_REST_NON_MODAL_PX) return;
     if (iosMidRestSyncRaf) return;
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
@@ -1139,17 +1166,29 @@
       iosMidRestSyncRaf = null;
 
       try {
+        var storedSnap = readStoredPanelSnap();
+        if (!storedSnap) storedSnap = (storedY <= MID_REST_NON_MODAL_PX) ? 'open' : 'mid';
+        if (storedSnap === 'closed') return;
+
         var dockObscurePx = getDockObscurePxSafe();
         var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
         var rect = panel.getBoundingClientRect();
         var panelH = (rect && rect.height) ? rect.height : 1;
         var closedY = Math.max(1, Math.round(panelH - (dockObscurePx + peek)));
 
-        var y = Math.round(storedY);
-        if (y < 0) y = 0;
-        if (y > closedY) y = closedY;
+        var y = 0;
+        if (storedSnap !== 'open') {
+          var contentH = measureLexiconContentHeight();
+          var availAboveDock = Math.max(180, Math.round(getViewportHeightSafe() - dockObscurePx));
+          var capH = Math.round(availAboveDock * 0.60);
+          var desired = Math.min(contentH, capH);
 
-        applyMobileRestingY(y, closedY, false);
+          y = Math.round(panelH - (dockObscurePx + desired));
+          if (y < 0) y = 0;
+          if (y > closedY) y = closedY;
+        }
+
+        applyMobileRestingY(y, closedY, false, derivePanelSnap(y, closedY));
         applyLexiconBodyDockInset(dockObscurePx);
       } catch (err) {}
     });
@@ -1195,13 +1234,13 @@
 
     panel.style.transition = 'none';
     lexOverlay.style.transition = 'none';
-    applyMobileRestingY(closedY, closedY, false);
+    applyMobileRestingY(closedY, closedY, false, 'closed');
 
     var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
     raf(function () {
       panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
       lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
-      applyMobileRestingY(openY, closedY, false);
+      applyMobileRestingY(openY, closedY, false, derivePanelSnap(openY, closedY));
       applyLexiconBodyDockInset(dockObscurePx);
 
       setTimeout(function () {
@@ -1296,7 +1335,10 @@
     lexOverlay.setAttribute('aria-hidden', 'true');
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
 
-    if (isBottomSheetMode()) setSealToClosedPosition();
+    if (isBottomSheetMode()) {
+      setSealToClosedPosition();
+      storePanelSnap('closed');
+    }
 
     unlockBodyScroll();
     setLexiconGlyph();
@@ -1690,10 +1732,8 @@
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () {
         var dockObscurePx = getDockObscurePxSafe();
-        applyLexiconBodySizingForY(0, dockObscurePx);
+        applyMobileRestingY(0, Math.max(1, Math.round(closedY || 1)), false, 'open');
         applyLexiconBodyDockInset(dockObscurePx);
-        setSealToOpenPosition();
-        storePanelY(0);
       });
     }
 
@@ -1720,6 +1760,7 @@
       clearLexiconBodySizing();
       clearSealDragOffset();
       storePanelY(closedY);
+      storePanelSnap('closed');
     }
 
     function snap() {
@@ -1770,18 +1811,20 @@
         ensureOpenShellFromDrag();
 
         if (targetY === openY) {
-          setPanelY(openY, false);
+          applyMobileRestingY(openY, closed, false, 'open');
           finalizeFullyOpenFromDrag();
         } else {
-          applyMobileRestingY(targetY, closed, false);
+          applyMobileRestingY(targetY, closed, false, 'mid');
         }
       }
 
       setTimeout(function () {
         panel.style.transition = '';
         if (lexOverlay) lexOverlay.style.transition = '';
-        if (targetY === closed || targetY === openY) {
+        if (targetY === closed) {
           panel.style.transform = '';
+          if (lexOverlay) lexOverlay.style.opacity = '';
+        } else if (targetY === openY) {
           if (lexOverlay) lexOverlay.style.opacity = '';
         }
       }, SNAP_MS + 20);
