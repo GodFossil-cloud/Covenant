@@ -584,7 +584,7 @@ html.lexicon-scroll-lock #navFooter{
 
 #navFooter #lexiconToggle{
   overflow:hidden;
-  margin-top:calc(-1 * var(--lexicon-seal-top-align) + 4px) !important;
+  margin-top:calc(-1 * var(--lexicon-seal-top-align)) !important;
 
   /* iPhone Safari: keep the seal welded to the dock during rubber-band and mid-rest overscroll.
      Avoid a separately promoted child transform layer; it can detach/clamp a frame ahead of the slab. */
