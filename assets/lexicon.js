@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.17 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
+/*! Covenant Lexicon UI v0.3.18 (mobile bottom-sheet supports 3 snap stops: closed, tap-rest mid, fully open; tap-to-close from fully open closes straight to dock) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.17';
+  window.COVENANT_LEXICON_VERSION = '0.3.18';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1258,6 +1258,8 @@
     // Fallbacks: some Safari versions are picky about vv listeners.
     try { window.addEventListener('orientationchange', function () { setTimeout(scheduleIOSMidRestViewportResync, 50); }); } catch (err1) {}
     try { window.addEventListener('resize', scheduleIOSMidRestViewportResync, { passive: true }); } catch (err2) {}
+    try { window.addEventListener('scroll', scheduleIOSMidRestViewportResync, { passive: true }); } catch (err3) {}
+    try { window.addEventListener('pageshow', scheduleIOSMidRestViewportResync); } catch (err4) {}
   })();
 
   function mobileTapOpenToContentHeight() {
