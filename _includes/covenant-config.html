@@ -9,24 +9,6 @@
 <!-- Head-loaded: stabilize dock geometry on first paint (iPhone Safari). -->
 <link rel="stylesheet" href="assets/footer-overrides.css?v=68">
 
-<style id="lexicon-ios-midrest-scroll-lock">
-  @supports selector(html:has(#lexiconPanel.is-open[data-lexicon-snap="mid"])) {
-    @media (max-width: 600px) {
-      html:has(#lexiconPanel.is-open[data-lexicon-snap="mid"]) {
-        overflow: hidden;
-        height: 100%;
-        overscroll-behavior: none;
-      }
-
-      html:has(#lexiconPanel.is-open[data-lexicon-snap="mid"]) body {
-        overflow: hidden;
-        height: 100%;
-        overscroll-behavior: none;
-      }
-    }
-  }
-</style>
-
 <!-- Panel veils + dock tab seat model. -->
 <link rel="stylesheet" href="assets/toc.css?v=68">
 <link rel="stylesheet" href="assets/reliquary.css?v=56">
