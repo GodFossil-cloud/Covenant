@@ -9,6 +9,63 @@
 <!-- Head-loaded: stabilize dock geometry on first paint (iPhone Safari). -->
 <link rel="stylesheet" href="assets/footer-overrides.css?v=68">
 
+<script>
+  (function () {
+    var ua = navigator.userAgent || '';
+    var platform = navigator.platform || '';
+    var isIOSDevice = /iPad|iPhone|iPod/.test(ua);
+    var isIPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+    if (!(isIOSDevice || isIPadOS)) return;
+
+    var restoreQueued = false;
+    var preservedSealY = '';
+
+    function isMobileBottomSheet() {
+      return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    }
+
+    function getPanel() {
+      return document.getElementById('lexiconPanel');
+    }
+
+    function getSeal() {
+      return document.getElementById('lexiconToggle');
+    }
+
+    function isLexiconMidRest(panel) {
+      if (!panel) return false;
+      return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
+    }
+
+    function preserveSealDuringPageScroll() {
+      if (!isMobileBottomSheet()) return;
+
+      var panel = getPanel();
+      var seal = getSeal();
+      if (!isLexiconMidRest(panel) || !seal) return;
+
+      preservedSealY = seal.style.getPropertyValue('--seal-drag-y') || preservedSealY;
+      if (restoreQueued) return;
+      restoreQueued = true;
+
+      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+      raf(function () {
+        restoreQueued = false;
+
+        var livePanel = getPanel();
+        var liveSeal = getSeal();
+        if (!isMobileBottomSheet()) return;
+        if (!isLexiconMidRest(livePanel) || !liveSeal) return;
+        if (!preservedSealY) return;
+
+        liveSeal.style.setProperty('--seal-drag-y', preservedSealY);
+      });
+    }
+
+    window.addEventListener('scroll', preserveSealDuringPageScroll, { passive: true });
+  })();
+</script>
+
 <!-- Panel veils + dock tab seat model. -->
 <link rel="stylesheet" href="assets/toc.css?v=68">
 <link rel="stylesheet" href="assets/reliquary.css?v=56">
