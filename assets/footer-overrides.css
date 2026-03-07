@@ -615,3 +615,47 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
 #navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph::before,
 #navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph::before,
 #navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph::before{opacity:0 !important;animation:none !important;filter:none !important}
+
+/* Lexicon panel header / quote-box alignment (retired micro-file consolidation) */
+.lexicon-panel-header{
+  justify-content:flex-start;
+  gap:12px;
+}
+
+.lexicon-panel-close{
+  margin-left:auto;
+}
+
+#lexiconHeaderText{
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+#lexiconHeaderText .lexicon-panel-title,
+#lexiconHeaderText .lexicon-panel-mode{
+  text-align:left;
+}
+
+@media (max-width: 520px){
+  #lexiconSealSlot:empty{
+    display:none !important;
+  }
+
+  .lexicon-panel-header{
+    gap:8px !important;
+  }
+}
+
+.lexicon-panel-body .lexicon-sentence-quote{
+  box-sizing:border-box !important;
+  width:auto !important;
+  max-width:100% !important;
+  margin-left:-20px !important;
+  margin-right:20px !important;
+  background:#3b0c10 !important;
+  color:#d0c0c0 !important;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
