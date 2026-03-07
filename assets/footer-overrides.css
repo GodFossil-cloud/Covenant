@@ -15,54 +15,34 @@
    ------------------------------------------------- */
 
 :root{
-  /* Dock tab medallion surface (used by ToC + Mirror caps via toc.css).
-     Single source of truth: toc.css must not redeclare this token. */
   --dock-tab-face:#010103;
-
-  /* Lexicon seal: closed/base surface tones (keep selection/leaf styling untouched). */
   --lexicon-seal-face:#08090b;
   --lexicon-seal-face-hover:#0a0b0e;
 
-  /* -------------------------------------------------
-     Metal system (palette improvements)
-     - Adds a clear ladder: rest → intent → blessed
-     - Standardizes shadow recipes (structure stays constant; only alpha shifts)
-     ------------------------------------------------- */
-
-  /* Brass / leaf anchors (fallbacks preserve behavior if covenant.css isn't loaded yet). */
   --metal-brass-rest:var(--brass-1, rgba(201, 169, 97, 0.72));
   --metal-leaf-intent:var(--leaf-0, rgba(242, 220, 154, 0.94));
   --metal-leaf-blessed:var(--leaf-1, rgba(255, 215, 122, 0.98));
 
-  /* Shared ink seat + halo recipes (used across dock glyphs + citation). */
   --metal-ink-seat:0 1px 0 rgba(0, 0, 0, 0.92);
   --metal-halo-soft:0 0 8px rgba(242, 220, 154, 0.12);
   --metal-halo-intent:0 0 12px rgba(242, 220, 154, 0.16);
 
-  /* Footer citation label beneath Lexicon seal (copy-to-clipboard).
-     Default should read as brass (rest); leaf is reserved for the moment of confirmation. */
   --citation-label-color:rgba(201, 169, 97, 0.88);
   --citation-label-shadow:var(--metal-ink-seat), var(--metal-halo-soft);
 
-  /* Lexicon glyph (open state): keep the symbol itself brass-gold, but let the halo go bright. */
   --lexicon-glyph-open-color:var(--gold-1, rgba(242,220,154,0.98));
   --lexicon-glyph-open-shadow:
     0 0 10px rgba(255,255,255,0.62),
     0 0 22px rgba(255,255,255,0.26),
     0 0 40px rgba(242,220,154,0.16);
 
-  /* Fully-open "embedded" state: keep gold, remove halo (tiny ink seat only). */
   --lexicon-glyph-open-embedded-shadow:0 1px 0 rgba(0,0,0,0.86);
 
-  /* Fully-open + selection: "leaf inlay" (sacred distinction without radiance).
-     Crisp bevel/seat only: no blur values, so it reads engraved/inlaid, not glowing. */
   --lexicon-glyph-open-inlay-color:#D8C07A;
   --lexicon-glyph-open-inlay-shadow:
     0 1px 0 rgba(0,0,0,0.92),
     0 -1px 0 rgba(255,255,255,0.08);
 
-  /* Selected + CLOSED: increase distinction without turning the *open* state radiant.
-     This adds a controlled, faint halo (small blur) around the inlay so it reads "chosen" at a glance. */
   --lexicon-glyph-selected-quiet-halo-shadow:
     0 1px 0 rgba(0,0,0,0.94),
     0 -1px 0 rgba(255,255,255,0.14),
@@ -70,11 +50,8 @@
     0 0 22px rgba(242,220,154,0.34),
     0 0 46px rgba(242,220,154,0.16);
 
-  /* Selected + CLOSED color (antique leaf). */
   --lexicon-glyph-selected-color:#F2DC9A;
 
-  /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
-     (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
   --lexicon-glyph-tap-aura-size:2.0em;
   --lexicon-glyph-tap-aura-blur:8px;
   --lexicon-glyph-tap-aura:
@@ -87,23 +64,20 @@
     );
   --lexicon-glyph-tap-aura-close-duration:260ms;
 
-  /* Dock tab tap flash (ToC + Mirror): same family, slightly quieter than Lexicon. */
-  --dock-tab-glyph-tap-aura-size:3.0em;
-  --dock-tab-glyph-tap-aura-blur:8px;
+  --dock-tab-glyph-tap-aura-size:2.4em;
+  --dock-tab-glyph-tap-aura-blur:7px;
   --dock-tab-glyph-tap-aura:
     radial-gradient(circle at 50% 50%,
-      rgba(255,255,255,0.88) 0%,
-      rgba(255,255,255,0.52) 16%,
-      rgba(242,220,154,0.32) 34%,
-      rgba(242,220,154,0.18) 54%,
-      rgba(0,0,0,0) 86%
+      rgba(255,255,255,0.78) 0%,
+      rgba(242,220,154,0.44) 22%,
+      rgba(201,169,97,0.22) 44%,
+      rgba(0,0,0,0) 76%
     );
+  --dock-tab-glyph-tap-aura-open-duration:280ms;
+  --dock-tab-glyph-tap-aura-close-duration:240ms;
 
-  /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 
-  /* Lexicon cradle glow (center dock notch): subtle at rest, stronger during engagement.
-     IMPORTANT: bias the radiance toward the cradle floor (bottom) so it doesn't read "lit from above". */
   --lexicon-cradle-glow-rest:
     inset 0 -10px 18px rgba(242, 220, 154, 0.06),
     inset 0 -22px 34px rgba(201, 169, 97, 0.04);
@@ -112,10 +86,6 @@
     inset 0 -12px 24px rgba(242, 220, 154, 0.14),
     inset 0 -26px 44px rgba(201, 169, 97, 0.10);
 }
-
-/* -------------------------------------------------
-   Monochrome-metal dock (ToC + Mirror)
-   ------------------------------------------------- */
 
 html #navFooter{
   --toc-glyph-rest-color:var(--metal-brass-rest);
@@ -191,20 +161,27 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
     transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+#navFooter #tocToggle .toc-glyph,
+#navFooter #mirrorToggle .toc-glyph{
+  position:relative;
+  display:inline-block;
+  z-index:0;
+}
+
 #navFooter #tocToggle .toc-glyph::before,
 #navFooter #mirrorToggle .toc-glyph::before{
   content:'';
   position:absolute;
   left:50%;
   top:50%;
-  width:var(--dock-tab-glyph-tap-aura-size, 3.0em);
-  height:var(--dock-tab-glyph-tap-aura-size, 3.0em);
+  width:var(--dock-tab-glyph-tap-aura-size, 2.4em);
+  height:var(--dock-tab-glyph-tap-aura-size, 2.4em);
   border-radius:999px;
   background:var(--dock-tab-glyph-tap-aura);
-  filter:blur(var(--dock-tab-glyph-tap-aura-blur, 8px));
+  filter:blur(var(--dock-tab-glyph-tap-aura-blur, 7px));
   opacity:0;
   pointer-events:none;
-  transform:translate(-50%, -50%) scale(0.52);
+  transform:translate(-50%, -50%) scale(0.56);
   z-index:-1;
 }
 
@@ -215,11 +192,35 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   overflow:visible;
 }
 
-#navFooter #tocToggle.is-tap-opening .toc-glyph::before,
-#navFooter #tocToggle.is-tap-closing .toc-glyph::before,
-#navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
-#navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
-  animation:lexiconTapAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+@keyframes dockTabTapAuraPulse{
+  0%{opacity:0;transform:translate(-50%, -50%) scale(0.34)}
+  14%{opacity:1;transform:translate(-50%, -50%) scale(0.82)}
+  58%{opacity:0.66;transform:translate(-50%, -50%) scale(0.94)}
+  100%{opacity:0;transform:translate(-50%, -50%) scale(1.02)}
+}
+
+@media (prefers-reduced-motion: no-preference){
+  #navFooter #tocToggle.is-tap-opening .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+
+  #navFooter #tocToggle.is-tap-closing .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+
+  #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
+  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
+    content:'' !important;
+    display:block !important;
+  }
+
+  #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+
+  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -616,7 +617,6 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
 #navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph::before,
 #navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph::before{opacity:0 !important;animation:none !important;filter:none !important}
 
-/* Lexicon panel header / quote-box alignment (retired micro-file consolidation) */
 .lexicon-panel-header{
   justify-content:flex-start;
   gap:12px;
