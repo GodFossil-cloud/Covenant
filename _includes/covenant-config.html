@@ -16,27 +16,137 @@
     var isIOSDevice = /iPad|iPhone|iPod/.test(ua);
     var isIPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
     if (!(isIOSDevice || isIPadOS)) return;
-    if (window.__COVENANT_LEXICON_SCROLL_SHIM__) return;
-    if (typeof window.addEventListener !== 'function') return;
+    if (window.__COVENANT_LEXICON_MIDREST_WELD__) return;
+    window.__COVENANT_LEXICON_MIDREST_WELD__ = true;
 
-    var nativeAddEventListener = window.addEventListener;
-    window.__COVENANT_LEXICON_SCROLL_SHIM__ = true;
+    var placeholder = null;
+    var dockParent = null;
+    var sealInHeader = false;
+    var observer = null;
 
-    window.addEventListener = function (type, listener, options) {
-      if (
-        type === 'scroll'
-        && typeof listener === 'function'
-        && listener.name === 'scheduleIOSMidRestViewportResync'
-      ) {
-        return;
+    function isMobileBottomSheet() {
+      return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    }
+
+    function getPanel() {
+      return document.getElementById('lexiconPanel');
+    }
+
+    function getSeal() {
+      return document.getElementById('lexiconToggle');
+    }
+
+    function getSealSlot() {
+      return document.getElementById('lexiconSealSlot');
+    }
+
+    function ensurePlaceholder() {
+      if (placeholder) return placeholder;
+
+      var el = document.createElement('span');
+      el.setAttribute('aria-hidden', 'true');
+      el.style.display = 'block';
+      el.style.width = 'var(--seal-size, 56px)';
+      el.style.height = 'var(--seal-size, 56px)';
+      el.style.pointerEvents = 'none';
+      placeholder = el;
+      return el;
+    }
+
+    function shouldWeldSeal() {
+      var panel = getPanel();
+      if (!isMobileBottomSheet() || !panel) return false;
+      return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
+    }
+
+    function weldSealIntoHeader() {
+      var seal = getSeal();
+      var slot = getSealSlot();
+      if (!seal || !slot || sealInHeader) return;
+
+      dockParent = seal.parentNode;
+      if (!dockParent) return;
+
+      try {
+        dockParent.insertBefore(ensurePlaceholder(), seal);
+      } catch (err0) {}
+
+      slot.style.display = 'flex';
+      slot.style.alignItems = 'center';
+      slot.style.justifyContent = 'center';
+      slot.style.flex = '0 0 auto';
+
+      var headerText = document.getElementById('lexiconHeaderText');
+      if (headerText) {
+        headerText.style.flex = '1 1 auto';
+        headerText.style.minWidth = '0';
       }
 
-      return nativeAddEventListener.call(this, type, listener, options);
-    };
+      seal.classList.remove('is-pulsing', 'is-nudging', 'is-tap-opening', 'is-tap-closing', 'is-seal-dragging', 'is-seal-settling');
+      seal.classList.add('is-seal-in-header');
+      seal.style.transform = 'none';
+      seal.style.margin = '0 8px 0 0';
+      seal.style.removeProperty('--seal-drag-y');
+      slot.appendChild(seal);
+      sealInHeader = true;
+    }
 
-    document.addEventListener('DOMContentLoaded', function () {
-      window.addEventListener = nativeAddEventListener;
-    }, { once: true });
+    function restoreSealToDock() {
+      var seal = getSeal();
+      if (!seal || !sealInHeader || !dockParent) return;
+
+      try {
+        if (placeholder && placeholder.parentNode === dockParent) {
+          dockParent.insertBefore(seal, placeholder);
+          dockParent.removeChild(placeholder);
+        } else {
+          dockParent.appendChild(seal);
+        }
+      } catch (err1) {}
+
+      seal.classList.remove('is-seal-in-header');
+      seal.style.transform = '';
+      seal.style.margin = '';
+      placeholder = null;
+      dockParent = null;
+      sealInHeader = false;
+    }
+
+    function syncSealAttachment() {
+      if (shouldWeldSeal()) weldSealIntoHeader();
+      else restoreSealToDock();
+    }
+
+    function attachObserver() {
+      var panel = getPanel();
+      if (!panel || observer) return;
+
+      observer = new MutationObserver(function () {
+        syncSealAttachment();
+      });
+
+      observer.observe(panel, {
+        attributes: true,
+        attributeFilter: ['class', 'data-lexicon-snap']
+      });
+    }
+
+    function init() {
+      attachObserver();
+      syncSealAttachment();
+
+      window.addEventListener('resize', syncSealAttachment, { passive: true });
+      window.addEventListener('orientationchange', syncSealAttachment);
+      window.addEventListener('scroll', syncSealAttachment, { passive: true });
+      document.addEventListener('visibilitychange', syncSealAttachment);
+      window.addEventListener('pageshow', syncSealAttachment);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+      init();
+    }
   })();
 </script>
 
