@@ -4,10 +4,14 @@
    This file consolidates:
    - nav-footer-flat-top.css (Lexicon seal flat-top geometry + socket/cradle shaping)
    - footer-tones.css (small contrast/ink nudges for dock tabs + Lexicon seal)
+   - Lexicon quiet-open / lock-state / tap-flash / stack-cover micro-rules
+   - dock-tab tap-flash micro-rules
+   - Lexicon header + quote-box alignment micro-rules
 
    Scope:
    - Geometry rules target #navFooter to avoid bleed.
    - Tone variables are global (as before) because toc.css consumes them.
+   - Lexicon stack-cover rules remain global because ui-stack can cover the seal outside footer state.
 */
 
 /* -------------------------------------------------
@@ -76,6 +80,14 @@
   --dock-tab-glyph-tap-aura-open-duration:280ms;
   --dock-tab-glyph-tap-aura-close-duration:240ms;
 
+  --lexicon-cover-fade-ms:220ms;
+  --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
+  --lexicon-cover-transform-ms:560ms;
+  --lexicon-cover-vh:100vh;
+  --lexicon-cover-fallback-y:-22px;
+  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 14px));
+  --lexicon-cover-opacity-delay:130ms;
+
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 
   --lexicon-cradle-glow-rest:
@@ -85,6 +97,10 @@
   --lexicon-cradle-glow-intent:
     inset 0 -12px 24px rgba(242, 220, 154, 0.14),
     inset 0 -26px 44px rgba(201, 169, 97, 0.10);
+}
+
+@supports (height: 100dvh){
+  :root{ --lexicon-cover-vh:100dvh; }
 }
 
 html #navFooter{
@@ -658,4 +674,71 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
   color:#d0c0c0 !important;
   overflow-wrap:anywhere;
   word-break:break-word;
+}
+
+html body #lexiconToggle{
+  opacity:1;
+  --lexicon-stack-cover-y:0px;
+  will-change:opacity;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease,
+    filter 0.2s ease,
+    transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+}
+
+html body #lexiconToggle.is-seal-dragging{
+  will-change:transform, opacity;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease,
+    filter 0.2s ease,
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+  transition-delay:0ms !important;
+}
+
+html body #lexiconToggle.is-ui-stack-covered{
+  z-index:1490 !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  filter:none !important;
+}
+
+html body #lexiconToggle.is-ui-stack-covered{
+  --lexicon-stack-cover-y:var(--lexicon-cover-fallback-y);
+  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
+  -webkit-transform:translateY(var(--lexicon-stack-cover-y, 0px)) !important;
+  transform:translateY(var(--lexicon-stack-cover-y, 0px)) !important;
+}
+
+html body #navFooter #lexiconToggle.is-ui-stack-covered{
+  --lexicon-stack-cover-y:var(--lexicon-cover-out-y);
+  transition:
+    transform var(--lexicon-cover-transform-ms, 560ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
+  -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
+  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
+}
+
+html body #navFooter #lexiconToggle.is-seal-dragging{
+  will-change:transform, opacity;
+  transition:
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+  transition-delay:0ms !important;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html body #lexiconToggle{transition:none !important}
+
+  html body #lexiconToggle.is-ui-stack-covered{
+    opacity:0 !important;
+    -webkit-transform:translateY(0) !important;
+    transform:translateY(0) !important;
+  }
 }
