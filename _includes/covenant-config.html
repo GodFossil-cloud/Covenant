@@ -94,55 +94,65 @@
       }
     }
 
-    function applyCenteredHeaderLayout() {
+    function applyWeldedHeaderLayout() {
       var slot = getSealSlot();
       var header = getHeader();
       var headerText = getHeaderText();
       var closeBtn = getCloseButton();
       if (!slot || !header) return;
 
-      header.style.position = 'relative';
-      header.style.justifyContent = 'center';
+      header.style.display = 'grid';
+      header.style.gridTemplateColumns = 'minmax(0, 1fr) auto minmax(44px, 1fr)';
       header.style.alignItems = 'center';
-      header.style.flexWrap = 'wrap';
-      header.style.gap = '6px 12px';
-      header.style.paddingTop = '14px';
+      header.style.columnGap = '12px';
+      header.style.rowGap = '0';
+      header.style.justifyContent = '';
+      header.style.flexWrap = '';
+      header.style.paddingTop = '';
 
       slot.style.display = 'flex';
       slot.style.alignItems = 'center';
       slot.style.justifyContent = 'center';
-      slot.style.flex = '0 0 100%';
-      slot.style.width = '100%';
-      slot.style.order = '0';
+      slot.style.flex = '0 0 auto';
+      slot.style.width = 'auto';
+      slot.style.order = '';
+      slot.style.gridColumn = '2';
+      slot.style.justifySelf = 'center';
 
       if (headerText) {
-        headerText.style.flex = '0 0 100%';
-        headerText.style.width = '100%';
+        headerText.style.flex = '0 1 auto';
+        headerText.style.width = 'auto';
         headerText.style.minWidth = '0';
-        headerText.style.alignItems = 'center';
-        headerText.style.textAlign = 'center';
+        headerText.style.alignItems = 'flex-start';
+        headerText.style.textAlign = 'left';
+        headerText.style.gridColumn = '1';
+        headerText.style.justifySelf = 'start';
       }
 
       if (closeBtn) {
-        closeBtn.style.position = 'absolute';
-        closeBtn.style.top = '12px';
-        closeBtn.style.right = '14px';
+        closeBtn.style.position = '';
+        closeBtn.style.top = '';
+        closeBtn.style.right = '';
         closeBtn.style.marginLeft = '0';
+        closeBtn.style.gridColumn = '3';
+        closeBtn.style.justifySelf = 'end';
       }
     }
 
-    function clearCenteredHeaderLayout() {
+    function clearWeldedHeaderLayout() {
       var slot = getSealSlot();
       var header = getHeader();
       var headerText = getHeaderText();
       var closeBtn = getCloseButton();
 
       if (header) {
-        header.style.position = '';
-        header.style.justifyContent = '';
+        header.style.display = '';
+        header.style.gridTemplateColumns = '';
         header.style.alignItems = '';
+        header.style.columnGap = '';
+        header.style.rowGap = '';
+        header.style.justifyContent = '';
         header.style.flexWrap = '';
-        header.style.gap = '';
         header.style.paddingTop = '';
       }
 
@@ -153,6 +163,8 @@
         slot.style.flex = '';
         slot.style.width = '';
         slot.style.order = '';
+        slot.style.gridColumn = '';
+        slot.style.justifySelf = '';
       }
 
       if (headerText) {
@@ -161,6 +173,8 @@
         headerText.style.minWidth = '';
         headerText.style.alignItems = '';
         headerText.style.textAlign = '';
+        headerText.style.gridColumn = '';
+        headerText.style.justifySelf = '';
       }
 
       if (closeBtn) {
@@ -168,6 +182,8 @@
         closeBtn.style.top = '';
         closeBtn.style.right = '';
         closeBtn.style.marginLeft = '';
+        closeBtn.style.gridColumn = '';
+        closeBtn.style.justifySelf = '';
       }
     }
 
@@ -183,7 +199,7 @@
         dockParent.insertBefore(ensurePlaceholder(), seal);
       } catch (err0) {}
 
-      applyCenteredHeaderLayout();
+      applyWeldedHeaderLayout();
 
       seal.classList.remove('is-pulsing', 'is-nudging', 'is-tap-opening', 'is-tap-closing', 'is-seal-dragging', 'is-seal-settling');
       seal.classList.add('is-seal-in-header');
@@ -215,7 +231,7 @@
       dockParent = null;
       sealInHeader = false;
       syncGlyphPairForHeader(false);
-      clearCenteredHeaderLayout();
+      clearWeldedHeaderLayout();
     }
 
     function syncSealAttachment() {
