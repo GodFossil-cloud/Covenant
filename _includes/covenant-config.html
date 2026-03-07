@@ -54,6 +54,10 @@
       return panel ? panel.querySelector('.lexicon-panel-close') : null;
     }
 
+    function getModeLabel() {
+      return document.getElementById('lexiconModeLabel');
+    }
+
     function ensurePlaceholder() {
       if (placeholder) return placeholder;
 
@@ -99,43 +103,53 @@
       var header = getHeader();
       var headerText = getHeaderText();
       var closeBtn = getCloseButton();
+      var modeLabel = getModeLabel();
       if (!slot || !header) return;
 
-      header.style.display = 'grid';
-      header.style.gridTemplateColumns = 'minmax(0, 1fr) auto minmax(44px, 1fr)';
+      header.style.display = 'flex';
       header.style.alignItems = 'center';
-      header.style.columnGap = '12px';
-      header.style.rowGap = '0';
-      header.style.justifyContent = '';
-      header.style.flexWrap = '';
+      header.style.justifyContent = 'flex-start';
+      header.style.gap = '12px';
+      header.style.flexWrap = 'nowrap';
       header.style.paddingTop = '';
+      header.style.gridTemplateColumns = '';
+      header.style.columnGap = '';
+      header.style.rowGap = '';
 
       slot.style.display = 'flex';
       slot.style.alignItems = 'center';
       slot.style.justifyContent = 'center';
       slot.style.flex = '0 0 auto';
       slot.style.width = 'auto';
-      slot.style.order = '';
-      slot.style.gridColumn = '2';
-      slot.style.justifySelf = 'center';
+      slot.style.order = '2';
+      slot.style.gridColumn = '';
+      slot.style.justifySelf = '';
 
       if (headerText) {
-        headerText.style.flex = '0 1 auto';
+        headerText.style.flex = '1 1 auto';
         headerText.style.width = 'auto';
         headerText.style.minWidth = '0';
         headerText.style.alignItems = 'flex-start';
         headerText.style.textAlign = 'left';
-        headerText.style.gridColumn = '1';
-        headerText.style.justifySelf = 'start';
+        headerText.style.order = '1';
+        headerText.style.gridColumn = '';
+        headerText.style.justifySelf = '';
+      }
+
+      if (modeLabel) {
+        modeLabel.style.whiteSpace = 'nowrap';
+        modeLabel.style.overflow = 'hidden';
+        modeLabel.style.textOverflow = 'ellipsis';
       }
 
       if (closeBtn) {
         closeBtn.style.position = '';
         closeBtn.style.top = '';
         closeBtn.style.right = '';
-        closeBtn.style.marginLeft = '0';
-        closeBtn.style.gridColumn = '3';
-        closeBtn.style.justifySelf = 'end';
+        closeBtn.style.marginLeft = 'auto';
+        closeBtn.style.order = '3';
+        closeBtn.style.gridColumn = '';
+        closeBtn.style.justifySelf = '';
       }
     }
 
@@ -144,16 +158,18 @@
       var header = getHeader();
       var headerText = getHeaderText();
       var closeBtn = getCloseButton();
+      var modeLabel = getModeLabel();
 
       if (header) {
         header.style.display = '';
-        header.style.gridTemplateColumns = '';
         header.style.alignItems = '';
-        header.style.columnGap = '';
-        header.style.rowGap = '';
         header.style.justifyContent = '';
+        header.style.gap = '';
         header.style.flexWrap = '';
         header.style.paddingTop = '';
+        header.style.gridTemplateColumns = '';
+        header.style.columnGap = '';
+        header.style.rowGap = '';
       }
 
       if (slot) {
@@ -173,8 +189,15 @@
         headerText.style.minWidth = '';
         headerText.style.alignItems = '';
         headerText.style.textAlign = '';
+        headerText.style.order = '';
         headerText.style.gridColumn = '';
         headerText.style.justifySelf = '';
+      }
+
+      if (modeLabel) {
+        modeLabel.style.whiteSpace = '';
+        modeLabel.style.overflow = '';
+        modeLabel.style.textOverflow = '';
       }
 
       if (closeBtn) {
@@ -182,6 +205,7 @@
         closeBtn.style.top = '';
         closeBtn.style.right = '';
         closeBtn.style.marginLeft = '';
+        closeBtn.style.order = '';
         closeBtn.style.gridColumn = '';
         closeBtn.style.justifySelf = '';
       }
@@ -204,7 +228,7 @@
       seal.classList.remove('is-pulsing', 'is-nudging', 'is-tap-opening', 'is-tap-closing', 'is-seal-dragging', 'is-seal-settling');
       seal.classList.add('is-seal-in-header');
       seal.style.transform = 'none';
-      seal.style.margin = '0 auto';
+      seal.style.margin = '0';
       seal.style.removeProperty('--seal-drag-y');
       slot.appendChild(seal);
       sealInHeader = true;
