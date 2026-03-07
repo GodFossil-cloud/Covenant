@@ -40,6 +40,20 @@
       return document.getElementById('lexiconSealSlot');
     }
 
+    function getHeader() {
+      var slot = getSealSlot();
+      return slot ? slot.parentNode : null;
+    }
+
+    function getHeaderText() {
+      return document.getElementById('lexiconHeaderText');
+    }
+
+    function getCloseButton() {
+      var panel = getPanel();
+      return panel ? panel.querySelector('.lexicon-panel-close') : null;
+    }
+
     function ensurePlaceholder() {
       if (placeholder) return placeholder;
 
@@ -59,6 +73,104 @@
       return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
     }
 
+    function syncGlyphPairForHeader(isWelded) {
+      var seal = getSeal();
+      if (!seal) return;
+
+      var idle = seal.querySelector('.lexicon-glyph--idle');
+      var active = seal.querySelector('.lexicon-glyph--active');
+      if (!idle || !active) return;
+
+      if (isWelded) {
+        idle.style.display = 'none';
+        active.style.display = 'inline-block';
+        active.style.visibility = 'visible';
+        active.style.opacity = '1';
+      } else {
+        idle.style.display = '';
+        active.style.display = '';
+        active.style.visibility = '';
+        active.style.opacity = '';
+      }
+    }
+
+    function applyCenteredHeaderLayout() {
+      var slot = getSealSlot();
+      var header = getHeader();
+      var headerText = getHeaderText();
+      var closeBtn = getCloseButton();
+      if (!slot || !header) return;
+
+      header.style.position = 'relative';
+      header.style.justifyContent = 'center';
+      header.style.alignItems = 'center';
+      header.style.flexWrap = 'wrap';
+      header.style.gap = '6px 12px';
+      header.style.paddingTop = '14px';
+
+      slot.style.display = 'flex';
+      slot.style.alignItems = 'center';
+      slot.style.justifyContent = 'center';
+      slot.style.flex = '0 0 100%';
+      slot.style.width = '100%';
+      slot.style.order = '0';
+
+      if (headerText) {
+        headerText.style.flex = '0 0 100%';
+        headerText.style.width = '100%';
+        headerText.style.minWidth = '0';
+        headerText.style.alignItems = 'center';
+        headerText.style.textAlign = 'center';
+      }
+
+      if (closeBtn) {
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '12px';
+        closeBtn.style.right = '14px';
+        closeBtn.style.marginLeft = '0';
+      }
+    }
+
+    function clearCenteredHeaderLayout() {
+      var slot = getSealSlot();
+      var header = getHeader();
+      var headerText = getHeaderText();
+      var closeBtn = getCloseButton();
+
+      if (header) {
+        header.style.position = '';
+        header.style.justifyContent = '';
+        header.style.alignItems = '';
+        header.style.flexWrap = '';
+        header.style.gap = '';
+        header.style.paddingTop = '';
+      }
+
+      if (slot) {
+        slot.style.display = '';
+        slot.style.alignItems = '';
+        slot.style.justifyContent = '';
+        slot.style.flex = '';
+        slot.style.width = '';
+        slot.style.order = '';
+      }
+
+      if (headerText) {
+        headerText.style.flex = '';
+        headerText.style.width = '';
+        headerText.style.minWidth = '';
+        headerText.style.alignItems = '';
+        headerText.style.textAlign = '';
+      }
+
+      if (closeBtn) {
+        closeBtn.style.position = '';
+        closeBtn.style.top = '';
+        closeBtn.style.right = '';
+        closeBtn.style.marginLeft = '';
+      }
+    }
+
     function weldSealIntoHeader() {
       var seal = getSeal();
       var slot = getSealSlot();
@@ -71,24 +183,16 @@
         dockParent.insertBefore(ensurePlaceholder(), seal);
       } catch (err0) {}
 
-      slot.style.display = 'flex';
-      slot.style.alignItems = 'center';
-      slot.style.justifyContent = 'center';
-      slot.style.flex = '0 0 auto';
-
-      var headerText = document.getElementById('lexiconHeaderText');
-      if (headerText) {
-        headerText.style.flex = '1 1 auto';
-        headerText.style.minWidth = '0';
-      }
+      applyCenteredHeaderLayout();
 
       seal.classList.remove('is-pulsing', 'is-nudging', 'is-tap-opening', 'is-tap-closing', 'is-seal-dragging', 'is-seal-settling');
       seal.classList.add('is-seal-in-header');
       seal.style.transform = 'none';
-      seal.style.margin = '0 8px 0 0';
+      seal.style.margin = '0 auto';
       seal.style.removeProperty('--seal-drag-y');
       slot.appendChild(seal);
       sealInHeader = true;
+      syncGlyphPairForHeader(true);
     }
 
     function restoreSealToDock() {
@@ -110,6 +214,8 @@
       placeholder = null;
       dockParent = null;
       sealInHeader = false;
+      syncGlyphPairForHeader(false);
+      clearCenteredHeaderLayout();
     }
 
     function syncSealAttachment() {
