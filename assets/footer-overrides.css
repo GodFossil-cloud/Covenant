@@ -391,7 +391,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   --seal-cradle-drop-y:var(--seal-cradle-center-y);
 
   /* Lexicon SEAL size.
-     IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM).
+     IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in the DOM).
      Use !important so cradle geometry stays authoritative and responds to --lexicon-cradle-w changes. */
   --lexicon-seal-w:66px !important;
   --lexicon-seal-h:34px !important;
@@ -994,4 +994,88 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
 #navFooter #lexiconToggle[aria-expanded="true"]::after{
   background-color:transparent !important;
   background-image:none !important;
+}
+
+/* -------------------------------------------------
+   Consolidated Lexicon quiet-open overrides
+   (absorbed from retired micro-CSS files)
+   ------------------------------------------------- */
+
+/* Selected while NOT fully open: keep a clean face (no fleck stack).
+   Full-open truth is html.lexicon-scroll-lock; do not key this off aria-expanded,
+   because mobile mid-rest also carries aria-expanded="true". */
+html:not(.lexicon-scroll-lock) #navFooter #lexiconToggle.has-selection:not(.is-seal-dragging)::after{
+  background-color:var(--lexicon-seal-face, #08090b) !important;
+  background-image:none !important;
+}
+
+/* Fully OPEN: keep seal backdrop welded/empty even while pressed.
+   Only the committed full-open class should drive this state. */
+html.lexicon-scroll-lock #navFooter #lexiconToggle:active::after,
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after{
+  background-color:transparent !important;
+  background-image:none !important;
+}
+
+/* Mobile rim guard: prevent a 1px gold/yellow underside hairline from flashing during drag-release
+   (when .is-seal-dragging has just dropped but the seal is still settling back into the cradle).
+   Again, do not use aria-expanded here; mid-rest is not the welded full-open state. */
+@media (hover: none), (pointer: coarse){
+  html:not(.lexicon-scroll-lock) #navFooter #lexiconToggle.nav-btn.center:not(.is-seal-dragging):not(.is-nudging)::before{
+    border-color:rgba(0,0,0,0.72) !important;
+    box-shadow:
+      inset 0 0 18px rgba(0,0,0,0.84),
+      inset 0 1px 0 rgba(255,255,255,0.05),
+      0 10px 18px -14px rgba(0,0,0,0.90),
+      0 14px 10px -12px rgba(0,0,0,0.92) !important;
+  }
+}
+
+/* Header-SEATED or fully OPEN: hard-kill glow on the glyph (any selection state). */
+#lexiconPanel #lexiconToggle.is-seal-in-header .lexicon-glyph,
+#lexiconPanel #lexiconToggle.is-seal-in-header .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+/* Header-SEATED or fully OPEN: also prevent any button-level text glow / filter tint
+   from reading as a seal glow. */
+#lexiconPanel #lexiconToggle.is-seal-in-header,
+#lexiconPanel #lexiconToggle.is-seal-in-header:hover,
+#lexiconPanel #lexiconToggle.is-seal-in-header:focus,
+#lexiconPanel #lexiconToggle.is-seal-in-header:focus-visible,
+#navFooter #lexiconToggle[aria-expanded="true"],
+#navFooter #lexiconToggle[aria-expanded="true"]:hover,
+#navFooter #lexiconToggle[aria-expanded="true"]:focus,
+#navFooter #lexiconToggle[aria-expanded="true"]:focus-visible,
+html.lexicon-scroll-lock #navFooter #lexiconToggle,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:hover,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus-visible{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+/* Header-SEATED: freeze any residual dock-motion read on the button shell itself.
+   JS already clears motion classes on relocation; this keeps CSS from reintroducing
+   a floating/detached impression inside the panel header. */
+#lexiconPanel #lexiconToggle.is-seal-in-header,
+#lexiconPanel #lexiconToggle.is-seal-in-header::before,
+#lexiconPanel #lexiconToggle.is-seal-in-header::after{
+  transform:none !important;
+  animation:none !important;
+}
+
+/* Header-SEATED or fully OPEN: silence any tap aura/pulse layers while settled.
+   Exception: tap opening/closing must still be allowed to flash from the dock state. */
+#lexiconPanel #lexiconToggle.is-seal-in-header:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before,
+#navFooter #lexiconToggle[aria-expanded="true"]:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
 }

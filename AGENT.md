@@ -80,7 +80,7 @@ Rules:
 
 Core runtime files:
 - `assets/covenant.css` — sacred visual system (CSS guard applies).
-- `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges, including citation label styling beneath the Lexicon seal).
+- `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges, including citation label styling beneath the Lexicon seal; also consolidates retired Lexicon quiet-open seal/glyph overrides to reduce asset sprawl).
 - `assets/journey.js` — journey definitions + helpers.
 - `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules. Note: on mobile, tap-open rests at content height (capped around ~60% of available height above the dock, measured by how much of the sheet is truly obscured by the dock on iOS Safari), the seal drag can still open the sheet fully, and the `.lexicon-panel-body` is explicitly height-sized to the *visible* sheet area above the dock (so scrolling works even while half-open); the `.lexicon-panel-body` also receives a dock-aware bottom inset so the last lines are reachable by scroll.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
@@ -202,7 +202,7 @@ Docs:
   - Verify staged selection + deliberate confirm.
   - Verify progress gating still blocks locked direct-access.
   - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening pages.
-  - Verify ToC header band visually blends with the ToC tab face (no jarring seam).
+  - Verify ToC header band visually blends with the ToC tab face.
   - Verify ToC panel reaches the top cleanly on mobile (no ~1px gap).
   - Verify the binding overlay stops at the gate divider center line.
   - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
