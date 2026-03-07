@@ -16,53 +16,27 @@
     var isIOSDevice = /iPad|iPhone|iPod/.test(ua);
     var isIPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
     if (!(isIOSDevice || isIPadOS)) return;
+    if (window.__COVENANT_LEXICON_SCROLL_SHIM__) return;
+    if (typeof window.addEventListener !== 'function') return;
 
-    var restoreQueued = false;
-    var preservedSealY = '';
+    var nativeAddEventListener = window.addEventListener;
+    window.__COVENANT_LEXICON_SCROLL_SHIM__ = true;
 
-    function isMobileBottomSheet() {
-      return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
-    }
+    window.addEventListener = function (type, listener, options) {
+      if (
+        type === 'scroll'
+        && typeof listener === 'function'
+        && listener.name === 'scheduleIOSMidRestViewportResync'
+      ) {
+        return;
+      }
 
-    function getPanel() {
-      return document.getElementById('lexiconPanel');
-    }
+      return nativeAddEventListener.call(this, type, listener, options);
+    };
 
-    function getSeal() {
-      return document.getElementById('lexiconToggle');
-    }
-
-    function isLexiconMidRest(panel) {
-      if (!panel) return false;
-      return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
-    }
-
-    function preserveSealDuringPageScroll() {
-      if (!isMobileBottomSheet()) return;
-
-      var panel = getPanel();
-      var seal = getSeal();
-      if (!isLexiconMidRest(panel) || !seal) return;
-
-      preservedSealY = seal.style.getPropertyValue('--seal-drag-y') || preservedSealY;
-      if (restoreQueued) return;
-      restoreQueued = true;
-
-      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () {
-        restoreQueued = false;
-
-        var livePanel = getPanel();
-        var liveSeal = getSeal();
-        if (!isMobileBottomSheet()) return;
-        if (!isLexiconMidRest(livePanel) || !liveSeal) return;
-        if (!preservedSealY) return;
-
-        liveSeal.style.setProperty('--seal-drag-y', preservedSealY);
-      });
-    }
-
-    window.addEventListener('scroll', preserveSealDuringPageScroll, { passive: true });
+    document.addEventListener('DOMContentLoaded', function () {
+      window.addEventListener = nativeAddEventListener;
+    }, { once: true });
   })();
 </script>
 
