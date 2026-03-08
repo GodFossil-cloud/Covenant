@@ -123,6 +123,27 @@
       }
     }
 
+    function syncWeldedGlyphScale(isWelded) {
+      var seal = getSeal();
+      if (!seal) return;
+
+      var idle = seal.querySelector('.lexicon-glyph--idle');
+      var active = seal.querySelector('.lexicon-glyph--active');
+      if (!idle || !active) return;
+
+      if (isWelded) {
+        idle.style.transform = 'scale(0.88)';
+        active.style.transform = 'scale(0.88)';
+        idle.style.transformOrigin = '50% 50%';
+        active.style.transformOrigin = '50% 50%';
+      } else {
+        idle.style.transform = '';
+        active.style.transform = '';
+        idle.style.transformOrigin = '';
+        active.style.transformOrigin = '';
+      }
+    }
+
     function applyWeldedHeaderLayout() {
       var slot = getSealSlot();
       var header = getHeader();
@@ -278,6 +299,7 @@
       slot.appendChild(seal);
       sealInHeader = true;
       syncGlyphPairForHeader(true);
+      syncWeldedGlyphScale(true);
     }
 
     function restoreSealToDock() {
@@ -304,6 +326,7 @@
       dockParent = null;
       sealInHeader = false;
       syncGlyphPairForHeader(false);
+      syncWeldedGlyphScale(false);
       clearWeldedHeaderLayout();
     }
 
