@@ -23,7 +23,7 @@
     var dockParent = null;
     var sealInHeader = false;
     var observer = null;
-    var restoreTimer = null;
+    var dockCarryTimer = null;
 
     function isMobileBottomSheet() {
       return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
@@ -59,10 +59,10 @@
       return document.getElementById('lexiconModeLabel');
     }
 
-    function clearRestoreTimer() {
-      if (!restoreTimer) return;
-      window.clearTimeout(restoreTimer);
-      restoreTimer = null;
+    function clearDockCarryTimer() {
+      if (!dockCarryTimer) return;
+      window.clearTimeout(dockCarryTimer);
+      dockCarryTimer = null;
     }
 
     function getTapMotionMs() {
@@ -93,13 +93,6 @@
       var panel = getPanel();
       if (!isMobileBottomSheet() || !panel) return false;
       return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
-    }
-
-    function shouldHoldSealForClosingTrace() {
-      var panel = getPanel();
-      var seal = getSeal();
-      if (!isMobileBottomSheet() || !panel || !seal || !sealInHeader) return false;
-      return !panel.classList.contains('is-open') && seal.classList.contains('is-tap-closing');
     }
 
     function syncGlyphPairForHeader(isWelded) {
@@ -142,6 +135,39 @@
         idle.style.transformOrigin = '';
         active.style.transformOrigin = '';
       }
+    }
+
+    function animateDockReturnFromHeader(seal, fromRect) {
+      var toRect;
+      var deltaY;
+
+      if (!seal || !fromRect) return;
+
+      clearDockCarryTimer();
+
+      try {
+        toRect = seal.getBoundingClientRect();
+      } catch (err) {
+        return;
+      }
+
+      deltaY = fromRect.top - toRect.top;
+      if (!isFinite(deltaY) || Math.abs(deltaY) < 0.5) {
+        seal.style.removeProperty('--seal-drag-y');
+        return;
+      }
+
+      seal.style.setProperty('--seal-drag-y', deltaY + 'px');
+      seal.offsetHeight;
+
+      window.requestAnimationFrame(function () {
+        seal.style.setProperty('--seal-drag-y', '0px');
+      });
+
+      dockCarryTimer = window.setTimeout(function () {
+        dockCarryTimer = null;
+        seal.style.removeProperty('--seal-drag-y');
+      }, getTapMotionMs() + 80);
     }
 
     function applyWeldedHeaderLayout() {
@@ -278,7 +304,7 @@
       var slot = getSealSlot();
       if (!seal || !slot || sealInHeader) return;
 
-      clearRestoreTimer();
+      clearDockCarryTimer();
 
       dockParent = seal.parentNode;
       if (!dockParent) return;
@@ -304,9 +330,16 @@
 
     function restoreSealToDock() {
       var seal = getSeal();
+      var fromRect = null;
       if (!seal || !sealInHeader || !dockParent) return;
 
-      clearRestoreTimer();
+      clearDockCarryTimer();
+
+      try {
+        fromRect = seal.getBoundingClientRect();
+      } catch (err0) {
+        fromRect = null;
+      }
 
       try {
         if (placeholder && placeholder.parentNode === dockParent) {
@@ -328,25 +361,12 @@
       syncGlyphPairForHeader(false);
       syncWeldedGlyphScale(false);
       clearWeldedHeaderLayout();
-    }
-
-    function scheduleRestoreToDock() {
-      if (restoreTimer) return;
-      restoreTimer = window.setTimeout(function () {
-        restoreTimer = null;
-        restoreSealToDock();
-      }, getTapMotionMs() + 80);
+      animateDockReturnFromHeader(seal, fromRect);
     }
 
     function syncSealAttachment() {
       if (shouldWeldSeal()) {
-        clearRestoreTimer();
         weldSealIntoHeader();
-        return;
-      }
-
-      if (shouldHoldSealForClosingTrace()) {
-        scheduleRestoreToDock();
         return;
       }
 
