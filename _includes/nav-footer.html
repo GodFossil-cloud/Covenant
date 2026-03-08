@@ -206,31 +206,59 @@
     border-radius: 0 0 999px 999px !important;
   }
 
-  /* Seal visibility hotfix:
-     keep the seal visually above the carved cradle while closed and during drag-open.
-     The cradle remains decorative, but must not occlude the moving seal. */
+  /* Seal carry restoration:
+     the external footer override converts the Lexicon into a short clipped shell.
+     Reassert a full medallion in the fallback layer so the drag transform is visible. */
   #navFooter .nav-seals {
     position: relative;
-    z-index: 2;
+    z-index: 3 !important;
   }
 
-  #navFooter #lexiconToggle {
-    position: relative;
+  #navFooter #lexiconToggle.nav-btn.center {
+    position: relative !important;
+    width: var(--seal-size, 56px) !important;
+    height: var(--seal-size, 56px) !important;
+    min-width: var(--seal-size, 56px) !important;
+    min-height: var(--seal-size, 56px) !important;
+    flex: 0 0 var(--seal-size, 56px) !important;
     overflow: visible !important;
-    z-index: 4;
+    border-radius: 999px !important;
+    z-index: 6 !important;
     isolation: isolate;
+    -webkit-transform: translate3d(0, calc(var(--seal-drag-y, 0px) - var(--seal-seat-nudge, 0px)), 0) !important;
+    transform: translate3d(0, calc(var(--seal-drag-y, 0px) - var(--seal-seat-nudge, 0px)), 0) !important;
+  }
+
+  #navFooter #lexiconToggle.nav-btn.center::before,
+  #navFooter #lexiconToggle.nav-btn.center::after {
+    inset: 0 !important;
+    border-radius: 999px !important;
+  }
+
+  #navFooter #lexiconToggle.nav-btn.center::before {
+    z-index: 0 !important;
+  }
+
+  #navFooter #lexiconToggle.nav-btn.center::after {
+    z-index: 0 !important;
+    background-color: var(--lexicon-seal-face, #08090b) !important;
+  }
+
+  #navFooter #lexiconToggle .lexicon-glyph {
+    position: relative;
+    z-index: 1 !important;
   }
 
   #navFooter #lexiconToggle.is-seal-dragging,
   #navFooter #lexiconToggle.is-seal-settling,
   #navFooter #lexiconToggle.is-nudging,
   #navFooter #lexiconToggle[aria-expanded="true"] {
-    z-index: 5;
+    z-index: 7 !important;
   }
 
   #navFooter::before,
   #navFooter::after {
-    z-index: 1;
+    z-index: 1 !important;
   }
 
   /* Lexicon seal glyph swap (idle vs selected).
