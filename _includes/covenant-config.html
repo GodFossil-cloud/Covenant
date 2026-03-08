@@ -66,6 +66,38 @@
       }
     }
 
+    function readInlineDragY(seal) {
+      if (!seal || !seal.style) return 0;
+      var raw = seal.style.getPropertyValue('--seal-drag-y') || '';
+      var n = parseFloat(String(raw).trim());
+      return isFinite(n) ? n : 0;
+    }
+
+    function cacheDragY(seal) {
+      var y = readInlineDragY(seal);
+      if (Math.abs(y) > 0.5) seal.__covenantLastDragY = y;
+      return y;
+    }
+
+    function clearHoldTimer(seal) {
+      if (!seal || !seal.__covenantSettleHoldTimer__) return;
+      window.clearTimeout(seal.__covenantSettleHoldTimer__);
+      seal.__covenantSettleHoldTimer__ = null;
+    }
+
+    function setLiftedLayer(seal, active) {
+      if (!seal) return;
+
+      if (active) {
+        seal.style.position = 'relative';
+        seal.style.zIndex = '12';
+        return;
+      }
+
+      seal.style.position = '';
+      seal.style.zIndex = '';
+    }
+
     function releaseHold(seal) {
       if (!seal) return;
       if (
@@ -75,23 +107,31 @@
         seal.classList.contains('is-tap-closing')
       ) return;
 
-      seal.style.position = '';
-      seal.style.zIndex = '';
+      clearHoldTimer(seal);
+      seal.__covenantSettleActive = false;
       seal.style.removeProperty('--seal-drag-y');
-      seal.__covenantSettleHoldTimer__ = null;
+      setLiftedLayer(seal, false);
     }
 
-    function holdAboveCradle(seal) {
+    function animateSettleCarry(seal) {
+      var startY;
+
       if (!seal) return;
 
-      seal.style.position = 'relative';
-      seal.style.zIndex = '12';
-      seal.style.setProperty('--seal-drag-y', '0px');
+      startY = cacheDragY(seal);
+      if (Math.abs(startY) <= 0.5) startY = seal.__covenantLastDragY || 0;
 
-      if (seal.__covenantSettleHoldTimer__) {
-        window.clearTimeout(seal.__covenantSettleHoldTimer__);
-        seal.__covenantSettleHoldTimer__ = null;
-      }
+      clearHoldTimer(seal);
+      seal.__covenantSettleActive = true;
+      setLiftedLayer(seal, true);
+
+      seal.style.setProperty('--seal-drag-y', startY + 'px');
+      seal.offsetHeight;
+
+      window.requestAnimationFrame(function () {
+        if (!seal.classList.contains('is-seal-settling')) return;
+        seal.style.setProperty('--seal-drag-y', '0px');
+      });
 
       seal.__covenantSettleHoldTimer__ = window.setTimeout(function () {
         releaseHold(seal);
@@ -102,8 +142,11 @@
       var seal = getSeal();
       if (!seal) return;
 
+      cacheDragY(seal);
+
       if (seal.classList.contains('is-seal-settling')) {
-        holdAboveCradle(seal);
+        if (!seal.__covenantSettleActive) animateSettleCarry(seal);
+        else setLiftedLayer(seal, true);
         return;
       }
 
@@ -121,7 +164,7 @@
 
         observer.observe(seal, {
           attributes: true,
-          attributeFilter: ['class']
+          attributeFilter: ['class', 'style']
         });
       } catch (err) {}
 
