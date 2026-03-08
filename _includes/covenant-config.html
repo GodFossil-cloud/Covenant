@@ -43,12 +43,12 @@
   #navFooter #lexiconToggle.is-tap-opening,
   #navFooter #lexiconToggle.is-tap-closing,
   #navFooter #lexiconToggle.is-dock-returning {
-    z-index: 14 !important;
+    z-index: 18 !important;
     overflow: visible !important;
-  }
-
-  #navFooter #lexiconToggle.is-dock-returning {
+    isolation: isolate !important;
     transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
   }
 
   #navFooter #lexiconToggle.is-dock-returning::before,
@@ -57,7 +57,10 @@
   #navFooter #lexiconToggle.is-dock-returning .lexicon-glyph-mid,
   #navFooter #lexiconToggle.is-dock-returning .lexicon-glyph-mid-inner {
     position: relative !important;
-    z-index: 2 !important;
+    z-index: 3 !important;
+    transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
   }
 </style>
 
@@ -296,7 +299,8 @@
       return (
         seal.classList.contains('is-tap-closing') ||
         seal.classList.contains('is-seal-settling') ||
-        seal.classList.contains('is-seal-dragging')
+        seal.classList.contains('is-seal-dragging') ||
+        seal.classList.contains('is-dock-returning')
       );
     }
 
@@ -342,25 +346,40 @@
       }
     }
 
+    function finishDockCarry(seal) {
+      if (!seal) return;
+      seal.style.removeProperty('--seal-drag-y');
+      seal.classList.remove('is-dock-returning');
+      seal.style.position = '';
+      seal.style.zIndex = '';
+    }
+
     function setDockCarryLayer(seal, active) {
       if (!seal) return;
 
       if (active) {
         seal.classList.add('is-dock-returning');
         seal.style.position = 'relative';
-        seal.style.zIndex = '14';
+        seal.style.zIndex = '18';
         return;
       }
 
-      seal.classList.remove('is-dock-returning');
-      seal.style.position = '';
-      seal.style.zIndex = '';
+      finishDockCarry(seal);
+    }
+
+    function scheduleDockCarryRelease(seal, delay) {
+      if (!seal) return;
+      clearDockCarryTimer();
+      dockCarryTimer = window.setTimeout(function () {
+        dockCarryTimer = null;
+        finishDockCarry(seal);
+      }, delay);
     }
 
     function animateDockReturnFromHeader(seal, fromRect) {
       var toRect;
       var deltaY;
-      var duration = getTapMotionMs() + 80;
+      var duration = getTapMotionMs() + 260;
 
       if (!seal) return;
 
@@ -376,11 +395,7 @@
       deltaY = (fromRect && toRect) ? (fromRect.top - toRect.top) : 0;
       if (!isFinite(deltaY) || Math.abs(deltaY) < 0.5) {
         seal.style.removeProperty('--seal-drag-y');
-        dockCarryTimer = window.setTimeout(function () {
-          dockCarryTimer = null;
-          seal.style.removeProperty('--seal-drag-y');
-          setDockCarryLayer(seal, false);
-        }, 140);
+        scheduleDockCarryRelease(seal, 260);
         return;
       }
 
@@ -391,11 +406,7 @@
         seal.style.setProperty('--seal-drag-y', '0px');
       });
 
-      dockCarryTimer = window.setTimeout(function () {
-        dockCarryTimer = null;
-        seal.style.removeProperty('--seal-drag-y');
-        setDockCarryLayer(seal, false);
-      }, duration);
+      scheduleDockCarryRelease(seal, duration);
     }
 
     function applyWeldedHeaderLayout() {
@@ -534,7 +545,7 @@
 
       clearRestoreTimer();
       clearDockCarryTimer();
-      setDockCarryLayer(seal, false);
+      finishDockCarry(seal);
 
       dockParent = seal.parentNode;
       if (!dockParent) return;
@@ -633,8 +644,17 @@
     }
 
     function init() {
+      var seal = getSeal();
       attachObserver();
       syncSealAttachment();
+
+      if (seal) {
+        seal.addEventListener('transitionend', function (e) {
+          if (e && e.propertyName && e.propertyName !== 'transform') return;
+          if (!seal.classList.contains('is-dock-returning')) return;
+          scheduleDockCarryRelease(seal, 180);
+        });
+      }
 
       window.addEventListener('resize', syncSealAttachment, { passive: true });
       window.addEventListener('orientationchange', syncSealAttachment);
