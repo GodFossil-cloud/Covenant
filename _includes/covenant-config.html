@@ -23,6 +23,7 @@
     var dockParent = null;
     var sealInHeader = false;
     var observer = null;
+    var restoreTimer = null;
 
     function isMobileBottomSheet() {
       return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
@@ -58,6 +59,23 @@
       return document.getElementById('lexiconModeLabel');
     }
 
+    function clearRestoreTimer() {
+      if (!restoreTimer) return;
+      window.clearTimeout(restoreTimer);
+      restoreTimer = null;
+    }
+
+    function getTapMotionMs() {
+      try {
+        var root = document.documentElement;
+        var value = window.getComputedStyle(root).getPropertyValue('--lexicon-snap-duration') || '';
+        var n = parseFloat(String(value).trim());
+        return isFinite(n) ? n : 420;
+      } catch (err) {
+        return 420;
+      }
+    }
+
     function ensurePlaceholder() {
       if (placeholder) return placeholder;
 
@@ -75,6 +93,13 @@
       var panel = getPanel();
       if (!isMobileBottomSheet() || !panel) return false;
       return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
+    }
+
+    function shouldHoldSealForClosingTrace() {
+      var panel = getPanel();
+      var seal = getSeal();
+      if (!isMobileBottomSheet() || !panel || !seal || !sealInHeader) return false;
+      return !panel.classList.contains('is-open') && seal.classList.contains('is-tap-closing');
     }
 
     function syncGlyphPairForHeader(isWelded) {
@@ -232,6 +257,8 @@
       var slot = getSealSlot();
       if (!seal || !slot || sealInHeader) return;
 
+      clearRestoreTimer();
+
       dockParent = seal.parentNode;
       if (!dockParent) return;
 
@@ -241,10 +268,12 @@
 
       applyWeldedHeaderLayout();
 
-      seal.classList.remove('is-pulsing', 'is-nudging', 'is-tap-opening', 'is-tap-closing', 'is-seal-dragging', 'is-seal-settling');
+      seal.classList.remove('is-pulsing', 'is-nudging', 'is-tap-opening', 'is-seal-dragging', 'is-seal-settling');
       seal.classList.add('is-seal-in-header');
       seal.style.transform = 'none';
       seal.style.margin = '0';
+      seal.style.width = '52px';
+      seal.style.height = '52px';
       seal.style.removeProperty('--seal-drag-y');
       slot.appendChild(seal);
       sealInHeader = true;
@@ -254,6 +283,8 @@
     function restoreSealToDock() {
       var seal = getSeal();
       if (!seal || !sealInHeader || !dockParent) return;
+
+      clearRestoreTimer();
 
       try {
         if (placeholder && placeholder.parentNode === dockParent) {
@@ -267,6 +298,8 @@
       seal.classList.remove('is-seal-in-header');
       seal.style.transform = '';
       seal.style.margin = '';
+      seal.style.width = '';
+      seal.style.height = '';
       placeholder = null;
       dockParent = null;
       sealInHeader = false;
@@ -274,9 +307,27 @@
       clearWeldedHeaderLayout();
     }
 
+    function scheduleRestoreToDock() {
+      if (restoreTimer) return;
+      restoreTimer = window.setTimeout(function () {
+        restoreTimer = null;
+        restoreSealToDock();
+      }, getTapMotionMs() + 80);
+    }
+
     function syncSealAttachment() {
-      if (shouldWeldSeal()) weldSealIntoHeader();
-      else restoreSealToDock();
+      if (shouldWeldSeal()) {
+        clearRestoreTimer();
+        weldSealIntoHeader();
+        return;
+      }
+
+      if (shouldHoldSealForClosingTrace()) {
+        scheduleRestoreToDock();
+        return;
+      }
+
+      restoreSealToDock();
     }
 
     function attachObserver() {
