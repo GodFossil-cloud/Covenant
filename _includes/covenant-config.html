@@ -8,6 +8,26 @@
 
 <!-- Head-loaded: stabilize dock geometry on first paint (iPhone Safari). -->
 <link rel="stylesheet" href="assets/footer-overrides.css?v=68">
+<style id="lexiconSealDockLayerFix">
+  #navFooter .nav-center,
+  #navFooter .nav-seals,
+  #navFooter .citation-label {
+    position: relative;
+    z-index: 2;
+  }
+
+  #navFooter #lexiconToggle {
+    position: relative;
+    z-index: 3;
+  }
+
+  #navFooter #lexiconToggle.is-seal-dragging,
+  #navFooter #lexiconToggle.is-seal-settling,
+  #navFooter #lexiconToggle.is-tap-opening,
+  #navFooter #lexiconToggle.is-tap-closing {
+    z-index: 12;
+  }
+</style>
 
 <script>
   (function () {
