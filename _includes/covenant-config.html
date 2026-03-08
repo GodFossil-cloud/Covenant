@@ -186,11 +186,6 @@
 
 <script>
   (function () {
-    var ua = navigator.userAgent || '';
-    var platform = navigator.platform || '';
-    var isIOSDevice = /iPad|iPhone|iPod/.test(ua);
-    var isIPadOS = (platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
-    if (!(isIOSDevice || isIPadOS)) return;
     if (window.__COVENANT_LEXICON_MIDREST_WELD__) return;
     window.__COVENANT_LEXICON_MIDREST_WELD__ = true;
 
