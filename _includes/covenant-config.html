@@ -41,8 +41,23 @@
   #navFooter #lexiconToggle.is-seal-dragging,
   #navFooter #lexiconToggle.is-seal-settling,
   #navFooter #lexiconToggle.is-tap-opening,
-  #navFooter #lexiconToggle.is-tap-closing {
-    z-index: 12 !important;
+  #navFooter #lexiconToggle.is-tap-closing,
+  #navFooter #lexiconToggle.is-dock-returning {
+    z-index: 14 !important;
+    overflow: visible !important;
+  }
+
+  #navFooter #lexiconToggle.is-dock-returning {
+    transform: translateZ(0) !important;
+  }
+
+  #navFooter #lexiconToggle.is-dock-returning::before,
+  #navFooter #lexiconToggle.is-dock-returning::after,
+  #navFooter #lexiconToggle.is-dock-returning .lexicon-glyph,
+  #navFooter #lexiconToggle.is-dock-returning .lexicon-glyph-mid,
+  #navFooter #lexiconToggle.is-dock-returning .lexicon-glyph-mid-inner {
+    position: relative !important;
+    z-index: 2 !important;
   }
 </style>
 
@@ -269,7 +284,7 @@
     function shouldWeldSeal() {
       var panel = getPanel();
       if (!isMobileBottomSheet() || !panel) return false;
-      return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
+      return panel.classList.contains('is-open');
     }
 
     function shouldHoldSealForClosingTrace() {
@@ -331,11 +346,13 @@
       if (!seal) return;
 
       if (active) {
+        seal.classList.add('is-dock-returning');
         seal.style.position = 'relative';
-        seal.style.zIndex = '12';
+        seal.style.zIndex = '14';
         return;
       }
 
+      seal.classList.remove('is-dock-returning');
       seal.style.position = '';
       seal.style.zIndex = '';
     }
