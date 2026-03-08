@@ -206,6 +206,33 @@
     border-radius: 0 0 999px 999px !important;
   }
 
+  /* Seal visibility hotfix:
+     keep the seal visually above the carved cradle while closed and during drag-open.
+     The cradle remains decorative, but must not occlude the moving seal. */
+  #navFooter .nav-seals {
+    position: relative;
+    z-index: 2;
+  }
+
+  #navFooter #lexiconToggle {
+    position: relative;
+    overflow: visible !important;
+    z-index: 4;
+    isolation: isolate;
+  }
+
+  #navFooter #lexiconToggle.is-seal-dragging,
+  #navFooter #lexiconToggle.is-seal-settling,
+  #navFooter #lexiconToggle.is-nudging,
+  #navFooter #lexiconToggle[aria-expanded="true"] {
+    z-index: 5;
+  }
+
+  #navFooter::before,
+  #navFooter::after {
+    z-index: 1;
+  }
+
   /* Lexicon seal glyph swap (idle vs selected).
      lexicon.js owns the .has-selection class on #lexiconToggle. */
   #navFooter #lexiconToggle .lexicon-glyph {
