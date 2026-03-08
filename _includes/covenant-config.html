@@ -9,25 +9,137 @@
 <!-- Head-loaded: stabilize dock geometry on first paint (iPhone Safari). -->
 <link rel="stylesheet" href="assets/footer-overrides.css?v=68">
 <style id="lexiconSealDockLayerFix">
+  #navFooter {
+    isolation: isolate;
+  }
+
+  #navFooter::before {
+    z-index: 0 !important;
+  }
+
+  #navFooter::after {
+    z-index: 1 !important;
+  }
+
+  #navFooter .nav-footer-inner {
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
   #navFooter .nav-center,
   #navFooter .nav-seals,
   #navFooter .citation-label {
-    position: relative;
-    z-index: 2;
+    position: relative !important;
+    z-index: 3 !important;
   }
 
   #navFooter #lexiconToggle {
-    position: relative;
-    z-index: 3;
+    position: relative !important;
+    z-index: 4 !important;
   }
 
   #navFooter #lexiconToggle.is-seal-dragging,
   #navFooter #lexiconToggle.is-seal-settling,
   #navFooter #lexiconToggle.is-tap-opening,
   #navFooter #lexiconToggle.is-tap-closing {
-    z-index: 12;
+    z-index: 12 !important;
   }
 </style>
+
+<script>
+  (function () {
+    if (window.__COVENANT_LEXICON_SETTLE_HOLD__) return;
+    window.__COVENANT_LEXICON_SETTLE_HOLD__ = true;
+
+    function getSeal() {
+      return document.getElementById('lexiconToggle');
+    }
+
+    function getSnapMs() {
+      try {
+        var root = document.documentElement;
+        var value = window.getComputedStyle(root).getPropertyValue('--lexicon-snap-duration') || '';
+        var n = parseFloat(String(value).trim());
+        return isFinite(n) ? n : 420;
+      } catch (err) {
+        return 420;
+      }
+    }
+
+    function releaseHold(seal) {
+      if (!seal) return;
+      if (
+        seal.classList.contains('is-seal-dragging') ||
+        seal.classList.contains('is-seal-settling') ||
+        seal.classList.contains('is-tap-opening') ||
+        seal.classList.contains('is-tap-closing')
+      ) return;
+
+      seal.style.position = '';
+      seal.style.zIndex = '';
+      seal.style.removeProperty('--seal-drag-y');
+      seal.__covenantSettleHoldTimer__ = null;
+    }
+
+    function holdAboveCradle(seal) {
+      if (!seal) return;
+
+      seal.style.position = 'relative';
+      seal.style.zIndex = '12';
+      seal.style.setProperty('--seal-drag-y', '0px');
+
+      if (seal.__covenantSettleHoldTimer__) {
+        window.clearTimeout(seal.__covenantSettleHoldTimer__);
+        seal.__covenantSettleHoldTimer__ = null;
+      }
+
+      seal.__covenantSettleHoldTimer__ = window.setTimeout(function () {
+        releaseHold(seal);
+      }, getSnapMs() + 120);
+    }
+
+    function sync() {
+      var seal = getSeal();
+      if (!seal) return;
+
+      if (seal.classList.contains('is-seal-settling')) {
+        holdAboveCradle(seal);
+        return;
+      }
+
+      releaseHold(seal);
+    }
+
+    function init() {
+      var seal = getSeal();
+      if (!seal) return;
+
+      try {
+        var observer = new MutationObserver(function () {
+          sync();
+        });
+
+        observer.observe(seal, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+      } catch (err) {}
+
+      seal.addEventListener('transitionend', function (e) {
+        if (e && e.propertyName && e.propertyName !== 'transform') return;
+        sync();
+      });
+
+      sync();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+      init();
+    }
+  })();
+</script>
 
 <script>
   (function () {
