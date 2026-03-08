@@ -23,6 +23,7 @@
     var dockParent = null;
     var sealInHeader = false;
     var observer = null;
+    var restoreTimer = null;
     var dockCarryTimer = null;
 
     function isMobileBottomSheet() {
@@ -59,6 +60,12 @@
       return document.getElementById('lexiconModeLabel');
     }
 
+    function clearRestoreTimer() {
+      if (!restoreTimer) return;
+      window.clearTimeout(restoreTimer);
+      restoreTimer = null;
+    }
+
     function clearDockCarryTimer() {
       if (!dockCarryTimer) return;
       window.clearTimeout(dockCarryTimer);
@@ -93,6 +100,19 @@
       var panel = getPanel();
       if (!isMobileBottomSheet() || !panel) return false;
       return panel.classList.contains('is-open') && panel.getAttribute('data-lexicon-snap') === 'mid';
+    }
+
+    function shouldHoldSealForClosingTrace() {
+      var panel = getPanel();
+      var seal = getSeal();
+      if (!isMobileBottomSheet() || !panel || !seal || !sealInHeader) return false;
+      if (panel.classList.contains('is-open')) return false;
+
+      return (
+        seal.classList.contains('is-tap-closing') ||
+        seal.classList.contains('is-seal-settling') ||
+        seal.classList.contains('is-seal-dragging')
+      );
     }
 
     function syncGlyphPairForHeader(isWelded) {
@@ -137,23 +157,43 @@
       }
     }
 
+    function setDockCarryLayer(seal, active) {
+      if (!seal) return;
+
+      if (active) {
+        seal.style.position = 'relative';
+        seal.style.zIndex = '12';
+        return;
+      }
+
+      seal.style.position = '';
+      seal.style.zIndex = '';
+    }
+
     function animateDockReturnFromHeader(seal, fromRect) {
       var toRect;
       var deltaY;
+      var duration = getTapMotionMs() + 80;
 
-      if (!seal || !fromRect) return;
+      if (!seal) return;
 
       clearDockCarryTimer();
+      setDockCarryLayer(seal, true);
 
       try {
         toRect = seal.getBoundingClientRect();
       } catch (err) {
-        return;
+        toRect = null;
       }
 
-      deltaY = fromRect.top - toRect.top;
+      deltaY = (fromRect && toRect) ? (fromRect.top - toRect.top) : 0;
       if (!isFinite(deltaY) || Math.abs(deltaY) < 0.5) {
         seal.style.removeProperty('--seal-drag-y');
+        dockCarryTimer = window.setTimeout(function () {
+          dockCarryTimer = null;
+          seal.style.removeProperty('--seal-drag-y');
+          setDockCarryLayer(seal, false);
+        }, 140);
         return;
       }
 
@@ -167,7 +207,8 @@
       dockCarryTimer = window.setTimeout(function () {
         dockCarryTimer = null;
         seal.style.removeProperty('--seal-drag-y');
-      }, getTapMotionMs() + 80);
+        setDockCarryLayer(seal, false);
+      }, duration);
     }
 
     function applyWeldedHeaderLayout() {
@@ -304,7 +345,9 @@
       var slot = getSealSlot();
       if (!seal || !slot || sealInHeader) return;
 
+      clearRestoreTimer();
       clearDockCarryTimer();
+      setDockCarryLayer(seal, false);
 
       dockParent = seal.parentNode;
       if (!dockParent) return;
@@ -333,6 +376,7 @@
       var fromRect = null;
       if (!seal || !sealInHeader || !dockParent) return;
 
+      clearRestoreTimer();
       clearDockCarryTimer();
 
       try {
@@ -364,9 +408,23 @@
       animateDockReturnFromHeader(seal, fromRect);
     }
 
+    function scheduleRestoreToDock() {
+      if (restoreTimer) return;
+      restoreTimer = window.setTimeout(function () {
+        restoreTimer = null;
+        restoreSealToDock();
+      }, getTapMotionMs() + 80);
+    }
+
     function syncSealAttachment() {
       if (shouldWeldSeal()) {
+        clearRestoreTimer();
         weldSealIntoHeader();
+        return;
+      }
+
+      if (shouldHoldSealForClosingTrace()) {
+        scheduleRestoreToDock();
         return;
       }
 
