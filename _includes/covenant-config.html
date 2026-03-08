@@ -46,9 +46,21 @@
     z-index: 18 !important;
     overflow: visible !important;
     isolation: isolate !important;
-    transform: translateZ(0) !important;
     -webkit-backface-visibility: hidden !important;
     backface-visibility: hidden !important;
+  }
+
+  #navFooter #lexiconToggle.is-dock-returning {
+    transform: translateZ(0) !important;
+    margin-top: 0 !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 999px !important;
+  }
+
+  #navFooter #lexiconToggle.is-dock-returning::before,
+  #navFooter #lexiconToggle.is-dock-returning::after {
+    border-radius: 999px !important;
   }
 
   #navFooter #lexiconToggle.is-dock-returning::before {
@@ -372,6 +384,10 @@
       seal.classList.remove('is-dock-returning');
       seal.style.position = '';
       seal.style.zIndex = '';
+      seal.style.marginTop = '';
+      seal.style.width = '';
+      seal.style.height = '';
+      seal.style.borderRadius = '';
     }
 
     function setDockCarryLayer(seal, active) {
@@ -381,6 +397,10 @@
         seal.classList.add('is-dock-returning');
         seal.style.position = 'relative';
         seal.style.zIndex = '18';
+        seal.style.marginTop = '0';
+        seal.style.width = '56px';
+        seal.style.height = '56px';
+        seal.style.borderRadius = '999px';
         return;
       }
 
