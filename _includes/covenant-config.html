@@ -85,29 +85,6 @@
 </style>
 
 <style id="lexiconSealMotionFootprintFix">
-  html.lexicon-scroll-lock #navFooter #lexiconToggle,
-  #navFooter #lexiconToggle[aria-expanded="true"],
-  #navFooter #lexiconToggle.is-tap-opening,
-  #navFooter #lexiconToggle.is-tap-closing,
-  #navFooter #lexiconToggle.is-seal-dragging,
-  #navFooter #lexiconToggle.is-seal-settling,
-  #navFooter #lexiconToggle.is-dock-returning {
-    width: var(--lexicon-seal-w) !important;
-    min-width: var(--lexicon-seal-w) !important;
-    max-width: var(--lexicon-seal-w) !important;
-    height: var(--lexicon-seal-h) !important;
-    min-height: var(--lexicon-seal-h) !important;
-    max-height: var(--lexicon-seal-h) !important;
-    flex: 0 0 var(--lexicon-seal-w) !important;
-    align-self: flex-end !important;
-    margin-top: calc(-1 * var(--lexicon-seal-top-align)) !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding: 0 !important;
-    transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;
-    -webkit-transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;
-  }
-
   html.lexicon-scroll-lock #navFooter #lexiconToggle::before,
   html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
   #navFooter #lexiconToggle[aria-expanded="true"]::before,
