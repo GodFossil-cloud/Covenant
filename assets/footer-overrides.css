@@ -425,7 +425,7 @@ html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-
 #navFooter #lexiconToggle,
 #navFooter #lexiconToggle::before,
 #navFooter #lexiconToggle::after{border-radius:0 0 999px 999px !important}
-#navFooter #lexiconToggle{overflow:hidden;margin-top:calc(-1 * var(--lexicon-seal-top-align)) !important;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto;transform-style:flat;-webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;width:var(--lexicon-seal-w);height:var(--lexicon-seal-h)}
+#navFooter #lexiconToggle{overflow:hidden;margin-top:calc(-1 * var(--lexicon-seal-top-align)) !important;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto;transform-style:flat;-webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;width:var(--lexicon-seal-w);height:var(--lexicon-seal-h);position:relative;z-index:1}
 #navFooter #lexiconToggle.is-tap-opening,
 #navFooter #lexiconToggle.is-tap-closing{overflow:visible}
 @media (max-width: 600px){#navFooter{--toc-tab-gap:12px !important}}
@@ -471,11 +471,12 @@ html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-
 #navFooter a.nav-next.is-armed .nav-next-label{opacity:1;text-shadow:0 1px 1px rgba(0, 0, 0, 0.96), 0 0 16px rgba(242, 220, 154, 0.22)}
 #navFooter .nav-next-frame .nav-btn-icon,
 #navFooter .nav-prev-frame .nav-btn-icon{font-size:1.55rem}
-#navFooter .citation-label{margin-top:4px;min-height:18px;display:flex !important;align-items:center;justify-content:center;position:relative;visibility:visible !important;pointer-events:auto;color:var(--citation-color, rgba(242, 220, 154, 0.92));text-shadow:var(--citation-label-shadow)}
+#navFooter .citation-label{margin-top:4px;min-height:18px;display:flex !important;align-items:center;justify-content:center;position:relative;visibility:visible !important;pointer-events:auto;color:var(--citation-color, rgba(242, 220, 154, 0.92));text-shadow:var(--citation-label-shadow);z-index:2;isolation:isolate}
 #navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
-#navFooter .citation-copy{display:inline-block;border:0;background:transparent;padding:0;margin:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;pointer-events:auto}
+#navFooter .citation-copy{display:inline-block;border:0;background:transparent;padding:0;margin:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;pointer-events:auto;position:relative;z-index:1}
 #navFooter .citation-copy:focus-visible{outline:1px solid rgba(212, 170, 78, 0.65);outline-offset:4px;border-radius:6px}
 #navFooter .citation-label.is-copied #citationText{display:inline-block;color:var(--metal-leaf-intent);text-shadow:var(--metal-ink-seat), var(--metal-halo-intent);background:rgba(0, 0, 0, 0.58);border:1px solid rgba(242, 220, 154, 0.22);border-radius:999px;padding:2px 9px 3px;letter-spacing:0.14em;line-height:1.08}
+#navFooter #citationText{position:relative;z-index:1}
 @media (max-width: 600px){#navFooter .citation-label{margin-top:2px;min-height:16px}#navFooter .nav-next-label,#navFooter .nav-prev-label{font-size:0.78rem;letter-spacing:0.10em;opacity:0.86}}
 @media (max-width: 480px){#navFooter .nav-next-label,#navFooter .nav-prev-label{font-size:0.76rem;opacity:0.8}}
 
@@ -741,4 +742,16 @@ html body #navFooter #lexiconToggle.is-seal-dragging{
     -webkit-transform:translateY(0) !important;
     transform:translateY(0) !important;
   }
+}
+
+/* Close-settle layering refinement:
+   keep the citation readable and clickable while the mobile seal settles home. */
+#navFooter #lexiconToggle.is-seal-settling{
+  z-index:0;
+  pointer-events:none;
+}
+
+#navFooter #lexiconToggle.is-seal-settling::before,
+#navFooter #lexiconToggle.is-seal-settling::after{
+  z-index:0;
 }
