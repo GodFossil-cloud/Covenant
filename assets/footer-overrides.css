@@ -744,10 +744,13 @@ html body #navFooter #lexiconToggle.is-seal-dragging{
   }
 }
 
-/* Close-settle layering refinement:
-   keep the citation readable and clickable while the mobile seal settles home. */
+/* Close-settle layering: keep seal overlaying its cradle dock during snap-home.
+   z-index:1 matches the seal's normal resting value so the cradle ::after
+   pseudo-element (which paints at z-index:auto/0 inside the isolated footer
+   stacking context) never wins the paint-order race against the settling seal.
+   pointer-events:none is retained so the citation label remains hittable. */
 #navFooter #lexiconToggle.is-seal-settling{
-  z-index:0;
+  z-index:1;
   pointer-events:none;
 }
 
