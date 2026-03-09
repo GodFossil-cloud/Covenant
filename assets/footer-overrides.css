@@ -42,7 +42,7 @@
 
   --lexicon-glyph-open-embedded-shadow:0 1px 0 rgba(0,0,0,0.86);
 
-  --lexicon-glyph-open-inlay-color:#D8C07A;
+  --lexicon-glyph-open-inlay-color:var(--leaf-1, rgba(255,215,122,0.98));
   --lexicon-glyph-open-inlay-shadow:
     0 1px 0 rgba(0,0,0,0.92),
     0 -1px 0 rgba(255,255,255,0.08);
@@ -54,8 +54,6 @@
     0 0 22px rgba(242,220,154,0.34),
     0 0 46px rgba(242,220,154,0.16);
 
-  --lexicon-glyph-selected-color:#F2DC9A;
-
   --lexicon-glyph-tap-aura-size:2.0em;
   --lexicon-glyph-tap-aura-blur:8px;
   --lexicon-glyph-tap-aura:
@@ -66,10 +64,9 @@
       rgba(242,220,154,0.22) 54%,
       rgba(0,0,0,0) 86%
     );
-  --lexicon-glyph-tap-aura-close-duration:260ms;
 
-  --dock-tab-glyph-tap-aura-size:2.4em;
-  --dock-tab-glyph-tap-aura-blur:7px;
+  --dock-tab-glyph-tap-aura-size:3.0em;
+  --dock-tab-glyph-tap-aura-blur:8px;
   --dock-tab-glyph-tap-aura:
     radial-gradient(circle at 50% 50%,
       rgba(255,255,255,0.78) 0%,
@@ -77,16 +74,6 @@
       rgba(201,169,97,0.22) 44%,
       rgba(0,0,0,0) 76%
     );
-  --dock-tab-glyph-tap-aura-open-duration:280ms;
-  --dock-tab-glyph-tap-aura-close-duration:240ms;
-
-  --lexicon-cover-fade-ms:220ms;
-  --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
-  --lexicon-cover-transform-ms:560ms;
-  --lexicon-cover-vh:100vh;
-  --lexicon-cover-fallback-y:-22px;
-  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 14px));
-  --lexicon-cover-opacity-delay:130ms;
 
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 
@@ -97,10 +84,6 @@
   --lexicon-cradle-glow-intent:
     inset 0 -12px 24px rgba(242, 220, 154, 0.14),
     inset 0 -26px 44px rgba(201, 169, 97, 0.10);
-}
-
-@supports (height: 100dvh){
-  :root{ --lexicon-cover-vh:100dvh; }
 }
 
 html #navFooter{
@@ -323,7 +306,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
 }
 
 #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{
-  animation:lexiconTapAuraPulse var(--lexicon-glyph-tap-aura-close-duration, 260ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  animation:lexiconTapAuraPulse 260ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -355,7 +338,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   --citation-color:var(--citation-label-color);
   --citation-shadow:rgba(242, 220, 154, 0.12);
   --lexicon-seal-top-align:12px !important;
-  --seal-cradle-center-y:0px;
+  --seal-cradle-center-y:1px;
   --footer-cradle-line:#39332A;
   --seal-cradle-shift-y:0px;
   --seal-cradle-drop-y:var(--seal-cradle-center-y);
@@ -379,41 +362,16 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   --nav-wing-pill-h:calc(var(--nav-pill-height) + 8px);
   -webkit-backface-visibility:hidden;
   backface-visibility:hidden;
-  will-change:auto;
+  will-change:transform;
   isolation:isolate;
 }
 
 #navFooter .nav-footer-inner{max-width:1120px;padding:0 2px}
 
 /* #navFooter and .nav-footer-inner need overflow:visible so the cradle mask
-   pseudo-elements (::before/::after) can paint outside their boxes.
-   .nav-seals is handled separately below. */
+   pseudo-elements (::before/::after) can paint outside their boxes. */
 #navFooter,
 #navFooter .nav-footer-inner{overflow:visible !important}
-
-/* Fix 2 — seal translateY layout displacement
-   ─────────────────────────────────────────────────────────────────────────
-   Problem: with overflow:visible, the seal's large translateY during travel
-   accumulated scrollable overflow on .nav-seals that shifted sibling layout
-   (citation label position, nav-footer-inner children).
-
-   overflow:clip (NOT overflow:hidden):
-     • Clips the layout-overflow box so sibling metrics are unaffected.
-     • Does NOT create a scroll container (no scroll-position side-effects).
-     • Does NOT clip transform-painted overflow in the compositor — the
-       seal's visual translateY path continues to paint freely above/below.
-
-   contain:layout:
-     • Belt-and-suspenders: severs size feedback from .nav-seals internals
-       back to the flex row, so even internal reflow cannot shift siblings.
-     • Safe: .nav-seals is a self-contained grid; nothing outside it reads
-       its intrinsic scroll size.
-
-   No change to seal drag, snap, settle, aura, or cradle geometry. */
-#navFooter .nav-seals{
-  overflow:clip;
-  contain:layout;
-}
 
 #navFooter::before,
 #navFooter::after{-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto}
@@ -436,7 +394,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;
   background:linear-gradient(to bottom, rgba(0,0,0,0.95) 0 1px, rgba(0,0,0,0) 1px 100%), radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%, transparent 0 calc(var(--seal-notch-radius) - 2px), var(--footer-cradle-line) calc(var(--seal-notch-radius) - 1px) calc(var(--seal-notch-radius) + 1px), transparent calc(var(--seal-notch-radius) + 2px) 100%), linear-gradient(to right, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(0,0,0,.55) 100%), radial-gradient(circle farthest-side at 50% 0, rgba(0,0,0,.92) 0%, rgba(16,16,20,.96) 46%, rgba(0,0,0,.985) 100%);
   opacity:0.96;
-  box-shadow:inset 0 12px 18px rgba(0,0,0,.80), inset 0 -10px 14px rgba(255,255,255,.06), 0 1px 0 rgba(255,255,255,.05), var(--lexicon-cradle-glow, none);
+  box-shadow:inset 0 12px 18px rgba(0,0,0,.80), inset 0 -10px 14px rgba(255,255,255,.06), 0 1px 0 rgba(255,255,255,.05), var(--lexicon-cradle-glow, var(--lexicon-cradle-glow-rest));
   transition: box-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
@@ -454,13 +412,7 @@ html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-
 #navFooter #lexiconToggle::before,
 #navFooter #lexiconToggle::after{border-radius:0 0 999px 999px !important}
 
-/* Fix 3 — z-index authority consolidated to JS inline style
-   ─────────────────────────────────────────────────────────────────────────
-   z-index is intentionally absent here. JS sets z-index:4 !important
-   on the live element as the single authoritative source. Any CSS z-index
-   on this element is either redundant (if lower) or a conflict (if higher).
-   Removed the former z-index:1 that lived in this rule. */
-#navFooter #lexiconToggle{overflow:hidden;margin-top:calc(-1 * var(--lexicon-seal-top-align)) !important;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto;transform-style:flat;-webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;width:var(--lexicon-seal-w);height:var(--lexicon-seal-h);position:relative;}
+#navFooter #lexiconToggle{overflow:hidden;margin-top:calc(-1 * var(--lexicon-seal-top-align) + 4px) !important;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform;-webkit-transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;width:var(--lexicon-seal-w);height:var(--lexicon-seal-h);position:relative;}
 #navFooter #lexiconToggle.is-tap-opening,
 #navFooter #lexiconToggle.is-tap-closing{overflow:visible}
 @media (max-width: 600px){#navFooter{--toc-tab-gap:12px !important}}
@@ -517,8 +469,8 @@ html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-
 
 #navFooter #lexiconToggle.has-selection::before{border-color:rgba(0,0,0,0.72) !important;box-shadow:inset 0 0 18px rgba(0,0,0,0.84), inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 18px -14px rgba(0,0,0,0.90), 0 14px 10px -12px rgba(0,0,0,0.92) !important}
 #navFooter #lexiconToggle.has-selection{ text-shadow:none !important; }
-#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
-#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{color:var(--lexicon-glyph-selected-color) !important;text-shadow:var(--lexicon-glyph-selected-quiet-halo-shadow) !important;filter:none !important}
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]) .lexicon-glyph,
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{color:var(--lexicon-glyph-open-color) !important;text-shadow:var(--lexicon-glyph-selected-quiet-halo-shadow) !important;filter:none !important}
 #navFooter #lexiconToggle.has-selection.is-nudging .lexicon-glyph,
 #navFooter #lexiconToggle.has-selection.is-pulsing .lexicon-glyph,
 #navFooter #lexiconToggle.has-selection.is-seal-dragging .lexicon-glyph,
@@ -617,57 +569,6 @@ html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]).has
 html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
 html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
 html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner{color:rgba(0,0,0,0.72) !important;text-shadow:0 1px 0 rgba(242,220,154,0.06), 0 -1px 0 rgba(0,0,0,0.98) !important}
-#navFooter #lexiconToggle.is-lexicon-locked,
-#navFooter #lexiconToggle[data-lexicon-locked="true"],
-#navFooter #lexiconToggle[aria-disabled="true"]{opacity:1 !important;filter:none !important;cursor:not-allowed}
-#navFooter #lexiconToggle.is-lexicon-locked::after,
-#navFooter #lexiconToggle[data-lexicon-locked="true"]::after,
-#navFooter #lexiconToggle[aria-disabled="true"]::after{background-color:#000 !important;background-image:radial-gradient(120% 150% at 50% 10%, rgba(255,255,255,0.03), rgba(255,255,255,0) 46%), radial-gradient(140% 190% at 50% 118%, rgba(0,0,0,1), rgba(0,0,0,0) 64%), repeating-linear-gradient(135deg, rgba(255,255,255,0.030) 0 1px, rgba(0,0,0,0) 1px 7px), linear-gradient(to bottom, rgba(255,255,255,0.018), rgba(0,0,0,0.76));box-shadow:inset 0 0 32px rgba(0,0,0,0.98), inset 0 -28px 28px rgba(0,0,0,0.94), inset 0 12px 16px -18px rgba(255,255,255,0.06);transition:background-color 160ms linear}
-#navFooter #lexiconToggle.is-lexicon-locked::before,
-#navFooter #lexiconToggle[data-lexicon-locked="true"]::before,
-#navFooter #lexiconToggle[aria-disabled="true"]::before{border-color:rgba(0,0,0,0.96) !important;box-shadow:inset 0 0 40px rgba(0,0,0,1), inset 0 3px 22px rgba(0,0,0,0.92), inset 0 1px 0 rgba(255,255,255,0.015), inset 0 -1px 0 rgba(255,255,255,0.010), 0 0 0 1px rgba(0,0,0,0.96) !important}
-#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph,
-#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph,
-#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph,
-#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph-mid-inner{color:rgba(0,0,0,0.88) !important;text-shadow:0 1px 0 rgba(255,255,255,0.060), 0 -1px 0 rgba(0,0,0,0.98) !important;filter:none !important}
-#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph,
-#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph,
-#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph{transform:translateY(1px)}
-#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph::before,
-#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph::before,
-#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph::before{opacity:0 !important;animation:none !important;filter:none !important}
-#navFooter #lexiconToggle.is-lexicon-locked.has-selection .lexicon-glyph,
-#navFooter #lexiconToggle.is-lexicon-locked.has-selection .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].has-selection .lexicon-glyph,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].has-selection .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph,
-#navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph-mid-inner{color:rgba(0,0,0,0.72) !important;text-shadow:0 1px 0 rgba(242,220,154,0.06), 0 -1px 0 rgba(0,0,0,0.98) !important}
-#navFooter #lexiconToggle.is-lexicon-locked:hover,
-#navFooter #lexiconToggle.is-lexicon-locked:focus-visible,
-#navFooter #lexiconToggle[data-lexicon-locked="true"]:hover,
-#navFooter #lexiconToggle[data-lexicon-locked="true"]:focus-visible,
-#navFooter #lexiconToggle[aria-disabled="true"]:hover,
-#navFooter #lexiconToggle[aria-disabled="true"]:focus-visible{text-shadow:none !important;filter:none !important}
-#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph,
-#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph,
-#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph,
-#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph,
-#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph-mid-inner{color:#000 !important;text-shadow:none !important;filter:none !important}
-#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph::before,
-#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph::before,
-#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph::before,
-#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph::before,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph::before,
-#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph::before{opacity:0 !important;animation:none !important;filter:none !important}
 
 .lexicon-panel-header{
   justify-content:flex-start;
@@ -712,100 +613,15 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
   word-break:break-word;
 }
 
-html body #lexiconToggle{
-  opacity:1;
-  --lexicon-stack-cover-y:0px;
-  will-change:opacity;
-  transition:
-    color 0.2s ease,
-    text-shadow 0.2s ease,
-    filter 0.2s ease,
-    transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
-    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
-    !important;
-}
-
-html body #lexiconToggle.is-seal-dragging{
-  will-change:transform, opacity;
-  transition:
-    color 0.2s ease,
-    text-shadow 0.2s ease,
-    filter 0.2s ease,
-    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
-    !important;
-  transition-delay:0ms !important;
-}
-
-html body #lexiconToggle.is-ui-stack-covered{
-  z-index:1490 !important;
-  opacity:0 !important;
-  pointer-events:none !important;
-  filter:none !important;
-}
-
-html body #lexiconToggle.is-ui-stack-covered{
-  --lexicon-stack-cover-y:var(--lexicon-cover-fallback-y);
-  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
-  -webkit-transform:translateY(var(--lexicon-stack-cover-y, 0px)) !important;
-  transform:translateY(var(--lexicon-stack-cover-y, 0px)) !important;
-}
-
-html body #navFooter #lexiconToggle.is-ui-stack-covered{
-  --lexicon-stack-cover-y:var(--lexicon-cover-out-y);
-  transition:
-    transform var(--lexicon-cover-transform-ms, 560ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
-    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
-    !important;
-  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
-  -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
-  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px)) !important;
-}
-
-html body #navFooter #lexiconToggle.is-seal-dragging{
-  will-change:transform, opacity;
-  transition:
-    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
-    !important;
-  transition-delay:0ms !important;
-}
-
-@media (prefers-reduced-motion: reduce){
-  html body #lexiconToggle{transition:none !important}
-
-  html body #lexiconToggle.is-ui-stack-covered{
-    opacity:0 !important;
-    -webkit-transform:translateY(0) !important;
-    transform:translateY(0) !important;
-  }
-}
-
 /* -------------------------------------------------------------------------
-   Close-settle compositing fix (Option A)
-
-   Root cause: when lexicon-scroll-lock is removed from <html> on close,
-   the footer's ::before -webkit-mask-image re-evaluates. On iOS Safari and
-   some Android Chrome the masked pseudo-element re-raster can promote the
-   cradle ::after to its own composited layer in the same paint frame —
-   temporarily winning over siblings that are not yet composited, causing
-   the seal to flash "behind" the cradle for one frame.
-
-   Fix 3 note: z-index is intentionally absent from this rule.
-   The inline JS z-index:4 !important is the single authoritative source.
-   A CSS z-index:1 here would be lower than the inline value and could only
-   ever lower the seal during the settle window — the opposite of safe.
-
-   The actual compositing guarantee is will-change:transform + translateZ(0),
-   which forces a stable compositor promotion through the entire snap-home
-   window so the seal always paints above ::after regardless of mask repaint
-   timing. That is the real protection; z-index is not needed here.
-
-   pointer-events:none is retained so the citation label remains hittable.
+   Close-settle compositing fix
+   Keeps the seal above ::after during mask repaint on iOS/Android Chrome.
    ------------------------------------------------------------------------- */
 #navFooter #lexiconToggle.is-seal-settling{
   pointer-events:none;
   will-change:transform;
-  -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) translateZ(0) !important;
-  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) translateZ(0) !important;
+  -webkit-transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) translateZ(0) !important;
+  transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) translateZ(0) !important;
 }
 
 #navFooter #lexiconToggle.is-seal-settling::before,
