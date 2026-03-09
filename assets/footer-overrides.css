@@ -453,7 +453,14 @@ html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-
 #navFooter #lexiconToggle,
 #navFooter #lexiconToggle::before,
 #navFooter #lexiconToggle::after{border-radius:0 0 999px 999px !important}
-#navFooter #lexiconToggle{overflow:hidden;margin-top:calc(-1 * var(--lexicon-seal-top-align)) !important;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto;transform-style:flat;-webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;width:var(--lexicon-seal-w);height:var(--lexicon-seal-h);position:relative;z-index:1}
+
+/* Fix 3 — z-index authority consolidated to JS inline style
+   ─────────────────────────────────────────────────────────────────────────
+   z-index is intentionally absent here. JS sets z-index:4 !important
+   on the live element as the single authoritative source. Any CSS z-index
+   on this element is either redundant (if lower) or a conflict (if higher).
+   Removed the former z-index:1 that lived in this rule. */
+#navFooter #lexiconToggle{overflow:hidden;margin-top:calc(-1 * var(--lexicon-seal-top-align)) !important;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto;transform-style:flat;-webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;width:var(--lexicon-seal-w);height:var(--lexicon-seal-h);position:relative;}
 #navFooter #lexiconToggle.is-tap-opening,
 #navFooter #lexiconToggle.is-tap-closing{overflow:visible}
 @media (max-width: 600px){#navFooter{--toc-tab-gap:12px !important}}
@@ -779,19 +786,22 @@ html body #navFooter #lexiconToggle.is-seal-dragging{
    the footer's ::before -webkit-mask-image re-evaluates. On iOS Safari and
    some Android Chrome the masked pseudo-element re-raster can promote the
    cradle ::after to its own composited layer in the same paint frame —
-   temporarily winning over z-index:1 children that are not yet composited,
-   which causes the seal to flash "behind" the cradle for one frame.
+   temporarily winning over siblings that are not yet composited, causing
+   the seal to flash "behind" the cradle for one frame.
 
-   Fix: force the seal onto its own composited layer while .is-seal-settling
-   is active. will-change:transform + transform:translateZ(0) guarantee a
-   stable compositor promotion through the entire snap-home window so the
-   seal always paints above ::after regardless of mask repaint timing.
+   Fix 3 note: z-index is intentionally absent from this rule.
+   The inline JS z-index:4 !important is the single authoritative source.
+   A CSS z-index:1 here would be lower than the inline value and could only
+   ever lower the seal during the settle window — the opposite of safe.
 
-   z-index:1 is kept as belt-and-suspenders.
+   The actual compositing guarantee is will-change:transform + translateZ(0),
+   which forces a stable compositor promotion through the entire snap-home
+   window so the seal always paints above ::after regardless of mask repaint
+   timing. That is the real protection; z-index is not needed here.
+
    pointer-events:none is retained so the citation label remains hittable.
    ------------------------------------------------------------------------- */
 #navFooter #lexiconToggle.is-seal-settling{
-  z-index:1;
   pointer-events:none;
   will-change:transform;
   -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) translateZ(0) !important;
