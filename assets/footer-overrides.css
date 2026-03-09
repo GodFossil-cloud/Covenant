@@ -744,14 +744,30 @@ html body #navFooter #lexiconToggle.is-seal-dragging{
   }
 }
 
-/* Close-settle layering: keep seal overlaying its cradle dock during snap-home.
-   z-index:1 matches the seal's normal resting value so the cradle ::after
-   pseudo-element (which paints at z-index:auto/0 inside the isolated footer
-   stacking context) never wins the paint-order race against the settling seal.
-   pointer-events:none is retained so the citation label remains hittable. */
+/* -------------------------------------------------------------------------
+   Close-settle compositing fix (Option A)
+
+   Root cause: when lexicon-scroll-lock is removed from <html> on close,
+   the footer's ::before -webkit-mask-image re-evaluates. On iOS Safari and
+   some Android Chrome the masked pseudo-element re-raster can promote the
+   cradle ::after to its own composited layer in the same paint frame —
+   temporarily winning over z-index:1 children that are not yet composited,
+   which causes the seal to flash "behind" the cradle for one frame.
+
+   Fix: force the seal onto its own composited layer while .is-seal-settling
+   is active. will-change:transform + transform:translateZ(0) guarantee a
+   stable compositor promotion through the entire snap-home window so the
+   seal always paints above ::after regardless of mask repaint timing.
+
+   z-index:1 is kept as belt-and-suspenders.
+   pointer-events:none is retained so the citation label remains hittable.
+   ------------------------------------------------------------------------- */
 #navFooter #lexiconToggle.is-seal-settling{
   z-index:1;
   pointer-events:none;
+  will-change:transform;
+  -webkit-transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) translateZ(0) !important;
+  transform:translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) translateZ(0) !important;
 }
 
 #navFooter #lexiconToggle.is-seal-settling::before,
