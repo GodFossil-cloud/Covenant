@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.24 (seal stays in footer; no DOM reparenting; stable geometry) */
+/*! Covenant Lexicon UI v0.3.25 (seal stays in footer; no DOM reparenting; stable geometry) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.24';
+  window.COVENANT_LEXICON_VERSION = '0.3.25';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1373,6 +1373,32 @@
 
   function closePanel() {
     if (!panel || !lexOverlay) return;
+
+    // FIX 1: Promote the seal onto its own compositor layer for the entire
+    // close animation, regardless of whether close was triggered by a tap/click
+    // or by a drag. Without this, the footer ::after cradle pseudo-element could
+    // win the compositing race during the one-to-two frames where
+    // lexicon-scroll-lock is being removed and the mask is repainting, causing
+    // the seal to appear to slide behind the cradle dock.
+    if (isBottomSheetMode()) {
+      var snapMs = getCssVarNumber('--lexicon-snap-duration', 420);
+      // markSealSettling is defined inside initMobileSealDrag; call via the
+      // same mechanism used by the drag-snap path by dispatching through the
+      // shared toggle class. We replicate the logic inline here so it is
+      // available regardless of whether the drag IIFE has run.
+      if (lexiconToggle && lexiconToggle.classList) {
+        var _settlingTimer = null;
+        lexiconToggle.classList.add('is-seal-settling');
+        _settlingTimer = window.setTimeout(function () {
+          try {
+            if (lexiconToggle && lexiconToggle.classList) {
+              lexiconToggle.classList.remove('is-seal-settling');
+            }
+          } catch (err) {}
+          _settlingTimer = null;
+        }, Math.max(0, snapMs) + 80);
+      }
+    }
 
     clearActiveTooltip();
     resetPanelInlineMotion();
