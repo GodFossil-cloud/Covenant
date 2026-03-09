@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.25 (seal stays in footer; no DOM reparenting; stable geometry) */
+/*! Covenant Lexicon UI v0.3.10 (honor explicit dock glyph markup) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.25';
+  window.COVENANT_LEXICON_VERSION = '0.3.10';
 
   var doc = document;
   var root = doc.documentElement;
@@ -62,6 +62,13 @@
   var sentenceExplanations = pageConfig.sentenceExplanations || {};
   var logPrefix = pageId ? ('[Covenant Lexicon / ' + pageId + ']') : '[Covenant Lexicon]';
 
+  // ----------------------------------------------------------
+  // Covenant Journey Header Standardization
+  // ----------------------------------------------------------
+  // Policy: Invocation → XII use the compact header style.
+  // This ensures Foundation/Declaration and Articles II–X conform
+  // without having to hand-edit each page during migration.
+  // (rituals.html is intentionally excluded.)
   function applyJourneyCompactHeader() {
     var ids = {
       invocation: true,
@@ -111,6 +118,7 @@
 
   var citationText = byId('citationText');
 
+  // Optional: coordinated UI stack (true surface layering across panels).
   var UI_STACK_ID = 'lexicon';
   var uiRegistered = false;
 
@@ -161,14 +169,19 @@
       stack.register({
         id: UI_STACK_ID,
         priority: 40,
+
+        // Participate in shared scroll lock.
         useSharedScrollLock: true,
         allowScrollSelector: '#lexiconPanel .lexicon-panel-body',
+
         isOpen: function () {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
+
         requestClose: function () {
           if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
         },
+
         setInert: function (isInert) {
           try {
             var asleep = !!isInert;
@@ -183,6 +196,7 @@
             }
           } catch (err2) {}
         },
+
         setZIndex: function (baseZ) {
           try {
             if (lexOverlay) lexOverlay.style.zIndex = String(baseZ);
@@ -215,37 +229,104 @@
   }
 
   function clearStackZIndex() {
+    // Important: when Lexicon closes back to its "peek" state, it must not keep the
+    // last UI-stack inline z-index from its open state; otherwise it can sit above
+    // ToC/Reliquary tabs after an open→close cycle.
     try { if (lexOverlay) lexOverlay.style.zIndex = ''; } catch (err1) {}
     try { if (panel) panel.style.zIndex = ''; } catch (err2) {}
   }
 
+  // ----------------------------------------
+  // Seal re-parenting (desktop/tablet only)
+  // ----------------------------------------
   var sealSlot = byId('lexiconSealSlot');
   var headerText = byId('lexiconHeaderText');
   var sealDockParent = null;
   var sealDockPlaceholder = null;
   var sealIsInHeader = false;
 
-  // Geometry fix: seal reparenting disabled.
-  // The seal now stays in the footer DOM at all times.
-  // On desktop/tablet open, it visually hides via opacity + pointer-events in openPanel().
   function ensureSealDockPlaceholder() {
-    // No-op: placeholder no longer needed.
-    return null;
+    if (sealDockPlaceholder) return sealDockPlaceholder;
+
+    var el = doc.createElement('span');
+    el.setAttribute('aria-hidden', 'true');
+    el.style.display = 'block';
+    el.style.width = 'var(--seal-size, 56px)';
+    el.style.height = 'var(--seal-size, 56px)';
+    el.style.pointerEvents = 'none';
+
+    sealDockPlaceholder = el;
+    return el;
   }
 
   function ensureHeaderLayout() {
-    // No-op: header slot remains empty (seal stays in footer).
+    if (sealSlot) {
+      sealSlot.style.display = 'flex';
+      sealSlot.style.alignItems = 'center';
+      sealSlot.style.justifyContent = 'center';
+      sealSlot.style.flex = '0 0 auto';
+    }
+
+    if (headerText) {
+      headerText.style.flex = '1 1 auto';
+      headerText.style.minWidth = '0';
+    }
   }
 
   function moveSealIntoHeader() {
-    // No-op: seal stays in footer; visually hidden on desktop/tablet open.
+    if (!lexiconToggle || !sealSlot) return;
+    if (sealIsInHeader) return;
+
+    sealDockParent = lexiconToggle.parentNode;
+    if (!sealDockParent) return;
+
+    // Maintain footer geometry: leave a placeholder where the seal lived.
+    try {
+      sealDockParent.insertBefore(ensureSealDockPlaceholder(), lexiconToggle);
+    } catch (err0) {}
+
+    // Move the live button into the panel header.
+    try {
+      ensureHeaderLayout();
+      sealSlot.appendChild(lexiconToggle);
+
+      // When the seal is in the header, it must behave as a static emblem,
+      // not as the mobile bottom-sheet drag handle.
+      lexiconToggle.classList.add('is-seal-in-header');
+      lexiconToggle.style.transform = 'none';
+      lexiconToggle.style.margin = '0 8px 0 0';
+      lexiconToggle.style.removeProperty('--seal-drag-y');
+
+      sealIsInHeader = true;
+    } catch (err1) {}
   }
 
   function restoreSealToDock() {
-    // No-op: seal never left the footer.
+    if (!lexiconToggle) return;
+    if (!sealDockParent) return;
+    if (!sealIsInHeader) return;
+
+    try {
+      if (sealDockPlaceholder && sealDockPlaceholder.parentNode === sealDockParent) {
+        sealDockParent.insertBefore(lexiconToggle, sealDockPlaceholder);
+        sealDockParent.removeChild(sealDockPlaceholder);
+      } else {
+        sealDockParent.appendChild(lexiconToggle);
+      }
+
+      lexiconToggle.classList.remove('is-seal-in-header');
+      lexiconToggle.style.transform = '';
+      lexiconToggle.style.margin = '';
+
+      sealDockPlaceholder = null;
+      sealIsInHeader = false;
+    } catch (err2) {}
   }
 
   var sealClearTimer = null;
+
+  // Policy: On mobile bottom-sheet, the panel should ONLY be dragged down from the footer seal.
+  // The top drag handle is kept in markup for compatibility, but disabled here.
   var ENABLE_PANEL_HANDLE_DRAG = false;
   if (dragRegion && !ENABLE_PANEL_HANDLE_DRAG) {
     dragRegion.style.display = 'none';
@@ -260,6 +341,7 @@
   }
 
   var defaultOverviewHTML = pageConfig.defaultOverviewHTML || (dynamicContent ? dynamicContent.innerHTML : '');
+
   if (dynamicContent && pageConfig.defaultOverviewHTML) {
     dynamicContent.innerHTML = pageConfig.defaultOverviewHTML;
   }
@@ -273,17 +355,12 @@
   var currentlyActiveTooltip = null;
   var focusReturnEl = null;
   var scrollLockY = 0;
-  var localBodyScrollLocked = false;
-  var iosViewportFrozen = false;
-  var iosFrozenBodyStyles = null;
 
   var mobileGlyphMql = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)') : null;
   var isMobileGlyphMode = !!(mobileGlyphMql && mobileGlyphMql.matches);
 
   var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
   function isBottomSheetMode() { return !!(bottomSheetMql && bottomSheetMql.matches); }
-
-  var MID_REST_NON_MODAL_PX = 2;
 
   var isIOS = (function () {
     try {
@@ -326,91 +403,37 @@
     iosTouchMoveBlocker = null;
   }
 
-  function shouldTreatLexiconAsFullyOpen() {
-    if (!panel || !panel.classList || !panel.classList.contains('is-open')) return false;
-    if (!isBottomSheetMode()) return true;
-
-    var snap = readStoredPanelSnap();
-    if (snap === 'open') return true;
-
-    var y = readStoredPanelY();
-    return (typeof y === 'number' && isFinite(y) && y <= MID_REST_NON_MODAL_PX);
-  }
-
-  function freezeIOSViewportForLexicon() {
-    if (!isIOS || iosViewportFrozen || !doc.body) return;
-
-    iosFrozenBodyStyles = {
-      position: doc.body.style.position || '',
-      top: doc.body.style.top || '',
-      left: doc.body.style.left || '',
-      right: doc.body.style.right || '',
-      width: doc.body.style.width || '',
-      overflow: doc.body.style.overflow || ''
-    };
-
-    scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
-    doc.body.style.position = 'fixed';
-    doc.body.style.top = (-scrollLockY) + 'px';
-    doc.body.style.left = '0';
-    doc.body.style.right = '0';
-    doc.body.style.width = '100%';
-    doc.body.style.overflow = 'hidden';
-    iosViewportFrozen = true;
-  }
-
-  function unfreezeIOSViewportForLexicon() {
-    if (!iosViewportFrozen || !doc.body) return;
-
-    var restoreY = Math.round(scrollLockY || 0);
-    var previous = iosFrozenBodyStyles || {};
-
-    doc.body.style.position = previous.position || '';
-    doc.body.style.top = previous.top || '';
-    doc.body.style.left = previous.left || '';
-    doc.body.style.right = previous.right || '';
-    doc.body.style.width = previous.width || '';
-    doc.body.style.overflow = previous.overflow || '';
-
-    iosFrozenBodyStyles = null;
-    iosViewportFrozen = false;
-    window.scrollTo(0, restoreY);
-  }
-
-  function syncLexiconFullOpenState(forceState) {
-    var shouldLock = (typeof forceState === 'boolean') ? forceState : shouldTreatLexiconAsFullyOpen();
-
-    root.classList.toggle('lexicon-scroll-lock', !!shouldLock);
-
-    if (!isIOS) return;
-    if (shouldLock) freezeIOSViewportForLexicon();
-    else unfreezeIOSViewportForLexicon();
-  }
-
   function lockBodyScroll() {
     if (!shouldUseLocalScrollLock()) return;
-    if (localBodyScrollLocked) return;
 
+    if (root.classList.contains('lexicon-scroll-lock')) return;
+
+    // Round to avoid feeding fractional scroll offsets back into layout.
     scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
-    localBodyScrollLocked = true;
 
+    // Keep footer dock sovereign above the Lexicon overlay/panel.
+    root.classList.add('lexicon-scroll-lock');
+
+    // iOS Safari: toggling overflow hidden can nudge visualViewport and tick fixed docks by ~1px.
+    // Local lock on iOS uses only the touchmove blocker.
     if (isIOS) {
       enableIOSTouchScrollLock();
       return;
     }
 
+    // Overflow-only scroll lock (non-iOS).
     try { doc.body.style.overflow = 'hidden'; } catch (err) {}
   }
 
   function unlockBodyScroll() {
     if (!shouldUseLocalScrollLock()) return;
-    if (!localBodyScrollLocked) return;
 
-    localBodyScrollLocked = false;
+    if (!root.classList.contains('lexicon-scroll-lock')) return;
+
+    root.classList.remove('lexicon-scroll-lock');
 
     if (isIOS) {
       disableIOSTouchScrollLock();
-      if (!iosViewportFrozen) window.scrollTo(0, scrollLockY);
       return;
     }
 
@@ -472,15 +495,23 @@
     }
   }
 
+  // ----------------------------------------
+  // Seal interaction feedback (pulse + nudge)
+  // ----------------------------------------
   var sealPulseTimer = null;
   var sealNudgeTimer = null;
+
+  // Tap/open glow management (distinct from drag).
   var sealTapClassTimer = null;
 
   function getNavPulseDurationMs() {
+    // CSS var is typically like "520ms"; parseFloat yields 520.
     return getCssVarNumber('--nav-pulse-duration', 520);
   }
 
   function getLexiconTapMotionMs() {
+    // Align tap open/close class lifetime to the same snap timing used by the bottom sheet.
+    // (Keeps intent glow present through the open/close transition even after aria flips.)
     return getCssVarNumber('--lexicon-snap-duration', 420);
   }
 
@@ -551,6 +582,9 @@
     }, 140);
   }
 
+  // ----------------------------------------
+  // Lexicon toggle glyph management
+  // ----------------------------------------
   var lexiconHovering = false;
   var LEX_GLYPHS = {
     default: '𖤓',
@@ -595,12 +629,15 @@
 
     midOuter.appendChild(midInner);
     target.appendChild(midOuter);
+
     target.appendChild(doc.createTextNode(right));
   }
 
   function setLexiconGlyph() {
     if (!lexiconToggle || !panel) return;
 
+    // If the dock provides explicit idle/active glyph spans, treat that markup as the source of truth.
+    // (Prevents JS from overwriting the curated symbols in _includes/nav-footer.html.)
     var explicitIdle = qs('.lexicon-glyph--idle', lexiconToggle);
     var explicitActive = qs('.lexicon-glyph--active', lexiconToggle);
     if (explicitIdle && explicitActive) return;
@@ -646,6 +683,9 @@
     setLexiconGlyph();
   }
 
+  // ----------------------------------------
+  // Mode label
+  // ----------------------------------------
   var modeEl = byId('lexiconModeLabel') || qs('.lexicon-panel-mode');
   function setModeLabel() {
     if (!pageConfig.modeLabel || !modeEl) return;
@@ -907,30 +947,24 @@
     if (lexOverlay) {
       lexOverlay.style.opacity = '';
       lexOverlay.style.transition = '';
-      lexOverlay.style.pointerEvents = '';
     }
-    clearLexiconBodySizing();
   }
 
-  function getSeatNudge() {
-    if (!lexiconToggle) return 0;
-    return getCssVarNumber('--seal-seat-nudge-closed', 0);
-  }
-
-  function shouldAnchorSealToDock() {
-    // Keep the mobile seal on the same geometry path as the sheet.
-    // The iOS-only dock anchoring shortcut pinned the seal in its cradle.
-    return false;
+  function getFooterHeightSafe() {
+    if (navFooter) {
+      try {
+        var r = navFooter.getBoundingClientRect();
+        if (r && r.height) return Math.max(0, Math.round(r.height));
+      } catch (err) {}
+    }
+    var val = getCssVar('--footer-total-height');
+    var n = parseFloat(val);
+    return isFinite(n) ? Math.max(0, Math.round(n)) : 0;
   }
 
   function setSealDragOffset(px, draggingNow) {
     if (!lexiconToggle) return;
     if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
-
-    if (shouldAnchorSealToDock()) {
-      clearSealDragOffset();
-      return;
-    }
 
     if (sealClearTimer) {
       window.clearTimeout(sealClearTimer);
@@ -957,11 +991,6 @@
     if (!lexiconToggle) return;
     if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
 
-    if (shouldAnchorSealToDock()) {
-      clearSealDragOffset();
-      return;
-    }
-
     var OPEN_DROP_PX = isIOS ? 1 : 0;
     var unit = supportsDVH() ? '100dvh' : '100vh';
 
@@ -980,315 +1009,6 @@
 
   function setSealToClosedPosition() {
     clearSealDragOffset();
-  }
-
-  function readStoredPanelY() {
-    if (!panel) return null;
-    var raw = '';
-    try {
-      raw = panel.getAttribute('data-lexicon-y') || '';
-    } catch (err) {
-      raw = '';
-    }
-    var n = parseFloat(String(raw).trim());
-    return isFinite(n) ? n : null;
-  }
-
-  function storePanelY(y) {
-    if (!panel) return;
-    try { panel.setAttribute('data-lexicon-y', String(Math.round(y))); } catch (err) {}
-  }
-
-  function readStoredPanelSnap() {
-    if (!panel) return null;
-    try {
-      var raw = String(panel.getAttribute('data-lexicon-snap') || '').trim();
-      if (raw === 'open' || raw === 'mid' || raw === 'closed') return raw;
-    } catch (err) {}
-    return null;
-  }
-
-  function storePanelSnap(state) {
-    if (!panel) return;
-    try {
-      var next = String(state || '').trim();
-      if (next === 'open' || next === 'mid' || next === 'closed') panel.setAttribute('data-lexicon-snap', next);
-      else panel.removeAttribute('data-lexicon-snap');
-    } catch (err) {}
-  }
-
-  function derivePanelSnap(y, closedY) {
-    if (!(typeof y === 'number' && isFinite(y))) return null;
-    var closed = Math.max(1, Math.round(closedY || 1));
-    var current = Math.round(y);
-    if (current <= MID_REST_NON_MODAL_PX) return 'open';
-    if (Math.abs(current - closed) <= 1) return 'closed';
-    return 'mid';
-  }
-
-  function getViewportHeightSafe() {
-    try {
-      if (window.visualViewport && typeof window.visualViewport.height === 'number' && window.visualViewport.height > 0) {
-        var vv = window.visualViewport;
-        var h = vv.height;
-        var off = (typeof vv.offsetTop === 'number' && isFinite(vv.offsetTop)) ? vv.offsetTop : 0;
-        var sum = h + off;
-        return (sum > 0) ? sum : h;
-      }
-    } catch (err) {}
-    return window.innerHeight || 0;
-  }
-
-  function getDockObscurePxSafe() {
-    var vh = getViewportHeightSafe();
-
-    if (navFooter) {
-      try {
-        var r = navFooter.getBoundingClientRect();
-        if (r && isFinite(r.top)) return Math.max(0, Math.round(vh - r.top));
-        if (r && r.height) return Math.max(0, Math.round(r.height));
-      } catch (err0) {}
-    }
-
-    var val = getCssVar('--footer-total-height');
-    var n = parseFloat(val);
-    return isFinite(n) ? Math.max(0, Math.round(n)) : 0;
-  }
-
-  function clearLexiconBodyDockInset() {
-    if (!panel) return;
-    var body = qs('.lexicon-panel-body', panel);
-    if (!body) return;
-    body.style.paddingBottom = '';
-    body.style.scrollPaddingBottom = '';
-  }
-
-  function applyLexiconBodyDockInset(dockObscurePx) {
-    if (!panel) return;
-    var body = qs('.lexicon-panel-body', panel);
-    if (!body) return;
-
-    if (!isBottomSheetMode() || !panel.classList.contains('is-open')) {
-      clearLexiconBodyDockInset();
-      return;
-    }
-
-    var inset = Math.max(0, Math.round((dockObscurePx || 0) + 24));
-    body.style.paddingBottom = inset + 'px';
-    body.style.scrollPaddingBottom = inset + 'px';
-  }
-
-  function clearLexiconBodySizing() {
-    if (!panel) return;
-    var body = qs('.lexicon-panel-body', panel);
-    if (!body) return;
-    body.style.height = '';
-    body.style.maxHeight = '';
-  }
-
-  function applyLexiconBodySizingForY(y, dockObscurePx) {
-    if (!panel) return;
-    var body = qs('.lexicon-panel-body', panel);
-    if (!body) return;
-
-    if (!isBottomSheetMode() || !panel.classList.contains('is-open')) {
-      clearLexiconBodySizing();
-      return;
-    }
-
-    var header = qs('.lexicon-panel-header', panel);
-    var headerH = 0;
-    try { headerH = header ? (header.getBoundingClientRect().height || 0) : 0; } catch (err0) { headerH = 0; }
-
-    var vh = getViewportHeightSafe();
-    if (typeof dockObscurePx !== 'number') dockObscurePx = getDockObscurePxSafe();
-
-    var dockTop = Math.max(0, Math.round(vh - dockObscurePx));
-    var yPx = Math.max(0, Math.round(y || 0));
-    var avail = dockTop - yPx - Math.round(headerH);
-    var MIN_BODY_H = 140;
-    var bodyH = Math.max(MIN_BODY_H, Math.round(avail));
-
-    body.style.height = bodyH + 'px';
-    body.style.maxHeight = bodyH + 'px';
-  }
-
-  function measureLexiconContentHeight() {
-    if (!panel) return 0;
-
-    var header = qs('.lexicon-panel-header', panel);
-    var body = qs('.lexicon-panel-body', panel);
-
-    var headerH = 0;
-    var bodyH = 0;
-
-    try { headerH = header ? (header.getBoundingClientRect().height || 0) : 0; } catch (err0) { headerH = 0; }
-    try { bodyH = body ? (body.scrollHeight || 0) : 0; } catch (err1) { bodyH = 0; }
-
-    return Math.max(0, Math.round(headerH + bodyH + 10));
-  }
-
-  function applyMobileRestingY(y, closedY, sealDragging, snapState) {
-    if (!panel || !lexOverlay) return;
-
-    if (typeof sealDragging !== 'boolean') sealDragging = false;
-
-    y = Math.round(y);
-    closedY = Math.max(1, Math.round(closedY || 1));
-
-    var stableOpen = (!sealDragging && (snapState === 'open' || y <= MID_REST_NON_MODAL_PX));
-    panel.style.transform = 'translateY(' + (stableOpen ? 0 : y) + 'px)';
-
-    var dockObscurePx = getDockObscurePxSafe();
-    applyLexiconBodySizingForY(stableOpen ? 0 : y, dockObscurePx);
-
-    if (stableOpen) {
-      setSealToOpenPosition();
-      lexOverlay.style.opacity = '1';
-      lexOverlay.style.pointerEvents = '';
-      storePanelY(0);
-      storePanelSnap('open');
-      syncLexiconFullOpenState(true);
-      return;
-    }
-
-    var progress = 1 - (y / closedY);
-    if (progress < 0) progress = 0;
-    if (progress > 1) progress = 1;
-
-    var seatNudge = getSeatNudge();
-    var openDrop = (isIOS ? 1 : 0) * progress;
-    var sealOffset = (y - closedY) + (seatNudge * progress) + openDrop;
-
-    setSealDragOffset(sealOffset, sealDragging);
-
-    if (isBottomSheetMode() && !sealDragging && y > MID_REST_NON_MODAL_PX) {
-      lexOverlay.style.opacity = '0';
-      lexOverlay.style.pointerEvents = 'none';
-    } else {
-      lexOverlay.style.opacity = String(progress);
-      lexOverlay.style.pointerEvents = '';
-    }
-
-    storePanelY(y);
-    storePanelSnap(snapState || derivePanelSnap(y, closedY));
-    syncLexiconFullOpenState(false);
-  }
-
-  var iosMidRestSyncRaf = null;
-
-  function scheduleIOSMidRestViewportResync() {
-    if (!isIOS) return;
-    if (!isBottomSheetMode()) return;
-    if (!panel || !panel.classList.contains('is-open')) return;
-    if (panel.classList.contains('is-dragging')) return;
-
-    var storedY = readStoredPanelY();
-    if (!(typeof storedY === 'number' && isFinite(storedY))) return;
-    if (iosMidRestSyncRaf) return;
-
-    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-    iosMidRestSyncRaf = raf(function () {
-      iosMidRestSyncRaf = null;
-
-      try {
-        var storedSnap = readStoredPanelSnap();
-        if (!storedSnap) storedSnap = (storedY <= MID_REST_NON_MODAL_PX) ? 'open' : 'mid';
-        if (storedSnap === 'closed') return;
-
-        var dockObscurePx = getDockObscurePxSafe();
-        if (storedSnap === 'open') {
-          panel.style.transform = 'translateY(0px)';
-          applyLexiconBodySizingForY(0, dockObscurePx);
-          applyLexiconBodyDockInset(dockObscurePx);
-          setSealToOpenPosition();
-          if (lexOverlay) {
-            lexOverlay.style.opacity = '1';
-            lexOverlay.style.pointerEvents = '';
-          }
-          storePanelY(0);
-          storePanelSnap('open');
-          syncLexiconFullOpenState(true);
-          return;
-        }
-
-        var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
-        var rect = panel.getBoundingClientRect();
-        var panelH = (rect && rect.height) ? rect.height : 1;
-        var closedY = Math.max(1, Math.round(panelH - (dockObscurePx + peek)));
-
-        var y = 0;
-        if (storedSnap !== 'open') {
-          var contentH = measureLexiconContentHeight();
-          var availAboveDock = Math.max(180, Math.round(getViewportHeightSafe() - dockObscurePx));
-          var capH = Math.round(availAboveDock * 0.60);
-          var desired = Math.min(contentH, capH);
-
-          y = Math.round(panelH - (dockObscurePx + desired));
-          if (y < 0) y = 0;
-          if (y > closedY) y = closedY;
-        }
-
-        applyMobileRestingY(y, closedY, false, derivePanelSnap(y, closedY));
-        applyLexiconBodyDockInset(dockObscurePx);
-      } catch (err) {}
-    });
-  }
-
-  (function initIOSMidRestViewportResync() {
-    if (!isIOS) return;
-
-    try {
-      if (window.visualViewport && window.visualViewport.addEventListener) {
-        window.visualViewport.addEventListener('resize', scheduleIOSMidRestViewportResync, { passive: true });
-        window.visualViewport.addEventListener('scroll', scheduleIOSMidRestViewportResync, { passive: true });
-      }
-    } catch (err0) {}
-
-    try { window.addEventListener('orientationchange', function () { setTimeout(scheduleIOSMidRestViewportResync, 50); }); } catch (err1) {}
-    try { window.addEventListener('resize', scheduleIOSMidRestViewportResync, { passive: true }); } catch (err2) {}
-    try { window.addEventListener('scroll', scheduleIOSMidRestViewportResync, { passive: true }); } catch (err3) {}
-    try { window.addEventListener('pageshow', scheduleIOSMidRestViewportResync); } catch (err4) {}
-  })();
-
-  function mobileTapOpenToContentHeight() {
-    if (!panel || !lexOverlay) return;
-    if (!isBottomSheetMode()) return;
-
-    var dockObscurePx = getDockObscurePxSafe();
-    var peek = getCssVarNumber('--lexicon-panel-closed-peek', 0);
-    var rect = panel.getBoundingClientRect();
-    var panelH = (rect && rect.height) ? rect.height : 1;
-    var closedY = Math.max(1, Math.round(panelH - (dockObscurePx + peek)));
-
-    var contentH = measureLexiconContentHeight();
-    var availAboveDock = Math.max(180, Math.round(getViewportHeightSafe() - dockObscurePx));
-    var capH = Math.round(availAboveDock * 0.60);
-    var desired = Math.min(contentH, capH);
-
-    var openY = Math.round(panelH - (dockObscurePx + desired));
-    if (openY < 0) openY = 0;
-    if (openY > closedY) openY = closedY;
-
-    var SNAP_MS = getCssVarNumber('--lexicon-snap-duration', 420);
-    var SNAP_EASE = getCssVarString('--lexicon-snap-ease', 'cubic-bezier(0.22, 0.61, 0.36, 1)');
-
-    panel.style.transition = 'none';
-    lexOverlay.style.transition = 'none';
-    applyMobileRestingY(closedY, closedY, false, 'closed');
-
-    var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-    raf(function () {
-      panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
-      lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
-      applyMobileRestingY(openY, closedY, false, derivePanelSnap(openY, closedY));
-      applyLexiconBodyDockInset(dockObscurePx);
-
-      setTimeout(function () {
-        try { panel.style.transition = ''; } catch (err0) {}
-        try { lexOverlay.style.transition = ''; } catch (err1) {}
-      }, SNAP_MS + 30);
-    });
   }
 
   function isKeyboardIntentEvent(e) {
@@ -1344,10 +1064,10 @@
 
     var bottomSheet = isBottomSheetMode();
 
-    // Geometry fix: seal stays in footer; visually hide on desktop/tablet.
-    if (!bottomSheet && lexiconToggle) {
-      lexiconToggle.style.opacity = '0';
-      lexiconToggle.style.pointerEvents = 'none';
+    if (!bottomSheet) {
+      moveSealIntoHeader();
+    } else {
+      setSealToOpenPosition();
     }
 
     panel.classList.add('is-open');
@@ -1360,13 +1080,6 @@
     setLexiconGlyph();
     noteOpen();
 
-    if (bottomSheet) {
-      syncLexiconFullOpenState(false);
-      mobileTapOpenToContentHeight();
-    } else {
-      syncLexiconFullOpenState(true);
-    }
-
     var preferCloseFocus = isKeyboardIntentEvent(openEvent);
     setTimeout(function () { focusIntoPanel(preferCloseFocus); }, 0);
   }
@@ -1374,36 +1087,8 @@
   function closePanel() {
     if (!panel || !lexOverlay) return;
 
-    // FIX 1: Promote the seal onto its own compositor layer for the entire
-    // close animation, regardless of whether close was triggered by a tap/click
-    // or by a drag. Without this, the footer ::after cradle pseudo-element could
-    // win the compositing race during the one-to-two frames where
-    // lexicon-scroll-lock is being removed and the mask is repainting, causing
-    // the seal to appear to slide behind the cradle dock.
-    if (isBottomSheetMode()) {
-      var snapMs = getCssVarNumber('--lexicon-snap-duration', 420);
-      // markSealSettling is defined inside initMobileSealDrag; call via the
-      // same mechanism used by the drag-snap path by dispatching through the
-      // shared toggle class. We replicate the logic inline here so it is
-      // available regardless of whether the drag IIFE has run.
-      if (lexiconToggle && lexiconToggle.classList) {
-        var _settlingTimer = null;
-        lexiconToggle.classList.add('is-seal-settling');
-        _settlingTimer = window.setTimeout(function () {
-          try {
-            if (lexiconToggle && lexiconToggle.classList) {
-              lexiconToggle.classList.remove('is-seal-settling');
-            }
-          } catch (err) {}
-          _settlingTimer = null;
-        }, Math.max(0, snapMs) + 80);
-      }
-    }
-
     clearActiveTooltip();
     resetPanelInlineMotion();
-    clearLexiconBodyDockInset();
-    clearLexiconBodySizing();
 
     panel.classList.remove('is-open');
     lexOverlay.classList.remove('is-open');
@@ -1413,17 +1098,11 @@
 
     if (isBottomSheetMode()) {
       setSealToClosedPosition();
-      storePanelSnap('closed');
-    }
-
-    // Geometry fix: restore seal visibility on desktop/tablet close.
-    if (!isBottomSheetMode() && lexiconToggle) {
-      lexiconToggle.style.opacity = '';
-      lexiconToggle.style.pointerEvents = '';
+    } else {
+      restoreSealToDock();
     }
 
     unlockBodyScroll();
-    syncLexiconFullOpenState(false);
     setLexiconGlyph();
     noteClose();
     clearStackZIndex();
@@ -1676,11 +1355,7 @@
     var velocity = 0;
     var startWasOpen = false;
     var closedY = 0;
-    var midY = null;
     var currentY = 0;
-    var startPanelY = 0;
-    var panelHCache = 1;
-    var dockObscurePxCache = 0;
     var MOVE_SLOP = 6;
     var OPEN_VELOCITY = -0.85;
     var OPEN_RATIO = 0.38;
@@ -1721,42 +1396,16 @@
       return getCssVarNumber('--lexicon-panel-closed-peek', 0);
     }
 
-    function getDockObscurePxSafeLocal() {
-      var vh = getViewportHeightSafe();
-
-      if (navFooter) {
-        try {
-          var r = navFooter.getBoundingClientRect();
-          if (r && isFinite(r.top)) return Math.max(0, Math.round(vh - r.top));
-          if (r && r.height) return Math.max(0, Math.round(r.height));
-        } catch (err0) {}
-      }
-
-      var val = getCssVar('--footer-total-height');
-      var n = parseFloat(val);
-      return isFinite(n) ? Math.max(0, Math.round(n)) : 0;
+    function getFooterHeightLocal() {
+      return getFooterHeightSafe();
     }
 
     function computeClosedY() {
       var rect = panel.getBoundingClientRect();
-      panelHCache = (rect && rect.height) ? rect.height : 1;
-      dockObscurePxCache = getDockObscurePxSafeLocal();
+      var panelH = (rect && rect.height) ? rect.height : 1;
+      var footerH = getFooterHeightLocal();
       var peek = getClosedPeek();
-      closedY = Math.max(1, panelHCache - (dockObscurePxCache + peek));
-    }
-
-    function computeMidY() {
-      var contentH = measureLexiconContentHeight();
-      var availAboveDock = Math.max(180, Math.round(getViewportHeightSafe() - dockObscurePxCache));
-      var capH = Math.round(availAboveDock * 0.60);
-      var desired = Math.min(contentH, capH);
-
-      var y = Math.round(panelHCache - (dockObscurePxCache + desired));
-      if (y < 0) y = 0;
-      if (y > closedY) y = closedY;
-      if (Math.abs(y) < 12) return null;
-      if (Math.abs(y - closedY) < 12) return null;
-      return y;
+      closedY = Math.max(1, panelH - (footerH + peek));
     }
 
     function setPanelY(y, sealDragging) {
@@ -1770,28 +1419,20 @@
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
-      var seatNudge = getSeatNudge();
+      var seatNudge = getCssVarNumber('--seal-seat-nudge-closed', 0);
       var openDrop = (isIOS ? 1 : 0) * progress;
       var sealOffset = (y - closedY) + (seatNudge * progress) + openDrop;
 
       setSealDragOffset(sealOffset, sealDragging);
 
       if (lexOverlay) {
-        if (isBottomSheetMode() && !sealDragging && y > MID_REST_NON_MODAL_PX) {
-          lexOverlay.style.opacity = '0';
-          lexOverlay.style.pointerEvents = 'none';
-        } else {
-          lexOverlay.style.opacity = String(progress);
-          lexOverlay.style.pointerEvents = '';
-        }
+        lexOverlay.style.opacity = String(progress);
+        lexOverlay.style.pointerEvents = progress > 0 ? '' : 'none';
       }
-
-      // Live drag stays transform-only; body sizing + stored state are committed on snap.
     }
 
-    function ensureOpenShellFromDrag() {
+    function applyOpenStateFromDrag() {
       clearSealTapClasses();
-      clearSealSettling();
 
       if (!panel.classList.contains('is-open')) {
         panel.classList.add('is-open');
@@ -1806,17 +1447,8 @@
         bringSelfToFront();
       }
 
-      syncLexiconFullOpenState(false);
-      applyLexiconBodyDockInset(getDockObscurePxSafe());
-    }
-
-    function finalizeFullyOpenFromDrag() {
-      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () {
-        var dockObscurePx = getDockObscurePxSafe();
-        applyMobileRestingY(0, Math.max(1, Math.round(closedY || 1)), false, 'open');
-        applyLexiconBodyDockInset(dockObscurePx);
-      });
+      root.classList.add('lexicon-scroll-lock');
+      setSealToOpenPosition();
     }
 
     function applyClosedStateFromDrag() {
@@ -1834,80 +1466,49 @@
         clearStackZIndex();
       }
 
-      try {
-        if (lexOverlay) lexOverlay.style.pointerEvents = '';
-      } catch (err0) {}
-
-      clearLexiconBodyDockInset();
-      clearLexiconBodySizing();
       clearSealDragOffset();
-      storePanelY(closedY);
-      storePanelSnap('closed');
-      syncLexiconFullOpenState(false);
     }
 
     function snap() {
-      var openY = 0;
-      var targetY = null;
-      var mid = (typeof midY === 'number' && isFinite(midY)) ? Math.round(midY) : null;
+      var shouldOpen;
       var closed = Math.max(1, Math.round(closedY || 1));
 
       if (startWasOpen) {
         var dragDown = currentY - 0;
-        if (velocity > CLOSE_VELOCITY || dragDown > closed * CLOSE_RATIO) targetY = closed;
+        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > closed * CLOSE_RATIO);
       } else {
         var dragUp = closed - currentY;
-        if (velocity < OPEN_VELOCITY || dragUp > closed * OPEN_RATIO) targetY = openY;
-      }
-
-      if (targetY === null) {
-        if (velocity < OPEN_VELOCITY) targetY = openY;
-        else if (velocity > CLOSE_VELOCITY) targetY = closed;
-        else {
-          var candidates = [openY, closed];
-          if (mid !== null) candidates.splice(1, 0, mid);
-          targetY = candidates[0];
-          var bestDist = Math.abs(currentY - targetY);
-          for (var i = 1; i < candidates.length; i++) {
-            var d = Math.abs(currentY - candidates[i]);
-            if (d < bestDist) {
-              bestDist = d;
-              targetY = candidates[i];
-            }
-          }
-        }
+        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > closed * OPEN_RATIO);
       }
 
       panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
       if (lexOverlay) lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
-      if (targetY === closed) {
+      if (!shouldOpen) {
         markSealSettling(SNAP_MS);
         currentY = closed;
         panel.style.transform = 'translateY(' + closed + 'px)';
         if (lexOverlay) {
           lexOverlay.style.opacity = '0';
-          lexOverlay.style.pointerEvents = '';
+          lexOverlay.style.pointerEvents = 'none';
         }
         applyClosedStateFromDrag();
       } else {
-        ensureOpenShellFromDrag();
-
-        if (targetY === openY) {
-          applyMobileRestingY(openY, closed, false, 'open');
-          finalizeFullyOpenFromDrag();
-        } else {
-          applyMobileRestingY(targetY, closed, false, 'mid');
+        panel.style.transform = 'translateY(0px)';
+        if (lexOverlay) {
+          lexOverlay.style.opacity = '1';
+          lexOverlay.style.pointerEvents = '';
         }
+        applyOpenStateFromDrag();
       }
 
       setTimeout(function () {
         panel.style.transition = '';
         if (lexOverlay) lexOverlay.style.transition = '';
-        if (targetY === closed) {
+        if (!shouldOpen) {
           panel.style.transform = '';
           if (lexOverlay) lexOverlay.style.opacity = '';
-        } else if (targetY === openY) {
+        } else {
           if (lexOverlay) lexOverlay.style.opacity = '';
         }
       }, SNAP_MS + 20);
@@ -1929,15 +1530,8 @@
       startWasOpen = panel.classList.contains('is-open');
 
       computeClosedY();
-      midY = computeMidY();
 
-      var stored = startWasOpen ? readStoredPanelY() : null;
-      if (!isFinite(stored)) stored = 0;
-      if (stored < 0) stored = 0;
-      if (stored > closedY) stored = closedY;
-
-      startPanelY = startWasOpen ? stored : closedY;
-      currentY = startPanelY;
+      currentY = startWasOpen ? 0 : closedY;
 
       panel.classList.add('is-dragging');
       panel.style.transition = 'none';
@@ -1969,7 +1563,7 @@
       lastY = e.clientY;
       lastT = now;
 
-      var base = startWasOpen ? startPanelY : closedY;
+      var base = startWasOpen ? 0 : closedY;
       var targetY = base + deltaY;
       if (targetY < 0) targetY = 0;
       if (targetY > closedY) targetY = closedY;
