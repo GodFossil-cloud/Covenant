@@ -84,6 +84,77 @@
   }
 </style>
 
+<style id="lexiconSealMotionFootprintFix">
+  html.lexicon-scroll-lock #navFooter #lexiconToggle,
+  #navFooter #lexiconToggle[aria-expanded="true"],
+  #navFooter #lexiconToggle.is-tap-opening,
+  #navFooter #lexiconToggle.is-tap-closing,
+  #navFooter #lexiconToggle.is-seal-dragging,
+  #navFooter #lexiconToggle.is-seal-settling,
+  #navFooter #lexiconToggle.is-dock-returning {
+    width: var(--lexicon-seal-w) !important;
+    min-width: var(--lexicon-seal-w) !important;
+    max-width: var(--lexicon-seal-w) !important;
+    height: var(--lexicon-seal-h) !important;
+    min-height: var(--lexicon-seal-h) !important;
+    max-height: var(--lexicon-seal-h) !important;
+    flex: 0 0 var(--lexicon-seal-w) !important;
+    align-self: flex-end !important;
+    margin-top: calc(-1 * var(--lexicon-seal-top-align)) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;
+    -webkit-transform: translateY(calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + 0px)) !important;
+  }
+
+  html.lexicon-scroll-lock #navFooter #lexiconToggle::before,
+  html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
+  #navFooter #lexiconToggle[aria-expanded="true"]::before,
+  #navFooter #lexiconToggle[aria-expanded="true"]::after,
+  #navFooter #lexiconToggle.is-tap-opening::before,
+  #navFooter #lexiconToggle.is-tap-opening::after,
+  #navFooter #lexiconToggle.is-tap-closing::before,
+  #navFooter #lexiconToggle.is-tap-closing::after,
+  #navFooter #lexiconToggle.is-seal-dragging::before,
+  #navFooter #lexiconToggle.is-seal-dragging::after,
+  #navFooter #lexiconToggle.is-seal-settling::before,
+  #navFooter #lexiconToggle.is-seal-settling::after,
+  #navFooter #lexiconToggle.is-dock-returning::before,
+  #navFooter #lexiconToggle.is-dock-returning::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+  }
+
+  #navFooter #lexiconToggle.is-seal-dragging,
+  #navFooter #lexiconToggle.is-seal-settling,
+  #navFooter #lexiconToggle.is-tap-opening,
+  #navFooter #lexiconToggle.is-tap-closing,
+  #navFooter #lexiconToggle.is-dock-returning {
+    overflow: visible !important;
+    isolation: isolate !important;
+    z-index: 18 !important;
+  }
+
+  #navFooter #lexiconToggle.is-seal-dragging .lexicon-glyph,
+  #navFooter #lexiconToggle.is-seal-settling .lexicon-glyph,
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph,
+  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph,
+  #navFooter #lexiconToggle.is-dock-returning .lexicon-glyph,
+  #navFooter #lexiconToggle.is-seal-dragging .lexicon-glyph-mid-inner,
+  #navFooter #lexiconToggle.is-seal-settling .lexicon-glyph-mid-inner,
+  #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner,
+  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph-mid-inner,
+  #navFooter #lexiconToggle.is-dock-returning .lexicon-glyph-mid-inner {
+    color: var(--lexicon-glyph-open-color, rgba(242,220,154,0.98)) !important;
+    text-shadow: var(--lexicon-glyph-open-shadow, 0 0 10px rgba(255,255,255,0.62), 0 0 22px rgba(255,255,255,0.26), 0 0 40px rgba(242,220,154,0.16)) !important;
+  }
+</style>
+
 <script>
   (function () {
     if (window.__COVENANT_LEXICON_SETTLE_HOLD__) return;
@@ -690,8 +761,6 @@
     }
   })();
 </script>
-
-<link rel="stylesheet" href="assets/footer-lexicon-hotfix.css?v=1">
 
 <!-- Panel veils + dock tab seat model. -->
 <link rel="stylesheet" href="assets/toc.css?v=68">
