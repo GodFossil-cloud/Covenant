@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.10 (remove left, navigate right; symbol captions) */
+/*! Covenant Reliquary Archive v0.4.11 (arm/confirm two-tap mechanic) */
 (function () {
   'use strict';
 
@@ -301,6 +301,56 @@
     return activeItemHref === href && activeItemKey === key;
   }
 
+  // ---------------------------
+  // Armed button state
+  // ---------------------------
+
+  // Tracks which action button (if any) is currently armed within the open menu.
+  // armedAction: 'remove' | 'navigate' | null
+  var armedAction = null;
+
+  function getArmedBtn() {
+    if (!armedAction || !activeItemHref || !activeItemKey) return null;
+    var host = byId('reliquaryArchive');
+    if (!host) return null;
+    var safeHref = activeItemHref.replace(/"/g, '');
+    var safeKey  = activeItemKey.replace(/"/g, '');
+    try {
+      return host.querySelector(
+        '.reliquary-archive-item-action[data-reliquary-action="' + armedAction + '"]'
+        + '[data-reliquary-href="' + safeHref + '"]'
+        + '[data-reliquary-key="'  + safeKey  + '"]'
+      );
+    } catch (err) { return null; }
+  }
+
+  function disarmBtn(btn, originalCaption) {
+    if (!btn) return;
+    btn.classList.remove('is-armed');
+    var captionEl = btn.querySelector('.reliquary-archive-item-action-caption');
+    if (captionEl && originalCaption) captionEl.textContent = originalCaption;
+  }
+
+  function clearArmed() {
+    if (!armedAction) return;
+    var btn = getArmedBtn();
+    var caption = (armedAction === 'remove') ? 'Remove' : 'Navigate';
+    disarmBtn(btn, caption);
+    armedAction = null;
+  }
+
+  function armBtn(btn, action) {
+    if (!btn) return;
+    armedAction = action;
+    btn.classList.add('is-armed');
+    var captionEl = btn.querySelector('.reliquary-archive-item-action-caption');
+    if (captionEl) captionEl.textContent = 'Confirm?';
+  }
+
+  // ---------------------------
+  // Button factory
+  // ---------------------------
+
   function makeActionBtn(action, href, key, glyph, caption, extraClass) {
     var btn = doc.createElement('button');
     btn.type = 'button';
@@ -346,7 +396,7 @@
   function collapseActiveItem() {
     if (!activeItemHref || !activeItemKey) return;
     var host = byId('reliquaryArchive');
-    if (!host) { clearActiveItem(); return; }
+    if (!host) { clearActiveItem(); clearArmed(); return; }
     var safeHref = activeItemHref.replace(/"/g, '');
     var safeKey  = activeItemKey.replace(/"/g, '');
     var btn = host.querySelector(
@@ -359,6 +409,7 @@
       var menu = btn.querySelector('.reliquary-archive-item-menu');
       if (menu) btn.removeChild(menu);
     }
+    armedAction = null; // menu gone, no need to clean DOM
     clearActiveItem();
   }
 
@@ -458,6 +509,7 @@
 
   function doNavigate(href, key) {
     clearActiveItem();
+    armedAction = null;
     var here = getCurrentFile();
     var target = basename(href);
     if (here && target && here === target) {
@@ -470,6 +522,7 @@
 
   function doRemove(href, key) {
     clearActiveItem();
+    armedAction = null;
     removeItem(href, key);
     renderArchive();
   }
@@ -490,7 +543,12 @@
       el = el.parentElement;
     }
 
+    // Tap on background (no action element) — disarm, keep menu open
     if (!action || !actionEl) {
+      if (armedAction) {
+        clearArmed();
+        return;
+      }
       collapseActiveItem();
       return;
     }
@@ -498,19 +556,22 @@
     var href = String(actionEl.getAttribute('data-reliquary-href') || '').trim();
     var key  = String(actionEl.getAttribute('data-reliquary-key')  || '').trim();
 
-    if (action === 'navigate') {
+    if (action === 'navigate' || action === 'remove') {
       e.preventDefault();
       e.stopPropagation();
       if (!href || !key) return;
-      doNavigate(href, key);
-      return;
-    }
 
-    if (action === 'remove') {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!href || !key) return;
-      doRemove(href, key);
+      // Already armed on this exact button → commit
+      if (armedAction === action) {
+        clearArmed();
+        if (action === 'navigate') doNavigate(href, key);
+        else doRemove(href, key);
+        return;
+      }
+
+      // Different button (or nothing) armed → disarm old, arm this one
+      clearArmed();
+      armBtn(actionEl, action);
       return;
     }
 
@@ -520,10 +581,12 @@
       if (!href || !key) return;
 
       if (isActiveItem(href, key)) {
+        clearArmed();
         collapseActiveItem();
         return;
       }
 
+      clearArmed();
       collapseActiveItem();
       expandItem(actionEl, href, key);
       return;
@@ -540,8 +603,8 @@
 
     function sync() {
       var isOpen = root.classList.contains('reliquary-open');
-      if (isOpen && !lastOpen) { clearActiveItem(); renderArchive(); }
-      if (!isOpen && lastOpen) { clearActiveItem(); }
+      if (isOpen && !lastOpen) { clearActiveItem(); armedAction = null; renderArchive(); }
+      if (!isOpen && lastOpen) { clearActiveItem(); armedAction = null; }
       lastOpen = isOpen;
     }
 
@@ -707,7 +770,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.10',
+    version: '0.4.11',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,

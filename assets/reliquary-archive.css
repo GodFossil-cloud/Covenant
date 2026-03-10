@@ -192,7 +192,8 @@ html.reliquary-open .reliquary-archive{display:block}
     background     180ms cubic-bezier(0.22,0.61,0.36,1),
     border-color   180ms cubic-bezier(0.22,0.61,0.36,1),
     color          180ms cubic-bezier(0.22,0.61,0.36,1),
-    transform      180ms cubic-bezier(0.22,0.61,0.36,1);
+    transform      180ms cubic-bezier(0.22,0.61,0.36,1),
+    box-shadow     180ms cubic-bezier(0.22,0.61,0.36,1);
 }
 
 @media (hover: hover) {
@@ -232,6 +233,36 @@ html.reliquary-open .reliquary-archive{display:block}
   text-transform:uppercase;
   opacity:.78;
   pointer-events:none;
+
+  transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1);
+}
+
+/* ---------------------------
+   Armed state (tap-to-confirm)
+   --------------------------- */
+
+/* Navigate armed — gold pulse */
+.reliquary-archive-item-navigate.is-armed{
+  background:rgba(201,169,97,.18);
+  border-color:rgba(201,169,97,.52);
+  color:rgba(245,236,214,1);
+  box-shadow:0 0 0 2px rgba(201,169,97,.22), 0 0 14px rgba(201,169,97,.14);
+  transform:scale(1.06);
+}
+
+/* Remove armed — ember warning */
+.reliquary-archive-item-remove.is-armed{
+  background:rgba(176,86,74,.22);
+  border-color:rgba(224,124,104,.52);
+  color:rgba(224,164,144,1);
+  box-shadow:0 0 0 2px rgba(224,124,104,.22), 0 0 14px rgba(176,86,74,.14);
+  transform:scale(1.06);
+}
+
+/* Caption brightens when armed */
+.reliquary-archive-item-action.is-armed .reliquary-archive-item-action-caption{
+  opacity:1;
+  letter-spacing:.14em;
 }
 
 /* Remove button — warm ember tint on hover (mouse only) */
