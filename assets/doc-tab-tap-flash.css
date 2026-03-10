@@ -1,0 +1,96 @@
+/* Dock tab tap flash (head-loaded)
+   Purpose: apply a Lexicon-style glyph flash to the ToC + Mirror dock tabs on tap-open/tap-close.
+   Scope: footer dock only.
+*/
+
+:root{
+  --dock-tab-glyph-tap-aura-size:2.4em;
+  --dock-tab-glyph-tap-aura-blur:7px;
+  --dock-tab-glyph-tap-aura:
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,0.78) 0%,
+      rgba(242,220,154,0.44) 22%,
+      rgba(201,169,97,0.22) 44%,
+      rgba(0,0,0,0) 76%
+    );
+
+  --dock-tab-glyph-tap-aura-open-duration:280ms;
+  --dock-tab-glyph-tap-aura-close-duration:240ms;
+}
+
+#navFooter #tocToggle .toc-glyph,
+#navFooter #mirrorToggle .toc-glyph{
+  position:relative;
+  display:inline-block;
+  z-index:0;
+}
+
+#navFooter #tocToggle.is-tap-opening,
+#navFooter #tocToggle.is-tap-closing,
+#navFooter #mirrorToggle.is-tap-opening,
+#navFooter #mirrorToggle.is-tap-closing{
+  /* Let the aura radiate beyond the medallion silhouette during the tap flash. */
+  overflow:visible;
+}
+
+/* Base aura layer (hidden until tapped). */
+#navFooter #tocToggle .toc-glyph::before,
+#navFooter #mirrorToggle .toc-glyph::before{
+  content:'';
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:var(--dock-tab-glyph-tap-aura-size);
+  height:var(--dock-tab-glyph-tap-aura-size);
+  border-radius:999px;
+  background:var(--dock-tab-glyph-tap-aura);
+  filter:blur(var(--dock-tab-glyph-tap-aura-blur));
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%, -50%) scale(0.56);
+  z-index:-1;
+}
+
+@keyframes dockTabTapAuraPulse{
+  0%{opacity:0;transform:translate(-50%, -50%) scale(0.34)}
+  14%{opacity:1;transform:translate(-50%, -50%) scale(0.82)}
+  58%{opacity:0.66;transform:translate(-50%, -50%) scale(0.94)}
+  100%{opacity:0;transform:translate(-50%, -50%) scale(1.02)}
+}
+
+@media (prefers-reduced-motion: no-preference){
+  #navFooter #tocToggle.is-tap-opening .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms)
+      cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+
+  #navFooter #tocToggle.is-tap-closing .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms)
+      cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+
+  /* Mirror tab: footer-overrides.css globally disables its legacy aura;
+     re-enable only during explicit tap-flash windows. */
+  #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
+  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
+    content:'' !important;
+    display:block !important;
+  }
+
+  #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms)
+      cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+
+  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
+    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms)
+      cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  #navFooter #tocToggle.is-tap-opening .toc-glyph::before,
+  #navFooter #tocToggle.is-tap-closing .toc-glyph::before,
+  #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
+  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{animation:none}
+}
