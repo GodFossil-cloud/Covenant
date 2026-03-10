@@ -1,8 +1,8 @@
-/*! Covenant Reliquary UI v0.3.44 (Header is drag surface; hide drag pill) */
+/*! Covenant Reliquary UI v0.3.45 (no passage highlight on open) */
 (function () {
   'use strict';
 
-  window.COVENANT_RELIQUARY_VERSION = '0.3.44';
+  window.COVENANT_RELIQUARY_VERSION = '0.3.45';
 
   var doc = document;
   var root = doc.documentElement;
@@ -535,12 +535,7 @@
 
   function focusIntoPanel() {
     if (!panel) return;
-
-    var body = panel.querySelector('.reliquary-panel-body');
-    var target = body ? body.querySelector('button:not([disabled]), a[href], textarea, input, select, [tabindex]:not([tabindex="-1"])') : null;
-
-    if (target && target.focus) target.focus();
-    else if (panel && panel.focus) panel.focus();
+    if (panel.focus) panel.focus();
   }
 
   function getFooterReservedPx() {
