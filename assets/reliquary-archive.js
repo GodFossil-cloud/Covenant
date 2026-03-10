@@ -332,7 +332,7 @@
 
     // Remove on the left, Navigate on the right
     menu.appendChild(makeActionBtn('remove',   href, key, '\u2716\ufe0e', 'Remove',   'reliquary-archive-item-remove'));
-    menu.appendChild(makeActionBtn('navigate', href, key, '\u279c',       'Navigate', 'reliquary-archive-item-navigate'));
+    menu.appendChild(makeActionBtn('navigate', href, key, '\u27a5',       'Navigate', 'reliquary-archive-item-navigate'));
 
     return menu;
   }
