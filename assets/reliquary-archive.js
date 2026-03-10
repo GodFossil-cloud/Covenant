@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.9 (menu injected into DOM only on expand) */
+/*! Covenant Reliquary Archive v0.4.10 (remove left, navigate right; symbol captions) */
 (function () {
   'use strict';
 
@@ -301,32 +301,39 @@
     return activeItemHref === href && activeItemKey === key;
   }
 
-  // Build the menu element and append it; does NOT touch the DOM otherwise.
+  function makeActionBtn(action, href, key, glyph, caption, extraClass) {
+    var btn = doc.createElement('button');
+    btn.type = 'button';
+    btn.className = 'reliquary-archive-item-action ' + extraClass;
+    btn.setAttribute('data-reliquary-action', action);
+    btn.setAttribute('data-reliquary-href', href);
+    btn.setAttribute('data-reliquary-key', key);
+    btn.setAttribute('aria-label', caption);
+
+    var glyphEl = doc.createElement('span');
+    glyphEl.className = 'reliquary-archive-item-action-glyph';
+    glyphEl.setAttribute('aria-hidden', 'true');
+    glyphEl.textContent = glyph;
+
+    var captionEl = doc.createElement('span');
+    captionEl.className = 'reliquary-archive-item-action-caption';
+    captionEl.setAttribute('aria-hidden', 'true');
+    captionEl.textContent = caption;
+
+    btn.appendChild(glyphEl);
+    btn.appendChild(captionEl);
+    return btn;
+  }
+
   function buildMenuEl(href, key) {
     var menu = doc.createElement('div');
     menu.className = 'reliquary-archive-item-menu';
     menu.setAttribute('aria-hidden', 'false');
 
-    var navBtn = doc.createElement('button');
-    navBtn.type = 'button';
-    navBtn.className = 'reliquary-archive-item-action reliquary-archive-item-navigate';
-    navBtn.setAttribute('data-reliquary-action', 'navigate');
-    navBtn.setAttribute('data-reliquary-href', href);
-    navBtn.setAttribute('data-reliquary-key', key);
-    navBtn.setAttribute('aria-label', 'Navigate to passage');
-    navBtn.textContent = '\u279c';
+    // Remove on the left, Navigate on the right
+    menu.appendChild(makeActionBtn('remove',   href, key, '\u2716\ufe0e', 'Remove',   'reliquary-archive-item-remove'));
+    menu.appendChild(makeActionBtn('navigate', href, key, '\u279c',       'Navigate', 'reliquary-archive-item-navigate'));
 
-    var remBtn = doc.createElement('button');
-    remBtn.type = 'button';
-    remBtn.className = 'reliquary-archive-item-action reliquary-archive-item-remove';
-    remBtn.setAttribute('data-reliquary-action', 'remove');
-    remBtn.setAttribute('data-reliquary-href', href);
-    remBtn.setAttribute('data-reliquary-key', key);
-    remBtn.setAttribute('aria-label', 'Remove passage');
-    remBtn.textContent = '\u2716\ufe0e';
-
-    menu.appendChild(navBtn);
-    menu.appendChild(remBtn);
     return menu;
   }
 
@@ -700,7 +707,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.9',
+    version: '0.4.10',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
