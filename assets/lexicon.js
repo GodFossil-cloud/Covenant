@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.10 (honor explicit dock glyph markup) */
+/*! Covenant Lexicon UI v0.3.11 (tap-close seal settling matches drag-close) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.10';
+  window.COVENANT_LEXICON_VERSION = '0.3.11';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1138,7 +1138,12 @@
     lexOverlay.setAttribute('aria-hidden', 'true');
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
 
-    if (isBottomSheetMode()) setSealToClosedPosition();
+    if (isBottomSheetMode()) {
+      // Mirror the drag-close path: apply is-seal-settling for the full snap duration
+      // so the seal's visual feedback is identical whether closed by tap or drag.
+      markSealSettling(getLexiconTapMotionMs());
+      setSealToClosedPosition();
+    }
 
     unlockBodyScroll();
     setLexiconGlyph();
