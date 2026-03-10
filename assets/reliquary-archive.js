@@ -331,8 +331,8 @@
     menu.setAttribute('aria-hidden', 'false');
 
     // Remove on the left, Navigate on the right
-    menu.appendChild(makeActionBtn('remove',   href, key, '\u2716\ufe0e', 'Remove',   'reliquary-archive-item-remove'));
-    menu.appendChild(makeActionBtn('navigate', href, key, '\u21f2',       'Navigate', 'reliquary-archive-item-navigate'));
+    menu.appendChild(makeActionBtn('remove',   href, key, '\u2715', 'Remove',   'reliquary-archive-item-remove'));
+    menu.appendChild(makeActionBtn('navigate', href, key, '\u21f2', 'Navigate', 'reliquary-archive-item-navigate'));
 
     return menu;
   }
