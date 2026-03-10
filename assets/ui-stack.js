@@ -1,4 +1,4 @@
-/*! Covenant UI Stack v0.3.29 */
+/*! Covenant UI Stack v0.3.23 */
 (function () {
   'use strict';
 
@@ -7,7 +7,7 @@
 
   if (window.COVENANT_UI_STACK) return;
 
-  window.COVENANT_UI_STACK_VERSION = '0.3.29';
+  window.COVENANT_UI_STACK_VERSION = '0.3.23';
 
   var registry = Object.create(null);
   var order = [];
@@ -23,177 +23,6 @@
   var prevHtmlOverflow = '';
   var prevBodyOverflow = '';
   var prevBodyPaddingRight = '';
-
-  // Lexicon mid-rest page spacer (mobile bottom-sheet).
-  // When Lexicon is open but resting mid (non-modal), the page behind it should remain scrollable
-  // AND be able to scroll far enough that the last lines can rise fully into the window above the sheet.
-  var lexiconMidRestSpacerEl = null;
-
-  // IMPORTANT:
-  // - getBoundingClientRect() top values are in the *layout viewport* coordinate space.
-  // - On iOS Safari, visualViewport.height alone is not in that same space when the URL bar is present.
-  // - Use visualViewport.offsetTop + visualViewport.height as the "bottom" in layout coordinates.
-  function getViewportHeightSafe() {
-    var best = 0;
-
-    // Layout viewport candidates.
-    try {
-      var ih = window.innerHeight || 0;
-      if (ih > 0) best = Math.max(best, ih);
-    } catch (err0) {}
-
-    try {
-      var ch = (document.documentElement && document.documentElement.clientHeight) ? document.documentElement.clientHeight : 0;
-      if (ch > 0) best = Math.max(best, ch);
-    } catch (err1) {}
-
-    // Visual viewport bottom expressed in layout-viewport coordinates.
-    try {
-      if (
-        window.visualViewport
-        && typeof window.visualViewport.height === 'number'
-        && window.visualViewport.height > 0
-        && typeof window.visualViewport.offsetTop === 'number'
-        && window.visualViewport.offsetTop >= 0
-      ) {
-        var vvBottom = window.visualViewport.height + window.visualViewport.offsetTop;
-        if (vvBottom > 0) best = Math.max(best, vvBottom);
-      }
-    } catch (err2) {}
-
-    return best;
-  }
-
-  function getDockObscurePxSafe(vh) {
-    if (typeof vh !== 'number') vh = getViewportHeightSafe();
-
-    try {
-      var footer = document.querySelector('.nav-footer');
-      if (footer && footer.getBoundingClientRect) {
-        var r = footer.getBoundingClientRect();
-        if (r && isFinite(r.top)) return Math.max(0, Math.round(vh - r.top));
-        if (r && r.height) return Math.max(0, Math.round(r.height));
-      }
-    } catch (err0) {}
-
-    return 0;
-  }
-
-  function ensureLexiconMidRestSpacerEl() {
-    if (lexiconMidRestSpacerEl) return lexiconMidRestSpacerEl;
-
-    try {
-      var el = document.createElement('div');
-      el.id = 'lexiconMidRestSpacer';
-      el.setAttribute('aria-hidden', 'true');
-      el.style.width = '1px';
-      el.style.height = '0px';
-      el.style.pointerEvents = 'none';
-      el.style.opacity = '0';
-
-      // Append directly to body so it always contributes to the page scroll height.
-      var host = document.body || document.documentElement;
-      if (host && host.appendChild) host.appendChild(el);
-      lexiconMidRestSpacerEl = el;
-    } catch (err1) {
-      lexiconMidRestSpacerEl = null;
-    }
-
-    return lexiconMidRestSpacerEl;
-  }
-
-  function setLexiconMidRestSpacerPx(px) {
-    px = Math.max(0, Math.round(px || 0));
-
-    var el = ensureLexiconMidRestSpacerEl();
-    if (!el || !el.style) return;
-
-    var next = px ? (px + 'px') : '0px';
-    if (el.style.height === next) return;
-
-    el.style.height = next;
-  }
-
-  function computeLexiconMidRestSpacerPx() {
-    var lex = document.getElementById('lexiconPanel');
-    if (!lex || !lex.classList || !lex.classList.contains('is-open')) return 0;
-
-    // Do not inject spacer while the user is dragging the sheet.
-    if (lex.classList.contains('is-dragging')) return 0;
-
-    // Bottom-sheet mode only.
-    var isBottomSheet = false;
-    try {
-      isBottomSheet = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
-    } catch (errBS) {
-      isBottomSheet = false;
-    }
-    if (!isBottomSheet) return 0;
-
-    // Mid-rest signature.
-    var y = NaN;
-    try {
-      y = parseFloat(String(lex.getAttribute('data-lexicon-y') || '').trim());
-    } catch (errY) {
-      y = NaN;
-    }
-    if (!isFinite(y) || y <= 2) return 0;
-
-    // How much of the viewport is covered by the Lexicon sheet.
-    // NOTE: use layout-viewport bottom so rect.top math matches on iOS Safari.
-    var vh = getViewportHeightSafe();
-    var rect = null;
-    try { rect = lex.getBoundingClientRect ? lex.getBoundingClientRect() : null; } catch (errR) { rect = null; }
-    if (!rect || !isFinite(rect.top)) return 0;
-
-    var obstruction = Math.max(0, Math.round(vh - rect.top));
-
-    // Subtract the dock's own persistent overlay height; pages already account for the dock.
-    var dock = getDockObscurePxSafe(vh);
-
-    var extra = Math.max(0, obstruction - dock);
-
-    // A small breath so the last line isn't kissing the sheet edge.
-    if (extra) extra += 40;
-
-    return extra;
-  }
-
-  function syncLexiconMidRestSpacer() {
-    try {
-      setLexiconMidRestSpacerPx(computeLexiconMidRestSpacerPx());
-    } catch (err) {}
-  }
-
-  // iOS Safari: the URL bar collapsing/expanding changes visualViewport metrics without necessarily
-  // producing DOM mutations; keep the mid-rest spacer in sync so the page behind the sheet can
-  // still scroll to its true end.
-  (function wireLexiconMidRestSpacerViewportSync() {
-    var pending = false;
-
-    function schedule() {
-      if (pending) return;
-      pending = true;
-
-      var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
-
-      raf(function () {
-        pending = false;
-        try { syncLexiconMidRestSpacer(); } catch (err) {}
-      });
-    }
-
-    try {
-      if (window.visualViewport && window.visualViewport.addEventListener) {
-        window.visualViewport.addEventListener('resize', schedule);
-        window.visualViewport.addEventListener('scroll', schedule);
-      }
-    } catch (err0) {}
-
-    try { window.addEventListener('resize', schedule); } catch (err1) {}
-    try { window.addEventListener('orientationchange', schedule); } catch (err2) {}
-    try { window.addEventListener('pageshow', schedule); } catch (err3) {}
-  })();
 
   // Lexicon gating: Lexicon may open only if it is opened first.
   // If Lexicon is closed and ToC or Reliquary is open, the Lexicon toggle is "locked":
@@ -747,158 +576,6 @@
 
   })();
 
-  // -------------------------------------------------
-  // iOS Lexicon mid-rest boundary overscroll guard
-  // Prevent page-edge rubber-band while the Lexicon rests half-open.
-  // This keeps the sheet/footer seam and the Lexicon seal visually welded together on Safari.
-  // -------------------------------------------------
-
-  (function wireIOSLexiconMidRestBoundaryGuard() {
-    if (!isIOS) return;
-
-    var touchId = null;
-    var lastY = 0;
-    var active = false;
-    var EPS = 2;
-
-    function isBottomSheet() {
-      try {
-        return !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
-      } catch (err) {
-        return false;
-      }
-    }
-
-    function getLexiconMidRestY() {
-      var lex = document.getElementById('lexiconPanel');
-      if (!lex || !lex.classList || !lex.classList.contains('is-open')) return NaN;
-      if (lex.classList.contains('is-dragging')) return NaN;
-
-      try {
-        return parseFloat(String(lex.getAttribute('data-lexicon-y') || '').trim());
-      } catch (err) {
-        return NaN;
-      }
-    }
-
-    function isGuardActiveForTarget(target) {
-      if (!isBottomSheet()) return false;
-      if (closestSafe(target, '#lexiconPanel .lexicon-panel-body')) return false;
-
-      var y = getLexiconMidRestY();
-      return !!(isFinite(y) && y > 2);
-    }
-
-    function readTouchById(e, id) {
-      try {
-        if (!e) return null;
-        var list = (e.touches && e.touches.length) ? e.touches : ((e.changedTouches && e.changedTouches.length) ? e.changedTouches : null);
-        if (!list) return null;
-        for (var i = 0; i < list.length; i++) {
-          if (list[i] && list[i].identifier === id) return list[i];
-        }
-      } catch (err) {}
-      return null;
-    }
-
-    function clearSession() {
-      active = false;
-      touchId = null;
-      lastY = 0;
-    }
-
-    function getPageScrollState() {
-      var el = document.scrollingElement || document.documentElement || document.body;
-      var top = 0;
-      var max = 0;
-
-      if (!el) return { top: 0, max: 0 };
-
-      try {
-        top = window.pageYOffset;
-        if (!isFinite(top)) top = el.scrollTop || 0;
-      } catch (err0) {
-        top = 0;
-      }
-
-      try {
-        var viewportH = getViewportHeightSafe();
-        var clientH = el.clientHeight || 0;
-        var basisH = viewportH > 0 ? viewportH : clientH;
-        max = Math.max(0, (el.scrollHeight || 0) - basisH);
-      } catch (err1) {
-        max = 0;
-      }
-
-      return { top: top, max: max };
-    }
-
-    function wouldRubberBand(deltaY) {
-      var state = getPageScrollState();
-      if (deltaY > 0 && state.top <= EPS) return true;
-      if (deltaY < 0 && state.top >= (state.max - EPS)) return true;
-      return false;
-    }
-
-    document.addEventListener('touchstart', function (e) {
-      if (!isGuardActiveForTarget(e && e.target)) {
-        clearSession();
-        return;
-      }
-
-      try {
-        if (!e || !e.changedTouches || !e.changedTouches.length) {
-          clearSession();
-          return;
-        }
-
-        var t = e.changedTouches[0];
-        if (!t) {
-          clearSession();
-          return;
-        }
-
-        active = true;
-        touchId = t.identifier;
-        lastY = t.clientY;
-      } catch (err) {
-        clearSession();
-      }
-    }, { capture: true, passive: true });
-
-    document.addEventListener('touchmove', function (e) {
-      if (!active) return;
-      if (!isGuardActiveForTarget(e && e.target)) {
-        clearSession();
-        return;
-      }
-
-      var t = readTouchById(e, touchId);
-      if (!t) return;
-
-      var deltaY = t.clientY - lastY;
-      if (Math.abs(deltaY) < 2) return;
-
-      if (wouldRubberBand(deltaY)) {
-        if (e && e.cancelable) e.preventDefault();
-        return;
-      }
-
-      lastY = t.clientY;
-    }, { capture: true, passive: false });
-
-    document.addEventListener('touchend', function (e) {
-      if (!active) return;
-      if (!e || touchId == null) {
-        clearSession();
-        return;
-      }
-      if (readTouchById(e, touchId)) clearSession();
-    }, { capture: true, passive: true });
-
-    document.addEventListener('touchcancel', clearSession, { capture: true, passive: true });
-  })();
-
   function computeScrollbarWidth() {
     try {
       var docEl = document.documentElement;
@@ -1040,33 +717,7 @@
 
       if (id === 'lexicon') {
         var lex = document.getElementById('lexiconPanel');
-        if (!lex || !lex.classList || !lex.classList.contains('is-open')) return false;
-
-        // During seal-drag, keep the page stable.
-        if (lex.classList.contains('is-dragging')) return true;
-
-        // Mobile bottom-sheet: treat the mid-rest (nonzero stored Y) as non-modal.
-        // The sheet can be "open" while resting mid (with translateY + scrim), but we do not
-        // want the shared scroll lock to engage in that state.
-        var isBottomSheet = false;
-        try {
-          isBottomSheet = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
-        } catch (errBS) {
-          isBottomSheet = false;
-        }
-
-        if (isBottomSheet) {
-          var y = NaN;
-          try {
-            y = parseFloat(String(lex.getAttribute('data-lexicon-y') || '').trim());
-          } catch (errY) {
-            y = NaN;
-          }
-
-          if (isFinite(y) && y > 2) return false;
-        }
-
-        return true;
+        return !!(lex && lex.classList && lex.classList.contains('is-open'));
       }
     } catch (err0) {}
 
@@ -1088,9 +739,6 @@
   }
 
   function syncScrollLockFromIds(ids) {
-    // Always update the Lexicon mid-rest spacer (even when scroll lock is off).
-    syncLexiconMidRestSpacer();
-
     // If no open surface opts in, the shared lock should be off.
     if (ids && ids.length && shouldUseSharedScrollLock(ids)) {
       lockBodyScroll();
@@ -1449,10 +1097,8 @@
 
         var observer = new MutationObserver(function () { schedule(); });
 
-        // Also observe Lexicon mid-rest (`data-lexicon-y`) so scroll lock releases immediately
-        // when the sheet settles into its non-modal halfway state.
         for (var i = 0; i < targets.length; i++) {
-          observer.observe(targets[i], { attributes: true, attributeFilter: ['class', 'data-lexicon-y'] });
+          observer.observe(targets[i], { attributes: true, attributeFilter: ['class'] });
         }
       } catch (err2) {}
 
