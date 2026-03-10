@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.11 (tap-close seal settling matches drag-close) */
+/*! Covenant Lexicon UI v0.3.12 (tap-close seal offset cleared before settling) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.11';
+  window.COVENANT_LEXICON_VERSION = '0.3.12';
 
   var doc = document;
   var root = doc.documentElement;
@@ -1139,10 +1139,13 @@
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
 
     if (isBottomSheetMode()) {
-      // Mirror the drag-close path: apply is-seal-settling for the full snap duration
-      // so the seal's visual feedback is identical whether closed by tap or drag.
-      markSealSettling(getLexiconTapMotionMs());
+      // Clear --seal-drag-y FIRST (removes the open-position calc value) and force a
+      // reflow so the browser commits the property removal before the settling class
+      // adds a CSS transition. Without this, the transition would animate from the
+      // open-position value (near top of viewport) toward 0, causing the stuck-seal bug.
       setSealToClosedPosition();
+      try { if (lexiconToggle) void lexiconToggle.offsetWidth; } catch (err) {}
+      markSealSettling(getLexiconTapMotionMs());
     }
 
     unlockBodyScroll();
@@ -1520,7 +1523,7 @@
       clearSealSettling();
 
       if (!panel.classList.contains('is-open')) {
-        panel.classList.add('is-open');
+      panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
         lexOverlay.setAttribute('aria-hidden', 'false');
