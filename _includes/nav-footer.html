@@ -206,47 +206,6 @@
     border-radius: 0 0 999px 999px !important;
   }
 
-  /* Seal carry without layout drift:
-     preserve the original footer footprint, but let the seal travel visibly above the cradle. */
-  #navFooter .nav-seals {
-    position: relative;
-    z-index: 2 !important;
-  }
-
-  #navFooter #lexiconToggle.nav-btn.center {
-    position: relative !important;
-    overflow: visible !important;
-    z-index: 4 !important;
-    isolation: isolate;
-    -webkit-transform: translate3d(0, calc(var(--seal-drag-y, 0px) - var(--seal-seat-nudge, 0px)), 0) !important;
-    transform: translate3d(0, calc(var(--seal-drag-y, 0px) - var(--seal-seat-nudge, 0px)), 0) !important;
-  }
-
-  #navFooter #lexiconToggle::before,
-  #navFooter #lexiconToggle::after {
-    inset: 0 !important;
-    background: transparent !important;
-    border-color: transparent !important;
-    box-shadow: none !important;
-  }
-
-  #navFooter #lexiconToggle .lexicon-glyph {
-    position: relative;
-    z-index: 1 !important;
-  }
-
-  #navFooter #lexiconToggle.is-seal-dragging,
-  #navFooter #lexiconToggle.is-seal-settling,
-  #navFooter #lexiconToggle.is-nudging,
-  #navFooter #lexiconToggle[aria-expanded="true"] {
-    z-index: 5 !important;
-  }
-
-  #navFooter::before,
-  #navFooter::after {
-    z-index: 1 !important;
-  }
-
   /* Lexicon seal glyph swap (idle vs selected).
      lexicon.js owns the .has-selection class on #lexiconToggle. */
   #navFooter #lexiconToggle .lexicon-glyph {
