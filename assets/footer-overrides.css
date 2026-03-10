@@ -4,14 +4,10 @@
    This file consolidates:
    - nav-footer-flat-top.css (Lexicon seal flat-top geometry + socket/cradle shaping)
    - footer-tones.css (small contrast/ink nudges for dock tabs + Lexicon seal)
-   - Lexicon quiet-open / lock-state / tap-flash / stack-cover micro-rules
-   - dock-tab tap-flash micro-rules
-   - Lexicon header + quote-box alignment micro-rules
 
    Scope:
    - Geometry rules target #navFooter to avoid bleed.
    - Tone variables are global (as before) because toc.css consumes them.
-   - Lexicon stack-cover rules remain global because ui-stack can cover the seal outside footer state.
 */
 
 /* -------------------------------------------------
@@ -19,41 +15,62 @@
    ------------------------------------------------- */
 
 :root{
+  /* Dock tab medallion surface (used by ToC + Mirror caps via toc.css).
+     Single source of truth: toc.css must not redeclare this token. */
   --dock-tab-face:#010103;
+
+  /* Lexicon seal: closed/base surface tones (keep selection/leaf styling untouched). */
   --lexicon-seal-face:#08090b;
   --lexicon-seal-face-hover:#0a0b0e;
 
+  /* -------------------------------------------------
+     Metal system (palette improvements)
+     - Adds a clear ladder: rest → intent → blessed
+     - Standardizes shadow recipes (structure stays constant; only alpha shifts)
+     ------------------------------------------------- */
+
+  /* Brass / leaf anchors (fallbacks preserve behavior if covenant.css isn't loaded yet). */
   --metal-brass-rest:var(--brass-1, rgba(201, 169, 97, 0.72));
   --metal-leaf-intent:var(--leaf-0, rgba(242, 220, 154, 0.94));
   --metal-leaf-blessed:var(--leaf-1, rgba(255, 215, 122, 0.98));
 
+  /* Shared ink seat + halo recipes (used across dock glyphs + citation). */
   --metal-ink-seat:0 1px 0 rgba(0, 0, 0, 0.92);
   --metal-halo-soft:0 0 8px rgba(242, 220, 154, 0.12);
   --metal-halo-intent:0 0 12px rgba(242, 220, 154, 0.16);
 
+  /* Footer citation label beneath Lexicon seal (copy-to-clipboard).
+     Default should read as brass (rest); leaf is reserved for the moment of confirmation. */
   --citation-label-color:rgba(201, 169, 97, 0.88);
   --citation-label-shadow:var(--metal-ink-seat), var(--metal-halo-soft);
 
+  /* Lexicon glyph (open state): keep the symbol itself brass-gold, but let the halo go bright. */
   --lexicon-glyph-open-color:var(--gold-1, rgba(242,220,154,0.98));
   --lexicon-glyph-open-shadow:
     0 0 10px rgba(255,255,255,0.62),
     0 0 22px rgba(255,255,255,0.26),
     0 0 40px rgba(242,220,154,0.16);
 
+  /* Fully-open "embedded" state: keep gold, remove halo (tiny ink seat only). */
   --lexicon-glyph-open-embedded-shadow:0 1px 0 rgba(0,0,0,0.86);
 
+  /* Fully-open + selection: "leaf inlay" (sacred distinction without radiance).
+     Crisp bevel/seat only: no blur values, so it reads engraved/inlaid, not glowing. */
   --lexicon-glyph-open-inlay-color:var(--leaf-1, rgba(255,215,122,0.98));
   --lexicon-glyph-open-inlay-shadow:
     0 1px 0 rgba(0,0,0,0.92),
     0 -1px 0 rgba(255,255,255,0.08);
 
+  /* Selected + CLOSED: increase distinction without turning the *open* state radiant.
+     This adds a controlled, faint halo (small blur) around the inlay so it reads "chosen" at a glance. */
   --lexicon-glyph-selected-quiet-halo-shadow:
-    0 1px 0 rgba(0,0,0,0.94),
-    0 -1px 0 rgba(255,255,255,0.14),
-    0 0 12px rgba(255,255,255,0.12),
-    0 0 22px rgba(242,220,154,0.34),
-    0 0 46px rgba(242,220,154,0.16);
+    0 1px 0 rgba(0,0,0,0.92),
+    0 -1px 0 rgba(255,255,255,0.10),
+    0 0 10px rgba(242,220,154,0.20),
+    0 0 18px rgba(242,220,154,0.10);
 
+  /* Tap accent flash (pulse): a stronger aura field *behind* the glyph.
+     (Keeps the symbol steady; the radiance blooms around it and fades slower.) */
   --lexicon-glyph-tap-aura-size:2.0em;
   --lexicon-glyph-tap-aura-blur:8px;
   --lexicon-glyph-tap-aura:
@@ -65,18 +82,23 @@
       rgba(0,0,0,0) 86%
     );
 
+  /* Dock tab tap flash (ToC + Mirror): same family, slightly quieter than Lexicon. */
   --dock-tab-glyph-tap-aura-size:3.0em;
   --dock-tab-glyph-tap-aura-blur:8px;
   --dock-tab-glyph-tap-aura:
     radial-gradient(circle at 50% 50%,
-      rgba(255,255,255,0.78) 0%,
-      rgba(242,220,154,0.44) 22%,
-      rgba(201,169,97,0.22) 44%,
-      rgba(0,0,0,0) 76%
+      rgba(255,255,255,0.88) 0%,
+      rgba(255,255,255,0.52) 16%,
+      rgba(242,220,154,0.32) 34%,
+      rgba(242,220,154,0.18) 54%,
+      rgba(0,0,0,0) 86%
     );
 
+  /* Lexicon cradle (the upward-facing semicircle behind the seal): 1px taller. */
   --lexicon-cradle-h:calc(var(--seal-notch-height) + 0px);
 
+  /* Lexicon cradle glow (center dock notch): subtle at rest, stronger during engagement.
+     IMPORTANT: bias the radiance toward the cradle floor (bottom) so it doesn't read "lit from above". */
   --lexicon-cradle-glow-rest:
     inset 0 -10px 18px rgba(242, 220, 154, 0.06),
     inset 0 -22px 34px rgba(201, 169, 97, 0.04);
@@ -86,39 +108,55 @@
     inset 0 -26px 44px rgba(201, 169, 97, 0.10);
 }
 
+/* -------------------------------------------------
+   Monochrome-metal dock (ToC + Mirror)
+   ------------------------------------------------- */
+
 html #navFooter{
+  /* Force dock glyph feedback into the brass/leaf family (no blue/pink/magenta). */
   --toc-glyph-rest-color:var(--metal-brass-rest);
   --toc-glyph-intent-color:var(--metal-leaf-intent);
   --toc-glyph-intent-shadow:var(--metal-ink-seat), var(--metal-halo-soft);
+
   --mirror-glyph-rest-color:var(--metal-brass-rest);
   --mirror-glyph-intent-color:var(--metal-leaf-intent);
   --mirror-glyph-intent-shadow:var(--metal-ink-seat), var(--metal-halo-intent);
+
+  /* Neutralize legacy "glyph-red" usage inside the dock scope.
+     (Some fallback states in covenant.css still reference it.) */
   --glyph-red:var(--obsidian-1);
 }
 
 html #navFooter .nav-seals{
+  /* Socket intent glow lives inside the cradles only, and stays monochrome-metal. */
   --dock-socket-glow-toc:
     inset 0 0 22px rgba(242, 220, 154, 0.14),
     inset 0 0 36px rgba(201, 169, 97, 0.10);
+
   --dock-socket-glow-mirror:
     inset 0 0 22px rgba(242, 220, 154, 0.14),
     inset 0 0 36px rgba(201, 169, 97, 0.10);
 }
 
+/* Never allow Reliquary-era aura overlays to paint over the dock slab.
+   (But allow our tap flash on demand.) */
 html #navFooter #mirrorToggle:not(.is-tap-opening):not(.is-tap-closing) .toc-glyph::before{content:none !important;display:none !important}
 
+/* Darken the Lexicon seal base (closed state) + make it a flat single tone (no gradient stack). */
 #lexiconToggle.nav-btn.center:not(.has-selection)::after{
   background-color:var(--lexicon-seal-face);
   background-image:none !important;
   transition:background-color 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Preserve interaction feedback while staying within the darker scheme. */
 #lexiconToggle.nav-btn.center:not(.has-selection):hover::after,
 #lexiconToggle.nav-btn.center:not(.has-selection):focus-visible::after{
   background-color:var(--lexicon-seal-face-hover);
   background-image:none !important;
 }
 
+/* Touch/coarse pointer: prevent any legacy red press tint from flashing through. */
 @media (hover: none), (pointer: coarse){
   #navFooter #lexiconToggle:active::after{
     background-color:var(--lexicon-seal-face-hover) !important;
@@ -126,12 +164,15 @@ html #navFooter #mirrorToggle:not(.is-tap-opening):not(.is-tap-closing) .toc-gly
   }
 }
 
+/* Lexicon OPEN: seal must be frameless so it welds into the Lexicon header. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center::before,
 #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]::before{border:0 !important;box-shadow:none !important}
 
 html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
 #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]{box-shadow:none !important}
 
+/* Lexicon DRAG: seal must become glyph-only (no rim/inset) so cradle reads through cleanly.
+   ALSO: during snap-back-to-closed we keep the rim killed for the full settle window. */
 #navFooter #lexiconToggle.nav-btn.center.is-seal-dragging::before,
 #navFooter #lexiconToggle.nav-btn.center.is-seal-settling::before,
 #navFooter #lexiconToggle.nav-btn.center.is-nudging::before{
@@ -139,8 +180,10 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   box-shadow:none !important;
 }
 
+/* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.86em !important;position:relative;display:inline-block;z-index:0}
 
+/* Tap aura (behind the glyph group). */
 #navFooter #lexiconToggle .lexicon-glyph::before{
   content:'';
   position:absolute;
@@ -160,27 +203,22 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
     transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-#navFooter #tocToggle .toc-glyph,
-#navFooter #mirrorToggle .toc-glyph{
-  position:relative;
-  display:inline-block;
-  z-index:0;
-}
-
+/* Dock tab tap aura (behind the glyph).
+   Keep it glyph-only (no border glow), and keep it out of drag interactions (tap classes only). */
 #navFooter #tocToggle .toc-glyph::before,
 #navFooter #mirrorToggle .toc-glyph::before{
   content:'';
   position:absolute;
   left:50%;
   top:50%;
-  width:var(--dock-tab-glyph-tap-aura-size, 2.4em);
-  height:var(--dock-tab-glyph-tap-aura-size, 2.4em);
+  width:var(--dock-tab-glyph-tap-aura-size, 3.0em);
+  height:var(--dock-tab-glyph-tap-aura-size, 3.0em);
   border-radius:999px;
   background:var(--dock-tab-glyph-tap-aura);
-  filter:blur(var(--dock-tab-glyph-tap-aura-blur, 7px));
+  filter:blur(var(--dock-tab-glyph-tap-aura-blur, 8px));
   opacity:0;
   pointer-events:none;
-  transform:translate(-50%, -50%) scale(0.56);
+  transform:translate(-50%, -50%) scale(0.52);
   z-index:-1;
 }
 
@@ -191,35 +229,11 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   overflow:visible;
 }
 
-@keyframes dockTabTapAuraPulse{
-  0%{opacity:0;transform:translate(-50%, -50%) scale(0.34)}
-  14%{opacity:1;transform:translate(-50%, -50%) scale(0.82)}
-  58%{opacity:0.66;transform:translate(-50%, -50%) scale(0.94)}
-  100%{opacity:0;transform:translate(-50%, -50%) scale(1.02)}
-}
-
-@media (prefers-reduced-motion: no-preference){
-  #navFooter #tocToggle.is-tap-opening .toc-glyph::before{
-    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
-  }
-
-  #navFooter #tocToggle.is-tap-closing .toc-glyph::before{
-    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
-  }
-
-  #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
-  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
-    content:'' !important;
-    display:block !important;
-  }
-
-  #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before{
-    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
-  }
-
-  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
-    animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms) cubic-bezier(0.22, 0.61, 0.36, 1) 1;
-  }
+#navFooter #tocToggle.is-tap-opening .toc-glyph::before,
+#navFooter #tocToggle.is-tap-closing .toc-glyph::before,
+#navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
+#navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
+  animation:lexiconTapAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -229,6 +243,9 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{animation:none}
 }
 
+/* Lexicon tab: "earned" radiance on the glyph itself.
+   Default at-rest remains quiet; open + intent states stay luminous.
+   (Keeps iOS Safari stable: no rim/border glow, only text-shadow on the glyph.) */
 #navFooter #lexiconToggle .lexicon-glyph,
 #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
   text-shadow:none;
@@ -238,6 +255,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
     filter 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* OPEN (and selection): brass-gold glyph with bright halo while the panel is moving/engaging. */
 #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
 #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner,
 #navFooter #lexiconToggle.has-selection .lexicon-glyph,
@@ -246,6 +264,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   text-shadow:var(--lexicon-glyph-open-shadow);
 }
 
+/* Fully OPEN (scroll-lock): no glow anywhere on the control (button-level + glyph-level).
+   NOTE: do not depend on aria-expanded here; scroll-lock is our truth that the panel is fully open. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle,
 html.lexicon-scroll-lock #navFooter #lexiconToggle:hover,
 html.lexicon-scroll-lock #navFooter #lexiconToggle:focus,
@@ -254,6 +274,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle:focus-visible{
   filter:none !important;
 }
 
+/* Fully OPEN (scroll-lock): keep gold but remove the halo so it "embeds" into the seal.
+   Also hard-kill any lingering filter-based glow so the open state stays carved/quiet. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
 html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-color);
@@ -263,6 +285,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
 
 html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph::before{opacity:0 !important}
 
+/* Fully OPEN + selection: leaf inlay (distinct, but still embedded; no glow). */
 html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection .lexicon-glyph,
 html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-inlay-color);
@@ -270,6 +293,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection .lexicon-glyph-
   filter:none !important;
 }
 
+/* Fully OPEN + selection (fallback specificity if aria-expanded remains true): leaf inlay (distinct, but still embedded; no glow). */
 html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="true"] .lexicon-glyph,
 html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="true"] .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-inlay-color);
@@ -277,6 +301,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   filter:none !important;
 }
 
+/* Tap-to-close: keep the same halo through the closing transition even after aria-expanded flips. */
 #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph,
 #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph-mid-inner{
   color:var(--lexicon-glyph-open-color);
@@ -296,6 +321,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   100%{color:var(--lexicon-glyph-open-color);text-shadow:var(--lexicon-glyph-open-shadow)}
 }
 
+/* Tap-to-open: aura pulse + micro "ink blink" on the glyph itself (tap-only). */
 #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph::before{
   animation:lexiconTapAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
 }
@@ -305,8 +331,9 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   animation:lexiconTapGlyphInkBlink 140ms ease-out 1;
 }
 
+/* Tap-to-close: aura only (no glyph blink). */
 #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{
-  animation:lexiconTapAuraPulse 260ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  animation:lexiconTapAuraPulse 420ms cubic-bezier(0.22, 0.61, 0.36, 1) 1;
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -317,6 +344,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   #navFooter #lexiconToggle.is-tap-opening .lexicon-glyph-mid-inner{animation:none}
 }
 
+/* Intent + drag feedback: match the same brass-gold + bright halo used in the open-engaging state.
+   (This includes dragging open/closed, and the brief intent pulses.) */
 #navFooter #lexiconToggle.is-nudging .lexicon-glyph,
 #navFooter #lexiconToggle.is-pulsing .lexicon-glyph,
 #navFooter #lexiconToggle.is-seal-dragging .lexicon-glyph,
@@ -327,150 +356,561 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   text-shadow:var(--lexicon-glyph-open-shadow);
 }
 
+/* Make the Lexicon seal cradle border/field 1px taller without touching socket geometry tokens. */
 .nav-footer::after{height:var(--lexicon-cradle-h, var(--seal-notch-height))}
 
+/* Touch/coarse pointer: neutralize any fallback hover tint that would re-lighten the seal. */
 @media (hover: none), (pointer: coarse){
   #lexiconToggle:not(.has-selection):hover::after,
   #lexiconToggle:not(.has-selection):focus-visible::after{background-color:var(--lexicon-seal-face);background-image:none !important}
 }
 
+/* -------------------------------------------------
+   Flat-top Lexicon seal geometry (footer-only)
+   ------------------------------------------------- */
+
 #navFooter{
+  /* Footer citation label (universal): variables consumed by assets/covenant.css (.citation-text). */
   --citation-color:var(--citation-label-color);
   --citation-shadow:rgba(242, 220, 154, 0.12);
+
+  /* Seal seating: raise the flat-top seal so its top edge aligns with the footer slab top.
+     IMPORTANT (iPhone Safari): navFooterCritical defines this token later in the DOM.
+     Use !important so vertical positioning changes actually take effect. */
   --lexicon-seal-top-align:12px !important;
+
+  /* Cradle seat (circle center y, relative to footer top): keep it tracking the seal seat.
+     (If the seal drops, the cradle should follow so the geometry still reads welded.) */
   --seal-cradle-center-y:1px;
+
+  /* Border trace (cradle dock rim). */
   --footer-cradle-line:#39332A;
+
+  /* Legacy tokens still exist, but the cradle now uses --seal-cradle-center-y directly. */
   --seal-cradle-shift-y:0px;
   --seal-cradle-drop-y:var(--seal-cradle-center-y);
+
+  /* Lexicon SEAL size.
+     IMPORTANT: must beat the inline iPhone "navFooterCritical" safety-net (later in DOM).
+     Use !important so cradle geometry stays authoritative and responds to --lexicon-cradle-w changes. */
   --lexicon-seal-w:66px !important;
   --lexicon-seal-h:34px !important;
+
+  /* ToC/Mirror: slightly larger + slightly more spread, without touching Prev/Next. */
   --toc-tab-gap:26px !important;
   --toc-tab-width:calc(var(--nav-pill-width) + 8px);
+
+  /* Side sockets: nudge outward so the cradles sit directly beneath the medallions. */
   --dock-socket-spread:10px;
+
+  /* Side sockets: widen the cradle so the medallions sit more comfortably inside. */
   --dock-socket-d:calc(var(--dock-tab-width) + 6px);
+
+  /* Socket geometry: cradle dock size (independent of seal). */
   --lexicon-cradle-w:66px;
+
+  /* Tighten the void a touch more (so "smaller" reads even with antialias). */
   --seal-notch-grow:1px;
+
+  /* IMPORTANT (iPhone Safari): navFooterCritical defines these same tokens later in the DOM.
+     Use !important so cradle geometry stays authoritative and responds to --lexicon-cradle-w changes. */
   --seal-notch-radius:calc(var(--lexicon-cradle-w) * 0.5 + var(--seal-notch-grow)) !important;
   --seal-notch-height:calc(var(--seal-notch-radius) + 6px) !important;
+
+  /* Cradle depth: deepen the ellipse so the trace hugs the underside of the seal. */
   --seal-notch-radius-y:calc(var(--seal-notch-radius) + 1px) !important;
+
+  /* Border trace should follow the deeper void; give the tracing element enough height to render fully. */
   --seal-notch-height-y:calc(var(--seal-notch-radius-y) + 6px) !important;
+
+  /* Micro-nudges for glyph optical centering (mobile Safari). */
   --toc-glyph-nudge-x:0px;
   --mirror-glyph-nudge-x:0px;
   --toc-glyph-nudge-y:9px;
   --mirror-glyph-nudge-y:9px;
+
+  /* Prev/Next frames: slightly larger than the ToC/Mirror pill size (all breakpoints). */
   --nav-wing-pill-w:calc(var(--nav-pill-width) + 10px);
   --nav-wing-pill-h:calc(var(--nav-pill-height) + 8px);
+
+  /* iOS Safari: keep the dock pre-promoted as a stable layer (see assets/covenant.css + AGENT.md).
+     Do not override transform here; only guard against "will-change" churn. */
   -webkit-backface-visibility:hidden;
   backface-visibility:hidden;
-  will-change:transform;
+  will-change:auto;
   isolation:isolate;
+
+  /* Lexicon cradle glow: default to subtle rest glow. */
+  --lexicon-cradle-glow: var(--lexicon-cradle-glow-rest);
 }
 
-#navFooter .nav-footer-inner{max-width:1120px;padding:0 2px}
-
-/* #navFooter and .nav-footer-inner need overflow:visible so the cradle mask
-   pseudo-elements (::before/::after) can paint outside their boxes. */
-#navFooter,
-#navFooter .nav-footer-inner{overflow:visible !important}
+/* Widen the footer dock more so Prev/Next sit further from the center (all breakpoints). */
+#navFooter .nav-footer-inner{
+  max-width:1120px;
+  padding:0 2px;
+}
 
 #navFooter::before,
 #navFooter::after{-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:auto}
+
+/* Cutout socket:
+   Paint the slab on ::before, then punch the cradle notch out via a mask.
+   This makes the cradle interior transparent (reads as a carved opening).
+*/
 #navFooter{background:radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%) !important;border-top:none !important;border-bottom:none !important;box-shadow:none !important}
 
 #navFooter::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
-  background-position:0 0,0 0;border-top:1px solid #000;border-bottom:0;
-  box-shadow:0 -14px 22px -14px rgba(0,0,0,0.78), inset 0 -10px 18px -16px rgba(0,0,0,0.72);
-  -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% var(--seal-cradle-center-y, 0px), rgba(0,0,0,0) 0 98%, rgba(255,255,255,1) 99% 100%);
-  mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% var(--seal-cradle-center-y, 0px), rgba(0,0,0,0) 0 98%, rgba(255,255,255,1) 99% 100%);
-  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+
+  /* Same obsidian slab paint as assets/covenant.css (.nav-footer override block). */
+  background:
+    radial-gradient(1200px 90px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    linear-gradient(to bottom, var(--obsidian-2) 0%, var(--obsidian-1) 45%, var(--obsidian-0) 100%);
+
+  background-position:0 0,0 0;
+
+  /* Single top seam only (no second line beneath). */
+  border-top:1px solid #000;
+  border-bottom:0;
+
+  box-shadow:
+    0 -14px 22px -14px rgba(0,0,0,0.78),
+    inset 0 -10px 18px -16px rgba(0,0,0,0.72);
+
+  /* Punch the cradle void (ellipse: wider + deeper).
+     NOTE (iOS Safari): avoid half-pixel mask stops (can jitter by ~1px on reraster).
+  */
+  -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% var(--seal-cradle-center-y, 0px),
+    rgba(0,0,0,0) 0 98%,
+    rgba(255,255,255,1) 99% 100%
+  );
+  mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% var(--seal-cradle-center-y, 0px),
+    rgba(0,0,0,0) 0 98%,
+    rgba(255,255,255,1) 99% 100%
+  );
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
 }
 
+/* Cradle border + shaded recess (match ToC/Mirror socket family). */
 #navFooter::after{
-  content:'';position:absolute;left:0;right:0;top:var(--seal-cradle-center-y, 0px);height:var(--seal-notch-height-y, var(--seal-notch-height));pointer-events:none;
-  -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%, rgba(255,255,255,1) 0 99.7%, rgba(0,0,0,0) 99.85% 100%);
-  mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%, rgba(255,255,255,1) 0 99.7%, rgba(0,0,0,0) 99.85% 100%);
-  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;
-  background:linear-gradient(to bottom, rgba(0,0,0,0.95) 0 1px, rgba(0,0,0,0) 1px 100%), radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%, transparent 0 calc(var(--seal-notch-radius) - 2px), var(--footer-cradle-line) calc(var(--seal-notch-radius) - 1px) calc(var(--seal-notch-radius) + 1px), transparent calc(var(--seal-notch-radius) + 2px) 100%), linear-gradient(to right, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(0,0,0,.55) 100%), radial-gradient(circle farthest-side at 50% 0, rgba(0,0,0,.92) 0%, rgba(16,16,20,.96) 46%, rgba(0,0,0,.985) 100%);
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  top:var(--seal-cradle-center-y, 0px);
+  height:var(--seal-notch-height-y, var(--seal-notch-height));
+  pointer-events:none;
+
+  /* Clip the shading to the cradle ellipse only (so no rectangular wash).
+     IMPORTANT: keep the mask opaque far enough out that the border trace isn't clipped. */
+  -webkit-mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
+    rgba(255,255,255,1) 0 99.7%,
+    rgba(0,0,0,0) 99.85% 100%
+  );
+  mask-image:radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
+    rgba(255,255,255,1) 0 99.7%,
+    rgba(0,0,0,0) 99.85% 100%
+  );
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+
+  background:
+    /* Top edge seam (inside cradle): force black without touching the rim trace. */
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.95) 0 1px,
+      rgba(0,0,0,0) 1px 100%),
+    /* Border trace (U-shape): MUST be topmost or the depth layers will cover it. */
+    radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
+      transparent 0 calc(var(--seal-notch-radius) - 2px),
+      var(--footer-cradle-line) calc(var(--seal-notch-radius) - 1px) calc(var(--seal-notch-radius) + 1px),
+      transparent calc(var(--seal-notch-radius) + 2px) 100%
+    ),
+    /* Sidewall bevels (machining reads at the sides, not the top rim). */
+    linear-gradient(to right,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,0) 18%,
+      rgba(255,255,255,0) 82%,
+      rgba(0,0,0,.55) 100%),
+    /* Depth body (keep same family as ToC/Mirror sockets; the directional "floor glow" is handled by box-shadow). */
+    radial-gradient(circle farthest-side at 50% 0,
+      rgba(0,0,0,.92) 0%,
+      rgba(16,16,20,.96) 46%,
+      rgba(0,0,0,.985) 100%);
+
   opacity:0.96;
-  box-shadow:inset 0 12px 18px rgba(0,0,0,.80), inset 0 -10px 14px rgba(255,255,255,.06), 0 1px 0 rgba(255,255,255,.05), var(--lexicon-cradle-glow, var(--lexicon-cradle-glow-rest));
+
+  /* Interior depth + faint bottom catch (this is what makes the glow read as coming from below). */
+  box-shadow:
+    inset 0 12px 18px rgba(0,0,0,.80),
+    inset 0 -10px 14px rgba(255,255,255,.06),
+    0 1px 0 rgba(255,255,255,.05),
+    var(--lexicon-cradle-glow, none);
+
   transition: box-shadow 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Lexicon cradle engagement glow: boost to intent during tap/drag/open-close motion. */
 @supports selector(#navFooter:has(#lexiconToggle.is-tap-opening)){
   #navFooter:has(#lexiconToggle.is-tap-opening),
   #navFooter:has(#lexiconToggle.is-tap-closing),
   #navFooter:has(#lexiconToggle.is-seal-dragging),
   #navFooter:has(#lexiconToggle.is-nudging),
   #navFooter:has(#lexiconToggle.is-pulsing),
-  #navFooter:has(#lexiconPanel.is-dragging){--lexicon-cradle-glow: var(--lexicon-cradle-glow-intent)}
+  #navFooter:has(#lexiconPanel.is-dragging){
+    --lexicon-cradle-glow: var(--lexicon-cradle-glow-intent);
+  }
 }
 
-html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-glow-intent)}
+/* Fully OPEN (scroll-lock): keep the cradle glow present after the motion completes. */
+html.lexicon-scroll-lock #navFooter{
+  --lexicon-cradle-glow: var(--lexicon-cradle-glow-intent);
+}
+
 #navFooter #lexiconToggle,
 #navFooter #lexiconToggle::before,
 #navFooter #lexiconToggle::after{border-radius:0 0 999px 999px !important}
 
-#navFooter #lexiconToggle{overflow:hidden;margin-top:calc(-1 * var(--lexicon-seal-top-align) + 4px) !important;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform;-webkit-transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;width:var(--lexicon-seal-w);height:var(--lexicon-seal-h);position:relative;}
+#navFooter #lexiconToggle{
+  overflow:hidden;
+  margin-top:calc(-1 * var(--lexicon-seal-top-align) + 4px) !important;
+
+  /* iPhone Safari: keep the seal on its own stable layer so the cradle border
+     doesn't hitch a ride on first drag frame reraster. */
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  will-change:transform;
+
+  /* Preserve drag math (lexicon.js drives --seal-drag-y). */
+  -webkit-transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;
+  transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) !important;
+
+  width:var(--lexicon-seal-w);
+  height:var(--lexicon-seal-h);
+}
+
+/* Tap flash must radiate outward from the glyph (not clip to the seal silhouette). */
 #navFooter #lexiconToggle.is-tap-opening,
-#navFooter #lexiconToggle.is-tap-closing{overflow:visible}
-@media (max-width: 600px){#navFooter{--toc-tab-gap:12px !important}}
+#navFooter #lexiconToggle.is-tap-closing{
+  overflow:visible;
+}
+
+@media (max-width: 600px){
+  #navFooter{--toc-tab-gap:12px !important}
+}
+
 #navFooter #lexiconToggle{flex:0 0 var(--lexicon-seal-w)}
 
+/* Prev/Next: larger frames, remove brass border outline. */
 #navFooter .nav-next-frame,
-#navFooter .nav-prev-frame{width:var(--nav-wing-pill-w);height:var(--nav-wing-pill-h)}
+#navFooter .nav-prev-frame{
+  width:var(--nav-wing-pill-w);
+  height:var(--nav-wing-pill-h);
+}
+
 #navFooter .nav-next-frame,
 #navFooter .nav-prev-frame,
 #navFooter .nav-next-frame::before,
 #navFooter .nav-prev-frame::before,
 #navFooter .nav-next-frame::after,
-#navFooter .nav-prev-frame::after{transition:box-shadow 180ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 180ms cubic-bezier(0.22, 0.61, 0.36, 1), background 220ms cubic-bezier(0.22, 0.61, 0.36, 1)}
-#navFooter .nav-next-frame::before,
-#navFooter .nav-prev-frame::before{border:0 !important;box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px #39332A}
-#navFooter .nav-prev-frame::before{box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px #000}
-#navFooter .nav-next-frame::before{box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px #000}
-#navFooter .nav-next-frame::after,
-#navFooter .nav-prev-frame::after{background:linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0) 18px), linear-gradient(to bottom, rgba(38,40,45,0.76) 0%, rgba(10,10,12,0.90) 100%)}
-#navFooter a.nav-prev .nav-prev-frame::after,
-#navFooter a.nav-next .nav-next-frame::after{background:linear-gradient(to bottom, rgba(255,233,178,0.10) 0%, rgba(255,233,178,0) 18px), linear-gradient(to bottom, rgba(72,50,18,0.72) 0%, rgba(10,8,4,0.94) 100%)}
-#navFooter.is-at-bottom a.nav-next:not(.is-armed) .nav-next-frame::after{background:linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0) 18px), linear-gradient(to bottom, rgba(38,40,45,0.76) 0%, rgba(10,10,12,0.90) 100%)}
-#navFooter a.nav-prev.is-armed .nav-prev-frame::before,
-#navFooter a.nav-next.is-armed .nav-next-frame::before{box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(242, 220, 154, 0.34), 0 0 28px rgba(218, 184, 86, 0.24);animation:navArmedGlowBreathe 2.8s ease-in-out infinite}
-#navFooter a.nav-prev.is-armed .nav-btn-icon--arrow{animation:navArrowNudgeLeft 1.8s ease-in-out infinite}
-#navFooter a.nav-next.is-armed .nav-btn-icon--arrow{animation:navArrowNudgeRight 1.8s ease-in-out infinite}
-@keyframes navArmedGlowBreathe{0%, 100%{box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(242, 220, 154, 0.34), 0 0 28px rgba(218, 184, 86, 0.24)}50%{box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 0 0 1px rgba(242, 220, 154, 0.42), 0 0 32px rgba(218, 184, 86, 0.30)}}}
-@keyframes navArrowNudgeRight{0%, 100%{ transform:translateX(0px); }50%{ transform:translateX(4px); }}
-@keyframes navArrowNudgeLeft{0%, 100%{ transform:translateX(0px); }50%{ transform:translateX(-4px); }}
-@media (prefers-reduced-motion: reduce){#navFooter a.nav-prev.is-armed .nav-prev-frame::before,#navFooter a.nav-next.is-armed .nav-next-frame::before{animation:none;box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(242, 220, 154, 0.34), 0 0 28px rgba(218, 184, 86, 0.24)}#navFooter a.nav-prev.is-armed .nav-btn-icon--arrow,#navFooter a.nav-next.is-armed .nav-btn-icon--arrow{animation:none}}
-#navFooter a.nav-prev.is-armed:active .nav-prev-frame,
-#navFooter a.nav-next.is-armed:active .nav-next-frame{animation:navRadiantPulse var(--nav-pulse-duration, 520ms) ease-out 1;box-shadow:0 0 0 1px rgba(201, 169, 97, 0.26), 0 0 18px rgba(201, 169, 97, 0.20), 0 0 34px rgba(201, 169, 97, 0.12)}
-#navFooter a.nav-prev.is-armed:active .nav-prev-frame::before,
-#navFooter a.nav-next.is-armed:active .nav-next-frame::before{box-shadow:inset 0 0 26px rgba(0, 0, 0, 0.96), inset 0 2px 12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(201, 169, 97, 0.20), 0 0 18px rgba(201, 169, 97, 0.16)}
-#navFooter a.nav-prev.is-armed:active .nav-prev-frame::after,
-#navFooter a.nav-next.is-armed:active .nav-next-frame::after{background:linear-gradient(to bottom, rgba(255, 242, 210, 0.22) 0%, rgba(255, 242, 210, 0) 18px), linear-gradient(to bottom, rgba(72,50,18,0.36) 0%, rgba(10,8,4,0.92) 100%)}
-@media (prefers-reduced-motion: reduce){#navFooter a.nav-prev.is-armed:active .nav-prev-frame,#navFooter a.nav-next.is-armed:active .nav-next-frame{animation:none}}
-#navFooter .nav-next .nav-btn-icon--arrow,
-#navFooter .nav-prev .nav-btn-icon--arrow{position:relative;top:2px}
-#navFooter .nav-next-label,
-#navFooter .nav-prev-label{transition:color 180ms cubic-bezier(0.22, 0.61, 0.36, 1), text-shadow 180ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1)}
-#navFooter a.nav-prev.is-armed .nav-prev-label,
-#navFooter a.nav-next.is-armed .nav-next-label{opacity:1;text-shadow:0 1px 1px rgba(0, 0, 0, 0.96), 0 0 16px rgba(242, 220, 154, 0.22)}
-#navFooter .nav-next-frame .nav-btn-icon,
-#navFooter .nav-prev-frame .nav-btn-icon{font-size:1.55rem}
-#navFooter .citation-label{margin-top:4px;min-height:18px;display:flex !important;align-items:center;justify-content:center;position:relative;visibility:visible !important;pointer-events:auto;color:var(--citation-color, rgba(242, 220, 154, 0.92));text-shadow:var(--citation-label-shadow);z-index:2;isolation:isolate}
-#navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
-#navFooter .citation-copy{display:inline-block;border:0;background:transparent;padding:0;margin:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;pointer-events:auto;position:relative;z-index:1}
-#navFooter .citation-copy:focus-visible{outline:1px solid rgba(212, 170, 78, 0.65);outline-offset:4px;border-radius:6px}
-#navFooter .citation-label.is-copied #citationText{display:inline-block;color:var(--metal-leaf-intent);text-shadow:var(--metal-ink-seat), var(--metal-halo-intent);background:rgba(0, 0, 0, 0.58);border:1px solid rgba(242, 220, 154, 0.22);border-radius:999px;padding:2px 9px 3px;letter-spacing:0.14em;line-height:1.08}
-#navFooter #citationText{position:relative;z-index:1}
-@media (max-width: 600px){#navFooter .citation-label{margin-top:2px;min-height:16px}#navFooter .nav-next-label,#navFooter .nav-prev-label{font-size:0.78rem;letter-spacing:0.10em;opacity:0.86}}
-@media (max-width: 480px){#navFooter .nav-next-label,#navFooter .nav-prev-label{font-size:0.76rem;opacity:0.8}}
+#navFooter .nav-prev-frame::after{
+  transition:
+    box-shadow 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    background 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
 
-#navFooter #lexiconToggle.has-selection::before{border-color:rgba(0,0,0,0.72) !important;box-shadow:inset 0 0 18px rgba(0,0,0,0.84), inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 18px -14px rgba(0,0,0,0.90), 0 14px 10px -12px rgba(0,0,0,0.92) !important}
+#navFooter .nav-next-frame::before,
+#navFooter .nav-prev-frame::before{
+  border:0 !important;
+  box-shadow:
+    inset 0 0 26px rgba(0, 0, 0, 0.96),
+    inset 0 2px 12px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px #39332A;
+}
+
+/* Prev: border ring should be black (rest state). */
+#navFooter .nav-prev-frame::before{
+  box-shadow:
+    inset 0 0 26px rgba(0, 0, 0, 0.96),
+    inset 0 2px 12px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px #000;
+}
+
+/* Next: border ring should be black (rest state). */
+#navFooter .nav-next-frame::before{
+  box-shadow:
+    inset 0 0 26px rgba(0, 0, 0, 0.96),
+    inset 0 2px 12px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px #000;
+}
+
+/* Default button face (disabled buttons): neutral gray (emphasize inset depth). */
+#navFooter .nav-next-frame::after,
+#navFooter .nav-prev-frame::after{
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0) 18px),
+    linear-gradient(to bottom, rgba(38,40,45,0.76) 0%, rgba(10,10,12,0.90) 100%);
+}
+
+/* ENABLED link buttons: warm deep-red face by default (inverted behavior). */
+#navFooter a.nav-prev .nav-prev-frame::after,
+#navFooter a.nav-next .nav-next-frame::after{
+  background:
+    linear-gradient(to bottom, rgba(255,233,178,0.10) 0%, rgba(255,233,178,0) 18px),
+    linear-gradient(to bottom, rgba(72,50,18,0.72) 0%, rgba(10,8,4,0.94) 100%);
+}
+
+/* When the reader reaches the bottom (latched by JS): cool the enabled Next button to neutral obsidian (inverted behavior).
+   IMPORTANT: .is-armed must override this, so only apply neutral tone when NOT armed. */
+#navFooter.is-at-bottom a.nav-next:not(.is-armed) .nav-next-frame::after{
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0) 18px),
+    linear-gradient(to bottom, rgba(38,40,45,0.76) 0%, rgba(10,10,12,0.90) 100%);
+}
+
+/* Armed glow: brass/leaf family (inverted behavior).
+   Enhanced +30% intensity with subtle breathing pulse.
+   IMPORTANT: this rule must have higher specificity than .is-at-bottom overrides. */
+#navFooter a.nav-prev.is-armed .nav-prev-frame::before,
+#navFooter a.nav-next.is-armed .nav-next-frame::before{
+  box-shadow:
+    inset 0 0 26px rgba(0, 0, 0, 0.96),
+    inset 0 2px 12px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(242, 220, 154, 0.34),
+    0 0 28px rgba(218, 184, 86, 0.24);
+  animation:navArmedGlowBreathe 2.8s ease-in-out infinite;
+}
+
+/* Arrow nudge animation: gentle horizontal shift toward navigation direction. */
+#navFooter a.nav-prev.is-armed .nav-btn-icon--arrow{
+  animation:navArrowNudgeLeft 1.8s ease-in-out infinite;
+}
+
+#navFooter a.nav-next.is-armed .nav-btn-icon--arrow{
+  animation:navArrowNudgeRight 1.8s ease-in-out infinite;
+}
+
+/* Breathing glow animation (subtle pulse on the frame border glow). */
+@keyframes navArmedGlowBreathe{
+  0%, 100%{
+    box-shadow:
+      inset 0 0 26px rgba(0, 0, 0, 0.96),
+      inset 0 2px 12px rgba(0, 0, 0, 0.62),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(242, 220, 154, 0.34),
+      0 0 28px rgba(218, 184, 86, 0.24);
+  }
+  50%{
+    box-shadow:
+      inset 0 0 26px rgba(0, 0, 0, 0.96),
+      inset 0 2px 12px rgba(0, 0, 0, 0.62),
+      inset 0 1px 0 rgba(255, 255, 255, 0.10),
+      0 0 0 1px rgba(242, 220, 154, 0.42),
+      0 0 32px rgba(218, 184, 86, 0.30);
+  }
+}
+
+/* Arrow nudge animations (4px shift in navigation direction). */
+@keyframes navArrowNudgeRight{
+  0%, 100%{ transform:translateX(0px); }
+  50%{ transform:translateX(4px); }
+}
+
+@keyframes navArrowNudgeLeft{
+  0%, 100%{ transform:translateX(0px); }
+  50%{ transform:translateX(-4px); }
+}
+
+/* prefers-reduced-motion: disable animations, keep static enhanced glow. */
+@media (prefers-reduced-motion: reduce){
+  #navFooter a.nav-prev.is-armed .nav-prev-frame::before,
+  #navFooter a.nav-next.is-armed .nav-next-frame::before{
+    animation:none;
+    box-shadow:
+      inset 0 0 26px rgba(0, 0, 0, 0.96),
+      inset 0 2px 12px rgba(0, 0, 0, 0.62),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(242, 220, 154, 0.34),
+      0 0 28px rgba(218, 184, 86, 0.24);
+  }
+
+  #navFooter a.nav-prev.is-armed .nav-btn-icon--arrow,
+  #navFooter a.nav-next.is-armed .nav-btn-icon--arrow{
+    animation:none;
+  }
+}
+
+/* Second tap (commit): animated feedback on pointer-down (so it reads even if navigation is immediate). */
+#navFooter a.nav-prev.is-armed:active .nav-prev-frame,
+#navFooter a.nav-next.is-armed:active .nav-next-frame{
+  animation:navRadiantPulse var(--nav-pulse-duration, 520ms) ease-out 1;
+  box-shadow:
+    0 0 0 1px rgba(201, 169, 97, 0.26),
+    0 0 18px rgba(201, 169, 97, 0.20),
+    0 0 34px rgba(201, 169, 97, 0.12);
+}
+
+#navFooter a.nav-prev.is-armed:active .nav-prev-frame::before,
+#navFooter a.nav-next.is-armed:active .nav-next-frame::before{
+  box-shadow:
+    inset 0 0 26px rgba(0, 0, 0, 0.96),
+    inset 0 2px 12px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(201, 169, 97, 0.20),
+    0 0 18px rgba(201, 169, 97, 0.16);
+}
+
+#navFooter a.nav-prev.is-armed:active .nav-prev-frame::after,
+#navFooter a.nav-next.is-armed:active .nav-next-frame::after{
+  background:
+    linear-gradient(to bottom, rgba(255, 242, 210, 0.22) 0%, rgba(255, 242, 210, 0) 18px),
+    linear-gradient(to bottom, rgba(72,50,18,0.36) 0%, rgba(10,8,4,0.92) 100%);
+}
+
+@media (prefers-reduced-motion: reduce){
+  #navFooter a.nav-prev.is-armed:active .nav-prev-frame,
+  #navFooter a.nav-next.is-armed:active .nav-next-frame{animation:none}
+}
+
+/* Glyph seat: lower the Prev/Next arrow glyph by ~1px without moving the frames. */
+#navFooter .nav-next .nav-btn-icon--arrow,
+#navFooter .nav-prev .nav-btn-icon--arrow{
+  position:relative;
+  top:2px;
+}
+
+/* Two-tap navigation arming glow (label beneath the button). */
+#navFooter .nav-next-label,
+#navFooter .nav-prev-label{
+  transition:
+    color 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    text-shadow 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Armed label: brass/leaf glow (inverted behavior).
+   IMPORTANT: this rule must have higher specificity than .is-at-bottom overrides. */
+#navFooter a.nav-prev.is-armed .nav-prev-label,
+#navFooter a.nav-next.is-armed .nav-next-label{
+  opacity:1;
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.96),
+    0 0 16px rgba(242, 220, 154, 0.22);
+}
+
+#navFooter .nav-next-frame .nav-btn-icon,
+#navFooter .nav-prev-frame .nav-btn-icon{
+  font-size:1.55rem;
+}
+
+/* Citation label: keep it present even when empty (altar-leading emphasis).
+   NOTE: covenant.css intentionally sets .citation-label { pointer-events: none; }.
+   Here we override that so the label can be tapped to copy. */
+#navFooter .citation-label{
+  margin-top:4px;
+  min-height:18px;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  visibility:visible !important;
+  pointer-events:auto;
+  color:var(--citation-color, rgba(242, 220, 154, 0.92));
+  text-shadow:var(--citation-label-shadow);
+}
+#navFooter .citation-label:empty{display:flex !important;visibility:visible !important}
+
+#navFooter .citation-copy{
+  display:inline-block;
+  border:0;
+  background:transparent;
+  padding:0;
+  margin:0;
+  font:inherit;
+  color:inherit;
+  letter-spacing:inherit;
+  text-transform:inherit;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  pointer-events:auto;
+}
+
+#navFooter .citation-copy:focus-visible{
+  outline:1px solid rgba(212, 170, 78, 0.65);
+  outline-offset:4px;
+  border-radius:6px;
+}
+
+/* "Copied" momentarily replaces the citation text (JS swaps #citationText content).
+   Style it as a faint pill so it reads cleanly against the dock gradient.
+   Leaf is allowed here because it's a momentary confirmation. */
+#navFooter .citation-label.is-copied #citationText{
+  display:inline-block;
+  color:var(--metal-leaf-intent);
+  text-shadow:var(--metal-ink-seat), var(--metal-halo-intent);
+
+  background:rgba(0, 0, 0, 0.58);
+  border:1px solid rgba(242, 220, 154, 0.22);
+  border-radius:999px;
+  padding:2px 9px 3px;
+
+  letter-spacing:0.14em;
+  line-height:1.08;
+}
+
+@media (max-width: 600px){
+  #navFooter .citation-label{margin-top:2px;min-height:16px}
+
+  #navFooter .nav-next-label,
+  #navFooter .nav-prev-label{font-size:0.78rem;letter-spacing:0.10em;opacity:0.86}
+}
+
+@media (max-width: 480px){
+  #navFooter .nav-next-label,
+  #navFooter .nav-prev-label{font-size:0.76rem;opacity:0.8}
+}
+
+/* -------------------------------------------------
+   Lexicon selection: no rim, glyph-only highlight
+   ------------------------------------------------- */
+
+/* Selected seal should NEVER gain a gilded rim/outline (keep the same quiet dark definition). */
+#navFooter #lexiconToggle.has-selection::before{
+  border-color:rgba(0,0,0,0.72) !important;
+  box-shadow:
+    inset 0 0 18px rgba(0,0,0,0.84),
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 10px 18px -14px rgba(0,0,0,0.90),
+    0 14px 10px -12px rgba(0,0,0,0.92) !important;
+}
+
+/* Selected seal: do not let the button itself glow; highlight lives on the glyph. */
 #navFooter #lexiconToggle.has-selection{ text-shadow:none !important; }
+
+/* Selected + CLOSED: leaf inlay with a controlled quiet halo.
+   (Open state remains governed by the "fully open must be quiet" rules.) */
 #navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]) .lexicon-glyph,
-#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{color:var(--lexicon-glyph-open-color) !important;text-shadow:var(--lexicon-glyph-selected-quiet-halo-shadow) !important;filter:none !important}
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{
+  color:var(--lexicon-glyph-open-inlay-color) !important;
+  text-shadow:var(--lexicon-glyph-selected-quiet-halo-shadow) !important;
+  filter:none !important;
+}
+
+/* Selected + interaction: halo on the glyph only (not the seal surface/border). */
 #navFooter #lexiconToggle.has-selection.is-nudging .lexicon-glyph,
 #navFooter #lexiconToggle.has-selection.is-pulsing .lexicon-glyph,
 #navFooter #lexiconToggle.has-selection.is-seal-dragging .lexicon-glyph,
@@ -478,10 +918,45 @@ html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-
 #navFooter #lexiconToggle.has-selection.is-nudging .lexicon-glyph-mid-inner,
 #navFooter #lexiconToggle.has-selection.is-pulsing .lexicon-glyph-mid-inner,
 #navFooter #lexiconToggle.has-selection.is-seal-dragging .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle.has-selection:active .lexicon-glyph-mid-inner{color:var(--lexicon-glyph-open-inlay-color) !important;text-shadow:var(--lexicon-glyph-open-shadow) !important}
-#navFooter #lexiconToggle.is-pulsing{animation:none !important;box-shadow:none !important}
+#navFooter #lexiconToggle.has-selection:active .lexicon-glyph-mid-inner{
+  color:var(--lexicon-glyph-open-inlay-color) !important;
+  text-shadow:var(--lexicon-glyph-open-shadow) !important;
+}
+
+/* Never pulse the seal as a unified object (we pulse via the glyph aura instead). */
+#navFooter #lexiconToggle.is-pulsing{
+  animation:none !important;
+  box-shadow:none !important;
+}
 #navFooter #lexiconToggle.is-pulsing::before{border-color:rgba(0,0,0,0.62) !important}
-@media (hover: none), (pointer: coarse){#navFooter #lexiconToggle.has-selection:active,#navFooter #lexiconToggle.has-selection.is-seal-dragging{filter:none !important}#navFooter #lexiconToggle.has-selection:active::before,#navFooter #lexiconToggle.has-selection.is-seal-dragging::before{border-color:rgba(0,0,0,0.72) !important;box-shadow:inset 0 0 18px rgba(0,0,0,0.84), inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 18px -14px rgba(0,0,0,0.90), 0 14px 10px -12px rgba(0,0,0,0.92) !important}#navFooter #lexiconToggle.has-selection:active::after,#navFooter #lexiconToggle.has-selection.is-seal-dragging::after{background-color:transparent !important;background-image:none !important}}
+
+/* Touch/coarse pointer: keep seal surface stable when selected (no heated veil, no rim). */
+@media (hover: none), (pointer: coarse){
+  #navFooter #lexiconToggle.has-selection:active,
+  #navFooter #lexiconToggle.has-selection.is-seal-dragging{filter:none !important}
+
+  #navFooter #lexiconToggle.has-selection:active::before,
+  #navFooter #lexiconToggle.has-selection.is-seal-dragging::before{
+    border-color:rgba(0,0,0,0.72) !important;
+    box-shadow:
+      inset 0 0 18px rgba(0,0,0,0.84),
+      inset 0 1px 0 rgba(255,255,255,0.05),
+      0 10px 18px -14px rgba(0,0,0,0.90),
+      0 14px 10px -12px rgba(0,0,0,0.92) !important;
+  }
+
+  /* Keep the existing fleck texture (selection surface) while pressed/dragging. */
+  #navFooter #lexiconToggle.has-selection:active::after,
+  #navFooter #lexiconToggle.has-selection.is-seal-dragging::after{
+    background-color:transparent !important;
+    background-image:none !important;
+  }
+}
+
+/* -------------------------------------------------
+   Lexicon seal face: transparent across ALL states
+   (glyph-only; dock/cradle visible beneath)
+   ------------------------------------------------- */
 
 #navFooter #lexiconToggle.nav-btn.center::after,
 #navFooter #lexiconToggle.nav-btn.center:hover::after,
@@ -499,132 +974,19 @@ html.lexicon-scroll-lock #navFooter{--lexicon-cradle-glow: var(--lexicon-cradle-
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-nudging::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-pulsing::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-seal-dragging::after,
-#navFooter #lexiconToggle.nav-btn.center.has-selection.is-sel-dragging::after{background-color:transparent !important;background-image:none !important}
+#navFooter #lexiconToggle.nav-btn.center.has-selection.is-sel-dragging::after{
+  background-color:transparent !important;
+  background-image:none !important;
+}
 
+/* -------------------------------------------------
+   Lexicon weld (open): remove seal backdrop
+   ------------------------------------------------- */
+
+/* When the seal rides up into the Lexicon header, it must not carry its own painted surface.
+   The header is the surface; the seal becomes purely the glyph (plus aura). */
 html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
-#navFooter #lexiconToggle[aria-expanded="true"]::after{background-color:transparent !important;background-image:none !important}
-
-html:not(.lexicon-scroll-lock) #navFooter #lexiconToggle.has-selection:not(.is-seal-dragging)::after{background-color:var(--lexicon-seal-face, #08090b) !important;background-image:none !important}
-html.lexicon-scroll-lock #navFooter #lexiconToggle:active::after,
-html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after{background-color:transparent !important;background-image:none !important}
-@media (hover: none), (pointer: coarse){html:not(.lexicon-scroll-lock) #navFooter #lexiconToggle.nav-btn.center:not(.is-seal-dragging):not(.is-nudging)::before{border-color:rgba(0,0,0,0.72) !important;box-shadow:inset 0 0 18px rgba(0,0,0,0.84), inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 18px -14px rgba(0,0,0,0.90), 0 14px 10px -12px rgba(0,0,0,0.92) !important}}
-#lexiconPanel #lexiconToggle.is-seal-in-header .lexicon-glyph,
-#lexiconPanel #lexiconToggle.is-seal-in-header .lexicon-glyph-mid-inner,
-#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
-#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner,
-html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
-html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{text-shadow:none !important;filter:none !important}
-#lexiconPanel #lexiconToggle.is-seal-in-header,
-#lexiconPanel #lexiconToggle.is-seal-in-header:hover,
-#lexiconPanel #lexiconToggle.is-seal-in-header:focus,
-#lexiconPanel #lexiconToggle.is-seal-in-header:focus-visible,
-#navFooter #lexiconToggle[aria-expanded="true"],
-#navFooter #lexiconToggle[aria-expanded="true"]:hover,
-#navFooter #lexiconToggle[aria-expanded="true"]:focus,
-#navFooter #lexiconToggle[aria-expanded="true"]:focus-visible,
-html.lexicon-scroll-lock #navFooter #lexiconToggle,
-html.lexicon-scroll-lock #navFooter #lexiconToggle:hover,
-html.lexicon-scroll-lock #navFooter #lexiconToggle:focus,
-html.lexicon-scroll-lock #navFooter #lexiconToggle:focus-visible{text-shadow:none !important;filter:none !important}
-#lexiconPanel #lexiconToggle.is-seal-in-header,
-#lexiconPanel #lexiconToggle.is-seal-in-header::before,
-#lexiconPanel #lexiconToggle.is-seal-in-header::after{transform:none !important;animation:none !important}
-#lexiconPanel #lexiconToggle.is-seal-in-header:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before,
-#navFooter #lexiconToggle[aria-expanded="true"]:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before,
-html.lexicon-scroll-lock #navFooter #lexiconToggle:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before{opacity:0 !important;animation:none !important;filter:none !important}
-
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]),
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]),
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]),
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]){opacity:1 !important;filter:none !important;cursor:not-allowed}
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"])::after{background-color:#000 !important;background-image:radial-gradient(120% 150% at 50% 10%, rgba(255,255,255,0.03), rgba(255,255,255,0) 46%), radial-gradient(140% 190% at 50% 118%, rgba(0,0,0,1), rgba(0,0,0,0) 64%), repeating-linear-gradient(135deg, rgba(255,255,255,0.030) 0 1px, rgba(0,0,0,0) 1px 7px), linear-gradient(to bottom, rgba(255,255,255,0.018), rgba(0,0,0,0.76));box-shadow:inset 0 0 32px rgba(0,0,0,0.98), inset 0 -28px 28px rgba(0,0,0,0.94), inset 0 12px 16px -18px rgba(255,255,255,0.06)}
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"])::before{border-color:rgba(0,0,0,0.96) !important;box-shadow:inset 0 0 40px rgba(0,0,0,1), inset 0 3px 22px rgba(0,0,0,0.92), inset 0 1px 0 rgba(255,255,255,0.015), inset 0 -1px 0 rgba(255,255,255,0.010), 0 0 0 1px rgba(0,0,0,0.96) !important}
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{color:rgba(0,0,0,0.88) !important;text-shadow:0 1px 0 rgba(255,255,255,0.060), 0 -1px 0 rgba(0,0,0,0.98) !important;filter:none !important}
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph{transform:translateY(1px)}
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before{opacity:0 !important;animation:none !important;filter:none !important}
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner{color:rgba(0,0,0,0.72) !important;text-shadow:0 1px 0 rgba(242,220,154,0.06), 0 -1px 0 rgba(0,0,0,0.98) !important}
-
-.lexicon-panel-header{
-  justify-content:flex-start;
-  gap:12px;
-}
-
-.lexicon-panel-close{
-  margin-left:auto;
-}
-
-#lexiconHeaderText{
-  text-align:left;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-}
-
-#lexiconHeaderText .lexicon-panel-title,
-#lexiconHeaderText .lexicon-panel-mode{
-  text-align:left;
-}
-
-@media (max-width: 520px){
-  #lexiconSealSlot:empty{
-    display:none !important;
-  }
-
-  .lexicon-panel-header{
-    gap:8px !important;
-  }
-}
-
-.lexicon-panel-body .lexicon-sentence-quote{
-  box-sizing:border-box !important;
-  width:auto !important;
-  max-width:100% !important;
-  margin-left:-20px !important;
-  margin-right:20px !important;
-  background:#3b0c10 !important;
-  color:#d0c0c0 !important;
-  overflow-wrap:anywhere;
-  word-break:break-word;
-}
-
-/* -------------------------------------------------------------------------
-   Close-settle compositing fix
-   Keeps the seal above ::after during mask repaint on iOS/Android Chrome.
-   ------------------------------------------------------------------------- */
-#navFooter #lexiconToggle.is-seal-settling{
-  pointer-events:none;
-  will-change:transform;
-  -webkit-transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) translateZ(0) !important;
-  transform:translate3d(0, calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) - var(--seal-seat-nudge) + 0px), 0) translateZ(0) !important;
-}
-
-#navFooter #lexiconToggle.is-seal-settling::before,
-#navFooter #lexiconToggle.is-seal-settling::after{
-  z-index:0;
+#navFooter #lexiconToggle[aria-expanded="true"]::after{
+  background-color:transparent !important;
+  background-image:none !important;
 }
