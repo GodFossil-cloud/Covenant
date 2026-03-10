@@ -692,6 +692,9 @@
     modeEl.textContent = pageConfig.modeLabel;
   }
 
+  // ----------------------------------------
+  // Sentence key validation
+  // ----------------------------------------
   function resolveKeyPattern() {
     var fallback = /^[IVX]+\.[0-9]+$/;
 
@@ -717,6 +720,7 @@
     var duplicates = Object.create(null);
     var missingCount = 0;
     var nonstandard = Object.create(null);
+
     var pattern = resolveKeyPattern();
 
     for (var i = 0; i < nodes.length; i++) {
@@ -742,6 +746,9 @@
     }
   }
 
+  // ----------------------------------------
+  // Intro sequencing
+  // ----------------------------------------
   function applyIntroOverrides() {
     var intro = pageConfig.intro;
     if (!intro || typeof intro !== 'object') return;
@@ -795,6 +802,7 @@
 
       setTimeout(function () {
         if (container) container.classList.add('fade-in');
+
         if (panel) panel.classList.add('fade-in');
 
         setTimeout(function () {
@@ -809,11 +817,16 @@
     }, introDelays.iconToOverlayDelay);
   }, introDelays.startDelay);
 
+  // ========================================
+  // Citation Label Management
+  // ========================================
   var lastCitationText = '';
+
   var UNICODE_ROMAN_ARTICLE = {
     'I': 'Ⅰ', 'II': 'Ⅱ', 'III': 'Ⅲ', 'IV': 'Ⅳ', 'V': 'Ⅴ', 'VI': 'Ⅵ',
     'VII': 'Ⅶ', 'VIII': 'Ⅷ', 'IX': 'Ⅸ', 'X': 'Ⅹ', 'XI': 'Ⅺ', 'XII': 'Ⅻ'
   };
+
   var UNICODE_ROMAN_NUM = ['', 'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'];
 
   function romanAsciiToUnicode(roman) {
@@ -862,11 +875,14 @@
     if (sentenceKey) {
       if (isArticlePage) {
         var m = String(sentenceKey).match(/^([IVX]+)\.(\d+)(?:\.([A-Za-z\u24B6-\u24CF]))?$/);
+
         var articleAscii = m ? m[1] : pageConfig.pageId;
         var sectionNum = m ? m[2] : null;
         var subpart = m ? m[3] : null;
+
         var articleUnicode = romanAsciiToUnicode(articleAscii);
         var sectionUnicode = sectionNum ? intToUnicodeRoman(sectionNum) : String(sentenceKey);
+
         var out = 'Article ' + articleUnicode + ', §.' + sectionUnicode;
         if (subpart) out += '.' + latinToCircled(subpart);
         return out;
@@ -886,10 +902,12 @@
     }
 
     var pageLabel = pageConfig.citationLabel || pageConfig.sectionLabel || pageConfig.pageId || '';
+
     if (pageConfig.pageId === 'invocation') return 'Invocation and Preamble';
     if (pageConfig.pageId === 'foundation') return 'Foundation';
     if (pageConfig.pageId === 'declaration') return 'Declaration';
     if (pageConfig.pageId && pageConfig.pageId.match(/^[IVX]+$/)) return 'Article ' + romanAsciiToUnicode(pageConfig.pageId);
+
     return pageLabel;
   }
 
@@ -901,6 +919,7 @@
 
     var isToSelection = !!sentenceKey;
     var wasSelection = !!fromSelection;
+
     citationText.classList.remove('slide-up', 'slide-up-dramatic', 'slide-down');
 
     var animClass;
@@ -912,6 +931,7 @@
     citationText.textContent = newText;
     lastCitationText = newText;
 
+    // CRITICAL: Expose raw lexicon key so Reliquary save button can reliably read it.
     if (citationText.dataset) {
       citationText.dataset.lexiconKey = sentenceKey || '';
     } else {
@@ -930,6 +950,7 @@
     citationText.textContent = initialText;
     lastCitationText = initialText;
 
+    // Ensure data-lexicon-key starts empty.
     if (citationText.dataset) {
       citationText.dataset.lexiconKey = '';
     } else {
@@ -939,6 +960,9 @@
 
   initializeCitationLabel();
 
+  // ========================================
+  // Panel open/close + content rendering
+  // ========================================
   function resetPanelInlineMotion() {
     if (!panel) return;
     panel.classList.remove('is-dragging');
@@ -950,16 +974,9 @@
     }
   }
 
-  function getFooterHeightSafe() {
-    if (navFooter) {
-      try {
-        var r = navFooter.getBoundingClientRect();
-        if (r && r.height) return Math.max(0, Math.round(r.height));
-      } catch (err) {}
-    }
-    var val = getCssVar('--footer-total-height');
-    var n = parseFloat(val);
-    return isFinite(n) ? Math.max(0, Math.round(n)) : 0;
+  function getSeatNudge() {
+    if (!lexiconToggle) return 0;
+    return getCssVarNumber('--seal-seat-nudge-closed', 0);
   }
 
   function setSealDragOffset(px, draggingNow) {
@@ -991,6 +1008,11 @@
     if (!lexiconToggle) return;
     if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
 
+    // iOS Safari: when the seal's travel is computed in JS px, it can desync slightly from
+    // the panel's own viewport-based transition (reads like the seal is being "dragged").
+    // Use a viewport-unit expression so seal + sheet resolve in the same coordinate space.
+    // The transform subtracts --seal-seat-nudge, so we add it here to keep the open position
+    // independent of the seating nudge.
     var OPEN_DROP_PX = isIOS ? 1 : 0;
     var unit = supportsDVH() ? '100dvh' : '100vh';
 
@@ -1012,6 +1034,7 @@
   }
 
   function isKeyboardIntentEvent(e) {
+    // In most browsers, keyboard activation of a button produces a click with detail === 0.
     try {
       if (!e) return false;
       if (e.type === 'click' && typeof e.detail === 'number' && e.detail === 0) return true;
@@ -1022,6 +1045,8 @@
 
   function focusIntoPanel(preferCloseFocus) {
     if (!panel) return;
+
+    // Avoid the "yellow box" focus ring on pointer-open; keep keyboard access intact.
     if (!preferCloseFocus) return;
 
     var closeBtn = qs('.lexicon-panel-close', panel);
@@ -1048,9 +1073,11 @@
     }
 
     var safeSentence = escapeHtml(sentenceText);
+
     dynamicContent.style.opacity = '0';
     setTimeout(function () {
-      dynamicContent.innerHTML = '<div class="lexicon-sentence-quote">"' + safeSentence + '"</div><p>' + explanation + '</p>';
+      dynamicContent.innerHTML =
+        '<div class="lexicon-sentence-quote">"' + safeSentence + "\"</div><p>" + explanation + '</p>';
       dynamicContent.style.opacity = '1';
     }, 150);
   }
@@ -1060,14 +1087,22 @@
 
     clearActiveTooltip();
     resetPanelInlineMotion();
+
     focusReturnEl = lexiconToggle;
 
     var bottomSheet = isBottomSheetMode();
 
-    if (!bottomSheet) {
-      moveSealIntoHeader();
-    } else {
+    // Desktop/tablet: move seal into the Lexicon header so it is correctly covered by higher UI-stack panels.
+    // Mobile bottom-sheet: keep the seal in the dock as the drag handle.
+    if (!bottomSheet) moveSealIntoHeader();
+    else restoreSealToDock();
+
+    if (bottomSheet) {
+      // iOS Safari: commit the seal transform BEFORE the sheet transition begins.
       setSealToOpenPosition();
+
+      try { if (lexiconToggle) void lexiconToggle.offsetWidth; } catch (err0) {}
+      try { if (panel) void panel.offsetWidth; } catch (err1) {}
     }
 
     panel.classList.add('is-open');
@@ -1078,7 +1113,14 @@
 
     lockBodyScroll();
     setLexiconGlyph();
+
     noteOpen();
+
+    if (bottomSheet) {
+      // Correct next frame in case any layout-driven values changed.
+      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+      raf(function () { setSealToOpenPosition(); });
+    }
 
     var preferCloseFocus = isKeyboardIntentEvent(openEvent);
     setTimeout(function () { focusIntoPanel(preferCloseFocus); }, 0);
@@ -1096,16 +1138,16 @@
     lexOverlay.setAttribute('aria-hidden', 'true');
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
 
-    if (isBottomSheetMode()) {
-      setSealToClosedPosition();
-    } else {
-      restoreSealToDock();
-    }
+    if (isBottomSheetMode()) setSealToClosedPosition();
 
     unlockBodyScroll();
     setLexiconGlyph();
+
     noteClose();
     clearStackZIndex();
+
+    // Desktop/tablet: return the seal to the dock after close.
+    if (!isBottomSheetMode()) restoreSealToDock();
 
     setTimeout(function () {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : lexiconToggle;
@@ -1117,9 +1159,13 @@
   function openFromToggleIntent(e) {
     if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
     else renderOverview();
+
     openPanel(e);
   }
 
+  // ========================================
+  // Initialization / event wiring
+  // ========================================
   validateSentenceKeys();
   registerWithUIStack();
 
@@ -1131,11 +1177,13 @@
       lexiconToggle.addEventListener('pointerenter', function () { lexiconHovering = true; setLexiconGlyph(); });
       lexiconToggle.addEventListener('mouseenter', function () { lexiconHovering = true; setLexiconGlyph(); });
       lexiconToggle.addEventListener('focus', function () { lexiconHovering = true; setLexiconGlyph(); });
+
       lexiconToggle.addEventListener('pointerleave', function () { lexiconHovering = false; setLexiconGlyph(); });
       lexiconToggle.addEventListener('mouseleave', function () { lexiconHovering = false; setLexiconGlyph(); });
       lexiconToggle.addEventListener('blur', function () { lexiconHovering = false; setLexiconGlyph(); });
     }
 
+    // Intent feedback for activation/drag/keyboard intent (not hover).
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
       triggerSealNudge();
@@ -1162,12 +1210,17 @@
           return;
         }
 
+        // Keep the bright halo present through the close transition (tap path only).
         markSealTapClosing();
         closePanel();
         return;
       }
 
+      // iOS Safari: avoid running the heavy filter-based pulse at the same moment as the
+      // bottom-sheet transform transition; it can cause the seal layer to lag behind.
       if (!(isIOS && isBottomSheetMode())) triggerSealPulse();
+
+      // Tap-to-open flash (distinct from drag).
       markSealTapOpening();
       openFromToggleIntent(e);
     });
@@ -1214,6 +1267,7 @@
     });
   }
 
+  // ---- Glossary Terms: two-tap on touch ----
   (function initGlossaryTwoTap() {
     var terms = qsa('.glossary-term');
     if (!terms || !terms.length) return;
@@ -1230,6 +1284,7 @@
       (function (term) {
         term.addEventListener('click', function (e) {
           if (!isTouchLikeEvent(e)) return;
+
           if (currentlyActiveTooltip !== term) {
             stopEvent(e);
             clearActiveTooltip();
@@ -1242,6 +1297,7 @@
     }
   })();
 
+  // ---- Subpart Selection (Ⓐ/Ⓑ/Ⓒ...) ----
   (function initSubpartSelection() {
     var subparts = qsa('.sentence.has-subparts .subpart');
     if (!subparts || !subparts.length) return;
@@ -1265,6 +1321,7 @@
           var key = baseKey + '.' + letter;
           var quoteEl = qs('.subpart-content', subpart) || subpart;
           var quoteText = normalizeWhitespace(quoteEl.textContent);
+
           var hadPreviousSelection = !!currentlySelectedKey;
           var isSameSelection = (currentlySelectedKey === key);
 
@@ -1284,11 +1341,14 @@
 
           sentence.classList.add('is-selected');
           currentlySelectedSentence = sentence;
+
           subpart.classList.add('is-subpart-selected');
           currentlySelectedSubpart = subpart;
+
           currentlySelectedKey = key;
           currentlySelectedFallbackKey = baseKey;
           currentlySelectedQuoteText = quoteText;
+
           updateLexiconButtonState();
           updateCitationLabel(key, hadPreviousSelection);
           renderSentenceExplanation(key, quoteText, baseKey);
@@ -1297,6 +1357,7 @@
     }
   })();
 
+  // ---- Sentence Selection ----
   (function initSentenceSelection() {
     var sentences = qsa('.sentence');
     if (!sentences || !sentences.length) return;
@@ -1305,6 +1366,7 @@
       (function (sentence) {
         sentence.addEventListener('click', function (e) {
           if (closestSafe(e && e.target, '.subpart')) return;
+
           clearActiveTooltip();
 
           var wasSelected = sentence.classList.contains('is-selected');
@@ -1331,9 +1393,11 @@
           var key = sentence.dataset.lexiconKey;
           var text = sentence.dataset.sentenceText || sentence.textContent.replace(/^[0-9]+\.\s*/, '');
           text = normalizeWhitespace(text);
+
           currentlySelectedKey = key;
           currentlySelectedQuoteText = text;
           currentlySelectedFallbackKey = null;
+
           updateLexiconButtonState();
           updateCitationLabel(key, hadPreviousSelection);
           renderSentenceExplanation(key, text);
@@ -1342,6 +1406,7 @@
     }
   })();
 
+  // ---- Mobile seal drag -> drag panel open/close (bottom sheet) ----
   (function initMobileSealDrag() {
     if (!lexiconToggle || !panel || !lexOverlay) return;
     if (!window.PointerEvent) return;
@@ -1349,23 +1414,32 @@
     var dragging = false;
     var moved = false;
     var pointerId = null;
+
     var startY = 0;
     var lastY = 0;
     var lastT = 0;
     var velocity = 0;
+
     var startWasOpen = false;
+
     var closedY = 0;
     var currentY = 0;
+
     var MOVE_SLOP = 6;
+
     var OPEN_VELOCITY = -0.85;
     var OPEN_RATIO = 0.38;
+
     var CLOSE_VELOCITY = 0.85;
     var CLOSE_RATIO = 0.28;
+
     var SNAP_MS = getCssVarNumber('--lexicon-snap-duration', 420);
     var SNAP_EASE = getCssVarString('--lexicon-snap-ease', 'cubic-bezier(0.22, 0.61, 0.36, 1)');
 
     window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
+
     var dragIntentPulsed = false;
+
     var sealSettlingTimer = null;
 
     function clearSealSettling() {
@@ -1382,6 +1456,7 @@
       }
 
       lexiconToggle.classList.add('is-seal-settling');
+
       sealSettlingTimer = window.setTimeout(function () {
         try { clearSealSettling(); } catch (err) {}
         sealSettlingTimer = null;
@@ -1396,14 +1471,21 @@
       return getCssVarNumber('--lexicon-panel-closed-peek', 0);
     }
 
-    function getFooterHeightLocal() {
-      return getFooterHeightSafe();
+    function getFooterHeightSafe() {
+      if (navFooter) {
+        var r = navFooter.getBoundingClientRect();
+        if (r && r.height) return r.height;
+      }
+
+      var val = getCssVar('--footer-total-height');
+      var n = parseFloat(val);
+      return isFinite(n) ? n : 0;
     }
 
     function computeClosedY() {
       var rect = panel.getBoundingClientRect();
       var panelH = (rect && rect.height) ? rect.height : 1;
-      var footerH = getFooterHeightLocal();
+      var footerH = getFooterHeightSafe();
       var peek = getClosedPeek();
       closedY = Math.max(1, panelH - (footerH + peek));
     }
@@ -1419,20 +1501,18 @@
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
-      var seatNudge = getCssVarNumber('--seal-seat-nudge-closed', 0);
+      var seatNudge = getSeatNudge();
       var openDrop = (isIOS ? 1 : 0) * progress;
       var sealOffset = (y - closedY) + (seatNudge * progress) + openDrop;
 
       setSealDragOffset(sealOffset, sealDragging);
 
-      if (lexOverlay) {
-        lexOverlay.style.opacity = String(progress);
-        lexOverlay.style.pointerEvents = progress > 0 ? '' : 'none';
-      }
+      if (lexOverlay) lexOverlay.style.opacity = String(progress);
     }
 
     function applyOpenStateFromDrag() {
       clearSealTapClasses();
+      clearSealSettling();
 
       if (!panel.classList.contains('is-open')) {
         panel.classList.add('is-open');
@@ -1442,13 +1522,14 @@
         lexiconToggle.setAttribute('aria-expanded', 'true');
         lockBodyScroll();
         setLexiconGlyph();
+
         noteOpen();
       } else {
         bringSelfToFront();
       }
 
-      root.classList.add('lexicon-scroll-lock');
-      setSealToOpenPosition();
+      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
+      raf(function () { setSealToOpenPosition(); });
     }
 
     function applyClosedStateFromDrag() {
@@ -1462,82 +1543,74 @@
         lexiconToggle.setAttribute('aria-expanded', 'false');
         unlockBodyScroll();
         setLexiconGlyph();
+
         noteClose();
         clearStackZIndex();
       }
-
       clearSealDragOffset();
     }
 
     function snap() {
-      var shouldOpen;
-      var closed = Math.max(1, Math.round(closedY || 1));
+      var shouldOpen = false;
 
       if (startWasOpen) {
         var dragDown = currentY - 0;
-        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > closed * CLOSE_RATIO);
+        shouldOpen = !(velocity > CLOSE_VELOCITY || dragDown > closedY * CLOSE_RATIO);
       } else {
-        var dragUp = closed - currentY;
-        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > closed * OPEN_RATIO);
+        var dragUp = closedY - currentY;
+        shouldOpen = (velocity < OPEN_VELOCITY || dragUp > closedY * OPEN_RATIO);
       }
 
       panel.style.transition = 'transform ' + SNAP_MS + 'ms ' + SNAP_EASE;
       if (lexOverlay) lexOverlay.style.transition = 'opacity ' + SNAP_MS + 'ms ' + SNAP_EASE;
 
-      if (!shouldOpen) {
-        markSealSettling(SNAP_MS);
-        currentY = closed;
-        panel.style.transform = 'translateY(' + closed + 'px)';
-        if (lexOverlay) {
-          lexOverlay.style.opacity = '0';
-          lexOverlay.style.pointerEvents = 'none';
-        }
-        applyClosedStateFromDrag();
-      } else {
-        panel.style.transform = 'translateY(0px)';
-        if (lexOverlay) {
-          lexOverlay.style.opacity = '1';
-          lexOverlay.style.pointerEvents = '';
-        }
+      if (shouldOpen) {
+        clearSealSettling();
+        setPanelY(0, false);
         applyOpenStateFromDrag();
+      } else {
+        markSealSettling(SNAP_MS);
+        currentY = closedY;
+        panel.style.transform = 'translateY(' + closedY + 'px)';
+        if (lexOverlay) lexOverlay.style.opacity = '0';
+        applyClosedStateFromDrag();
       }
 
       setTimeout(function () {
+        panel.style.transform = '';
         panel.style.transition = '';
-        if (lexOverlay) lexOverlay.style.transition = '';
-        if (!shouldOpen) {
-          panel.style.transform = '';
-          if (lexOverlay) lexOverlay.style.opacity = '';
-        } else {
-          if (lexOverlay) lexOverlay.style.opacity = '';
+        if (lexOverlay) {
+          lexOverlay.style.opacity = '';
+          lexOverlay.style.transition = '';
         }
       }, SNAP_MS + 20);
     }
 
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (!isMobileSheet()) return;
+
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
       clearSealSettling();
+
       dragging = true;
       moved = false;
       dragIntentPulsed = false;
       pointerId = e.pointerId;
+
       startY = e.clientY;
       lastY = startY;
       lastT = Date.now();
       velocity = 0;
+
       startWasOpen = panel.classList.contains('is-open');
 
       computeClosedY();
-
       currentY = startWasOpen ? 0 : closedY;
 
       panel.classList.add('is-dragging');
       panel.style.transition = 'none';
       if (lexOverlay) lexOverlay.style.transition = 'none';
-      panel.style.transform = 'translateY(' + currentY + 'px)';
-      setPanelY(currentY, true);
 
       lexiconToggle.setPointerCapture(e.pointerId);
       e.preventDefault();
@@ -1550,6 +1623,7 @@
       if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
         moved = true;
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
+
         if (!dragIntentPulsed) {
           dragIntentPulsed = true;
           triggerSealNudge();
@@ -1560,6 +1634,7 @@
       var now = Date.now();
       var dt = now - lastT;
       if (dt > 0) velocity = (e.clientY - lastY) / dt;
+
       lastY = e.clientY;
       lastT = now;
 
