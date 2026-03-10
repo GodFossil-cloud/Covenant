@@ -1,0 +1,17 @@
+/* Lexicon tap flash timing overrides (head-loaded)
+   Purpose: ensure the glyph flash completes before the Lexicon sheet finishes closing.
+   Scope: footer dock only.
+*/
+
+:root{
+  /* Close flash should end early (sheet snap duration is typically 420ms). */
+  --lexicon-glyph-tap-aura-close-duration:260ms;
+}
+
+@media (prefers-reduced-motion: no-preference){
+  /* Tap-to-close: shorten the aura pulse so it ends before the panel finishes closing. */
+  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{
+    animation:lexiconTapAuraPulse var(--lexicon-glyph-tap-aura-close-duration, 260ms)
+      cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+}
