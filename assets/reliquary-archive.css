@@ -67,7 +67,12 @@ html.reliquary-open .reliquary-archive{display:block}
   padding:.62rem .72rem .74rem;
 }
 
+/* ---------------------------
+   Archive item — base
+   --------------------------- */
+
 .reliquary-archive-item{
+  position:relative;
   width:100%;
   text-align:left;
   border-radius:10px;
@@ -81,12 +86,47 @@ html.reliquary-open .reliquary-archive{display:block}
   line-height:1.55;
 
   cursor:pointer;
+  overflow:hidden;
+
+  transition:
+    border-color 220ms cubic-bezier(0.22,0.61,0.36,1),
+    background   220ms cubic-bezier(0.22,0.61,0.36,1);
 }
 
-.reliquary-archive-item:hover{border-color:rgba(201,169,97,.22);background:rgba(0,0,0,.26)}
+.reliquary-archive-item:hover{
+  border-color:rgba(201,169,97,.22);
+  background:rgba(0,0,0,.26);
+}
 
 .reliquary-archive-item:focus,
-.reliquary-archive-item:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(201,169,97,.22)}
+.reliquary-archive-item:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px rgba(201,169,97,.22);
+}
+
+/* Expanded state — outer item */
+.reliquary-archive-item.is-expanded{
+  border-color:rgba(201,169,97,.32);
+  background:rgba(0,0,0,.30);
+  cursor:default;
+}
+
+/* ---------------------------
+   Normal face
+   --------------------------- */
+
+.reliquary-archive-item-face{
+  transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1);
+  opacity:1;
+  pointer-events:auto;
+}
+
+.reliquary-archive-item.is-expanded .reliquary-archive-item-face{
+  opacity:0;
+  pointer-events:none;
+  user-select:none;
+  visibility:hidden;
+}
 
 .reliquary-archive-item .reliquary-archive-item-meta{
   display:flex;
@@ -102,6 +142,80 @@ html.reliquary-open .reliquary-archive{display:block}
 }
 
 .reliquary-archive-item .reliquary-archive-item-key{white-space:nowrap;flex:0 0 auto}
+
+/* ---------------------------
+   Menu face (expanded)
+   --------------------------- */
+
+.reliquary-archive-item-menu{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:1.4rem;
+
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1);
+}
+
+.reliquary-archive-item.is-expanded .reliquary-archive-item-menu{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* Action buttons inside the menu */
+.reliquary-archive-item-action{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:2.6rem;
+  height:2.6rem;
+  border-radius:50%;
+  border:1px solid rgba(201,169,97,.22);
+  background:rgba(0,0,0,.28);
+
+  font-size:1.15rem;
+  line-height:1;
+  color:var(--reliquary-ink, rgba(245,236,214,.92));
+
+  cursor:pointer;
+  transition:
+    background     180ms cubic-bezier(0.22,0.61,0.36,1),
+    border-color   180ms cubic-bezier(0.22,0.61,0.36,1),
+    color          180ms cubic-bezier(0.22,0.61,0.36,1),
+    transform      180ms cubic-bezier(0.22,0.61,0.36,1);
+}
+
+.reliquary-archive-item-action:hover{
+  background:rgba(201,169,97,.14);
+  border-color:rgba(201,169,97,.38);
+  color:rgba(245,236,214,1);
+  transform:scale(1.08);
+}
+
+.reliquary-archive-item-action:focus,
+.reliquary-archive-item-action:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px rgba(201,169,97,.32);
+}
+
+.reliquary-archive-item-action:active{
+  transform:scale(0.96);
+}
+
+/* Remove button — warm ember tint on hover */
+.reliquary-archive-item-remove:hover{
+  background:rgba(176,86,74,.18);
+  border-color:rgba(224,124,104,.38);
+  color:rgba(224,164,144,1);
+}
+
+/* ---------------------------
+   Misc
+   --------------------------- */
 
 .reliquary-archive-empty{
   font-family:'Cormorant Garamond',serif;
