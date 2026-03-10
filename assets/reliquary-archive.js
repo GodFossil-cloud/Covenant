@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.7 (footer glyph marks; Lexicon save toggle; no flash text) */
+/*! Covenant Reliquary Archive v0.4.8 (two-step passage interaction: expand → navigate/remove) */
 (function () {
   'use strict';
 
@@ -363,6 +363,102 @@
     }
   }
 
+  // ---------------------------
+  // Active item state (two-step interaction)
+  // ---------------------------
+
+  var activeItemHref = null;
+  var activeItemKey = null;
+
+  function setActiveItem(href, key) {
+    activeItemHref = href || null;
+    activeItemKey = key || null;
+  }
+
+  function clearActiveItem() {
+    activeItemHref = null;
+    activeItemKey = null;
+  }
+
+  function isActiveItem(href, key) {
+    return activeItemHref === href && activeItemKey === key;
+  }
+
+  function collapseActiveItem() {
+    if (!activeItemHref || !activeItemKey) return;
+
+    var host = byId('reliquaryArchive');
+    if (!host) { clearActiveItem(); return; }
+
+    var safeHref = activeItemHref.replace(/"/g, '');
+    var safeKey  = activeItemKey.replace(/"/g, '');
+    var btn = host.querySelector(
+      '.reliquary-archive-item.is-expanded'
+      + '[data-reliquary-href="' + safeHref + '"]'
+      + '[data-reliquary-key="'  + safeKey  + '"]'
+    );
+
+    if (btn) btn.classList.remove('is-expanded');
+    clearActiveItem();
+  }
+
+  // ---------------------------
+  // Render
+  // ---------------------------
+
+  function buildItemHtml(href, it) {
+    var label = truncate(it.quote || '', 180);
+    if (!label) label = '\u00a7 ' + it.lexiconKey;
+
+    var expanded = isActiveItem(href, it.lexiconKey);
+    var expandedClass = expanded ? ' is-expanded' : '';
+
+    var html = [];
+    html.push(
+      '<button'
+        + ' type="button"'
+        + ' class="reliquary-archive-item' + expandedClass + '"'
+        + ' data-reliquary-action="select"'
+        + ' data-reliquary-href="' + escapeHtml(href) + '"'
+        + ' data-reliquary-key="'  + escapeHtml(it.lexiconKey) + '"'
+        + '>'
+    );
+
+    // Normal face
+    html.push('<div class="reliquary-archive-item-face">');
+    html.push('<div class="reliquary-archive-item-text">' + escapeHtml(label) + '</div>');
+    html.push('<div class="reliquary-archive-item-meta">');
+    html.push('<span class="reliquary-archive-item-key">\u00a7 ' + escapeHtml(it.lexiconKey) + '</span>');
+    html.push('<span class="reliquary-archive-item-page">' + escapeHtml(getPageTitleByHref(href)) + '</span>');
+    html.push('</div>');
+    html.push('</div>');
+
+    // Expanded menu face
+    html.push('<div class="reliquary-archive-item-menu" aria-hidden="' + (expanded ? 'false' : 'true') + '">');
+    html.push(
+      '<button type="button"'
+        + ' class="reliquary-archive-item-action reliquary-archive-item-navigate"'
+        + ' data-reliquary-action="navigate"'
+        + ' data-reliquary-href="' + escapeHtml(href) + '"'
+        + ' data-reliquary-key="'  + escapeHtml(it.lexiconKey) + '"'
+        + ' aria-label="Navigate to passage"'
+        + '>\u279c</button>'
+    );
+    html.push(
+      '<button type="button"'
+        + ' class="reliquary-archive-item-action reliquary-archive-item-remove"'
+        + ' data-reliquary-action="remove"'
+        + ' data-reliquary-href="' + escapeHtml(href) + '"'
+        + ' data-reliquary-key="'  + escapeHtml(it.lexiconKey) + '"'
+        + ' aria-label="Remove passage"'
+        + '>\u2716\ufe0e</button>'
+    );
+    html.push('</div>');
+
+    html.push('</button>');
+    return html.join('');
+  }
+
   function renderArchive() {
     var host = byId('reliquaryArchive');
     var placeholder = byId('reliquaryPlaceholder');
@@ -409,25 +505,7 @@
         html.push('<div class="reliquary-archive-empty">No saved passages.</div>');
       } else {
         for (var j = 0; j < list.length; j++) {
-          var it = list[j];
-          var label = truncate(it.quote || '', 180);
-          if (!label) label = '§ ' + it.lexiconKey;
-
-          html.push(
-            '<button'
-              + ' type="button"'
-              + ' class="reliquary-archive-item"'
-              + ' data-reliquary-action="open"'
-              + ' data-reliquary-href="' + escapeHtml(href) + '"'
-              + ' data-reliquary-key="' + escapeHtml(it.lexiconKey) + '"'
-              + '>'
-          );
-          html.push('<div class="reliquary-archive-item-text">' + escapeHtml(label) + '</div>');
-          html.push('<div class="reliquary-archive-item-meta">');
-          html.push('<span class="reliquary-archive-item-key">§ ' + escapeHtml(it.lexiconKey) + '</span>');
-          html.push('<span class="reliquary-archive-item-page">' + escapeHtml(getPageTitleByHref(href)) + '</span>');
-          html.push('</div>');
-          html.push('</button>');
+          html.push(buildItemHtml(href, list[j]));
         }
       }
 
@@ -449,17 +527,12 @@
     setTimeout(fitTitlesToSingleLine, 0);
   }
 
-  function handleArchiveClick(e) {
-    var btn = closestSafe(e.target, '[data-reliquary-action="open"]');
-    if (!btn) return;
+  // ---------------------------
+  // Navigation helpers
+  // ---------------------------
 
-    e.preventDefault();
-    e.stopPropagation();
-
-    var href = String(btn.getAttribute('data-reliquary-href') || '').trim();
-    var key = String(btn.getAttribute('data-reliquary-key') || '').trim();
-    if (!href || !key) return;
-
+  function doNavigate(href, key) {
+    clearActiveItem();
     var here = getCurrentFile();
     var target = basename(href);
 
@@ -474,6 +547,78 @@
     window.location.href = href;
   }
 
+  function doRemove(href, key) {
+    clearActiveItem();
+    removeItem(href, key);
+    renderArchive();
+  }
+
+  // ---------------------------
+  // Click handling
+  // ---------------------------
+
+  function handleArchiveClick(e) {
+    var action = null;
+    var actionEl = null;
+
+    // Walk up from target looking for a data-reliquary-action
+    var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target ? e.target.parentElement : null);
+    while (el) {
+      var a = el.getAttribute && el.getAttribute('data-reliquary-action');
+      if (a) { action = a; actionEl = el; break; }
+      // Stop at the archive host boundary
+      if (el.id === 'reliquaryArchive') break;
+      el = el.parentElement;
+    }
+
+    if (!action || !actionEl) {
+      // Clicked somewhere in the archive but not on an action — collapse any active item
+      collapseActiveItem();
+      return;
+    }
+
+    var href = String(actionEl.getAttribute('data-reliquary-href') || '').trim();
+    var key  = String(actionEl.getAttribute('data-reliquary-key')  || '').trim();
+
+    if (action === 'navigate') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!href || !key) return;
+      doNavigate(href, key);
+      return;
+    }
+
+    if (action === 'remove') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!href || !key) return;
+      doRemove(href, key);
+      return;
+    }
+
+    if (action === 'select') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!href || !key) return;
+
+      // If this item is already expanded, collapse it
+      if (isActiveItem(href, key)) {
+        collapseActiveItem();
+        return;
+      }
+
+      // Collapse any previously expanded item first
+      collapseActiveItem();
+
+      // Expand the tapped item
+      setActiveItem(href, key);
+      actionEl.classList.add('is-expanded');
+      var menu = actionEl.querySelector('.reliquary-archive-item-menu');
+      if (menu) menu.setAttribute('aria-hidden', 'false');
+      return;
+    }
+  }
+
   function wireArchiveList() {
     var host = byId('reliquaryArchive');
     if (host && host.addEventListener) {
@@ -485,7 +630,11 @@
     function sync() {
       var isOpen = root.classList.contains('reliquary-open');
       if (isOpen && !lastOpen) {
+        clearActiveItem();
         renderArchive();
+      }
+      if (!isOpen && lastOpen) {
+        clearActiveItem();
       }
       lastOpen = isOpen;
     }
@@ -495,6 +644,10 @@
       obs.observe(root, { attributes: true, attributeFilter: ['class'] });
     } catch (err0) {}
   }
+
+  // ---------------------------
+  // Citation bookmark toggle (unchanged)
+  // ---------------------------
 
   function getCurrentSelection() {
     try {
@@ -606,7 +759,7 @@
       var labelText = isSaved ? 'Remove from Reliquary' : 'Save to Reliquary';
 
       if (lexLabel) lexLabel.textContent = labelText;
-      if (lexGlyph) lexGlyph.textContent = isSaved ? '✦' : '✧';
+      if (lexGlyph) lexGlyph.textContent = isSaved ? '\u2726' : '\u2727';
 
       try { lexBtn.setAttribute('aria-label', labelText); } catch (e5) {}
       try { lexBtn.setAttribute('aria-pressed', isSaved ? 'true' : 'false'); } catch (e6) {}
@@ -712,7 +865,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.7',
+    version: '0.4.8',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
