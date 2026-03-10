@@ -80,17 +80,13 @@ Rules:
 
 Core runtime files:
 - `assets/covenant.css` — sacred visual system (CSS guard applies).
-- `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges, including citation label styling beneath the Lexicon seal; also consolidates retired Lexicon quiet-open seal/glyph overrides, locked-state feedback, glyph state-color rules, tap-flash timing rules, dock-tab tap-flash rules, the Lexicon header/quote-box alignment rules that had lived in separate micro-files, and the Lexicon stack-cover motion rules, to reduce asset sprawl).
+- `assets/footer-overrides.css` — head-loaded footer geometry + tone overrides (Lexicon flat-top seal + small contrast nudges, including citation label styling beneath the Lexicon seal).
 - `assets/journey.js` — journey definitions + helpers.
-- `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules. Note: on mobile, tap-open rests at content height (capped around ~60% of available height above the dock, measured by how much of the sheet is truly obscured by the dock on iOS Safari), the seal drag can still open the sheet fully, and the `.lexicon-panel-body` is explicitly height-sized to the *visible* sheet area above the dock (so scrolling works even while half-open); the `.lexicon-panel-body` also receives a dock-aware bottom inset so the last lines are reachable by scroll.
+- `assets/lexicon.js` — Lexicon interactions + selection highlights + page standardization rules.
 - `assets/toc.js` + `assets/toc.css` — ToC modal veil (staged selection + deliberate confirm) + progress gating.
 - `assets/reliquary.js` + `assets/reliquary.css` — Reliquary modal veil + dock-tab interactions (Mirror tab). Note: Reliquary uses internal header tabs (Reliquary/Glossary); the drag surface is the full header (slop-based so taps still click), and the legacy drag-pill is hidden.
 - `assets/reliquary-archive.js` + `assets/reliquary-archive.css` — Reliquary “saved passages” archive + cross-page replay into Lexicon.
 - `assets/ui-stack.js` — coordinator layer used for “close panels before navigation” behavior (dock Prev/Next and ToC staged navigation).
-
-UI-stack notes (Lexicon mid-rest spacer):
-- The mid-rest spacer calculation must use layout-viewport coordinates on iOS Safari; use `visualViewport.offsetTop + visualViewport.height` (not `visualViewport.height` alone) so it matches `getBoundingClientRect()` `top` values.
-- Also resync the mid-rest spacer on `visualViewport` resize/scroll and orientation changes; iOS Safari URL bar changes can otherwise truncate behind-the-sheet scrolling.
 
 Glossary plumbing notes:
 - Journey pages pass a captured glossary HTML block into `_includes/lexicon-panel.html` via `glossary=...`.
@@ -103,7 +99,6 @@ Notes:
 - Note (ToC dock tab): ToC tab rides with the ToC sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (Reliquary dock tab): Mirror tab rides with the Reliquary sheet during drag + snap (Lexicon-style carry offsets). The dock socket remains visible beneath.
 - Note (ToC positioning): Avoid `Math.floor()` when computing the mobile sheet height from `visualViewport.height`; it can create a 1px top gap.
-- Note (ToC positioning / iOS): If a hairline gap remains at the very top on devices with no safe-area inset, allow a -1px overscan on the panel `top` in `assets/toc.js` (do not reduce a nonzero safe-area inset).
 - Note (footer bookends spacing): `--toc-tab-gap` in `assets/footer-overrides.css` controls ToC/Mirror distance from the center; mobile bookend nudges live in `assets/footer-overrides.css` and the `navFooterCritical` fallback in `_includes/nav-footer.html`.
 - Note (footer bookends vertical seat): `--dock-tab-raise` is defined in `assets/toc.css`; the mobile first-paint fallback may override it on `#navFooter` in `assets/footer-overrides.css`.
 - Note (Reliquary drag shell): During drag-open, the panel/overlay may be visible before `html.reliquary-open` is set; Lexicon dimming is handled via `html.reliquary-dragging` (active drag) and `html.reliquary-open` (committed open) so a cancelled drag re-enables immediately on release.
@@ -117,7 +112,7 @@ Notes:
 - Note (iOS dock tabs): Avoid 1px `:active` press-jumps on `#tocToggle`/`#mirrorToggle`; it reads like the iOS Safari dock hop.
 - Note (iOS ToC taps): The ToC seal uses a larger touch slop than the handle-drag region so taps stay taps on iOS Safari.
 - Note (ToC/Reliquary handle taps): The handle-drag regions should prime on pointerdown and only begin drag after slop, so a tap cannot desync the dock tab from its panel.
-- Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes and Lexicon `data-lexicon-y` so lock timing can follow motion classes and Lexicon mid-rest.
+- Note (ui-stack / shared scroll lock): ToC scroll-lock should engage only when ToC is *committed open* (`html.toc-open`, not during `toc-opening`/`toc-closing`/drag shells); ui-stack auto-syncs from DOM class changes so lock timing can follow motion classes.
 - Note (scroll lock): Prefer overflow-only locking (`overflow:hidden` + `height:100%` on `html.<lock>`, and `overflow:hidden` + `height:100%` on `html.<lock> body`); avoid `position:fixed` body-locking, which can trigger iOS Safari compositor hop and awkward scroll restoration.
 - (Removed) `assets/tab-weld.js` — legacy tab/panel welding loop (old system); do not reintroduce tab-weld assets or includes unless explicitly requested.
 - Note (ToC deliberate confirm): Deliberate confirm lives on the staged/pending ToC entry itself (click again on the pending item). There is no dedicated header confirm button.
@@ -202,7 +197,7 @@ Docs:
   - Verify staged selection + deliberate confirm.
   - Verify progress gating still blocks locked direct-access.
   - Verify locked direct URL visits do not advance `covenant_progress` or unlock intervening pages.
-  - Verify ToC header band visually blends with the ToC tab face.
+  - Verify ToC header band visually blends with the ToC tab face (no jarring seam).
   - Verify ToC panel reaches the top cleanly on mobile (no ~1px gap).
   - Verify the binding overlay stops at the gate divider center line.
   - Note: ToC will attempt to close the Reliquary by clicking `#mirrorToggle` when opening; if Reliquary wiring changes, re-test this interaction.
