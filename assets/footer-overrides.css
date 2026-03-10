@@ -4,6 +4,13 @@
    This file consolidates:
    - nav-footer-flat-top.css (Lexicon seal flat-top geometry + socket/cradle shaping)
    - footer-tones.css (small contrast/ink nudges for dock tabs + Lexicon seal)
+   - lexicon-glyph-state-colors.css
+   - lexicon-glyph-quiet-open.css
+   - lexicon-tap-flash-timing.css
+   - lexicon-seal-clean.css
+   - lexicon-header-left.css
+   - lexicon-stack-cover.css
+   - lexicon-locked-black-feedback.css
 
    Scope:
    - Geometry rules target #navFooter to avoid bleed.
@@ -989,4 +996,545 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
 #navFooter #lexiconToggle[aria-expanded="true"]::after{
   background-color:transparent !important;
   background-image:none !important;
+}
+
+
+/* =================================================================
+   § Lexicon glyph state colors (Palette B)
+   Absorbed from: lexicon-glyph-state-colors.css
+   ================================================================= */
+
+:root{
+  /* Reuse the footer's brass-gold token so we stay aligned with the dock palette. */
+  --lexicon-glyph-open-color-b: var(--lexicon-glyph-open-color, rgba(242,220,154,0.98));
+
+  --lexicon-glyph-selected-color-b: #F2DC9A; /* antique leaf */
+  --lexicon-glyph-selected-open-color-b: #D8C07A; /* embedded leaf-inlay (open + selected) */
+
+  /* Stronger at-rest distinction for selected+closed.
+     (footer-overrides.css consumes this token for the selected+closed text-shadow.) */
+  --lexicon-glyph-selected-quiet-halo-shadow:
+    0 1px 0 rgba(0,0,0,0.94),
+    0 -1px 0 rgba(255,255,255,0.14),
+    0 0 12px rgba(255,255,255,0.12),
+    0 0 22px rgba(242,220,154,0.34),
+    0 0 46px rgba(242,220,154,0.16);
+}
+
+/* Fully open, no selection */
+#navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+#navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
+  color: var(--lexicon-glyph-open-color-b) !important;
+}
+
+/* Selected, panel closed */
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
+  color: var(--lexicon-glyph-selected-color-b) !important;
+}
+
+/* Selected + fully open */
+#navFooter #lexiconToggle[aria-expanded="true"].has-selection:not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+#navFooter #lexiconToggle[aria-expanded="true"].has-selection:not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
+  color: var(--lexicon-glyph-selected-open-color-b) !important;
+}
+
+
+/* =================================================================
+   § Lexicon glyph: quiet-open (open state glow suppression)
+   Absorbed from: lexicon-glyph-quiet-open.css
+   ================================================================= */
+
+/* Fully OPEN: hard-kill glow on the glyph (any selection state). */
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+/* Fully OPEN: also prevent any button-level text glow / filter tint from reading as a seal glow. */
+#navFooter #lexiconToggle[aria-expanded="true"],
+#navFooter #lexiconToggle[aria-expanded="true"]:hover,
+#navFooter #lexiconToggle[aria-expanded="true"]:focus,
+#navFooter #lexiconToggle[aria-expanded="true"]:focus-visible,
+html.lexicon-scroll-lock #navFooter #lexiconToggle,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:hover,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:focus-visible{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+/* Fully OPEN: silence any tap aura/pulse layers while open.
+   Exception: tap opening/closing must still be allowed to flash. */
+#navFooter #lexiconToggle[aria-expanded="true"]:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before,
+html.lexicon-scroll-lock #navFooter #lexiconToggle:not(.is-tap-opening):not(.is-tap-closing) .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
+}
+
+
+/* =================================================================
+   § Lexicon tap-flash timing
+   Absorbed from: lexicon-tap-flash-timing.css
+   ================================================================= */
+
+:root{
+  /* Close flash should end early (sheet snap duration is typically 420ms). */
+  --lexicon-glyph-tap-aura-close-duration:260ms;
+}
+
+@media (prefers-reduced-motion: no-preference){
+  /* Tap-to-close: shorten the aura pulse so it ends before the panel finishes closing. */
+  #navFooter #lexiconToggle.is-tap-closing .lexicon-glyph::before{
+    animation:lexiconTapAuraPulse var(--lexicon-glyph-tap-aura-close-duration, 260ms)
+      cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+  }
+}
+
+
+/* =================================================================
+   § Lexicon seal: selection surface clean
+   Absorbed from: lexicon-seal-clean.css
+   ================================================================= */
+
+/* Selected + CLOSED (resting and interaction): always a clean face (no fleck stack). */
+#navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-seal-dragging)::after{
+  background-color:var(--lexicon-seal-face, #08090b) !important;
+  background-image:none !important;
+}
+
+/* Fully OPEN: keep seal backdrop welded/empty even while pressed.
+   (Prevents touch/coarse-pointer :active rules from reintroducing flecks.) */
+html.lexicon-scroll-lock #navFooter #lexiconToggle:active::after,
+html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
+#navFooter #lexiconToggle[aria-expanded="true"]:active::after,
+#navFooter #lexiconToggle.has-selection[aria-expanded="true"]:active::after{
+  background-color:transparent !important;
+  background-image:none !important;
+}
+
+/* Mobile rim guard: prevent a 1px gold/yellow underside hairline from flashing during drag-release
+   (when .is-seal-dragging has just dropped but the seal is still settling back into the cradle). */
+@media (hover: none), (pointer: coarse){
+  #navFooter #lexiconToggle.nav-btn.center:not([aria-expanded="true"]):not(.is-seal-dragging):not(.is-nudging)::before{
+    border-color:rgba(0,0,0,0.72) !important;
+    box-shadow:
+      inset 0 0 18px rgba(0,0,0,0.84),
+      inset 0 1px 0 rgba(255,255,255,0.05),
+      0 10px 18px -14px rgba(0,0,0,0.90),
+      0 14px 10px -12px rgba(0,0,0,0.92) !important;
+  }
+}
+
+
+/* =================================================================
+   § Lexicon panel header: left-flow layout + quote box geometry
+   Absorbed from: lexicon-header-left.css
+   ================================================================= */
+
+/* Make the header a left-flow row; keep the close button pinned right. */
+.lexicon-panel-header{
+  justify-content:flex-start;
+  gap:12px;
+}
+
+/* Pin the close button to the far right without forcing the title block to center. */
+.lexicon-panel-close{
+  margin-left:auto;
+}
+
+/* Ensure the title stack itself is left-aligned. */
+#lexiconHeaderText{
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+#lexiconHeaderText .lexicon-panel-title,
+#lexiconHeaderText .lexicon-panel-mode{
+  text-align:left;
+}
+
+/* Mobile: don't reserve space for an empty seal slot; tighten the gap so the header text sits closer left. */
+@media (max-width: 520px){
+  #lexiconSealSlot:empty{
+    display:none !important;
+  }
+
+  .lexicon-panel-header{
+    gap:8px !important;
+  }
+}
+
+/* Quote box geometry:
+   - Left edge flush with the Lexicon panel body surface (cancel body left padding).
+   - Right edge aligned to the main text column (body padding-right + p padding-right).
+   Note: assets/covenant.css defines:
+   - `.lexicon-panel-body { padding-left: 20px; padding-right: 12px; }`
+   - `.lexicon-panel-body p { padding-right: 20px; }`
+   So the paragraph text column ends 12px + 20px = 32px from the right edge. */
+.lexicon-panel-body .lexicon-sentence-quote{
+  box-sizing:border-box !important;
+  width:auto !important;
+  max-width:100% !important;
+
+  /* Extend into the panel-body padding so the box edge hits the body surface. */
+  margin-left:-20px !important;
+
+  /* Match paragraph text right edge (12px body padding-right + 20px paragraph padding-right). */
+  margin-right:20px !important;
+
+  /* Deep opaque red backdrop for selected passage quote. */
+  background:#3b0c10 !important;
+
+  /* Slightly brighter text for contrast on deep red. */
+  color:#d0c0c0 !important;
+
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+
+/* =================================================================
+   § Lexicon stack cover (ui-stack cover motion)
+   Absorbed from: lexicon-stack-cover.css
+   ================================================================= */
+
+:root{
+  --lexicon-cover-fade-ms:220ms;
+  --lexicon-cover-ease:cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Dedicated cover travel duration (slightly slower than snap so it reads deliberate). */
+  --lexicon-cover-transform-ms:560ms;
+
+  /* Viewport unit token used (only if needed). */
+  --lexicon-cover-vh:100vh;
+
+  /* Non-footer fallback motion when covered (desktop/header re-parent case). */
+  --lexicon-cover-fallback-y:-22px;
+
+  /* Footer covered motion target: slide just out of the top frame.
+     Keep it *barely gone* so it doesn't feel like it rockets upward. */
+  --lexicon-cover-out-y:calc(-1 * (var(--seal-size, 56px) + 14px));
+
+  /* Let the travel be seen before we fade out. */
+  --lexicon-cover-opacity-delay:130ms;
+}
+
+@supports (height: 100dvh){
+  :root{ --lexicon-cover-vh:100dvh; }
+}
+
+/* Base: keep a cover offset var we can animate via transform. */
+html body #lexiconToggle{
+  opacity:1;
+  --lexicon-stack-cover-y:0px;
+
+  will-change:transform, opacity;
+
+  /* IMPORTANT: beat the max-width:600px #lexiconToggle transition in assets/covenant.css. */
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease,
+    filter 0.2s ease,
+
+    /* Seal motion channel (drag/snap + cover). */
+    transform var(--lexicon-snap-duration, 420ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+
+    /* Cover fade. */
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+}
+
+/* Covered: fade, disable interaction. */
+html body #lexiconToggle.is-ui-stack-covered{
+  /* Backstop: keep below ui-stack surfaces (Z_BASE=1500). */
+  z-index:1490 !important;
+
+  opacity:0 !important;
+  pointer-events:none !important;
+  filter:none !important;
+}
+
+/* Default (non-footer) covered motion: small retract upward.
+   We only force a transform when covered to avoid fighting lexicon.js drag math. */
+html body #lexiconToggle.is-ui-stack-covered{
+  --lexicon-stack-cover-y:var(--lexicon-cover-fallback-y);
+
+  /* Delay opacity on cover so the motion reads before the fade. */
+  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
+
+  -webkit-transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
+  transform:translate3d(0, var(--lexicon-stack-cover-y, 0px), 0) !important;
+}
+
+/* Footer case (mobile): keep the existing drag math from assets/footer-overrides.css and
+   add a small extra upward offset so the seal slides just out of the top of the viewport. */
+html body #navFooter #lexiconToggle.is-ui-stack-covered{
+  --lexicon-stack-cover-y:var(--lexicon-cover-out-y);
+
+  transition:
+    transform var(--lexicon-cover-transform-ms, 560ms) var(--lexicon-snap-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+    opacity var(--lexicon-cover-fade-ms) var(--lexicon-cover-ease)
+    !important;
+
+  transition-delay:0ms, var(--lexicon-cover-opacity-delay) !important;
+
+  -webkit-transform:translate3d(
+    0,
+    calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px),
+    0
+  ) !important;
+
+  transform:translate3d(
+    0,
+    calc(0 * var(--seal-rise) + var(--seal-drag-y, 0px) + var(--lexicon-stack-cover-y, 0px) - var(--seal-seat-nudge) + 0px),
+    0
+  ) !important;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html body #lexiconToggle{transition:none !important}
+
+  html body #lexiconToggle.is-ui-stack-covered{
+    opacity:0 !important;
+    -webkit-transform:translate3d(0, 0, 0) !important;
+    transform:translate3d(0, 0, 0) !important;
+  }
+}
+
+
+/* =================================================================
+   § Lexicon locked: black feedback (reliquary gate + locked at-rest)
+   Absorbed from: lexicon-locked-black-feedback.css
+   ================================================================= */
+
+/* -------------------------------------------------
+   Reliquary gate compatibility
+   ------------------------------------------------- */
+
+/* reliquary.css dims #lexiconToggle via opacity during reliquary-open/closing/dragging.
+   That can visually overshoot (too dark) and then "snap back" once ui-stack applies the locked
+   attributes/classes. Keep the seal opaque and let the embedded styling carry the lock message. */
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]),
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]),
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]),
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]){
+  opacity:1 !important;
+  filter:none !important;
+  cursor:not-allowed;
+}
+
+/* Near-black etched plate (faint hatch + hard seat). */
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"])::after,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"])::after{
+  background-color:#000 !important;
+  background-image:
+    radial-gradient(120% 150% at 50% 10%, rgba(255,255,255,0.03), rgba(255,255,255,0) 46%),
+    radial-gradient(140% 190% at 50% 118%, rgba(0,0,0,1), rgba(0,0,0,0) 64%),
+    repeating-linear-gradient(135deg,
+      rgba(255,255,255,0.030) 0 1px,
+      rgba(0,0,0,0) 1px 7px
+    ),
+    linear-gradient(to bottom, rgba(255,255,255,0.018), rgba(0,0,0,0.76));
+
+  box-shadow:
+    inset 0 0 32px rgba(0,0,0,0.98),
+    inset 0 -28px 28px rgba(0,0,0,0.94),
+    inset 0 12px 16px -18px rgba(255,255,255,0.06);
+}
+
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"])::before,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"])::before{
+  border-color:rgba(0,0,0,0.96) !important;
+  box-shadow:
+    inset 0 0 40px rgba(0,0,0,1),
+    inset 0 3px 22px rgba(0,0,0,0.92),
+    inset 0 1px 0 rgba(255,255,255,0.015),
+    inset 0 -1px 0 rgba(255,255,255,0.010),
+    0 0 0 1px rgba(0,0,0,0.96) !important;
+}
+
+/* Glyph: near-black etch (visible via bevel, not via color). */
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{
+  color:rgba(0,0,0,0.88) !important;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.060),
+    0 -1px 0 rgba(0,0,0,0.98) !important;
+  filter:none !important;
+}
+
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph{
+  transform:translateY(1px);
+}
+
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
+}
+
+/* Selection while locked: allow only a whisper of leaf, still etched. */
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph,
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner,
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).has-selection .lexicon-glyph-mid-inner{
+  color:rgba(0,0,0,0.72) !important;
+  text-shadow:
+    0 1px 0 rgba(242,220,154,0.06),
+    0 -1px 0 rgba(0,0,0,0.98) !important;
+}
+
+
+/* -------------------------------------------------
+   Locked at-rest: embedded, opaque, "locked".
+   ------------------------------------------------- */
+
+#navFooter #lexiconToggle.is-lexicon-locked,
+#navFooter #lexiconToggle[data-lexicon-locked="true"],
+#navFooter #lexiconToggle[aria-disabled="true"]{
+  opacity:1 !important;
+  filter:none !important;
+  cursor:not-allowed;
+}
+
+/* Near-black etched plate (faint hatch + hard seat). */
+#navFooter #lexiconToggle.is-lexicon-locked::after,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]::after,
+#navFooter #lexiconToggle[aria-disabled="true"]::after{
+  background-color:#000 !important;
+
+  background-image:
+    radial-gradient(120% 150% at 50% 10%, rgba(255,255,255,0.03), rgba(255,255,255,0) 46%),
+    radial-gradient(140% 190% at 50% 118%, rgba(0,0,0,1), rgba(0,0,0,0) 64%),
+    repeating-linear-gradient(135deg,
+      rgba(255,255,255,0.030) 0 1px,
+      rgba(0,0,0,0) 1px 7px
+    ),
+    linear-gradient(to bottom, rgba(255,255,255,0.018), rgba(0,0,0,0.76));
+
+  box-shadow:
+    inset 0 0 32px rgba(0,0,0,0.98),
+    inset 0 -28px 28px rgba(0,0,0,0.94),
+    inset 0 12px 16px -18px rgba(255,255,255,0.06);
+
+  transition:background-color 160ms linear;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]::before,
+#navFooter #lexiconToggle[aria-disabled="true"]::before{
+  border-color:rgba(0,0,0,0.96) !important;
+  box-shadow:
+    inset 0 0 40px rgba(0,0,0,1),
+    inset 0 3px 22px rgba(0,0,0,0.92),
+    inset 0 1px 0 rgba(255,255,255,0.015),
+    inset 0 -1px 0 rgba(255,255,255,0.010),
+    0 0 0 1px rgba(0,0,0,0.96) !important;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph-mid-inner{
+  color:rgba(0,0,0,0.88) !important;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.060),
+    0 -1px 0 rgba(0,0,0,0.98) !important;
+  filter:none !important;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph{transform:translateY(1px)}
+
+#navFooter #lexiconToggle.is-lexicon-locked .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph::before,
+#navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked.has-selection .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked.has-selection .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].has-selection .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].has-selection .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph,
+#navFooter #lexiconToggle[aria-disabled="true"].has-selection .lexicon-glyph-mid-inner{
+  color:rgba(0,0,0,0.72) !important;
+  text-shadow:
+    0 1px 0 rgba(242,220,154,0.06),
+    0 -1px 0 rgba(0,0,0,0.98) !important;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked:hover,
+#navFooter #lexiconToggle.is-lexicon-locked:focus-visible,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:hover,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:focus-visible,
+#navFooter #lexiconToggle[aria-disabled="true"]:hover,
+#navFooter #lexiconToggle[aria-disabled="true"]:focus-visible{
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+
+/* -------------------------------------------------
+   Locked intent feedback: black (not gold).
+   ------------------------------------------------- */
+
+#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph,
+#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph-mid-inner{
+  color:#000 !important;
+  text-shadow:none !important;
+  filter:none !important;
+}
+
+#navFooter #lexiconToggle.is-lexicon-locked:active .lexicon-glyph::before,
+#navFooter #lexiconToggle.is-lexicon-locked.is-nudging .lexicon-glyph::before,
+#navFooter #lexiconToggle.is-lexicon-locked.is-pulsing .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"]:active .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-nudging .lexicon-glyph::before,
+#navFooter #lexiconToggle[data-lexicon-locked="true"].is-pulsing .lexicon-glyph::before{
+  opacity:0 !important;
+  animation:none !important;
+  filter:none !important;
 }
