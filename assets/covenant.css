@@ -847,11 +847,6 @@ body.is-exiting #blackFadeOverlay {
                 inset 0 0 32px 8px rgba(201, 169, 97, 0.1);
 }
 
-.nav-btn.center.has-selection::after {
-    background-color: var(--obsidian-0, #050506);
-    transform: translateY(0px);
-}
-
 /* Focus-visible "inspection ring" */
 .nav-btn:focus-visible:not(:disabled) {
     outline: none;
@@ -1135,12 +1130,45 @@ body.is-exiting #blackFadeOverlay {
     margin: 0;
 }
 
+/* Title wrapper: flex column so key sits above sub */
 .lexicon-panel-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
+    letter-spacing: 0.06em;
+    color: var(--glyph-gold);
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    /* No font-size here; child spans carry their own sizes */
+}
+
+/* "Article Ⅰ" — small, muted label */
+.lexicon-title-key {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a6e3a;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+/* "Of Sacred Silence" — dominant gold subtitle */
+.lexicon-title-sub {
+    font-size: 1.15rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--glyph-gold);
+    line-height: 1.25;
+    font-weight: 600;
+}
+
+/* Single-line title (non-article pages: no key, just sub) */
+.lexicon-title-sub--single {
+    font-size: 1.15rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--glyph-gold);
+    line-height: 1.25;
+    font-weight: 600;
 }
 
 .lexicon-panel-mode {
@@ -2038,7 +2066,7 @@ body {
       0 14px 10px -12px rgba(0,0,0,0.92);
   }
 
-  /* Slight surface “lift” while pressed (keeps the fleck texture). */
+  /* Slight surface "lift" while pressed (keeps the fleck texture). */
   #lexiconToggle.has-selection:active::after {
     background-color: var(--obsidian-2);
   }
@@ -2067,7 +2095,7 @@ body {
   }
 
   #lexiconToggle.has-selection.is-seal-dragging::after {
-    /* Warmed obsidian base so the whole medallion reads “heated”. */
+    /* Warmed obsidian base so the whole medallion reads "heated". */
     background-color: #2a1c0d;
 
     /* Gold-leaf veil, layered on top of the existing flecks/specular stack. */
