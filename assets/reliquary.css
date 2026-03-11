@@ -29,7 +29,7 @@
   --glossary-accent:rgba(80,8,12,1);
   --glossary-accent-mid:rgba(138,111,68,1);
   --glossary-accent-soft:rgba(198,158,88,1);
-  --glossary-accent-dim:rgba(198,158,88,1);
+  --glossary-accent-dim:rgba(51,51,51,1);
 
   --reliquary-notch-w:var(--dock-tab-width-visual, var(--dock-tab-width, var(--nav-pill-width,56px)));
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);
