@@ -299,8 +299,8 @@ html.reliquary-open .reliquary-archive{display:block}
 .lexicon-sentence-quote.is-saveable {
   cursor: pointer;
   border-left-color: rgba(201,169,97,.52);
-  background: #1e1e22;
-  color: #c0c0c0;
+  background: #1e1e22 !important;
+  color: #c0c0c0 !important;
 
   transition:
     border-left-color 260ms cubic-bezier(0.22,0.61,0.36,1),
@@ -320,8 +320,8 @@ html.reliquary-open .reliquary-archive{display:block}
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saveable:hover {
     border-left-color: rgba(201,169,97,.82);
-    background: #222228;
-    color: #d4d4d4;
+    background: #222228 !important;
+    color: #d4d4d4 !important;
     animation: none;
   }
 }
@@ -341,8 +341,8 @@ html.reliquary-open .reliquary-archive{display:block}
 .lexicon-sentence-quote.is-saved {
   cursor: pointer;
   border-left-color: rgba(201,169,97,.90);
-  background: #1a1210;
-  color: rgba(245,230,210,.92);
+  background: #1a1210 !important;
+  color: rgba(245,230,210,.92) !important;
 
   transition:
     border-left-color 300ms cubic-bezier(0.22,0.61,0.36,1),
@@ -355,8 +355,8 @@ html.reliquary-open .reliquary-archive{display:block}
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saved:hover {
     border-left-color: rgba(201,169,97,1);
-    background: #1f1511;
-    color: rgba(245,236,214,1);
+    background: #1f1511 !important;
+    color: rgba(245,236,214,1) !important;
   }
 }
 
