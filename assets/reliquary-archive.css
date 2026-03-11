@@ -287,25 +287,12 @@ html.reliquary-open .reliquary-archive{display:block}
 
 /* ---------------------------
    Quote box: interactive save surface
-   (replaces the old lexicon-reliquary-save button)
    --------------------------- */
 
-/* Saveable pulse: border-left brightens and dims — no outlines */
+/* Saveable pulse: border-left breathes */
 @keyframes quoteBoxSaveablePulse {
   0%, 100% { border-left-color: rgba(201,169,97,.42); }
   50%       { border-left-color: rgba(201,169,97,.72); }
-}
-
-/* Consecration flash: background warms briefly on save */
-@keyframes quoteBoxConsecrateFlash {
-  0%   { background: #2a2214; }
-  100% { background: #1e1c16; }
-}
-
-/* Unsave flash: background cools to ember then settles */
-@keyframes quoteBoxRemoveFlash {
-  0%   { background: #241410; }
-  100% { background: #1e1e22; }
 }
 
 /* Base saveable state */
@@ -339,7 +326,7 @@ html.reliquary-open .reliquary-archive{display:block}
   }
 }
 
-/* Focus (keyboard): minimal themed ring — only on focus-visible, never on click */
+/* Focus (keyboard) */
 .lexicon-sentence-quote.is-saveable:focus-visible,
 .lexicon-sentence-quote.is-saved:focus-visible {
   outline: 2px solid rgba(201,169,97,.38);
@@ -347,37 +334,30 @@ html.reliquary-open .reliquary-archive{display:block}
   animation: none;
 }
 
-/* Saved state: consecrated */
+/* ---------------------------
+   Saved state: consecrated
+   Deep red-black bg, warm parchment text, full gold border-left
+   --------------------------- */
 .lexicon-sentence-quote.is-saved {
   cursor: pointer;
-  border-left-color: rgba(201,169,97,.80);
-  background: #1e1c16;
-  color: rgba(245,236,214,.88);
+  border-left-color: rgba(201,169,97,.90);
+  background: #1a1210;
+  color: rgba(245,230,210,.92);
 
   transition:
-    border-left-color 260ms cubic-bezier(0.22,0.61,0.36,1),
-    background        260ms cubic-bezier(0.22,0.61,0.36,1),
-    color             260ms cubic-bezier(0.22,0.61,0.36,1);
+    border-left-color 300ms cubic-bezier(0.22,0.61,0.36,1),
+    background        300ms cubic-bezier(0.22,0.61,0.36,1),
+    color             300ms cubic-bezier(0.22,0.61,0.36,1);
 
   animation: none;
 }
 
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saved:hover {
-    border-left-color: rgba(201,169,97,.96);
-    background: #231f14;
-    color: rgba(245,236,214,.96);
+    border-left-color: rgba(201,169,97,1);
+    background: #1f1511;
+    color: rgba(245,236,214,1);
   }
-}
-
-/* Consecration flash */
-.lexicon-sentence-quote.is-consecrating {
-  animation: quoteBoxConsecrateFlash 380ms cubic-bezier(0.22,0.61,0.36,1) forwards !important;
-}
-
-/* Remove flash */
-.lexicon-sentence-quote.is-removing {
-  animation: quoteBoxRemoveFlash 340ms cubic-bezier(0.22,0.61,0.36,1) forwards !important;
 }
 
 /* Hint label — "Tap to save" / "Saved ✦" */
@@ -398,7 +378,7 @@ html.reliquary-open .reliquary-archive{display:block}
 }
 
 .lexicon-sentence-quote.is-saved::after {
-  color: rgba(201,169,97,.86);
+  color: rgba(201,169,97,.90);
 }
 
 /* Citation label bookmark toggle (beneath Lexicon seal). */
