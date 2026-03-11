@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.18 (Reliquary/Glossary distinct color schemes) */
+/*! Covenant Reliquary Panel Styles v0.3.19 (tab pills targeted by ID) */
 
 /* -------------------------------------------------
    Variables
@@ -190,30 +190,22 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 }
 
 /* Reliquary tab — selected: warm brass */
-#reliquaryPanel .reliquary-tab[data-tab="reliquary"][aria-selected="true"]{
+#reliquaryTabArchive[aria-selected="true"]{
   border-color:rgba(201,169,97,.56);
   background:rgba(255,255,255,.06);
   color:rgba(245,236,214,.92);
 }
 
 /* Glossary tab — selected: cool silver-violet */
-#reliquaryPanel .reliquary-tab[data-tab="glossary"][aria-selected="true"]{
+#reliquaryTabGlossary[aria-selected="true"]{
   border-color:var(--glossary-accent-mid);
   background:rgba(185,180,220,.07);
   color:rgba(245,236,214,.92);
 }
 
-/* Fallback for selected tab without data-tab attribute (legacy) */
-#reliquaryPanel .reliquary-tab[aria-selected="true"]:not([data-tab]){
-  border-color:rgba(201,169,97,.56);
-  background:rgba(255,255,255,.06);
-  color:rgba(245,236,214,.92);
-}
-
 /* Focus rings */
-#reliquaryPanel .reliquary-tab[data-tab="reliquary"]:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
-#reliquaryPanel .reliquary-tab[data-tab="glossary"]:focus-visible{outline:2px solid var(--glossary-accent-soft);outline-offset:3px}
-#reliquaryPanel .reliquary-tab:not([data-tab]):focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
+#reliquaryTabArchive:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
+#reliquaryTabGlossary:focus-visible{outline:2px solid var(--glossary-accent-soft);outline-offset:3px}
 
 /* -------------------------------------------------
    Glossary view
