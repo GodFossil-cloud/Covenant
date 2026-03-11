@@ -592,7 +592,23 @@
   }
 
   var flashTimer = null;
-
+  
+    // Mirror tab consecration pulse on save / remove.
+  var pulseTabTimer = null;
+  function pulseMirrorTab(type) {
+    var btn = byId('mirrorToggle');
+    if (!btn) return;
+    if (pulseTabTimer) { window.clearTimeout(pulseTabTimer); pulseTabTimer = null; }
+    btn.classList.remove('is-reliquary-pulse-save', 'is-reliquary-pulse-remove');
+    void btn.offsetWidth; // force reflow so re-triggering works
+    var cls = (type === 'save') ? 'is-reliquary-pulse-save' : 'is-reliquary-pulse-remove';
+    btn.classList.add(cls);
+    pulseTabTimer = window.setTimeout(function () {
+      try { btn.classList.remove('is-reliquary-pulse-save', 'is-reliquary-pulse-remove'); } catch (err) {}
+      pulseTabTimer = null;
+    }, type === 'save' ? 560 : 440);
+  }
+  
   function flashQuoteBox(type) {
     var box = getQuoteBox();
     if (!box) return;
@@ -638,9 +654,11 @@
       if (wasSaved) {
         removeItem(currentSel.href, currentSel.lexiconKey);
         flashQuoteBox('remove');
+        pulseMirrorTab('remove');
       } else {
         addItem(currentSel);
         flashQuoteBox('save');
+        pulseMirrorTab('save');
       }
 
       var nowSaved = !wasSaved;
@@ -775,6 +793,7 @@
       else addItem(sel);
       var type = wasSaved ? 'remove' : 'save';
       flashLabel(type);
+      pulseMirrorTab(type);
       // Keep quote box in sync when toggled from the citation label.
       if (typeof window.COVENANT_LEXICON_UPDATE_QUOTE_BOX === 'function') {
         window.COVENANT_LEXICON_UPDATE_QUOTE_BOX(!wasSaved);
