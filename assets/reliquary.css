@@ -26,10 +26,10 @@
   --reliquary-brass:rgba(201,169,97,1);
 
   /* Glossary accent — cool silver-violet */
-  --glossary-accent:rgba(178,132,220,1);
-  --glossary-accent-mid:rgba(148,102,190,1);
-  --glossary-accent-soft:rgba(118,78,158,1);
-  --glossary-accent-dim:rgba(72,44,98,1);
+  --glossary-accent:rgba(172,118,210,1);
+  --glossary-accent-mid:rgba(198,158,88,1);
+  --glossary-accent-soft:rgba(126,162,148,1);
+  --glossary-accent-dim:rgba(68,58,82,1);
 
   --reliquary-notch-w:var(--dock-tab-width-visual, var(--dock-tab-width, var(--nav-pill-width,56px)));
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);
@@ -117,7 +117,7 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 /* Panel — Glossary world (cool indigo-black + silver-violet glow) */
 .reliquary-panel:has(#reliquaryViewGlossary:not([hidden])){
   background:
-    radial-gradient(900px 520px at 50% 0%, rgba(120,80,180,.09), rgba(120,80,180,0) 55%),
+    radial-gradient(900px 520px at 50% 0%, rgba(120,72,172,.10), rgba(120,72,172,0) 55%),
     linear-gradient(to bottom, var(--glossary-obsidian-2) 0%, var(--glossary-obsidian-1) 55%, var(--glossary-obsidian-0) 100%);
 }
 
