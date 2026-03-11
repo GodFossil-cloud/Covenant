@@ -1,4 +1,4 @@
-/*! Covenant Lexicon UI v0.3.14 (header title = page; subtitle = citation or Overview) */
+/*! Covenant Lexicon UI v0.3.14 (header title = key+sub split; subtitle = citation or Overview) */
 (function () {
   'use strict';
 
