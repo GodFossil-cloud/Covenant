@@ -1109,7 +1109,7 @@
     var saved = !!isSaved;
     box.classList.toggle('is-saved',    saved);
     box.classList.toggle('is-saveable', !saved);
-    box.setAttribute('data-quote-hint', saved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save');
+    box.setAttribute('data-quote-hint', saved ? 'Saved \u2726' : 'Tap to save');
     box.setAttribute('aria-label',      saved ? 'Remove from Reliquary' : 'Save to Reliquary');
     box.setAttribute('aria-pressed',    saved ? 'true' : 'false');
   }
