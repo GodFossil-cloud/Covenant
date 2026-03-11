@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.15 (quote box = interactive save surface) */
+/*! Covenant Lexicon UI v0.3.16 (is-saved/is-saveable mutually exclusive) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.15';
+  window.COVENANT_LEXICON_VERSION = '0.3.16';
 
   var doc = document;
   var root = doc.documentElement;
@@ -664,7 +664,6 @@
   var titleEl = byId('lexiconPanelTitle');
   var modeEl  = byId('lexiconModeLabel') || qs('.lexicon-panel-mode');
 
-  // Resolve a human-readable page name for the title slot.
   function resolvePageTitle() {
     if (pageConfig.modeLabel) return String(pageConfig.modeLabel);
 
@@ -686,47 +685,43 @@
   var PAGE_TITLE = resolvePageTitle();
 
   function setHeaderTitle() {
-  if (!titleEl) return;
+    if (!titleEl) return;
 
-  var raw = PAGE_TITLE;
-  var colonIdx = raw.indexOf(':');
+    var raw = PAGE_TITLE;
+    var colonIdx = raw.indexOf(':');
 
-  if (colonIdx !== -1) {
-    var keyPart = raw.slice(0, colonIdx).trim();
-    var subPart = raw.slice(colonIdx + 1).trim();
+    if (colonIdx !== -1) {
+      var keyPart = raw.slice(0, colonIdx).trim();
+      var subPart = raw.slice(colonIdx + 1).trim();
 
-    while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
+      while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
 
-    var keySpan = doc.createElement('span');
-    keySpan.className = 'lexicon-title-key';
-    keySpan.textContent = keyPart;
+      var keySpan = doc.createElement('span');
+      keySpan.className = 'lexicon-title-key';
+      keySpan.textContent = keyPart;
 
-    var subSpan = doc.createElement('span');
-    subSpan.className = 'lexicon-title-sub';
-    subSpan.textContent = subPart;
+      var subSpan = doc.createElement('span');
+      subSpan.className = 'lexicon-title-sub';
+      subSpan.textContent = subPart;
 
-    titleEl.appendChild(keySpan);
-    titleEl.appendChild(subSpan);
-  } else {
-    while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
+      titleEl.appendChild(keySpan);
+      titleEl.appendChild(subSpan);
+    } else {
+      while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
 
-    var singleSpan = doc.createElement('span');
-    singleSpan.className = 'lexicon-title-sub lexicon-title-sub--single';
-    singleSpan.textContent = raw;
+      var singleSpan = doc.createElement('span');
+      singleSpan.className = 'lexicon-title-sub lexicon-title-sub--single';
+      singleSpan.textContent = raw;
 
-    titleEl.appendChild(singleSpan);
+      titleEl.appendChild(singleSpan);
+    }
   }
-}
 
   function setHeaderSubtitle(text) {
     if (!modeEl) return;
     modeEl.textContent = text || '';
   }
 
-  // ----------------------------------------
-  // Mode label (kept for back-compat; now just
-  // delegates to setHeaderTitle on init)
-  // ----------------------------------------
   function setModeLabel() {
     setHeaderTitle();
     setHeaderSubtitle('Overview');
@@ -971,7 +966,6 @@
     citationText.textContent = newText;
     lastCitationText = newText;
 
-    // CRITICAL: Expose raw lexicon key so Reliquary save logic can reliably read it.
     if (citationText.dataset) {
       citationText.dataset.lexiconKey = sentenceKey || '';
     } else {
@@ -983,7 +977,6 @@
       citationText.classList.add(animClass);
     }
 
-    // Mirror into the Lexicon panel header subtitle.
     setHeaderSubtitle(sentenceKey ? newText : 'Overview');
   }
 
@@ -1102,24 +1095,35 @@
 
   // ----------------------------------------
   // Quote box save affordance
-  // reliquary-archive.js calls window.COVENANT_LEXICON_UPDATE_QUOTE_BOX
-  // to set / clear the is-saveable / is-saved classes after each toggle.
   // ----------------------------------------
+
   function getQuoteBox() {
     return dynamicContent ? dynamicContent.querySelector('.lexicon-sentence-quote') : null;
   }
 
+  // Called by reliquary-archive.js after each save/remove toggle.
+  // Keeps is-saved and is-saveable mutually exclusive.
   function updateQuoteBoxSaveState(isSaved) {
     var box = getQuoteBox();
     if (!box) return;
-    box.classList.toggle('is-saved', !!isSaved);
-    box.setAttribute('data-quote-hint', isSaved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save');
-    box.setAttribute('aria-label', isSaved ? 'Remove from Reliquary' : 'Save to Reliquary');
-    box.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
+    var saved = !!isSaved;
+    box.classList.toggle('is-saved',    saved);
+    box.classList.toggle('is-saveable', !saved);
+    box.setAttribute('data-quote-hint', saved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save');
+    box.setAttribute('aria-label',      saved ? 'Remove from Reliquary' : 'Save to Reliquary');
+    box.setAttribute('aria-pressed',    saved ? 'true' : 'false');
   }
 
-  // Exposed so reliquary-archive.js can call it after save/remove.
   window.COVENANT_LEXICON_UPDATE_QUOTE_BOX = updateQuoteBoxSaveState;
+
+  // Helper: ask the Reliquary store whether a passage is already saved.
+  function isPassageSaved(href, key) {
+    try {
+      var ra = window.COVENANT_RELIQUARY_ARCHIVE;
+      if (ra && typeof ra.hasItem === 'function') return ra.hasItem(href, key);
+    } catch (err) {}
+    return false;
+  }
 
   function renderSentenceExplanation(key, sentenceText, fallbackKey) {
     if (!dynamicContent) return;
@@ -1132,21 +1136,29 @@
 
     var safeSentence = escapeHtml(sentenceText);
 
+    // Determine saved state before injecting HTML so the correct class is set from the start.
+    var currentFile = (window.location && window.location.pathname)
+      ? window.location.pathname.split('/').pop() || ''
+      : '';
+    var alreadySaved = isPassageSaved(currentFile, key);
+    var saveClass  = alreadySaved ? 'is-saved'    : 'is-saveable';
+    var saveHint   = alreadySaved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save';
+    var saveLabel  = alreadySaved ? 'Remove from Reliquary' : 'Save to Reliquary';
+    var savePressed = alreadySaved ? 'true' : 'false';
+
     dynamicContent.style.opacity = '0';
     setTimeout(function () {
       dynamicContent.innerHTML =
-        '<div class="lexicon-sentence-quote is-saveable"' +
+        '<div class="lexicon-sentence-quote ' + saveClass + '"' +
         ' role="button"' +
         ' tabindex="0"' +
-        ' aria-label="Save to Reliquary"' +
-        ' aria-pressed="false"' +
-        ' data-quote-hint="Tap to save"' +
-        '>&ldquo;' + safeSentence + '&rdquo;</div>' +
+        ' aria-label="' + saveLabel + '"' +
+        ' aria-pressed="' + savePressed + '"' +
+        ' data-quote-hint="' + saveHint + '"' +
+        '>\u201c' + safeSentence + '\u201d</div>' +
         '<p>' + explanation + '</p>';
       dynamicContent.style.opacity = '1';
 
-      // Let reliquary-archive.js know a fresh quote box exists so it can
-      // set the correct initial saved state and wire the click handler.
       try {
         if (typeof window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX === 'function') {
           window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX();
@@ -1364,7 +1376,7 @@
     }
   })();
 
-  // ---- Subpart Selection (\u24b6/\u24b7/\u24b8...) ----
+  // ---- Subpart Selection ----
   (function initSubpartSelection() {
     var subparts = qsa('.sentence.has-subparts .subpart');
     if (!subparts || !subparts.length) return;
@@ -1473,7 +1485,7 @@
     }
   })();
 
-  // ---- Mobile seal drag -> drag panel open/close (bottom sheet) ----
+  // ---- Mobile seal drag (bottom sheet) ----
   (function initMobileSealDrag() {
     if (!lexiconToggle || !panel || !lexOverlay) return;
     if (!window.PointerEvent) return;
@@ -1530,9 +1542,7 @@
       }, Math.max(0, ms || 0) + 80);
     }
 
-    function isMobileSheet() {
-      return isBottomSheetMode();
-    }
+    function isMobileSheet() { return isBottomSheetMode(); }
 
     function getClosedPeek() {
       return getCssVarNumber('--lexicon-panel-closed-peek', 0);
