@@ -21,22 +21,15 @@
       <div class="lexicon-panel-title" id="lexiconPanelTitle">Lexicon</div>
     </div>
 
-    <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">×</button>
+    <button class="lexicon-panel-close" type="button" aria-label="Close Lexicon panel">&times;</button>
   </div>
 
   <div class="lexicon-panel-body">
     <div id="lexiconDynamicContent"></div>
-
-    <div class="lexicon-reliquary-save" id="lexiconReliquarySave" hidden>
-      <button class="lexicon-reliquary-save-btn" id="lexiconReliquarySaveBtn" type="button" disabled aria-label="Save current passage to Reliquary" aria-pressed="false">
-        <span class="lexicon-reliquary-save-glyph" aria-hidden="true">✧</span>
-        <span class="lexicon-reliquary-save-label">Save to Reliquary</span>
-      </button>
-    </div>
   </div>
 </div>
 
-<!-- Glossary HTML is stashed here (page passes include.glossary) so the Reliquary panel can render it in its Glossary tab. -->
+<!-- Glossary HTML is stashed here (page passes include.glossary) via Jekyll so the Reliquary panel can render it in its Glossary tab. -->
 <div id="covenantGlossaryStash" hidden>
   {{ include.glossary | default: "" }}
 </div>
