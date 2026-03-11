@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.12 (tap-close seal offset cleared before settling) */
+/*! Covenant Lexicon UI v0.3.13 (header title = page; subtitle = citation or Overview) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.12';
+  window.COVENANT_LEXICON_VERSION = '0.3.13';
 
   var doc = document;
   var root = doc.documentElement;
@@ -65,10 +65,6 @@
   // ----------------------------------------------------------
   // Covenant Journey Header Standardization
   // ----------------------------------------------------------
-  // Policy: Invocation → XII use the compact header style.
-  // This ensures Foundation/Declaration and Articles II–X conform
-  // without having to hand-edit each page during migration.
-  // (rituals.html is intentionally excluded.)
   function applyJourneyCompactHeader() {
     var ids = {
       invocation: true,
@@ -170,7 +166,6 @@
         id: UI_STACK_ID,
         priority: 40,
 
-        // Participate in shared scroll lock.
         useSharedScrollLock: true,
         allowScrollSelector: '#lexiconPanel .lexicon-panel-body',
 
@@ -229,9 +224,6 @@
   }
 
   function clearStackZIndex() {
-    // Important: when Lexicon closes back to its "peek" state, it must not keep the
-    // last UI-stack inline z-index from its open state; otherwise it can sit above
-    // ToC/Reliquary tabs after an open→close cycle.
     try { if (lexOverlay) lexOverlay.style.zIndex = ''; } catch (err1) {}
     try { if (panel) panel.style.zIndex = ''; } catch (err2) {}
   }
@@ -280,18 +272,14 @@
     sealDockParent = lexiconToggle.parentNode;
     if (!sealDockParent) return;
 
-    // Maintain footer geometry: leave a placeholder where the seal lived.
     try {
       sealDockParent.insertBefore(ensureSealDockPlaceholder(), lexiconToggle);
     } catch (err0) {}
 
-    // Move the live button into the panel header.
     try {
       ensureHeaderLayout();
       sealSlot.appendChild(lexiconToggle);
 
-      // When the seal is in the header, it must behave as a static emblem,
-      // not as the mobile bottom-sheet drag handle.
       lexiconToggle.classList.add('is-seal-in-header');
       lexiconToggle.style.transform = 'none';
       lexiconToggle.style.margin = '0 8px 0 0';
@@ -325,8 +313,6 @@
 
   var sealClearTimer = null;
 
-  // Policy: On mobile bottom-sheet, the panel should ONLY be dragged down from the footer seal.
-  // The top drag handle is kept in markup for compatibility, but disabled here.
   var ENABLE_PANEL_HANDLE_DRAG = false;
   if (dragRegion && !ENABLE_PANEL_HANDLE_DRAG) {
     dragRegion.style.display = 'none';
@@ -334,7 +320,7 @@
     dragRegion.setAttribute('aria-hidden', 'true');
   }
 
-  var loadingGlyph = (pageConfig && pageConfig.loadingGlyph) || window.COVENANT_LOADING_GLYPH || '֎';
+  var loadingGlyph = (pageConfig && pageConfig.loadingGlyph) || window.COVENANT_LOADING_GLYPH || '\u05CE';
   if (loadingIcon) {
     var currentGlyph = (loadingIcon.textContent || '').trim();
     if (currentGlyph !== loadingGlyph) loadingIcon.textContent = loadingGlyph;
@@ -408,20 +394,15 @@
 
     if (root.classList.contains('lexicon-scroll-lock')) return;
 
-    // Round to avoid feeding fractional scroll offsets back into layout.
     scrollLockY = Math.round(window.scrollY || window.pageYOffset || 0);
 
-    // Keep footer dock sovereign above the Lexicon overlay/panel.
     root.classList.add('lexicon-scroll-lock');
 
-    // iOS Safari: toggling overflow hidden can nudge visualViewport and tick fixed docks by ~1px.
-    // Local lock on iOS uses only the touchmove blocker.
     if (isIOS) {
       enableIOSTouchScrollLock();
       return;
     }
 
-    // Overflow-only scroll lock (non-iOS).
     try { doc.body.style.overflow = 'hidden'; } catch (err) {}
   }
 
@@ -501,17 +482,13 @@
   var sealPulseTimer = null;
   var sealNudgeTimer = null;
 
-  // Tap/open glow management (distinct from drag).
   var sealTapClassTimer = null;
 
   function getNavPulseDurationMs() {
-    // CSS var is typically like "520ms"; parseFloat yields 520.
     return getCssVarNumber('--nav-pulse-duration', 520);
   }
 
   function getLexiconTapMotionMs() {
-    // Align tap open/close class lifetime to the same snap timing used by the bottom sheet.
-    // (Keeps intent glow present through the open/close transition even after aria flips.)
     return getCssVarNumber('--lexicon-snap-duration', 420);
   }
 
@@ -587,14 +564,14 @@
   // ----------------------------------------
   var lexiconHovering = false;
   var LEX_GLYPHS = {
-    default: '𖤓',
-    defaultHover: '𖤓',
-    selected: '𖤓',
-    selectedHover: '𖤓',
-    openSummary: '𖤓',
-    openSelected: '𖤓',
-    openHover: '𖤓',
-    mobileOpen: '𖤓'
+    default: '\uD81A\uDF13',
+    defaultHover: '\uD81A\uDF13',
+    selected: '\uD81A\uDF13',
+    selectedHover: '\uD81A\uDF13',
+    openSummary: '\uD81A\uDF13',
+    openSelected: '\uD81A\uDF13',
+    openHover: '\uD81A\uDF13',
+    mobileOpen: '\uD81A\uDF13'
   };
 
   function setGlyphMarkup(target, glyph) {
@@ -608,7 +585,7 @@
 
     while (target.firstChild) target.removeChild(target.firstChild);
 
-    var star = '𖤓';
+    var star = '\uD81A\uDF13';
     var idx = glyph.indexOf(star);
     if (idx === -1) {
       target.textContent = glyph;
@@ -636,8 +613,6 @@
   function setLexiconGlyph() {
     if (!lexiconToggle || !panel) return;
 
-    // If the dock provides explicit idle/active glyph spans, treat that markup as the source of truth.
-    // (Prevents JS from overwriting the curated symbols in _includes/nav-footer.html.)
     var explicitIdle = qs('.lexicon-glyph--idle', lexiconToggle);
     var explicitActive = qs('.lexicon-glyph--active', lexiconToggle);
     if (explicitIdle && explicitActive) return;
@@ -684,12 +659,51 @@
   }
 
   // ----------------------------------------
-  // Mode label
+  // Panel header: title + mode/subtitle
   // ----------------------------------------
-  var modeEl = byId('lexiconModeLabel') || qs('.lexicon-panel-mode');
+  var titleEl = byId('lexiconPanelTitle');
+  var modeEl  = byId('lexiconModeLabel') || qs('.lexicon-panel-mode');
+
+  // Resolve a human-readable page name for the title slot.
+  function resolvePageTitle() {
+    if (pageConfig.modeLabel) return String(pageConfig.modeLabel);
+
+    var id = pageConfig.pageId || '';
+    if (id === 'invocation')  return 'Invocation';
+    if (id === 'foundation')  return 'Foundation';
+    if (id === 'declaration') return 'Declaration';
+
+    var UNICODE_ROMAN = {
+      'I':'\u2160','II':'\u2161','III':'\u2162','IV':'\u2163','V':'\u2164',
+      'VI':'\u2165','VII':'\u2166','VIII':'\u2167','IX':'\u2168','X':'\u2169',
+      'XI':'\u216A','XII':'\u216B'
+    };
+    if (id && UNICODE_ROMAN[id]) return 'Article\u00a0' + UNICODE_ROMAN[id];
+
+    return 'Lexicon';
+  }
+
+  var PAGE_TITLE = resolvePageTitle();
+
+  function setHeaderTitle() {
+    if (!titleEl) return;
+    titleEl.textContent = PAGE_TITLE;
+  }
+
+  function setHeaderSubtitle(text) {
+    if (!modeEl) return;
+    modeEl.textContent = text || '';
+  }
+
+  // ----------------------------------------
+  // Mode label (kept for back-compat; now just
+  // delegates to setHeaderTitle on init)
+  // ----------------------------------------
   function setModeLabel() {
-    if (!pageConfig.modeLabel || !modeEl) return;
-    modeEl.textContent = pageConfig.modeLabel;
+    // Title slot now holds the page name; modeLabel is no longer needed as a
+    // separate init step, but we keep this function so nothing else breaks.
+    setHeaderTitle();
+    setHeaderSubtitle('Overview');
   }
 
   // ----------------------------------------
@@ -823,11 +837,11 @@
   var lastCitationText = '';
 
   var UNICODE_ROMAN_ARTICLE = {
-    'I': 'Ⅰ', 'II': 'Ⅱ', 'III': 'Ⅲ', 'IV': 'Ⅳ', 'V': 'Ⅴ', 'VI': 'Ⅵ',
-    'VII': 'Ⅶ', 'VIII': 'Ⅷ', 'IX': 'Ⅸ', 'X': 'Ⅹ', 'XI': 'Ⅺ', 'XII': 'Ⅻ'
+    'I': '\u2160', 'II': '\u2161', 'III': '\u2162', 'IV': '\u2163', 'V': '\u2164', 'VI': '\u2165',
+    'VII': '\u2166', 'VIII': '\u2167', 'IX': '\u2168', 'X': '\u2169', 'XI': '\u216A', 'XII': '\u216B'
   };
 
-  var UNICODE_ROMAN_NUM = ['', 'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'];
+  var UNICODE_ROMAN_NUM = ['', '\u2160', '\u2161', '\u2162', '\u2163', '\u2164', '\u2165', '\u2166', '\u2167', '\u2168', '\u2169', '\u216A', '\u216B'];
 
   function romanAsciiToUnicode(roman) {
     roman = String(roman || '').trim();
@@ -883,7 +897,7 @@
         var articleUnicode = romanAsciiToUnicode(articleAscii);
         var sectionUnicode = sectionNum ? intToUnicodeRoman(sectionNum) : String(sentenceKey);
 
-        var out = 'Article ' + articleUnicode + ', §.' + sectionUnicode;
+        var out = 'Article ' + articleUnicode + ', \u00a7.' + sectionUnicode;
         if (subpart) out += '.' + latinToCircled(subpart);
         return out;
       }
@@ -892,13 +906,13 @@
         var invMatch = String(sentenceKey).match(/^[IVX]+\.(\d+)$/);
         if (invMatch) {
           var n = parseInt(invMatch[1], 10);
-          if (n === 1) return 'Invocation §\u2011' + n;
-          return 'Preamble §\u2011' + n;
+          if (n === 1) return 'Invocation \u00a7\u2011' + n;
+          return 'Preamble \u00a7\u2011' + n;
         }
-        return 'Invocation §\u2011' + sentenceKey;
+        return 'Invocation \u00a7\u2011' + sentenceKey;
       }
 
-      return '§\u2011' + sentenceKey;
+      return '\u00a7\u2011' + sentenceKey;
     }
 
     var pageLabel = pageConfig.citationLabel || pageConfig.sectionLabel || pageConfig.pageId || '';
@@ -942,6 +956,10 @@
       void citationText.offsetWidth;
       citationText.classList.add(animClass);
     }
+
+    // Mirror into the Lexicon panel header subtitle.
+    // When a passage is selected, show its citation; otherwise fall back to Overview.
+    setHeaderSubtitle(sentenceKey ? newText : 'Overview');
   }
 
   function initializeCitationLabel() {
@@ -950,12 +968,15 @@
     citationText.textContent = initialText;
     lastCitationText = initialText;
 
-    // Ensure data-lexicon-key starts empty.
     if (citationText.dataset) {
       citationText.dataset.lexiconKey = '';
     } else {
       try { citationText.setAttribute('data-lexicon-key', ''); } catch (err) {}
     }
+
+    // Header: title = page name, subtitle = Overview (no selection yet).
+    setHeaderTitle();
+    setHeaderSubtitle('Overview');
   }
 
   initializeCitationLabel();
@@ -1008,11 +1029,6 @@
     if (!lexiconToggle) return;
     if (lexiconToggle.classList && lexiconToggle.classList.contains('is-seal-in-header')) return;
 
-    // iOS Safari: when the seal's travel is computed in JS px, it can desync slightly from
-    // the panel's own viewport-based transition (reads like the seal is being "dragged").
-    // Use a viewport-unit expression so seal + sheet resolve in the same coordinate space.
-    // The transform subtracts --seal-seat-nudge, so we add it here to keep the open position
-    // independent of the seating nudge.
     var OPEN_DROP_PX = isIOS ? 1 : 0;
     var unit = supportsDVH() ? '100dvh' : '100vh';
 
@@ -1034,7 +1050,6 @@
   }
 
   function isKeyboardIntentEvent(e) {
-    // In most browsers, keyboard activation of a button produces a click with detail === 0.
     try {
       if (!e) return false;
       if (e.type === 'click' && typeof e.detail === 'number' && e.detail === 0) return true;
@@ -1045,8 +1060,6 @@
 
   function focusIntoPanel(preferCloseFocus) {
     if (!panel) return;
-
-    // Avoid the "yellow box" focus ring on pointer-open; keep keyboard access intact.
     if (!preferCloseFocus) return;
 
     var closeBtn = qs('.lexicon-panel-close', panel);
@@ -1092,13 +1105,10 @@
 
     var bottomSheet = isBottomSheetMode();
 
-    // Desktop/tablet: move seal into the Lexicon header so it is correctly covered by higher UI-stack panels.
-    // Mobile bottom-sheet: keep the seal in the dock as the drag handle.
     if (!bottomSheet) moveSealIntoHeader();
     else restoreSealToDock();
 
     if (bottomSheet) {
-      // iOS Safari: commit the seal transform BEFORE the sheet transition begins.
       setSealToOpenPosition();
 
       try { if (lexiconToggle) void lexiconToggle.offsetWidth; } catch (err0) {}
@@ -1117,7 +1127,6 @@
     noteOpen();
 
     if (bottomSheet) {
-      // Correct next frame in case any layout-driven values changed.
       var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
       raf(function () { setSealToOpenPosition(); });
     }
@@ -1139,10 +1148,6 @@
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
 
     if (isBottomSheetMode()) {
-      // Clear --seal-drag-y FIRST (removes the open-position calc value) and force a
-      // reflow so the browser commits the property removal before the settling class
-      // adds a CSS transition. Without this, the transition would animate from the
-      // open-position value (near top of viewport) toward 0, causing the stuck-seal bug.
       setSealToClosedPosition();
       try { if (lexiconToggle) void lexiconToggle.offsetWidth; } catch (err) {}
       markSealSettling(getLexiconTapMotionMs());
@@ -1154,7 +1159,6 @@
     noteClose();
     clearStackZIndex();
 
-    // Desktop/tablet: return the seal to the dock after close.
     if (!isBottomSheetMode()) restoreSealToDock();
 
     setTimeout(function () {
@@ -1191,7 +1195,6 @@
       lexiconToggle.addEventListener('blur', function () { lexiconHovering = false; setLexiconGlyph(); });
     }
 
-    // Intent feedback for activation/drag/keyboard intent (not hover).
     lexiconToggle.addEventListener('pointerdown', function (e) {
       if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
       triggerSealNudge();
@@ -1218,17 +1221,13 @@
           return;
         }
 
-        // Keep the bright halo present through the close transition (tap path only).
         markSealTapClosing();
         closePanel();
         return;
       }
 
-      // iOS Safari: avoid running the heavy filter-based pulse at the same moment as the
-      // bottom-sheet transform transition; it can cause the seal layer to lag behind.
       if (!(isIOS && isBottomSheetMode())) triggerSealPulse();
 
-      // Tap-to-open flash (distinct from drag).
       markSealTapOpening();
       openFromToggleIntent(e);
     });
@@ -1305,7 +1304,7 @@
     }
   })();
 
-  // ---- Subpart Selection (Ⓐ/Ⓑ/Ⓒ...) ----
+  // ---- Subpart Selection (\u24b6/\u24b7/\u24b8...) ----
   (function initSubpartSelection() {
     var subparts = qsa('.sentence.has-subparts .subpart');
     if (!subparts || !subparts.length) return;
@@ -1523,7 +1522,7 @@
       clearSealSettling();
 
       if (!panel.classList.contains('is-open')) {
-      panel.classList.add('is-open');
+        panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
         lexOverlay.setAttribute('aria-hidden', 'false');
