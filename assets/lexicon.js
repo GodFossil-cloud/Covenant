@@ -1142,7 +1142,7 @@
       : '';
     var alreadySaved = isPassageSaved(currentFile, key);
     var saveClass  = alreadySaved ? 'is-saved'    : 'is-saveable';
-    var saveHint   = alreadySaved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save';
+    var saveHint   = alreadySaved ? 'Saved \u2726' : 'Tap to save';
     var saveLabel  = alreadySaved ? 'Remove from Reliquary' : 'Save to Reliquary';
     var savePressed = alreadySaved ? 'true' : 'false';
 
