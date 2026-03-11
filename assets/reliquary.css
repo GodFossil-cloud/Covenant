@@ -14,14 +14,14 @@
   --reliquary-ink:rgba(245,236,214,.92);
   --reliquary-ink-soft:rgba(245,236,214,.74);
 
-  --reliquary-obsidian-0:#0a0a0c;
-  --reliquary-obsidian-1:#131418;
-  --reliquary-obsidian-2:#1c1d24;
+  --reliquary-obsidian-0:#060608;
+  --reliquary-obsidian-1:#0c0c10;
+  --reliquary-obsidian-2:#131318;
 
   /* Glossary obsidian — cool indigo-black */
-  --glossary-obsidian-0:#060608;
-  --glossary-obsidian-1:#0c0c10;
-  --glossary-obsidian-2:#131318;
+  --glossary-obsidian-0:#0a0a0c;
+  --glossary-obsidian-1:#131418;
+  --glossary-obsidian-2:#1c1d24;
 
   --reliquary-brass:rgba(201,169,97,1);
 
