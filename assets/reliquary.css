@@ -28,7 +28,7 @@
   /* Glossary accent — cool silver-violet */
   --glossary-accent:rgba(198,158,88,1);
   --glossary-accent-mid:rgba(198,158,88,1);
-  --glossary-accent-soft:rgba(126,162,148,1);
+  --glossary-accent-soft:rgba(198,158,88,1);
   --glossary-accent-dim:rgba(68,58,82,1);
 
   --reliquary-notch-w:var(--dock-tab-width-visual, var(--dock-tab-width, var(--nav-pill-width,56px)));
