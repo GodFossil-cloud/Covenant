@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.11 (arm/confirm two-tap mechanic) */
+/*! Covenant Reliquary Archive v0.4.12 (sync citation on remove) */
 (function () {
   'use strict';
 
@@ -7,6 +7,9 @@
 
   var KEY_PENDING = 'covenant_reliquary_pending_v1';
   var KEY_STORE = 'covenant_reliquary_v1';
+
+  // Hoisted ref set by wireCitationBookmarkToggle so doRemove can call sync().
+  var _syncCitationState = null;
 
   function byId(id) { return doc.getElementById(id); }
 
@@ -525,6 +528,12 @@
     armedAction = null;
     removeItem(href, key);
     renderArchive();
+    // If the removed passage is the currently selected one, sync the
+    // citation label, bookmark state, and Lexicon save button immediately.
+    var sel = getCurrentSelection();
+    if (sel && sel.lexiconKey === key && basename(sel.href) === basename(href)) {
+      if (_syncCitationState) _syncCitationState();
+    }
   }
 
   // ---------------------------
@@ -715,6 +724,9 @@
 
     function sync() { setStateFromSelection(getCurrentSelection()); }
 
+    // Expose sync so doRemove can call it when the removed passage is selected.
+    _syncCitationState = sync;
+
     function toggleSelection() {
       var sel = getCurrentSelection();
       if (!sel) { sync(); return; }
@@ -770,7 +782,7 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.11',
+    version: '0.4.12',
     readStore: readStore,
     writeStore: writeStore,
     addItem: addItem,
