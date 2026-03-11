@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Archive v0.4.12 (sync citation on remove) */
+/*! Covenant Reliquary Archive v0.4.13 (quote box = interactive save surface) */
 (function () {
   'use strict';
 
@@ -6,7 +6,7 @@
   var root = doc.documentElement;
 
   var KEY_PENDING = 'covenant_reliquary_pending_v1';
-  var KEY_STORE = 'covenant_reliquary_v1';
+  var KEY_STORE   = 'covenant_reliquary_v1';
 
   // Hoisted ref set by wireCitationBookmarkToggle so doRemove can call sync().
   var _syncCitationState = null;
@@ -55,17 +55,17 @@
 
   function normalizeItem(item) {
     if (!item || typeof item !== 'object') return null;
-    var href = String(item.href || '').trim();
+    var href       = String(item.href       || '').trim();
     var lexiconKey = String(item.lexiconKey || '').trim();
     if (!href || !lexiconKey) return null;
-    var quote = String(item.quote || '').trim();
+    var quote     = String(item.quote || '').trim();
     var createdAt = (typeof item.createdAt === 'number' && isFinite(item.createdAt)) ? item.createdAt : Date.now();
     return { href: basename(href), lexiconKey: lexiconKey, quote: quote, createdAt: createdAt };
   }
 
   function dedupeItems(items) {
     var seen = Object.create(null);
-    var out = [];
+    var out  = [];
     for (var i = 0; i < items.length; i++) {
       var it = normalizeItem(items[i]);
       if (!it) continue;
@@ -87,12 +87,12 @@
   }
 
   function removeItem(href, lexiconKey) {
-    href = basename(href);
+    href       = basename(href);
     lexiconKey = String(lexiconKey || '').trim();
     if (!href || !lexiconKey) return false;
-    var store = readStore();
+    var store  = readStore();
     var before = Array.isArray(store.items) ? store.items.length : 0;
-    var out = [];
+    var out    = [];
     for (var i = 0; i < store.items.length; i++) {
       var it = normalizeItem(store.items[i]);
       if (!it) continue;
@@ -105,7 +105,7 @@
   }
 
   function hasItem(href, lexiconKey) {
-    href = basename(href);
+    href       = basename(href);
     lexiconKey = String(lexiconKey || '').trim();
     if (!href || !lexiconKey) return false;
     var store = readStore();
@@ -152,7 +152,7 @@
 
   function openLexiconIfPossible() {
     var toggle = byId('lexiconToggle');
-    var panel = byId('lexiconPanel');
+    var panel  = byId('lexiconPanel');
     if (!toggle || !panel) return;
     try { if (panel.classList && panel.classList.contains('is-open')) return; } catch (err0) {}
     try { toggle.click(); } catch (err1) {}
@@ -161,11 +161,11 @@
   function closeReliquaryThen(cb) {
     cb = (typeof cb === 'function') ? cb : function () {};
     var toggle = byId('mirrorToggle');
-    var panel = byId('reliquaryPanel');
+    var panel  = byId('reliquaryPanel');
     if (!toggle || !panel) { cb(); return; }
     if (!root.classList.contains('reliquary-open')) { cb(); return; }
     var done = false;
-    var obs = null;
+    var obs  = null;
     function finish() {
       if (done) return;
       done = true;
@@ -174,10 +174,11 @@
     }
     try {
       obs = new MutationObserver(function () {
-        var closed = (!root.classList.contains('reliquary-open')) && (panel.getAttribute('aria-hidden') === 'true');
+        var closed = (!root.classList.contains('reliquary-open'))
+                     && (panel.getAttribute('aria-hidden') === 'true');
         if (closed) finish();
       });
-      obs.observe(root, { attributes: true, attributeFilter: ['class'] });
+      obs.observe(root,  { attributes: true, attributeFilter: ['class'] });
       obs.observe(panel, { attributes: true, attributeFilter: ['aria-hidden', 'class'] });
     } catch (err1) { obs = null; }
     try { toggle.click(); } catch (err2) { finish(); }
@@ -202,7 +203,7 @@
     var payload = safeJsonParse(raw);
     clearPending();
     if (!payload || !payload.href || !payload.lexiconKey) return;
-    var here = getCurrentFile();
+    var here   = getCurrentFile();
     var target = basename(payload.href);
     if (!here || !target || here !== target) return;
     playHere(payload.lexiconKey, !!payload.openLexicon);
@@ -210,11 +211,11 @@
 
   function escapeHtml(value) {
     return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+      .replace(/&/g,  '&amp;')
+      .replace(/</g,  '&lt;')
+      .replace(/>/g,  '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g,  '&#39;');
   }
 
   function truncate(s, n) {
@@ -259,19 +260,19 @@
     var summaries = doc.querySelectorAll('.reliquary-archive summary');
     if (!summaries || !summaries.length) return;
     for (var i = 0; i < summaries.length; i++) {
-      var summary = summaries[i];
-      var titleEl = summary.querySelector('.reliquary-archive-page-title');
+      var summary  = summaries[i];
+      var titleEl  = summary.querySelector('.reliquary-archive-page-title');
       if (!titleEl) continue;
-      titleEl.style.fontSize = '';
+      titleEl.style.fontSize   = '';
       titleEl.style.whiteSpace = 'nowrap';
       var summaryWidth = summary.offsetWidth;
-      var padding = 1.44 * 16;
-      var countEl = summary.querySelector('.reliquary-archive-count');
-      var countWidth = countEl ? countEl.offsetWidth : 0;
-      var availWidth = summaryWidth - padding - countWidth - 10 - 4;
+      var padding      = 1.44 * 16;
+      var countEl      = summary.querySelector('.reliquary-archive-count');
+      var countWidth   = countEl ? countEl.offsetWidth : 0;
+      var availWidth   = summaryWidth - padding - countWidth - 10 - 4;
       if (availWidth <= 0) { titleEl.style.whiteSpace = ''; continue; }
       var currentSize = 1.04;
-      var minSize = 0.86;
+      var minSize     = 0.86;
       titleEl.style.fontSize = currentSize + 'rem';
       var attempts = 0;
       while (titleEl.scrollWidth > availWidth && currentSize > minSize && attempts < 20) {
@@ -290,26 +291,14 @@
   var activeItemHref = null;
   var activeItemKey  = null;
 
-  function setActiveItem(href, key) {
-    activeItemHref = href || null;
-    activeItemKey  = key  || null;
-  }
-
-  function clearActiveItem() {
-    activeItemHref = null;
-    activeItemKey  = null;
-  }
-
-  function isActiveItem(href, key) {
-    return activeItemHref === href && activeItemKey === key;
-  }
+  function setActiveItem(href, key) { activeItemHref = href || null; activeItemKey = key || null; }
+  function clearActiveItem()        { activeItemHref = null; activeItemKey = null; }
+  function isActiveItem(href, key)  { return activeItemHref === href && activeItemKey === key; }
 
   // ---------------------------
   // Armed button state
   // ---------------------------
 
-  // Tracks which action button (if any) is currently armed within the open menu.
-  // armedAction: 'remove' | 'navigate' | null
   var armedAction = null;
 
   function getArmedBtn() {
@@ -336,7 +325,7 @@
 
   function clearArmed() {
     if (!armedAction) return;
-    var btn = getArmedBtn();
+    var btn    = getArmedBtn();
     var caption = (armedAction === 'remove') ? 'Remove' : 'Navigate';
     disarmBtn(btn, caption);
     armedAction = null;
@@ -382,11 +371,8 @@
     var menu = doc.createElement('div');
     menu.className = 'reliquary-archive-item-menu';
     menu.setAttribute('aria-hidden', 'false');
-
-    // Remove on the left, Navigate on the right
     menu.appendChild(makeActionBtn('remove',   href, key, '\u2715', 'Remove',   'reliquary-archive-item-remove'));
     menu.appendChild(makeActionBtn('navigate', href, key, '\u21f2', 'Navigate', 'reliquary-archive-item-navigate'));
-
     return menu;
   }
 
@@ -412,7 +398,7 @@
       var menu = btn.querySelector('.reliquary-archive-item-menu');
       if (menu) btn.removeChild(menu);
     }
-    armedAction = null; // menu gone, no need to clean DOM
+    armedAction = null;
     clearActiveItem();
   }
 
@@ -423,16 +409,14 @@
   function buildItemHtml(href, it) {
     var label = truncate(it.quote || '', 180);
     if (!label) label = '\u00a7 ' + it.lexiconKey;
-
     var html = [];
     html.push(
-      '<button'
-        + ' type="button"'
-        + ' class="reliquary-archive-item"'
-        + ' data-reliquary-action="select"'
-        + ' data-reliquary-href="' + escapeHtml(href) + '"'
-        + ' data-reliquary-key="'  + escapeHtml(it.lexiconKey) + '"'
-        + '>'
+      '<button type="button"'
+      + ' class="reliquary-archive-item"'
+      + ' data-reliquary-action="select"'
+      + ' data-reliquary-href="' + escapeHtml(href)           + '"'
+      + ' data-reliquary-key="'  + escapeHtml(it.lexiconKey) + '"'
+      + '>'
     );
     html.push('<div class="reliquary-archive-item-face">');
     html.push('<div class="reliquary-archive-item-text">' + escapeHtml(label) + '</div>');
@@ -446,7 +430,7 @@
   }
 
   function renderArchive() {
-    var host = byId('reliquaryArchive');
+    var host        = byId('reliquaryArchive');
     var placeholder = byId('reliquaryPlaceholder');
     if (!host) return;
 
@@ -454,25 +438,23 @@
     store.items = dedupeItems(store.items);
     writeStore(store);
 
-    var byHref = groupByHref(store.items);
-    var journey = getJourney();
+    var byHref      = groupByHref(store.items);
+    var journey     = getJourney();
     var currentHref = getCurrentHrefForJourney();
-    var total = store.items.length;
+    var total       = store.items.length;
 
     if (placeholder) placeholder.style.display = total ? 'none' : '';
 
-    var html = [];
-    html.push('<div class="reliquary-archive-index">');
+    var html = ['<div class="reliquary-archive-index">'];
 
     for (var i = 0; i < journey.length; i++) {
-      var p = journey[i];
+      var p     = journey[i];
       if (!p || !p.href) continue;
       var href  = String(p.href);
       var title = String(p.title || href);
       var list  = byHref[href] || [];
       var count = list.length;
-      var isCurrent = (currentHref && href === currentHref);
-      var cls = isCurrent ? ' class="is-current"' : '';
+      var cls   = (currentHref && href === currentHref) ? ' class="is-current"' : '';
 
       html.push('<details' + cls + ' data-reliquary-href="' + escapeHtml(href) + '">');
       html.push('<summary>');
@@ -480,15 +462,11 @@
       html.push('<span class="reliquary-archive-count">' + (count ? ('(' + count + ')') : '') + '</span>');
       html.push('</summary>');
       html.push('<div class="reliquary-archive-items">');
-
       if (!count) {
         html.push('<div class="reliquary-archive-empty">No saved passages.</div>');
       } else {
-        for (var j = 0; j < list.length; j++) {
-          html.push(buildItemHtml(href, list[j]));
-        }
+        for (var j = 0; j < list.length; j++) html.push(buildItemHtml(href, list[j]));
       }
-
       html.push('</div>');
       html.push('</details>');
     }
@@ -513,7 +491,7 @@
   function doNavigate(href, key) {
     clearActiveItem();
     armedAction = null;
-    var here = getCurrentFile();
+    var here   = getCurrentFile();
     var target = basename(href);
     if (here && target && here === target) {
       closeReliquaryThen(function () { playHere(key, true); });
@@ -528,8 +506,7 @@
     armedAction = null;
     removeItem(href, key);
     renderArchive();
-    // If the removed passage is the currently selected one, sync the
-    // citation label, bookmark state, and Lexicon save button immediately.
+    // Sync citation label + bookmark glyph + quote box if this was the selected passage.
     var sel = getCurrentSelection();
     if (sel && sel.lexiconKey === key && basename(sel.href) === basename(href)) {
       if (_syncCitationState) _syncCitationState();
@@ -537,11 +514,11 @@
   }
 
   // ---------------------------
-  // Click handling
+  // Archive click handling
   // ---------------------------
 
   function handleArchiveClick(e) {
-    var action = null;
+    var action   = null;
     var actionEl = null;
 
     var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target ? e.target.parentElement : null);
@@ -552,12 +529,8 @@
       el = el.parentElement;
     }
 
-    // Tap on background (no action element) — disarm, keep menu open
     if (!action || !actionEl) {
-      if (armedAction) {
-        clearArmed();
-        return;
-      }
+      if (armedAction) { clearArmed(); return; }
       collapseActiveItem();
       return;
     }
@@ -569,16 +542,12 @@
       e.preventDefault();
       e.stopPropagation();
       if (!href || !key) return;
-
-      // Already armed on this exact button → commit
       if (armedAction === action) {
         clearArmed();
         if (action === 'navigate') doNavigate(href, key);
         else doRemove(href, key);
         return;
       }
-
-      // Different button (or nothing) armed → disarm old, arm this one
       clearArmed();
       armBtn(actionEl, action);
       return;
@@ -588,13 +557,7 @@
       e.preventDefault();
       e.stopPropagation();
       if (!href || !key) return;
-
-      if (isActiveItem(href, key)) {
-        clearArmed();
-        collapseActiveItem();
-        return;
-      }
-
+      if (isActiveItem(href, key)) { clearArmed(); collapseActiveItem(); return; }
       clearArmed();
       collapseActiveItem();
       expandItem(actionEl, href, key);
@@ -604,19 +567,15 @@
 
   function wireArchiveList() {
     var host = byId('reliquaryArchive');
-    if (host && host.addEventListener) {
-      host.addEventListener('click', handleArchiveClick);
-    }
+    if (host && host.addEventListener) host.addEventListener('click', handleArchiveClick);
 
     var lastOpen = root.classList.contains('reliquary-open');
-
     function sync() {
       var isOpen = root.classList.contains('reliquary-open');
-      if (isOpen && !lastOpen) { clearActiveItem(); armedAction = null; renderArchive(); }
-      if (!isOpen && lastOpen) { clearActiveItem(); armedAction = null; }
+      if (isOpen && !lastOpen)  { clearActiveItem(); armedAction = null; renderArchive(); }
+      if (!isOpen && lastOpen)  { clearActiveItem(); armedAction = null; }
       lastOpen = isOpen;
     }
-
     try {
       var obs = new MutationObserver(sync);
       obs.observe(root, { attributes: true, attributeFilter: ['class'] });
@@ -624,7 +583,93 @@
   }
 
   // ---------------------------
-  // Citation bookmark toggle (unchanged)
+  // Quote box flash helpers
+  // ---------------------------
+
+  function getQuoteBox() {
+    var dc = byId('lexiconDynamicContent');
+    return dc ? dc.querySelector('.lexicon-sentence-quote') : null;
+  }
+
+  var flashTimer = null;
+
+  function flashQuoteBox(type) {
+    var box = getQuoteBox();
+    if (!box) return;
+    if (flashTimer) { window.clearTimeout(flashTimer); flashTimer = null; }
+    box.classList.remove('is-consecrating', 'is-removing');
+    void box.offsetWidth;
+    box.classList.add(type === 'save' ? 'is-consecrating' : 'is-removing');
+    flashTimer = window.setTimeout(function () {
+      try { if (box) box.classList.remove('is-consecrating', 'is-removing'); } catch (err) {}
+      flashTimer = null;
+    }, type === 'save' ? 420 : 380);
+  }
+
+  // ---------------------------
+  // Quote box: wire click/keyboard save toggle
+  // Called by lexicon.js after every renderSentenceExplanation.
+  // Also exposed as window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX.
+  // ---------------------------
+
+  function wireQuoteBox() {
+    var box = getQuoteBox();
+    if (!box) return;
+
+    // Set initial saved state.
+    var sel = getCurrentSelection();
+    if (sel) {
+      var isSaved = hasItem(sel.href, sel.lexiconKey);
+      box.classList.toggle('is-saved', isSaved);
+      box.classList.toggle('is-saveable', !isSaved);
+      box.setAttribute('data-quote-hint', isSaved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save');
+      box.setAttribute('aria-label',   isSaved ? 'Remove from Reliquary' : 'Save to Reliquary');
+      box.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
+    }
+
+    function toggle(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      if (e && e.stopPropagation) e.stopPropagation();
+
+      var currentSel = getCurrentSelection();
+      if (!currentSel) return;
+
+      var wasSaved = hasItem(currentSel.href, currentSel.lexiconKey);
+      if (wasSaved) {
+        removeItem(currentSel.href, currentSel.lexiconKey);
+        flashQuoteBox('remove');
+      } else {
+        addItem(currentSel);
+        flashQuoteBox('save');
+      }
+
+      var nowSaved = !wasSaved;
+
+      // Update quote box visual state.
+      if (typeof window.COVENANT_LEXICON_UPDATE_QUOTE_BOX === 'function') {
+        window.COVENANT_LEXICON_UPDATE_QUOTE_BOX(nowSaved);
+      }
+
+      // Sync citation bookmark glyph.
+      if (_syncCitationState) _syncCitationState();
+
+      // Re-render archive if it's open.
+      if (root.classList.contains('reliquary-open')) renderArchive();
+    }
+
+    box.addEventListener('click', toggle);
+    box.addEventListener('keydown', function (e) {
+      var k = e && e.key;
+      if (k !== 'Enter' && k !== ' ') return;
+      toggle(e);
+    });
+  }
+
+  // Exposed so lexicon.js can call it after every renderSentenceExplanation.
+  window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX = wireQuoteBox;
+
+  // ---------------------------
+  // Citation bookmark toggle
   // ---------------------------
 
   function getCurrentSelection() {
@@ -646,14 +691,9 @@
   }
 
   function wireCitationBookmarkToggle() {
-    var el = byId('citationText');
+    var el    = byId('citationText');
     var label = byId('citationLabel');
     if (!el) return;
-
-    var lexWrap  = byId('lexiconReliquarySave');
-    var lexBtn   = byId('lexiconReliquarySaveBtn');
-    var lexGlyph = lexBtn ? lexBtn.querySelector('.lexicon-reliquary-save-glyph') : null;
-    var lexLabel = lexBtn ? lexBtn.querySelector('.lexicon-reliquary-save-label') : null;
 
     try { el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); } catch (err0) {}
 
@@ -687,22 +727,24 @@
       lastArmed = armed;
     }
 
-    function setLexiconSaveState(sel, saved) {
-      if (!lexWrap || !lexBtn) return;
-      if (!sel) {
-        try { lexWrap.hidden = true; } catch (e0) {}
-        try { lexBtn.disabled = true; } catch (e1) {}
-        try { lexBtn.setAttribute('aria-pressed', 'false'); } catch (e2) {}
-        return;
-      }
-      try { lexWrap.hidden = false; } catch (e3) {}
-      try { lexBtn.disabled = false; } catch (e4) {}
-      var isSaved = !!saved;
-      var labelText = isSaved ? 'Remove from Reliquary' : 'Save to Reliquary';
-      if (lexLabel) lexLabel.textContent = labelText;
-      if (lexGlyph) lexGlyph.textContent = isSaved ? '\u2726' : '\u2727';
-      try { lexBtn.setAttribute('aria-label', labelText); } catch (e5) {}
-      try { lexBtn.setAttribute('aria-pressed', isSaved ? 'true' : 'false'); } catch (e6) {}
+    // Flash confirmation message via the citation label's ::after pseudo-element.
+    var flashLabelTimer = null;
+    function flashLabel(type) {
+      if (!label) return;
+      if (flashLabelTimer) { window.clearTimeout(flashLabelTimer); flashLabelTimer = null; }
+      label.classList.remove('is-reliquary-flash', 'is-reliquary-saved', 'is-reliquary-removed');
+      void label.offsetWidth;
+      var msg  = (type === 'save') ? 'Saved \u2726' : 'Removed';
+      var cls  = (type === 'save') ? 'is-reliquary-saved' : 'is-reliquary-removed';
+      label.setAttribute('data-reliquary-flash', msg);
+      label.classList.add('is-reliquary-flash', cls);
+      flashLabelTimer = window.setTimeout(function () {
+        try {
+          label.classList.remove('is-reliquary-flash', 'is-reliquary-saved', 'is-reliquary-removed');
+          label.removeAttribute('data-reliquary-flash');
+        } catch (err) {}
+        flashLabelTimer = null;
+      }, 1100);
     }
 
     function setStateFromSelection(sel) {
@@ -710,21 +752,19 @@
       if (!sel) {
         el.classList.remove('is-bookmarked');
         try { el.setAttribute('aria-label', 'Select a passage to mark'); el.setAttribute('aria-pressed', 'false'); } catch (err0) {}
-        setLexiconSaveState(null, false);
         return;
       }
       var saved = hasItem(sel.href, sel.lexiconKey);
       el.classList.toggle('is-bookmarked', saved);
       try {
-        el.setAttribute('aria-label', saved ? 'Remove from Reliquary' : 'Save to Reliquary');
+        el.setAttribute('aria-label',   saved ? 'Remove from Reliquary' : 'Save to Reliquary');
         el.setAttribute('aria-pressed', saved ? 'true' : 'false');
       } catch (err1) {}
-      setLexiconSaveState(sel, saved);
     }
 
     function sync() { setStateFromSelection(getCurrentSelection()); }
 
-    // Expose sync so doRemove can call it when the removed passage is selected.
+    // Expose sync so doRemove and wireQuoteBox can call it.
     _syncCitationState = sync;
 
     function toggleSelection() {
@@ -733,6 +773,12 @@
       var wasSaved = hasItem(sel.href, sel.lexiconKey);
       if (wasSaved) removeItem(sel.href, sel.lexiconKey);
       else addItem(sel);
+      var type = wasSaved ? 'remove' : 'save';
+      flashLabel(type);
+      // Keep quote box in sync when toggled from the citation label.
+      if (typeof window.COVENANT_LEXICON_UPDATE_QUOTE_BOX === 'function') {
+        window.COVENANT_LEXICON_UPDATE_QUOTE_BOX(!wasSaved);
+      }
       if (root.classList.contains('reliquary-open')) renderArchive();
       sync();
     }
@@ -753,21 +799,6 @@
       pulse(); toggleSelection();
     }, true);
 
-    if (lexBtn) {
-      lexBtn.addEventListener('click', function (e) {
-        if (e && e.preventDefault) e.preventDefault();
-        if (e && e.stopPropagation) e.stopPropagation();
-        toggleSelection();
-      });
-      lexBtn.addEventListener('keydown', function (e) {
-        var k = e && e.key;
-        if (k !== 'Enter' && k !== ' ') return;
-        if (e && e.preventDefault) e.preventDefault();
-        if (e && e.stopPropagation) e.stopPropagation();
-        toggleSelection();
-      });
-    }
-
     try {
       var obs = new MutationObserver(sync);
       obs.observe(el, { attributes: true, attributeFilter: ['data-lexicon-key'] });
@@ -782,13 +813,13 @@
   }
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
-    version: '0.4.12',
-    readStore: readStore,
+    version: '0.4.13',
+    readStore:  readStore,
     writeStore: writeStore,
-    addItem: addItem,
+    addItem:    addItem,
     removeItem: function (href, lexiconKey) { return removeItem(href, lexiconKey); },
-    hasItem: function (href, lexiconKey) { return hasItem(href, lexiconKey); },
-    render: renderArchive,
+    hasItem:    function (href, lexiconKey) { return hasItem(href, lexiconKey); },
+    render:     renderArchive,
     setPendingJump: function (href, lexiconKey, openLexicon) {
       setPendingJump({ href: href, lexiconKey: lexiconKey, openLexicon: !!openLexicon });
     }
