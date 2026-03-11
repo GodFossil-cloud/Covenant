@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.13 (header title = page; subtitle = citation or Overview) */
+/*! Covenant Lexicon UI v0.3.14 (header title = page; subtitle = citation or Overview) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.13';
+  window.COVENANT_LEXICON_VERSION = '0.3.14';
 
   var doc = document;
   var root = doc.documentElement;
@@ -686,9 +686,37 @@
   var PAGE_TITLE = resolvePageTitle();
 
   function setHeaderTitle() {
-    if (!titleEl) return;
-    titleEl.textContent = PAGE_TITLE;
+  if (!titleEl) return;
+
+  var raw = PAGE_TITLE;
+  var colonIdx = raw.indexOf(':');
+
+  if (colonIdx !== -1) {
+    var keyPart = raw.slice(0, colonIdx).trim();
+    var subPart = raw.slice(colonIdx + 1).trim();
+
+    while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
+
+    var keySpan = doc.createElement('span');
+    keySpan.className = 'lexicon-title-key';
+    keySpan.textContent = keyPart;
+
+    var subSpan = doc.createElement('span');
+    subSpan.className = 'lexicon-title-sub';
+    subSpan.textContent = subPart;
+
+    titleEl.appendChild(keySpan);
+    titleEl.appendChild(subSpan);
+  } else {
+    while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
+
+    var singleSpan = doc.createElement('span');
+    singleSpan.className = 'lexicon-title-sub lexicon-title-sub--single';
+    singleSpan.textContent = raw;
+
+    titleEl.appendChild(singleSpan);
   }
+}
 
   function setHeaderSubtitle(text) {
     if (!modeEl) return;
