@@ -1277,12 +1277,15 @@ body.is-exiting #blackFadeOverlay {
 .lexicon-sentence-quote {
     font-size: 0.88rem;
     font-style: italic;
-    color: #a8a8a8;
     margin-bottom: 1rem;
     padding: 0.6rem 1rem;
-    background: #262626;
-    border-left: 2px solid var(--glyph-gold);
+    border-left: 3px solid transparent;
+    border-radius: 2px;
     line-height: 1.5;
+    transition:
+        border-left-color 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+        background        280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+        color             280ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .lexicon-link {
