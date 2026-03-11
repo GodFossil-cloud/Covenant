@@ -157,14 +157,11 @@ html.reliquary-open .reliquary-archive{display:block}
   justify-content:center;
   gap:1.6rem;
 
-  /* Collapsed: invisible and inert immediately */
   opacity:0;
   pointer-events:none;
   transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1);
 }
 
-/* Expanded: delay the fade-in so the triggering touch has lifted
-   before the buttons become visible and hoverable on mobile. */
 .reliquary-archive-item.is-expanded .reliquary-archive-item-menu{
   opacity:1;
   pointer-events:auto;
@@ -241,7 +238,6 @@ html.reliquary-open .reliquary-archive{display:block}
    Armed state (tap-to-confirm)
    --------------------------- */
 
-/* Navigate armed — gold pulse */
 .reliquary-archive-item-navigate.is-armed{
   background:rgba(201,169,97,.18);
   border-color:rgba(201,169,97,.52);
@@ -250,7 +246,6 @@ html.reliquary-open .reliquary-archive{display:block}
   transform:scale(1.06);
 }
 
-/* Remove armed — ember warning */
 .reliquary-archive-item-remove.is-armed{
   background:rgba(176,86,74,.22);
   border-color:rgba(224,124,104,.52);
@@ -259,13 +254,11 @@ html.reliquary-open .reliquary-archive{display:block}
   transform:scale(1.06);
 }
 
-/* Caption brightens when armed */
 .reliquary-archive-item-action.is-armed .reliquary-archive-item-action-caption{
   opacity:1;
   letter-spacing:.14em;
 }
 
-/* Remove button — warm ember tint on hover (mouse only) */
 @media (hover: hover) {
   .reliquary-archive-item-remove:hover{
     background:rgba(176,86,74,.18);
@@ -297,35 +290,25 @@ html.reliquary-open .reliquary-archive{display:block}
    (replaces the old lexicon-reliquary-save button)
    --------------------------- */
 
-/* Saveable pulse: a slow, breathing amber ring */
+/* Saveable pulse: border-left brightens and dims — no outlines */
 @keyframes quoteBoxSaveablePulse {
-  0%, 100% {
-    box-shadow:
-      inset 0 0 0 1px rgba(201,169,97,.14),
-      0 0 0 1px rgba(201,169,97,.10),
-      0 0 12px rgba(201,169,97,.08);
-  }
-  50% {
-    box-shadow:
-      inset 0 0 0 1px rgba(201,169,97,.28),
-      0 0 0 1px rgba(201,169,97,.18),
-      0 0 18px rgba(201,169,97,.14);
-  }
+  0%, 100% { border-left-color: rgba(201,169,97,.42); }
+  50%       { border-left-color: rgba(201,169,97,.72); }
 }
 
-/* Consecration flash: brief bright flare on save */
+/* Consecration flash: background warms briefly on save */
 @keyframes quoteBoxConsecrateFlash {
-  0%   { box-shadow: inset 0 0 0 1px rgba(201,169,97,.52), 0 0 0 2px rgba(201,169,97,.32), 0 0 24px rgba(201,169,97,.22); }
-  100% { box-shadow: inset 0 0 0 1px rgba(201,169,97,.36), 0 0 0 1px rgba(201,169,97,.20), 0 0 16px rgba(201,169,97,.14); }
+  0%   { background: #2a2214; }
+  100% { background: #1e1c16; }
 }
 
-/* Unsave flash: ember fade */
+/* Unsave flash: background cools to ember then settles */
 @keyframes quoteBoxRemoveFlash {
-  0%   { box-shadow: inset 0 0 0 1px rgba(224,124,104,.52), 0 0 0 2px rgba(224,124,104,.28), 0 0 20px rgba(176,86,74,.20); }
-  100% { box-shadow: inset 0 0 0 1px rgba(201,169,97,.14), 0 0 0 1px rgba(201,169,97,.08), 0 0 10px rgba(201,169,97,.06); }
+  0%   { background: #241410; }
+  100% { background: #1e1e22; }
 }
 
-/* Base saveable state: quote box becomes interactive */
+/* Base saveable state */
 .lexicon-sentence-quote.is-saveable {
   cursor: pointer;
   border-left-color: rgba(201,169,97,.52);
@@ -333,10 +316,9 @@ html.reliquary-open .reliquary-archive{display:block}
   color: #c0c0c0;
 
   transition:
-    border-color     260ms cubic-bezier(0.22,0.61,0.36,1),
-    background       260ms cubic-bezier(0.22,0.61,0.36,1),
-    color            260ms cubic-bezier(0.22,0.61,0.36,1),
-    box-shadow       260ms cubic-bezier(0.22,0.61,0.36,1);
+    border-left-color 260ms cubic-bezier(0.22,0.61,0.36,1),
+    background        260ms cubic-bezier(0.22,0.61,0.36,1),
+    color             260ms cubic-bezier(0.22,0.61,0.36,1);
 
   animation: quoteBoxSaveablePulse 2.8s ease-in-out infinite;
 }
@@ -344,78 +326,61 @@ html.reliquary-open .reliquary-archive{display:block}
 @media (prefers-reduced-motion: reduce) {
   .lexicon-sentence-quote.is-saveable {
     animation: none;
-    box-shadow: inset 0 0 0 1px rgba(201,169,97,.22), 0 0 0 1px rgba(201,169,97,.14);
+    border-left-color: rgba(201,169,97,.52);
   }
 }
 
-/* Hover: invite the gesture */
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saveable:hover {
-    border-left-color: rgba(201,169,97,.78);
+    border-left-color: rgba(201,169,97,.82);
     background: #222228;
     color: #d4d4d4;
-    box-shadow:
-      inset 0 0 0 1px rgba(201,169,97,.22),
-      0 0 0 1px rgba(201,169,97,.18),
-      0 0 20px rgba(201,169,97,.12);
     animation: none;
   }
 }
 
-/* Focus (keyboard): themed ring */
-.lexicon-sentence-quote.is-saveable:focus,
-.lexicon-sentence-quote.is-saveable:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px rgba(201,169,97,.38),
-    0 0 0 4px rgba(0,0,0,.72);
+/* Focus (keyboard): minimal themed ring — only on focus-visible, never on click */
+.lexicon-sentence-quote.is-saveable:focus-visible,
+.lexicon-sentence-quote.is-saved:focus-visible {
+  outline: 2px solid rgba(201,169,97,.38);
+  outline-offset: 2px;
   animation: none;
 }
 
-/* Saved state: consecrated — deeper gold presence */
+/* Saved state: consecrated */
 .lexicon-sentence-quote.is-saved {
   cursor: pointer;
-  border-left-color: rgba(201,169,97,.72);
+  border-left-color: rgba(201,169,97,.80);
   background: #1e1c16;
   color: rgba(245,236,214,.88);
 
-  box-shadow:
-    inset 0 0 0 1px rgba(201,169,97,.36),
-    0 0 0 1px rgba(201,169,97,.20),
-    0 0 16px rgba(201,169,97,.14);
-
   transition:
-    border-color     260ms cubic-bezier(0.22,0.61,0.36,1),
-    background       260ms cubic-bezier(0.22,0.61,0.36,1),
-    color            260ms cubic-bezier(0.22,0.61,0.36,1),
-    box-shadow       260ms cubic-bezier(0.22,0.61,0.36,1);
+    border-left-color 260ms cubic-bezier(0.22,0.61,0.36,1),
+    background        260ms cubic-bezier(0.22,0.61,0.36,1),
+    color             260ms cubic-bezier(0.22,0.61,0.36,1);
 
   animation: none;
 }
 
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saved:hover {
-    border-left-color: rgba(201,169,97,.90);
+    border-left-color: rgba(201,169,97,.96);
     background: #231f14;
     color: rgba(245,236,214,.96);
-    box-shadow:
-      inset 0 0 0 1px rgba(201,169,97,.46),
-      0 0 0 1px rgba(201,169,97,.28),
-      0 0 22px rgba(201,169,97,.18);
   }
 }
 
-/* Consecration flash (applied briefly by JS on save) */
+/* Consecration flash */
 .lexicon-sentence-quote.is-consecrating {
   animation: quoteBoxConsecrateFlash 380ms cubic-bezier(0.22,0.61,0.36,1) forwards !important;
 }
 
-/* Remove flash (applied briefly by JS on unsave) */
+/* Remove flash */
 .lexicon-sentence-quote.is-removing {
   animation: quoteBoxRemoveFlash 340ms cubic-bezier(0.22,0.61,0.36,1) forwards !important;
 }
 
-/* Hint label rendered via ::after — "Tap to save" / "Saved ✦" */
+/* Hint label — "Tap to save" / "Saved ✦" */
 .lexicon-sentence-quote.is-saveable::after,
 .lexicon-sentence-quote.is-saved::after {
   content: attr(data-quote-hint);
@@ -429,15 +394,14 @@ html.reliquary-open .reliquary-archive{display:block}
   color: rgba(201,169,97,.62);
   pointer-events: none;
   user-select: none;
-  transition: color 260ms ease, opacity 260ms ease;
+  transition: color 260ms ease;
 }
 
 .lexicon-sentence-quote.is-saved::after {
   color: rgba(201,169,97,.86);
 }
 
-/* Citation label bookmark toggle (beneath Lexicon seal).
-   Uses ::before so lexicon.js can continue owning #citationText's textContent. */
+/* Citation label bookmark toggle (beneath Lexicon seal). */
 
 #citationLabel{
   position:relative;
@@ -452,11 +416,8 @@ html.reliquary-open .reliquary-archive{display:block}
   cursor:default;
 }
 
-/* Covenant glyph-like marks.
-   - ⌁ (uninscribed): "ready / beckoning"
-   - ⌘ (inscribed): "sealed / saved" */
 #citationText::before{
-  content:"⌁";
+  content:"\2301";
   display:inline-block;
   margin-right:.46em;
   opacity:.74;
@@ -469,7 +430,7 @@ html.reliquary-open .reliquary-archive{display:block}
 }
 
 #citationText.is-bookmarked::before{
-  content:"⌘";
+  content:"\2318";
   opacity:.94;
 }
 
@@ -478,7 +439,6 @@ html.reliquary-open .reliquary-archive{display:block}
   opacity:1;
 }
 
-/* Armed (a passage is selected): invite interaction without looking like a button label. */
 #citationLabel.is-armed #citationText::before{
   opacity:.88;
   filter:drop-shadow(0 0 8px rgba(242,220,154,0.12));
@@ -488,13 +448,8 @@ html.reliquary-open .reliquary-archive{display:block}
   text-shadow:0 0 10px rgba(242,220,154,0.10);
 }
 
-/* Momentary consecration/undo flash, without corrupting the underlying citation text.
-   (We render the message via a pseudo-element + data attr.) */
 #citationLabel.is-reliquary-flash{
   isolation:isolate;
-
-  /* Override Covenant footer default: .citation-label { overflow:hidden }.
-     We want the temporary flash to be able to extend past the citation's normal width. */
   overflow:visible;
 }
 
@@ -512,7 +467,6 @@ html.reliquary-open .reliquary-archive{display:block}
   line-height:1;
   white-space:nowrap;
 
-  /* A touch of breathing room so edge pixels never look clipped. */
   padding:.20rem .60rem;
   box-sizing:border-box;
 
