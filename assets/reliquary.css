@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.17 (Header drag surface; drag pill hidden) */
+/*! Covenant Reliquary Panel Styles v0.3.18 (Reliquary/Glossary distinct color schemes) */
 
 /* -------------------------------------------------
    Variables
@@ -19,6 +19,12 @@
   --reliquary-obsidian-2:#121318;
 
   --reliquary-brass:rgba(201,169,97,1);
+
+  /* Glossary accent — cool silver-violet */
+  --glossary-accent:rgba(185,180,220,1);
+  --glossary-accent-mid:rgba(185,180,220,.72);
+  --glossary-accent-soft:rgba(185,180,220,.44);
+  --glossary-accent-dim:rgba(185,180,220,.18);
 
   --reliquary-notch-w:var(--dock-tab-width-visual, var(--dock-tab-width, var(--nav-pill-width,56px)));
   --reliquary-notch-h:calc(var(--dock-tab-height, var(--nav-pill-height,40px)) - 14px);
@@ -183,13 +189,31 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   cursor:pointer;
 }
 
-#reliquaryPanel .reliquary-tab[aria-selected="true"]{
+/* Reliquary tab — selected: warm brass */
+#reliquaryPanel .reliquary-tab[data-tab="reliquary"][aria-selected="true"]{
   border-color:rgba(201,169,97,.56);
   background:rgba(255,255,255,.06);
   color:rgba(245,236,214,.92);
 }
 
-#reliquaryPanel .reliquary-tab:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
+/* Glossary tab — selected: cool silver-violet */
+#reliquaryPanel .reliquary-tab[data-tab="glossary"][aria-selected="true"]{
+  border-color:var(--glossary-accent-mid);
+  background:rgba(185,180,220,.07);
+  color:rgba(245,236,214,.92);
+}
+
+/* Fallback for selected tab without data-tab attribute (legacy) */
+#reliquaryPanel .reliquary-tab[aria-selected="true"]:not([data-tab]){
+  border-color:rgba(201,169,97,.56);
+  background:rgba(255,255,255,.06);
+  color:rgba(245,236,214,.92);
+}
+
+/* Focus rings */
+#reliquaryPanel .reliquary-tab[data-tab="reliquary"]:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
+#reliquaryPanel .reliquary-tab[data-tab="glossary"]:focus-visible{outline:2px solid var(--glossary-accent-soft);outline-offset:3px}
+#reliquaryPanel .reliquary-tab:not([data-tab]):focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
 
 /* -------------------------------------------------
    Glossary view
@@ -201,18 +225,18 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   padding:.95rem .95rem .90rem;
   border-radius:10px;
   background:rgba(0,0,0,.18);
-  border:1px solid rgba(201,169,97,.14);
+  border:1px solid var(--glossary-accent-dim);
 }
 
 #reliquaryPanel .lexicon-glossary-footer h3{margin:.1rem 0 .6rem;color:rgba(245,236,214,.90)}
 #reliquaryPanel .lexicon-term-list{margin:0;padding-left:1.15rem}
-#reliquaryPanel .lexicon-term-ref{color:rgba(201,169,97,.86)}
+#reliquaryPanel .lexicon-term-ref{color:var(--glossary-accent-mid)}
 
-#reliquaryPanel .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(245,236,214,.16)}
+#reliquaryPanel .toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid var(--glossary-accent-dim)}
 #reliquaryPanel .toc-annex-link{color:rgba(245,236,214,.74)}
 #reliquaryPanel .toc-annex-link:hover,
-#reliquaryPanel .toc-annex-link:focus-visible{color:rgba(245,236,214,.94);text-decoration-color:rgba(201,169,97,.44)}
-#reliquaryPanel .toc-annex-sigil{color:rgba(201,169,97,.72)}
+#reliquaryPanel .toc-annex-link:focus-visible{color:rgba(245,236,214,.94);text-decoration-color:var(--glossary-accent-soft)}
+#reliquaryPanel .toc-annex-sigil{color:var(--glossary-accent-mid)}
 
 .reliquary-placeholder{
   font-family:'Cormorant Garamond',serif;
