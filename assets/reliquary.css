@@ -149,7 +149,7 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 .reliquary-panel-header{
   position:relative;
   padding:.90rem 1.25rem .82rem;
-  border-bottom:1px solid rgba(201,169,97,.14);
+  border-bottom:1px solid rgba(100,80,90,1);
   background:var(--dock-tab-face,#010103);
 
   cursor:ns-resize;
