@@ -292,60 +292,149 @@ html.reliquary-open .reliquary-archive{display:block}
   display:none;
 }
 
-.lexicon-reliquary-save{
-  margin-top:1.05rem;
-  padding-top:1.05rem;
-  border-top:1px solid rgba(255,255,255,.08);
-}
+/* ---------------------------
+   Quote box: interactive save surface
+   (replaces the old lexicon-reliquary-save button)
+   --------------------------- */
 
-.lexicon-reliquary-save-btn{
-  width:100%;
-  padding:.65rem 1.0rem;
-  border-radius:10px;
-  border:1px solid rgba(201,169,97,.22);
-  background:linear-gradient(to bottom, rgba(201,169,97,.12), rgba(0,0,0,.18));
-  color:rgba(245,236,214,.88);
-
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.02rem;
-  letter-spacing:.10em;
-  line-height:1.25;
-
-  cursor:pointer;
-  transition:all 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-@media (hover: hover) {
-  .lexicon-reliquary-save-btn:not(:disabled):hover{
-    border-color:rgba(201,169,97,.32);
-    background:linear-gradient(to bottom, rgba(201,169,97,.18), rgba(0,0,0,.22));
-    color:rgba(245,236,214,.94);
+/* Saveable pulse: a slow, breathing amber ring */
+@keyframes quoteBoxSaveablePulse {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(201,169,97,.14),
+      0 0 0 1px rgba(201,169,97,.10),
+      0 0 12px rgba(201,169,97,.08);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(201,169,97,.28),
+      0 0 0 1px rgba(201,169,97,.18),
+      0 0 18px rgba(201,169,97,.14);
   }
 }
 
-.lexicon-reliquary-save-btn:disabled{
-  opacity:.48;
-  cursor:not-allowed;
+/* Consecration flash: brief bright flare on save */
+@keyframes quoteBoxConsecrateFlash {
+  0%   { box-shadow: inset 0 0 0 1px rgba(201,169,97,.52), 0 0 0 2px rgba(201,169,97,.32), 0 0 24px rgba(201,169,97,.22); }
+  100% { box-shadow: inset 0 0 0 1px rgba(201,169,97,.36), 0 0 0 1px rgba(201,169,97,.20), 0 0 16px rgba(201,169,97,.14); }
 }
 
-.lexicon-reliquary-save-btn.is-saved{
-  border-color:rgba(201,169,97,.42);
-  background:linear-gradient(to bottom, rgba(201,169,97,.22), rgba(0,0,0,.32));
-  color:rgba(245,236,214,1);
-  opacity:1;
+/* Unsave flash: ember fade */
+@keyframes quoteBoxRemoveFlash {
+  0%   { box-shadow: inset 0 0 0 1px rgba(224,124,104,.52), 0 0 0 2px rgba(224,124,104,.28), 0 0 20px rgba(176,86,74,.20); }
+  100% { box-shadow: inset 0 0 0 1px rgba(201,169,97,.14), 0 0 0 1px rgba(201,169,97,.08), 0 0 10px rgba(201,169,97,.06); }
 }
 
-.lexicon-reliquary-save-btn.is-removed{
-  border-color:rgba(176, 86, 74, .42);
-  background:linear-gradient(to bottom, rgba(176, 86, 74, .18), rgba(0,0,0,.30));
-  color:rgba(245,236,214,1);
-  opacity:1;
+/* Base saveable state: quote box becomes interactive */
+.lexicon-sentence-quote.is-saveable {
+  cursor: pointer;
+  border-left-color: rgba(201,169,97,.52);
+  background: #1e1e22;
+  color: #c0c0c0;
+
+  transition:
+    border-color     260ms cubic-bezier(0.22,0.61,0.36,1),
+    background       260ms cubic-bezier(0.22,0.61,0.36,1),
+    color            260ms cubic-bezier(0.22,0.61,0.36,1),
+    box-shadow       260ms cubic-bezier(0.22,0.61,0.36,1);
+
+  animation: quoteBoxSaveablePulse 2.8s ease-in-out infinite;
 }
 
-.lexicon-reliquary-save-btn[hidden]{display:none !important}
+@media (prefers-reduced-motion: reduce) {
+  .lexicon-sentence-quote.is-saveable {
+    animation: none;
+    box-shadow: inset 0 0 0 1px rgba(201,169,97,.22), 0 0 0 1px rgba(201,169,97,.14);
+  }
+}
 
-.lexicon-reliquary-save-btn:focus,
-.lexicon-reliquary-save-btn:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(201,169,97,.32)}
+/* Hover: invite the gesture */
+@media (hover: hover) {
+  .lexicon-sentence-quote.is-saveable:hover {
+    border-left-color: rgba(201,169,97,.78);
+    background: #222228;
+    color: #d4d4d4;
+    box-shadow:
+      inset 0 0 0 1px rgba(201,169,97,.22),
+      0 0 0 1px rgba(201,169,97,.18),
+      0 0 20px rgba(201,169,97,.12);
+    animation: none;
+  }
+}
+
+/* Focus (keyboard): themed ring */
+.lexicon-sentence-quote.is-saveable:focus,
+.lexicon-sentence-quote.is-saveable:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(201,169,97,.38),
+    0 0 0 4px rgba(0,0,0,.72);
+  animation: none;
+}
+
+/* Saved state: consecrated — deeper gold presence */
+.lexicon-sentence-quote.is-saved {
+  cursor: pointer;
+  border-left-color: rgba(201,169,97,.72);
+  background: #1e1c16;
+  color: rgba(245,236,214,.88);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(201,169,97,.36),
+    0 0 0 1px rgba(201,169,97,.20),
+    0 0 16px rgba(201,169,97,.14);
+
+  transition:
+    border-color     260ms cubic-bezier(0.22,0.61,0.36,1),
+    background       260ms cubic-bezier(0.22,0.61,0.36,1),
+    color            260ms cubic-bezier(0.22,0.61,0.36,1),
+    box-shadow       260ms cubic-bezier(0.22,0.61,0.36,1);
+
+  animation: none;
+}
+
+@media (hover: hover) {
+  .lexicon-sentence-quote.is-saved:hover {
+    border-left-color: rgba(201,169,97,.90);
+    background: #231f14;
+    color: rgba(245,236,214,.96);
+    box-shadow:
+      inset 0 0 0 1px rgba(201,169,97,.46),
+      0 0 0 1px rgba(201,169,97,.28),
+      0 0 22px rgba(201,169,97,.18);
+  }
+}
+
+/* Consecration flash (applied briefly by JS on save) */
+.lexicon-sentence-quote.is-consecrating {
+  animation: quoteBoxConsecrateFlash 380ms cubic-bezier(0.22,0.61,0.36,1) forwards !important;
+}
+
+/* Remove flash (applied briefly by JS on unsave) */
+.lexicon-sentence-quote.is-removing {
+  animation: quoteBoxRemoveFlash 340ms cubic-bezier(0.22,0.61,0.36,1) forwards !important;
+}
+
+/* Hint label rendered via ::after — "Tap to save" / "Saved ✦" */
+.lexicon-sentence-quote.is-saveable::after,
+.lexicon-sentence-quote.is-saved::after {
+  content: attr(data-quote-hint);
+  display: block;
+  margin-top: .55rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .72rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: rgba(201,169,97,.62);
+  pointer-events: none;
+  user-select: none;
+  transition: color 260ms ease, opacity 260ms ease;
+}
+
+.lexicon-sentence-quote.is-saved::after {
+  color: rgba(201,169,97,.86);
+}
 
 /* Citation label bookmark toggle (beneath Lexicon seal).
    Uses ::before so lexicon.js can continue owning #citationText's textContent. */
