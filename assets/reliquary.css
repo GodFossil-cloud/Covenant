@@ -258,6 +258,51 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 }
 
 /* -------------------------------------------------
+   Mirror tab consecration pulse (save / remove)
+   ------------------------------------------------- */
+
+@keyframes reliquary-pulse-save {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.72); }
+  18%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  55%  { opacity: 0.72; transform: translate(-50%, -50%) scale(1.22); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.55); }
+}
+
+@keyframes reliquary-pulse-remove {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.80); }
+  20%  { opacity: 0.82; transform: translate(-50%, -50%) scale(1.05); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.38); }
+}
+
+#navFooter #mirrorToggle.is-reliquary-pulse-save .toc-glyph::before {
+  animation: reliquary-pulse-save 520ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(220, 180, 80, 0.72)  0%,
+    rgba(201, 169, 97, 0.44) 28%,
+    rgba(201, 169, 97, 0.16) 54%,
+    rgba(0, 0, 0, 0)         76%
+  );
+}
+
+#navFooter #mirrorToggle.is-reliquary-pulse-remove .toc-glyph::before {
+  animation: reliquary-pulse-remove 400ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(190, 130, 160, 0.62)  0%,
+    rgba(160, 100, 200, 0.30) 34%,
+    rgba(120,  80, 180, 0.10) 58%,
+    rgba(0, 0, 0, 0)          76%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #navFooter #mirrorToggle.is-reliquary-pulse-save .toc-glyph::before,
+  #navFooter #mirrorToggle.is-reliquary-pulse-remove .toc-glyph::before {
+    animation: none;
+  }
+}
+
+
+/* -------------------------------------------------
    Reliquary dock glyph feedback (red ↔ violet)
    ------------------------------------------------- */
 
