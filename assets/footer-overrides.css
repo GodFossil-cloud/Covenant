@@ -1377,7 +1377,7 @@ html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]) .le
 html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
 html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner,
 html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) .lexicon-glyph-mid-inner{
-  color:rgba(0,0,0,0.88) !important;
+  color:rgba(80,8,12,0.92) !important;
   text-shadow:
     0 1px 0 rgba(255,255,255,0.060),
     0 -1px 0 rgba(0,0,0,0.98) !important;
@@ -1469,7 +1469,7 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
 #navFooter #lexiconToggle[data-lexicon-locked="true"] .lexicon-glyph-mid-inner,
 #navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph,
 #navFooter #lexiconToggle[aria-disabled="true"] .lexicon-glyph-mid-inner{
-  color:rgba(0,0,0,0.88) !important;
+  color:rgba(80,8,12,0.92) !important;
   text-shadow:
     0 1px 0 rgba(255,255,255,0.060),
     0 -1px 0 rgba(0,0,0,0.98) !important;
