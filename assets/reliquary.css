@@ -274,7 +274,13 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.38); }
 }
 
+#navFooter #mirrorToggle.is-reliquary-pulse-save .toc-glyph,
+#navFooter #mirrorToggle.is-reliquary-pulse-remove .toc-glyph {
+  overflow: visible;
+}
+
 #navFooter #mirrorToggle.is-reliquary-pulse-save .toc-glyph::before {
+  z-index: 10;
   animation: reliquary-pulse-save 520ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   background: radial-gradient(circle at 50% 50%,
     rgba(220, 180, 80, 0.72)  0%,
@@ -285,6 +291,7 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 }
 
 #navFooter #mirrorToggle.is-reliquary-pulse-remove .toc-glyph::before {
+  z-index: 10;
   animation: reliquary-pulse-remove 400ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   background: radial-gradient(circle at 50% 50%,
     rgba(190, 130, 160, 0.62)  0%,
@@ -300,7 +307,6 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
     animation: none;
   }
 }
-
 
 /* -------------------------------------------------
    Reliquary dock glyph feedback (red ↔ violet)
