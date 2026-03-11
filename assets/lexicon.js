@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.14 (header title = key+sub split; subtitle = citation or Overview) */
+/*! Covenant Lexicon UI v0.3.15 (quote box = interactive save surface) */
 (function () {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.14';
+  window.COVENANT_LEXICON_VERSION = '0.3.15';
 
   var doc = document;
   var root = doc.documentElement;
@@ -24,7 +24,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;')
+      .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
 
@@ -728,8 +728,6 @@
   // delegates to setHeaderTitle on init)
   // ----------------------------------------
   function setModeLabel() {
-    // Title slot now holds the page name; modeLabel is no longer needed as a
-    // separate init step, but we keep this function so nothing else breaks.
     setHeaderTitle();
     setHeaderSubtitle('Overview');
   }
@@ -973,7 +971,7 @@
     citationText.textContent = newText;
     lastCitationText = newText;
 
-    // CRITICAL: Expose raw lexicon key so Reliquary save button can reliably read it.
+    // CRITICAL: Expose raw lexicon key so Reliquary save logic can reliably read it.
     if (citationText.dataset) {
       citationText.dataset.lexiconKey = sentenceKey || '';
     } else {
@@ -986,7 +984,6 @@
     }
 
     // Mirror into the Lexicon panel header subtitle.
-    // When a passage is selected, show its citation; otherwise fall back to Overview.
     setHeaderSubtitle(sentenceKey ? newText : 'Overview');
   }
 
@@ -1002,7 +999,6 @@
       try { citationText.setAttribute('data-lexicon-key', ''); } catch (err) {}
     }
 
-    // Header: title = page name, subtitle = Overview (no selection yet).
     setHeaderTitle();
     setHeaderSubtitle('Overview');
   }
@@ -1104,6 +1100,27 @@
     }, 150);
   }
 
+  // ----------------------------------------
+  // Quote box save affordance
+  // reliquary-archive.js calls window.COVENANT_LEXICON_UPDATE_QUOTE_BOX
+  // to set / clear the is-saveable / is-saved classes after each toggle.
+  // ----------------------------------------
+  function getQuoteBox() {
+    return dynamicContent ? dynamicContent.querySelector('.lexicon-sentence-quote') : null;
+  }
+
+  function updateQuoteBoxSaveState(isSaved) {
+    var box = getQuoteBox();
+    if (!box) return;
+    box.classList.toggle('is-saved', !!isSaved);
+    box.setAttribute('data-quote-hint', isSaved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save');
+    box.setAttribute('aria-label', isSaved ? 'Remove from Reliquary' : 'Save to Reliquary');
+    box.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
+  }
+
+  // Exposed so reliquary-archive.js can call it after save/remove.
+  window.COVENANT_LEXICON_UPDATE_QUOTE_BOX = updateQuoteBoxSaveState;
+
   function renderSentenceExplanation(key, sentenceText, fallbackKey) {
     if (!dynamicContent) return;
 
@@ -1118,8 +1135,23 @@
     dynamicContent.style.opacity = '0';
     setTimeout(function () {
       dynamicContent.innerHTML =
-        '<div class="lexicon-sentence-quote">"' + safeSentence + "\"</div><p>" + explanation + '</p>';
+        '<div class="lexicon-sentence-quote is-saveable"' +
+        ' role="button"' +
+        ' tabindex="0"' +
+        ' aria-label="Save to Reliquary"' +
+        ' aria-pressed="false"' +
+        ' data-quote-hint="Tap to save"' +
+        '>&ldquo;' + safeSentence + '&rdquo;</div>' +
+        '<p>' + explanation + '</p>';
       dynamicContent.style.opacity = '1';
+
+      // Let reliquary-archive.js know a fresh quote box exists so it can
+      // set the correct initial saved state and wire the click handler.
+      try {
+        if (typeof window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX === 'function') {
+          window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX();
+        }
+      } catch (err) {}
     }, 150);
   }
 
