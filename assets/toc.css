@@ -19,8 +19,8 @@
   /* Binding rule below the gate: soft light blue (above-gate binding remains red). */
   --toc-rule-below:rgba(0,0,0,1);
 
-  --toc-parchment:rgba(228,222,210,1);
-  --toc-parchment-hi:rgba(238,232,220,.72);
+  --toc-parchment:rgba(194,186,170,1);
+  --toc-parchment-hi:rgba(204,196,180,.72);
 
   --toc-brass:rgba(201,169,97,1);
 
@@ -225,7 +225,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   top:auto;
   width:min(760px,calc(100vw - 24px));
   max-height:70vh;
-  background:linear-gradient(to bottom,var(--toc-parchment) 0%,rgba(210,204,192,1) 100%);
+  background:linear-gradient(to bottom,var(--toc-parchment) 0%,rgba(168,160,146,1) 100%);
   border:1px solid rgba(44,62,80,.16);
   border-left-color:var(--dock-tab-face,#010103);
   border-top-color:rgba(44,62,80,.18);
@@ -302,7 +302,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
    ------------------------------------------------- */
 
 /* Match Reliquary header sizing so both veils feel like the same instrument family. */
-.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(0,0,0,.62);background:var(--dock-tab-face,#010103)}
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(72,72,72,1);background:var(--dock-tab-face,#010103)}
 
 /* ToC visible title: match the Reliquary/Mirror title formatting exactly. */
 .toc-panel-title{
