@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.2.2 (spine/rule opacity raised; below-gate rule now gold) */
+/*! Covenant ToC Panel Styles v3.2.3 (spine/rule warm stone grey; gate stays red) */
 
 /* -------------------------------------------------
    Variables
@@ -13,24 +13,19 @@
 
   --toc-ink:rgba(220,200,165,.92);
   --toc-ink-soft:rgba(220,200,165,.62);
-  --toc-rule:rgba(201,169,97,.72);
-  --toc-rule-strong:rgba(201,169,97,.82);
+  --toc-rule:rgba(160,152,140,.58);
+  --toc-rule-strong:rgba(160,152,140,.72);
 
-  /* Binding rule below the gate: gold, matching above-gate spine. */
-  --toc-rule-below:rgba(201,169,97,.55);
+  /* Binding rule below the gate: same warm stone grey as above. */
+  --toc-rule-below:rgba(160,152,140,.45);
 
   --toc-parchment:rgba(26,26,28,1);
   --toc-parchment-hi:rgba(34,34,36,.72);
 
   --toc-brass:rgba(201,169,97,1);
 
-  /* Pending/armed node color (warm violet). Use rgba(var(--toc-armed-rgb), <alpha>). */
   --toc-armed-rgb:178,110,232;
-
-  /* Pending underline color: slightly softer violet than the node. */
   --toc-armed-underline-rgb:170,132,232;
-
-  /* Pending wash shade (lamp-shade): bolder amber, distinct from the violet node/underline. */
   --toc-pending-wash-rgb:255,218,130;
 
   --toc-drag-glyph-w:14px;
@@ -327,17 +322,17 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    ------------------------------------------------- */
 
 .toc-index{position:relative;color:var(--toc-ink);--toc-gate-y:0px;--toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));isolation:isolate}
-.toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1.5px;background-image:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%),linear-gradient(to bottom,var(--toc-rule-below, rgba(201,169,97,.55)) 0%,var(--toc-rule-below, rgba(201,169,97,.55)) 90%,transparent 100%);background-repeat:no-repeat;background-size:1.5px var(--toc-gate-cut),1.5px calc(100% - var(--toc-gate-cut));background-position:0 0,0 var(--toc-gate-cut);box-shadow:none;pointer-events:none;z-index:-1}
-.toc-index::after{content:'';position:absolute;top:.3rem;left:var(--toc-rule-x);width:1.5px;height:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));background:linear-gradient(to bottom,transparent 0%,rgba(201,169,97,.55) 10%,rgba(201,169,97,.55) 90%,transparent 100%);box-shadow:none;pointer-events:none;z-index:-1}
+.toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1.5px;background-image:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%),linear-gradient(to bottom,var(--toc-rule-below, rgba(160,152,140,.45)) 0%,var(--toc-rule-below, rgba(160,152,140,.45)) 90%,transparent 100%);background-repeat:no-repeat;background-size:1.5px var(--toc-gate-cut),1.5px calc(100% - var(--toc-gate-cut));background-position:0 0,0 var(--toc-gate-cut);box-shadow:none;pointer-events:none;z-index:-1}
+.toc-index::after{content:'';position:absolute;top:.3rem;left:var(--toc-rule-x);width:1.5px;height:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));background:linear-gradient(to bottom,transparent 0%,rgba(160,152,140,.45) 10%,rgba(160,152,140,.45) 90%,transparent 100%);box-shadow:none;pointer-events:none;z-index:-1}
 
 .toc-index .toc-list,
 .toc-index .toc-annex{position:relative;z-index:1}
 
-.toc-group + .toc-group{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(201,169,97,.18)}
+.toc-group + .toc-group{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(160,152,140,.22)}
 .toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
 
 .toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(220,200,165,.84);text-shadow:0 1px 0 rgba(0,0,0,.62)}
-.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(201,169,97,.72),rgba(201,169,97,.28),rgba(201,169,97,0));border-radius:999px}
+.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(160,152,140,.72),rgba(160,152,140,.28),rgba(160,152,140,0));border-radius:999px}
 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative;z-index:1}
@@ -352,9 +347,9 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   width:var(--toc-node);
   height:var(--toc-node);
   border-radius:999px;
-  background:rgba(28,20,20,1);
+  background:rgba(28,24,22,1);
   border:1px solid rgba(0,0,0,1);
-  box-shadow:inset 0 0 0 2px rgba(139,100,40,.52),0 10px 14px rgba(0,0,0,.03);
+  box-shadow:inset 0 0 0 2px rgba(160,152,140,.48),0 10px 14px rgba(0,0,0,.03);
   pointer-events:none;
   opacity:.92;
   z-index:2;
@@ -364,7 +359,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2) + var(--toc-node-x-nudge, 0px));
   width:var(--toc-node-locked);
   height:var(--toc-node-locked);
-  background:rgba(28,20,20,1);
+  background:rgba(28,24,22,1);
   border-color:rgba(0,0,0,1);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
 }
@@ -429,7 +424,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-gate ~ .toc-item--locked .toc-locked-btn > *{position:relative;z-index:1}
 
-.toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(201,169,97,.18)}
+.toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(160,152,140,.22)}
 .toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
 .toc-annex-link:hover,.toc-annex-link:focus-visible{color:rgba(255,240,200,1);text-decoration:underline;text-decoration-color:rgba(201,169,97,.55);text-decoration-thickness:1px;text-underline-offset:3px}
 .toc-annex-link:focus-visible{outline:2px solid rgba(201,169,97,.30);outline-offset:4px}
