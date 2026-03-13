@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.96 (body::before — red radial removed) */
+/*! Covenant ToC Panel Styles v3.1.97 (--toc-parchment near-black; red cast eliminated) */
 
 /* -------------------------------------------------
    Variables
@@ -19,8 +19,8 @@
   /* Binding rule below the gate: soft light blue (above-gate binding remains red). */
   --toc-rule-below:rgba(0,0,0,1);
 
-  --toc-parchment:rgba(38,27,26,1);
-  --toc-parchment-hi:rgba(58,40,38,.72);
+  --toc-parchment:rgba(14,11,10,1);
+  --toc-parchment-hi:rgba(22,16,14,.72);
 
   --toc-brass:rgba(201,169,97,1);
 
