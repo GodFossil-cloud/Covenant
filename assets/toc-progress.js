@@ -46,6 +46,7 @@
   function ensureFillEl(tocIndex){
     const fill = ensureEl(tocIndex, 'toc-progress-fill');
 
+    fill.style.zIndex = '-1';
     fill.style.width = '2px';
     fill.style.borderRadius = '999px';
     fill.style.opacity = '0';
