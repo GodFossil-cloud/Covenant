@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.99 (smoother panel gradient; ash extends further) */
+/*! Covenant ToC Panel Styles v3.2.0 (header border-bottom neutralized; no more mauve seam) */
 
 /* -------------------------------------------------
    Variables
@@ -16,7 +16,6 @@
   --toc-rule:rgba(201,169,97,.32);
   --toc-rule-strong:rgba(201,169,97,.48);
 
-  /* Binding rule below the gate: soft light blue (above-gate binding remains red). */
   --toc-rule-below:rgba(0,0,0,1);
 
   --toc-parchment:rgba(26,26,28,1);
@@ -24,16 +23,10 @@
 
   --toc-brass:rgba(201,169,97,1);
 
-  /* Pending/armed node color (warm violet). Use rgba(var(--toc-armed-rgb), <alpha>). */
   --toc-armed-rgb:178,110,232;
-
-  /* Pending underline color: slightly softer violet than the node. */
   --toc-armed-underline-rgb:170,132,232;
-
-  /* Pending wash shade (lamp-shade): bolder amber, distinct from the violet node/underline. */
   --toc-pending-wash-rgb:255,218,130;
 
-  /* ToC header drag pill alignment: approximate glyph width (for offset relative to the dock glyph). */
   --toc-drag-glyph-w:14px;
   --toc-drag-glyph-gap:8px;
 
@@ -44,28 +37,21 @@
   --toc-item-pad-y:.26rem;
   --toc-item-line:1.55;
 
-  /* Pending selection: title effect knobs.
-     Staged = partial hairline + soft halo; Confirm = line completes + halo strengthens. */
   --toc-pending-title-underline-w:44%;
   --toc-confirm-title-underline-w:100%;
 
-  /* Footer tabs (ToC + Mirror) live beside the Lexicon seal, but do not use the Lexicon "center" medallion styling. */
   --toc-tab-width:calc(var(--nav-pill-width,56px) + 4px);
   --toc-tab-height:var(--nav-pill-height,40px);
   --toc-tab-radius:4px;
   --toc-tab-gap:15px;
 
-  /* Socket geometry should follow the ORIGINAL dock-tab width.
-     Visual tab width can overhang by a hair without changing the cradle cutouts. */
   --dock-tab-width:calc(var(--toc-tab-width) - 4px);
   --dock-tab-width-visual:calc(var(--dock-tab-width) + 2px);
 
-  /* Micro spacing: move only the tabs outward from center (do not move sockets). */
   --toc-tab-x-nudge:-1px;
   --mirror-tab-x-nudge:1px;
 
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
-
   --dock-tab-height-visual:calc(var(--dock-tab-height) - 2px);
   --dock-tab-top-edge-lock:-1px;
 
@@ -73,7 +59,6 @@
   --mirror-tab-top-edge-lock:var(--dock-tab-top-edge-lock);
 
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
-
   --dock-tab-radius-top:var(--toc-tab-radius);
 
   --dock-tab-raise:-31px;
@@ -103,23 +88,18 @@
   --toc-notch-w:var(--dock-tab-width-visual);
   --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
   --toc-seat-overlap:2px;
-
   --toc-seat-dy:calc(var(--dock-tab-height) - var(--toc-seat-overlap));
-
   --toc-tab-weld-nudge:0px;
 
   --dock-socket-glow-toc:
     inset 0 0 22px rgba(236,246,255,0.20),
     inset 0 0 36px rgba(150,195,255,0.10);
-
   --dock-socket-glow-mirror:
     inset 0 0 22px rgba(255,110,130,0.16),
     inset 0 0 36px rgba(190,90,220,0.10);
-
   --dock-socket-glow-toc-rest:
     inset 0 0 16px rgba(236,246,255,0.10),
     inset 0 0 30px rgba(150,195,255,0.06);
-
   --dock-socket-glow-mirror-rest:
     inset 0 0 16px rgba(255,110,130,0.08),
     inset 0 0 30px rgba(190,90,220,0.05);
@@ -133,7 +113,6 @@
       rgba(201,169,97,0.22) 44%,
       rgba(0,0,0,0) 76%
     );
-
   --dock-tab-glyph-tap-aura-open-duration:280ms;
   --dock-tab-glyph-tap-aura-close-duration:240ms;
 }
@@ -208,7 +187,6 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 .toc-panel.is-closing{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px));pointer-events:none;--toc-scroll-duration:var(--toc-scroll-close-duration)}
 .toc-panel[aria-hidden="true"]{pointer-events:none}
 .toc-panel[aria-hidden="false"]{pointer-events:auto}
-
 .toc-panel.is-dragging{transition:none !important}
 
 @media (min-width:601px){
@@ -257,7 +235,8 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
    Header + connector strip
    ------------------------------------------------- */
 
-.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(100,80,90,1);background:var(--dock-tab-face,#010103)}
+/* border-bottom was rgba(100,80,90,1) — fully opaque mauve-red, visually bled into body top */
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(38,38,42,1);background:var(--dock-tab-face,#010103)}
 
 .toc-panel-title{
   position:relative;
@@ -322,7 +301,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
 
-/* Body overlay: warm brass bloom at the top edge; no red. */
 .toc-panel-body::before{
   content:'';
   position:absolute;
@@ -344,7 +322,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-index{position:relative;color:var(--toc-ink);--toc-gate-y:0px;--toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));isolation:isolate}
 .toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1.5px;background-image:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%),linear-gradient(to bottom,var(--toc-rule-below, rgba(115,170,235,.45)) 0%,var(--toc-rule-below, rgba(115,170,235,.45)) 90%,transparent 100%);background-repeat:no-repeat;background-size:1.5px var(--toc-gate-cut),1.5px calc(100% - var(--toc-gate-cut));background-position:0 0,0 var(--toc-gate-cut);box-shadow:none;pointer-events:none;z-index:-1}
-
 .toc-index::after{content:'';position:absolute;top:.3rem;left:var(--toc-rule-x);width:1.5px;height:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));background:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 90%,transparent 100%);box-shadow:none;pointer-events:none;z-index:-1}
 
 .toc-index .toc-list,
@@ -354,10 +331,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
 
 .toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(220,200,165,.84);text-shadow:0 1px 0 rgba(0,0,0,.62)}
-.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,
-      rgba(201,169,97,.72),
-      rgba(201,169,97,.28),
-      rgba(201,169,97,0));border-radius:999px}
+.toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(201,169,97,.72),rgba(201,169,97,.28),rgba(201,169,97,0));border-radius:999px}
 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative;z-index:1}
@@ -395,7 +369,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 }
 
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(0,0,0,1);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);opacity:1}
-
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(var(--toc-armed-rgb),.92) 0 3px,rgba(var(--toc-armed-rgb),0) 3.5px),rgba(247,244,238,1);border-color:rgba(0,0,0,1);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(var(--toc-armed-rgb),.14),0 10px 14px rgba(0,0,0,.04);opacity:1}
 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
@@ -409,23 +382,19 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-entry-title{flex:1 1 auto;min-width:0;color:var(--toc-ink)}
 
 .toc-item-btn{cursor:pointer;transition:color 200ms ease}
-
 .toc-item-btn:hover .toc-entry-title{color:rgba(255,240,200,1);text-decoration:none}
 .toc-item-btn:focus-visible .toc-entry-title{color:rgba(255,240,200,1);text-decoration:none}
-
 .toc-item-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:3px}
 
 .toc-item--current .toc-entry-title{font-weight:600;color:rgba(255,240,200,1)}
 .toc-item--current .toc-entry-key{color:rgba(201,169,97,.92)}
 
 .toc-item--pending .toc-entry-title{color:rgba(255,240,200,1)}
-
 .toc-item--pending .toc-item-btn:hover .toc-entry-title,
 .toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
 
 .toc-locked-btn{color:rgba(180,160,130,.40);opacity:.68;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
-
 .toc-item--locked .toc-entry-key{color:rgba(180,160,130,.28)}
 .toc-item--locked .toc-entry-title{color:rgba(180,160,130,.38)}
 
@@ -433,12 +402,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    Sealed boundary
    ------------------------------------------------- */
 
-.toc-gate ~ .toc-item--locked .toc-locked-btn{
-  position:relative;
-  isolation:isolate;
-  opacity:.54;
-  color:rgba(140,120,100,.55);
-}
+.toc-gate ~ .toc-item--locked .toc-locked-btn{position:relative;isolation:isolate;opacity:.54;color:rgba(140,120,100,.55)}
 .toc-gate ~ .toc-item--locked .toc-entry-key{color:rgba(140,120,100,.38)}
 .toc-gate ~ .toc-item--locked .toc-entry-title{color:rgba(140,120,100,.48)}
 
@@ -554,7 +518,6 @@ html #mirrorToggle.dock-tab .dock-cap{position:absolute;left:50%;top:0;width:var
 
 html #tocToggle.dock-tab .dock-cap::before,
 html #mirrorToggle.dock-tab .dock-cap::before{content:none;display:none}
-
 html #tocToggle.dock-tab .dock-cap::after,
 html #mirrorToggle.dock-tab .dock-cap::after{content:none;display:none}
 
@@ -748,7 +711,6 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
   .toc-panel{transition:opacity 160ms ease !important;transform:translateX(var(--toc-panel-x)) !important}
   .toc-toast{transition:none;transform:none}
   .toc-toast.is-visible{transform:none}
-
   .toc-item--pending .toc-item-btn::after,
   .toc-item--pending .toc-item-btn::before,
   .toc-item--pending::before{animation:none !important}
@@ -871,10 +833,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   86%{opacity:.20;transform:translate3d(0,0,0) scale(1)}
 }
 
-.toc-item--pending .toc-item-btn{
-  position:relative;
-  isolation:isolate;
-}
+.toc-item--pending .toc-item-btn{position:relative;isolation:isolate}
 
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{animation:tocPendingNodePulse 1100ms ease-in-out infinite}
 
@@ -991,11 +950,7 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
    ------------------------------------------------- */
 
 #navFooter #tocToggle .toc-glyph,
-#navFooter #mirrorToggle .toc-glyph{
-  position:relative;
-  display:inline-block;
-  z-index:0;
-}
+#navFooter #mirrorToggle .toc-glyph{position:relative;display:inline-block;z-index:0}
 
 #navFooter #tocToggle.is-tap-opening,
 #navFooter #tocToggle.is-tap-closing,
@@ -1036,10 +991,7 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
       cubic-bezier(0.22, 0.61, 0.36, 1) 1;
   }
   #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
-  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
-    content:'' !important;
-    display:block !important;
-  }
+  #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{content:'' !important;display:block !important}
   #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before{
     animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms)
       cubic-bezier(0.22, 0.61, 0.36, 1) 1;
