@@ -64,11 +64,7 @@
     spine.style.opacity = '0';
     spine.style.transition = 'height 240ms ease, opacity 180ms ease';
 
-    spine.style.background = 'repeating-linear-gradient(to bottom,
-      rgba(44,62,80,.00) 0px,
-      rgba(44,62,80,.00) 5px,
-      rgba(44,62,80,.26) 5px,
-      rgba(44,62,80,.26) 10px)';
+    spine.style.background = 'repeating-linear-gradient(to bottom,\n      rgba(44,62,80,.00) 0px,\n      rgba(44,62,80,.00) 5px,\n      rgba(44,62,80,.26) 5px,\n      rgba(44,62,80,.26) 10px)';
 
     spine.style.boxShadow = '0 0 0 1px rgba(255,255,255,.08)';
 
@@ -84,10 +80,7 @@
     gate.style.borderRadius = '999px';
     gate.style.boxShadow = '0 0 0 1px rgba(255,255,255,.06), 0 0 18px rgba(139,0,0,.10)';
 
-    gate.style.background = 'linear-gradient(to right,
-      rgba(139,0,0,1) 0%,
-      rgba(139,0,0,.40) 40%,
-      rgba(139,0,0,.00) 100%)';
+    gate.style.background = 'linear-gradient(to right,\n      rgba(139,0,0,1) 0%,\n      rgba(139,0,0,.40) 40%,\n      rgba(139,0,0,.00) 100%)';
 
     return gate;
   }
@@ -95,6 +88,7 @@
   function ensureGateSigilEl(tocIndex){
     const sigil = ensureEl(tocIndex, 'toc-gate-sigil');
 
+    sigil.style.zIndex = '-1';
     sigil.style.width = '18px';
     sigil.style.height = '18px';
     sigil.style.display = 'grid';
@@ -106,8 +100,7 @@
     sigil.style.fontFamily = "'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif";
     sigil.style.fontSize = '14px';
     sigil.style.lineHeight = '1';
-
-    sigil.style.textShadow = '0 1px 0 rgba(255,255,255,.22), 0 10px 16px rgba(0,0,0,.08)';
+    sigil.style.textShadow = 'none';
 
     sigil.textContent = '✦';
 
