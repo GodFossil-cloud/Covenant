@@ -103,7 +103,7 @@
     sigil.style.lineHeight = '1';
     sigil.style.textShadow = 'none';
 
-    sigil.textContent = '✦';
+    sigil.textContent = '\u2726';
 
     return sigil;
   }
@@ -186,12 +186,12 @@
     let h = nodeCenterY - (indexRect.top + ruleTopPx);
     h = Math.max(0, Math.min(h, maxH));
 
-    // Fill (unlocked progress).
+    // Fill (unlocked progress) — centered on the binding rule (brackets both sides).
     const fill = ensureFillEl(tocIndex);
-    fill.style.left = `${ruleXPx}px`;
+    fill.style.left = `${ruleXPx - 1}px`;
     fill.style.top = `${ruleTopPx}px`;
     fill.style.height = `${h}px`;
-    fill.style.transform = 'translateX(-1px)';
+    fill.style.transform = 'none';
     fill.style.opacity = (h > 0) ? '1' : '0';
 
     // Gate + sealed region emphasis (if gate exists).
