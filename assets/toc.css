@@ -11,16 +11,16 @@
   --toc-scroll-ease:cubic-bezier(.22,.61,.36,1);
   --toc-scroll-opacity-in:140ms;
 
-  --toc-ink:rgba(44,62,80,.92);
-  --toc-ink-soft:rgba(44,62,80,.74);
-  --toc-rule:rgba(139,115,85,.26);
-  --toc-rule-strong:rgba(139,115,85,.36);
+  --toc-ink:rgba(220,200,165,.92);
+  --toc-ink-soft:rgba(220,200,165,.62);
+  --toc-rule:rgba(201,169,97,.32);
+  --toc-rule-strong:rgba(201,169,97,.48);
 
   /* Binding rule below the gate: soft light blue (above-gate binding remains red). */
   --toc-rule-below:rgba(0,0,0,1);
 
-  --toc-parchment:rgba(194,186,170,1);
-  --toc-parchment-hi:rgba(204,196,180,.72);
+  --toc-parchment:rgba(38,27,26,1);
+  --toc-parchment-hi:rgba(58,40,38,.72);
 
   --toc-brass:rgba(201,169,97,1);
 
@@ -225,7 +225,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   top:auto;
   width:min(760px,calc(100vw - 24px));
   max-height:70vh;
-  background:linear-gradient(to bottom,var(--toc-parchment) 0%,rgba(168,160,146,1) 100%);
+  background:linear-gradient(to bottom,var(--toc-parchment) 0%,rgba(12,10,10,1) 100%);
   border:1px solid rgba(44,62,80,.16);
   border-left-color:var(--dock-tab-face,#010103);
   border-top-color:rgba(44,62,80,.18);
@@ -302,7 +302,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
    ------------------------------------------------- */
 
 /* Match Reliquary header sizing so both veils feel like the same instrument family. */
-.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(72,72,72,1);background:var(--dock-tab-face,#010103)}
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(100,80,90,1);background:var(--dock-tab-face,#010103)}
 
 /* ToC visible title: match the Reliquary/Mirror title formatting exactly. */
 .toc-panel-title{
@@ -373,8 +373,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    ------------------------------------------------- */
 
 .toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
-
-.toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(201,169,97,.06),rgba(201,169,97,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.05),rgba(0,0,0,0) 60%),linear-gradient(to bottom,var(--toc-parchment-hi),rgba(255,255,255,0));pointer-events:none}
+.toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(180,40,20,.08),rgba(180,40,20,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.18),rgba(0,0,0,0) 60%),linear-gradient(to bottom,var(--toc-parchment-hi),rgba(0,0,0,0));pointer-events:none}
 @supports (-webkit-touch-callout: none){.toc-panel-body::before{display:none}}
 
 .toc-panel-body>*{position:relative}
@@ -392,14 +391,14 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-index .toc-list,
 .toc-index .toc-annex{position:relative;z-index:1}
 
-.toc-group + .toc-group{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
+.toc-group + .toc-group{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(201,169,97,.18)}
 .toc-group-title{margin:0 0 .6rem 0;padding-left:1.65rem}
 
-.toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(44,62,80,.84);text-shadow:0 1px 0 rgba(255,255,255,.22)}
+.toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(220,200,165,.84);text-shadow:0 1px 0 rgba(0,0,0,.62)}
 .toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,
-      rgba(139,115,85,.62),
-      rgba(139,115,85,.28),
-      rgba(139,115,85,0));border-radius:999px}
+      rgba(201,169,97,.72),
+      rgba(201,169,97,.28),
+      rgba(201,169,97,0));border-radius:999px}
 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative;z-index:1}
@@ -416,7 +415,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   width:var(--toc-node);
   height:var(--toc-node);
   border-radius:999px;
-  background:var(--toc-parchment);
+  background:rgba(28,20,20,1);
   border:1px solid rgba(0,0,0,1);
   box-shadow:inset 0 0 0 2px rgba(139,100,40,.52),0 10px 14px rgba(0,0,0,.03);
   pointer-events:none;
@@ -430,7 +429,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2) + var(--toc-node-x-nudge, 0px));
   width:var(--toc-node-locked);
   height:var(--toc-node-locked);
-  background:var(--toc-parchment);
+  background:rgba(28,20,20,1);
   border-color:rgba(0,0,0,1);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
 }
@@ -448,7 +447,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 1.5px);transform:translateY(-50%);height:1.35px;border-radius:999px;background:linear-gradient(to right,rgba(220,0,0,1),rgba(220,0,0,.30),rgba(220,0,0,0));opacity:1}
-.toc-gate::after{content:'Ⱝ';position:absolute;left:calc(var(--toc-rule-x) - 3.3px);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:18px;line-height:1;color:rgba(220,0,0,1);text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
+.toc-gate::after{content:'Ⱝ';position:absolute;left:calc(var(--toc-rule-x) - 3.4px);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:18px;line-height:1;color:rgba(220,0,0,1);text-shadow:0 1px 0 rgba(255,255,255,.26),0 10px 16px rgba(0,0,0,.08);pointer-events:none}
 
 .toc-item-btn,.toc-locked-btn{display:block;width:100%;background:none;border:0;padding:var(--toc-item-pad-y) 0 var(--toc-item-pad-y) 1.65rem;margin:0;font:inherit;font-size:1rem;line-height:var(--toc-item-line);text-align:left;white-space:normal;overflow-wrap:anywhere}
 
@@ -459,16 +458,16 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item-btn{cursor:pointer;transition:color 200ms ease}
 
 /* IMPORTANT: JS focuses the first item on open, so do not underline on focus-visible. */
-.toc-item-btn:hover .toc-entry-title{color:#111;text-decoration:none}
-.toc-item-btn:focus-visible .toc-entry-title{color:#111;text-decoration:none}
+.toc-item-btn:hover .toc-entry-title{color:rgba(255,240,200,1);text-decoration:none}
+.toc-item-btn:focus-visible .toc-entry-title{color:rgba(255,240,200,1);text-decoration:none}
 
 .toc-item-btn:focus-visible{outline:2px solid rgba(201,169,97,.38);outline-offset:3px}
 
-.toc-item--current .toc-entry-title{font-weight:600;color:#111}
-.toc-item--current .toc-entry-key{color:rgba(44,62,80,.86)}
+.toc-item--current .toc-entry-title{font-weight:600;color:rgba(255,240,200,1)}
+.toc-item--current .toc-entry-key{color:rgba(201,169,97,.92)}
 
 /* Pending entries: keep the node brass (left dot). */
-.toc-item--pending .toc-entry-title{color:#111}
+.toc-item--pending .toc-entry-title{color:rgba(255,240,200,1)}
 
 /* Pending entries already render a deliberate lantern wash.
    Suppress the generic hover/focus underline so it does not double up. */
@@ -477,26 +476,27 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 /* Sealed entries: ashen slate (diluted ink) rather than "disabled gray".
    Slightly colder (blue-leaning) so sealed territory reads distinct from the warm unlocked track. */
-.toc-locked-btn{color:rgba(38,54,72,.58);opacity:.68;cursor:not-allowed;position:relative}
+
+.toc-locked-btn{color:rgba(180,160,130,.40);opacity:.68;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
 
-.toc-item--locked .toc-entry-key{color:rgba(38,54,72,.40)}
-.toc-item--locked .toc-entry-title{color:rgba(38,54,72,.54)}
+.toc-item--locked .toc-entry-key{color:rgba(180,160,130,.28)}
+.toc-item--locked .toc-entry-title{color:rgba(180,160,130,.38)}
 
 /* -------------------------------------------------
    Sealed boundary
    ------------------------------------------------- */
 
 /* Sealed region: cool wash behind locked entries AFTER the gate. */
+
 .toc-gate ~ .toc-item--locked .toc-locked-btn{
   position:relative;
   isolation:isolate;
   opacity:.54;
-  color:rgba(24,36,52,.55);
+  color:rgba(140,120,100,.55);
 }
-
-.toc-gate ~ .toc-item--locked .toc-entry-key{color:rgba(24,36,52,.40)}
-.toc-gate ~ .toc-item--locked .toc-entry-title{color:rgba(24,36,52,.54)}
+.toc-gate ~ .toc-item--locked .toc-entry-key{color:rgba(140,120,100,.38)}
+.toc-gate ~ .toc-item--locked .toc-entry-title{color:rgba(140,120,100,.48)}
 
 .toc-gate ~ .toc-item--locked .toc-locked-btn::after{
   content:'';
@@ -521,11 +521,12 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-gate ~ .toc-item--locked .toc-locked-btn > *{position:relative;z-index:1}
 
-.toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(44,62,80,.14)}
+.toc-annex{margin-top:1.05rem;padding-top:.95rem;border-top:1px solid rgba(201,169,97,.18)}
 .toc-annex-link{display:inline-flex;align-items:baseline;gap:.6rem;padding:.4rem .2rem .2rem 1.65rem;text-decoration:none;color:var(--toc-ink-soft);transition:color 200ms ease}
-.toc-annex-link:hover,.toc-annex-link:focus-visible{color:#111;text-decoration:underline;text-decoration-color:rgba(139,115,85,.55);text-decoration-thickness:1px;text-underline-offset:3px}
+.toc-annex-link:hover,.toc-annex-link:focus-visible{color:rgba(255,240,200,1);text-decoration:underline;text-decoration-color:rgba(201,169,97,.55);text-decoration-thickness:1px;text-underline-offset:3px}
 .toc-annex-link:focus-visible{outline:2px solid rgba(201,169,97,.30);outline-offset:4px}
-.toc-annex-sigil{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;color:rgba(139,115,85,.62)}
+
+.toc-annex-sigil{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;color:rgba(201,169,97,.72)}
 .toc-annex-text{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.10em;font-variant-caps:all-small-caps}
 
 .toc-toast{position:sticky;bottom:.65rem;margin:.95rem auto 0;width:fit-content;max-width:min(520px,92%);padding:.6rem 1rem;border-radius:999px;background:rgba(11,12,14,.92);color:rgba(245,245,240,.96);font-size:.95rem;letter-spacing:.04em;line-height:1.25;text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.22),0 2px 10px rgba(0,0,0,.12);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity 420ms ease,transform 180ms ease}
