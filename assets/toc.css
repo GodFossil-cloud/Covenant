@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.1.95 (Pending colors tuned) */
+/*! Covenant ToC Panel Styles v3.1.96 (body::before — red radial removed) */
 
 /* -------------------------------------------------
    Variables
@@ -66,84 +66,48 @@
 
   --dock-tab-height:calc(var(--toc-tab-height) + 2px);
 
-  /* Visual resize: tabs are 2px shorter, but their TOP EDGE must not move.
-     (Because the dock tabs are align-self:center, shrinking height by 2px would normally drop the top edge by 1px,
-      so we lift the whole tab by 1px via a shared carry.)
-
-     IMPORTANT: keep this an integer pixel to avoid device-pixel rounding reading as a 1px "proud" seat. */
   --dock-tab-height-visual:calc(var(--dock-tab-height) - 2px);
   --dock-tab-top-edge-lock:-1px;
 
-  /* Per-tab top edge lock.
-     Lets the active (welded) tab align to its panel without disturbing the other tab's dock seat. */
   --toc-tab-top-edge-lock:var(--dock-tab-top-edge-lock);
   --mirror-tab-top-edge-lock:var(--dock-tab-top-edge-lock);
 
-  /* Socket cutouts must stay seated in the dock slab (tabs can rise above). */
   --dock-socket-height:calc(var(--toc-tab-height) - 4px);
 
-  /* Sharpen the top corners only; keep bottom corners seated and round. */
   --dock-tab-radius-top:var(--toc-tab-radius);
 
-  /* Dock tab face base tone is defined in assets/footer-overrides.css; toc.css only consumes it. */
-
-  /* Vertical lift so dock tabs rise noticeably above the dock slab. */
   --dock-tab-raise:-31px;
-
-  /* Socket stays closer to the dock baseline so it reads as a true recess. */
   --dock-socket-raise:-2px;
-
-  /* Socket tuning: push the two cradles slightly outward from the center seal, and lift them so their top edge meets the footer slab top. */
   --dock-socket-spread:6px;
   --dock-socket-y-nudge:-6px;
 
-  /* Space between sheet bottom and footer top (0 = flush). */
   --toc-panel-gap:0px;
-
-  /* Optional: reserve a little top breathing-room when computing max height in JS. */
   --toc-top-safe:env(safe-area-inset-top, 0px);
-
-  /* Drag start: keep the fully-closed sheet seated at the dock baseline. */
   --toc-closed-offset:0px;
-
-  /* Fully-open lift: nudge the sheet 1px higher (JS drag math matches this baseline). */
   --toc-open-lift:0px;
 
-  /* Drag snap timing (should match JS SNAP_MS constant). */
   --toc-snap-duration:420ms;
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 
-  /* Dock tab medallion-cap (decorative; does not change the functional welded tab box). */
   --dock-cap-size:var(--dock-tab-width-visual);
   --dock-cap-h:calc(var(--dock-cap-size) / 2);
   --dock-cap-lift:10px;
   --dock-cap-half:calc(var(--dock-cap-h) / 2);
 
-  /* Socket cradle geometry: true semicircle tracing the lower half of the socket.
-     IMPORTANT: keep socket geometry independent of the medallion cap size. */
   --dock-socket-d:calc(var(--dock-tab-width) + 2px);
   --dock-socket-r:calc(var(--dock-socket-d) / 2);
   --dock-socket-h:var(--dock-socket-r);
 
-  /* Cradle border only: make the permanent socket cradle 2px taller than the window mask.
-     (Lets the top edge fully cover the footer slab hairline in the closed state.) */
   --dock-cradle-h:calc(var(--dock-socket-h) + 0px);
 
-  /* ToC header connector geometry.
-     IMPORTANT: notch width must match the *visual* tab width so the opened sheet meets the tab edges cleanly. */
   --toc-notch-w:var(--dock-tab-width-visual);
   --toc-notch-h:calc(var(--dock-tab-height, 42px) - 14px);
   --toc-seat-overlap:2px;
 
-  /* Seat welding: JS seats the tab box using (seat-dy + seat-overlap).
-     Tune so the tab TOP edge meets the panel TOP edge; notch/cap remain visual. */
   --toc-seat-dy:calc(var(--dock-tab-height) - var(--toc-seat-overlap));
 
-  /* Tab weld micro-nudge to eliminate hairline seams from fractional pixel rounding during motion.
-     NOTE: JS may temporarily override this root variable during close motion. */
   --toc-tab-weld-nudge:0px;
 
-  /* Dock cradle glow lives INSIDE the socket only (never over the footer slab). */
   --dock-socket-glow-toc:
     inset 0 0 22px rgba(236,246,255,0.20),
     inset 0 0 36px rgba(150,195,255,0.10);
@@ -152,7 +116,6 @@
     inset 0 0 22px rgba(255,110,130,0.16),
     inset 0 0 36px rgba(190,90,220,0.10);
 
-  /* Resting cradle glow (subtle, always-on). */
   --dock-socket-glow-toc-rest:
     inset 0 0 16px rgba(236,246,255,0.10),
     inset 0 0 30px rgba(150,195,255,0.06);
@@ -161,8 +124,6 @@
     inset 0 0 16px rgba(255,110,130,0.08),
     inset 0 0 30px rgba(190,90,220,0.05);
 
-  /* Dock tab tap-flash aura (footer dock only).
-     Shares the Lexicon-style glyph flash for ToC + Mirror tab tap-open/tap-close. */
   --dock-tab-glyph-tap-aura-size:2.4em;
   --dock-tab-glyph-tap-aura-blur:7px;
   --dock-tab-glyph-tap-aura:
@@ -177,16 +138,9 @@
   --dock-tab-glyph-tap-aura-close-duration:240ms;
 }
 
-/* iOS Safari: when the sheet is committed open (or opening), a +1px weld keeps the tab from
-   reading "proud" (slightly higher) than the panel edge due to subpixel rounding.
-   IMPORTANT: During close motion, JS cancels this weld with a matching -1px carry so the tab
-   does not visibly re-target transform mid-flight. */
 html.toc-opening,
 html.toc-open{--toc-tab-weld-nudge:1px}
 
-/* While a panel is open (or opening), drop the top-edge-lock so the active tab can meet its panel.
-   IMPORTANT: During closing, restore the lock so there is no last-frame 1px "drop then pop" when
-   root motion classes are cleaned up. */
 html.toc-opening,
 html.toc-open{--toc-tab-top-edge-lock:0px}
 html.toc-closing{--toc-tab-top-edge-lock:var(--dock-tab-top-edge-lock)}
@@ -252,8 +206,6 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 
 .toc-panel.is-dragging{transition:none !important}
 
-/* When the ToC is open, follow the tab's cradle nudge by shifting the panel (not the tab).
-   This preserves dock socket alignment while eliminating the outer-edge 1px overhang on the sheet. */
 @media (min-width:601px){
   html.toc-opening .toc-panel,
   html.toc-open .toc-panel,
@@ -280,10 +232,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   justify-content:flex-start;
   padding-top:8px;
   padding-bottom:0;
-
-  /* Symmetry: gap (panel-left → glyph-left) == gap (glyph-right → pill-left). */
   padding-left:var(--toc-notch-w);
-
   -webkit-tap-highlight-color:transparent;
   touch-action:none;
   user-select:none;
@@ -303,10 +252,8 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
    Header + connector strip
    ------------------------------------------------- */
 
-/* Match Reliquary header sizing so both veils feel like the same instrument family. */
 .toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(100,80,90,1);background:var(--dock-tab-face,#010103)}
 
-/* ToC visible title: match the Reliquary/Mirror title formatting exactly. */
 .toc-panel-title{
   position:relative;
   z-index:1;
@@ -325,13 +272,11 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   text-overflow:ellipsis;
 }
 
-/* Connector strip disabled: ToC tab stays anchored in the footer cradle now. */
 html.toc-opening .toc-panel-header::after,
 html.toc-open .toc-panel-header::after,
 html.toc-closing .toc-panel-header::after,
 html.toc-dock-settling .toc-panel-header::after{content:none}
 
-/* Persistent connector strip: visible regardless of root motion classes. */
 .toc-panel-header::after{
   content:'';
   position:absolute;
@@ -339,19 +284,15 @@ html.toc-dock-settling .toc-panel-header::after{content:none}
   top:0;
   bottom:0;
   width:var(--toc-notch-w);
-
-  /* Darker connector strip so the cutout reads as an intentional socket. */
   background:
     linear-gradient(to bottom,
       rgba(232,228,220,.96) 0%,
       rgba(222,217,208,.86) 52%,
       rgba(214,209,200,.78) 100%);
-
   border-right:1px solid rgba(44,62,80,.14);
   box-shadow:
     inset -10px 0 14px -14px rgba(0,0,0,.28),
     inset -1px 0 0 rgba(0,0,0,.06);
-
   pointer-events:none;
   z-index:0;
   opacity:1;
@@ -375,7 +316,19 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    ------------------------------------------------- */
 
 .toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative}
-.toc-panel-body::before{content:'';position:absolute;inset:0;background:radial-gradient(900px 420px at 50% 0%,rgba(180,40,20,.08),rgba(180,40,20,0) 55%),radial-gradient(900px 520px at 50% 120%,rgba(0,0,0,.18),rgba(0,0,0,0) 60%),linear-gradient(to bottom,var(--toc-parchment-hi),rgba(0,0,0,0));pointer-events:none}
+
+/* Body overlay: warm brass bloom at the top edge; no red. */
+.toc-panel-body::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(900px 320px at 50% 0%, rgba(201,169,97,.06), rgba(201,169,97,0) 55%),
+    radial-gradient(900px 520px at 50% 120%, rgba(0,0,0,.18), rgba(0,0,0,0) 60%),
+    linear-gradient(to bottom, var(--toc-parchment-hi), rgba(0,0,0,0));
+  pointer-events:none;
+}
+
 @supports (-webkit-touch-callout: none){.toc-panel-body::before{display:none}}
 
 .toc-panel-body>*{position:relative}
@@ -387,7 +340,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-index{position:relative;color:var(--toc-ink);--toc-gate-y:0px;--toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));isolation:isolate}
 .toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1.5px;background-image:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%),linear-gradient(to bottom,var(--toc-rule-below, rgba(115,170,235,.45)) 0%,var(--toc-rule-below, rgba(115,170,235,.45)) 90%,transparent 100%);background-repeat:no-repeat;background-size:1.5px var(--toc-gate-cut),1.5px calc(100% - var(--toc-gate-cut));background-position:0 0,0 var(--toc-gate-cut);box-shadow:none;pointer-events:none;z-index:-1}
 
-/* Binding ABOVE the gate: match the gate divider + ✦ marker; below remains the default rule. */
 .toc-index::after{content:'';position:absolute;top:.3rem;left:var(--toc-rule-x);width:1.5px;height:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));background:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 90%,transparent 100%);box-shadow:none;pointer-events:none;z-index:-1}
 
 .toc-index .toc-list,
@@ -405,8 +357,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative;z-index:1}
 
-/* Node indicators: restore empty circles for every entry so the binding reads like a stitched track.
-   Current + pending are then marked within that same track. */
 .toc-item::before{
   content:'';
   display:block;
@@ -425,8 +375,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   z-index:2;
 }
 
-/* Locked nodes: smaller + ashen (clear "not yet").
-   IMPORTANT: do not lower opacity on the whole dot, or the binding rule will bleed through the fill. */
 .toc-item--locked::before{
   left:calc(var(--toc-rule-x) - (var(--toc-node-locked) / 2) + var(--toc-node-x-nudge, 0px));
   width:var(--toc-node-locked);
@@ -436,13 +384,11 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
 }
 
-/* Sealed nodes AFTER gate: colder + more hollow (but keep the fill opaque so the rule can't show through). */
 .toc-gate ~ .toc-item--locked::before{
   border-color:rgba(0,0,0,1);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
 }
 
-/* Current + pending nodes: distinct. */
 .toc-item--current::before{background:radial-gradient(circle at 50% 50%,rgba(139,115,85,.86) 0 3px,rgba(139,115,85,0) 3.5px),rgba(247,244,238,1);border-color:rgba(0,0,0,1);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(201,169,97,.12),0 10px 14px rgba(0,0,0,.04);opacity:1}
 
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{background:radial-gradient(circle at 50% 50%,rgba(var(--toc-armed-rgb),.92) 0 3px,rgba(var(--toc-armed-rgb),0) 3.5px),rgba(247,244,238,1);border-color:rgba(0,0,0,1);box-shadow:0 0 0 1px rgba(255,255,255,.26),0 0 18px rgba(var(--toc-armed-rgb),.14),0 10px 14px rgba(0,0,0,.04);opacity:1}
@@ -459,7 +405,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 .toc-item-btn{cursor:pointer;transition:color 200ms ease}
 
-/* IMPORTANT: JS focuses the first item on open, so do not underline on focus-visible. */
 .toc-item-btn:hover .toc-entry-title{color:rgba(255,240,200,1);text-decoration:none}
 .toc-item-btn:focus-visible .toc-entry-title{color:rgba(255,240,200,1);text-decoration:none}
 
@@ -468,16 +413,10 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--current .toc-entry-title{font-weight:600;color:rgba(255,240,200,1)}
 .toc-item--current .toc-entry-key{color:rgba(201,169,97,.92)}
 
-/* Pending entries: keep the node brass (left dot). */
 .toc-item--pending .toc-entry-title{color:rgba(255,240,200,1)}
 
-/* Pending entries already render a deliberate lantern wash.
-   Suppress the generic hover/focus underline so it does not double up. */
 .toc-item--pending .toc-item-btn:hover .toc-entry-title,
 .toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
-
-/* Sealed entries: ashen slate (diluted ink) rather than "disabled gray".
-   Slightly colder (blue-leaning) so sealed territory reads distinct from the warm unlocked track. */
 
 .toc-locked-btn{color:rgba(180,160,130,.40);opacity:.68;cursor:not-allowed;position:relative}
 .toc-locked-btn:focus-visible{outline:2px solid rgba(201,169,97,.26);outline-offset:3px}
@@ -488,8 +427,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 /* -------------------------------------------------
    Sealed boundary
    ------------------------------------------------- */
-
-/* Sealed region: cool wash behind locked entries AFTER the gate. */
 
 .toc-gate ~ .toc-item--locked .toc-locked-btn{
   position:relative;
@@ -507,12 +444,9 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   bottom:-6px;
   left:1.05rem;
   right:.25rem;
-
   border-radius:16px;
   filter:blur(7px);
-
   background:none;
-
   opacity:.75;
   pointer-events:none;
   z-index:0;
@@ -535,13 +469,10 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    Footer tabs (ToC toggle + mirror)
    ------------------------------------------------- */
 
-/* Strategy B: one centered cluster governs tab symmetry. */
 .nav-seals{display:grid;grid-template-columns:var(--toc-tab-width) var(--seal-size) var(--toc-tab-width);column-gap:var(--toc-tab-gap);align-items:center;justify-content:center;min-width:0;position:relative;z-index:3;isolation:isolate}
 
-/* Keep dock controls above any decorative socket layers. */
 html .nav-seals > .nav-btn{position:relative;z-index:2}
 
-/* ToC + Mirror socket cradles: permanent dock cutouts that remain even when the tabs are seated. */
 .nav-seals::before,
 .nav-seals::after{
   content:'';
@@ -550,63 +481,40 @@ html .nav-seals > .nav-btn{position:relative;z-index:2}
   width:var(--dock-socket-d);
   height:var(--dock-cradle-h, var(--dock-socket-h));
   transform:translate3d(-50%,calc(-50% + var(--dock-socket-raise) + var(--dock-socket-y-nudge, 0px)),0);
-
-  /* True upward-facing semicircle (open top). */
   border-radius:0 0 var(--dock-socket-r) var(--dock-socket-r);
-
-  /* Keep the border from changing the socket geometry. */
   box-sizing:border-box;
-
-  /* Cut line: U-shape only (no top horizontal rim). */
   border:1px solid #39332A;
   border-top:0;
-
-  /* Needle taper: fade rim to invisible points at open top using a gradient mask. */
   -webkit-mask-image:linear-gradient(to top, #000 0%, #000 78%, transparent 100%);
   mask-image:linear-gradient(to top, #000 0%, #000 78%, transparent 100%);
-
   background:
-    /* Sidewall bevels (machining reads at the sides, not the top rim). */
     linear-gradient(to right,
       rgba(255,255,255,.08) 0%,
       rgba(255,255,255,0) 18%,
       rgba(255,255,255,0) 82%,
       rgba(0,0,0,.55) 100%),
-    /* Depth body (darker toward the arc floor). */
     radial-gradient(circle farthest-side at 50% 0,
       rgba(0,0,0,.92) 0%,
       rgba(16,16,20,.96) 46%,
       rgba(0,0,0,.985) 100%);
-
   --dock-socket-glow:inset 0 0 0 rgba(0,0,0,0);
-
   box-shadow:
-    /* Interior depth + faint bottom catch. */
     inset 0 12px 18px rgba(0,0,0,.80),
     inset 0 -10px 14px rgba(255,255,255,.06),
-    /* Tiny external lift so the cut reads against the slab. */
     0 1px 0 rgba(255,255,255,.05),
-    /* Intent glow (socket-only). */
     var(--dock-socket-glow);
-
   transition:box-shadow 420ms var(--toc-scroll-ease);
-
   opacity:1;
   pointer-events:none;
   z-index:1;
 }
 
-/* Left socket (ToC tab). */
 .nav-seals::before{left:calc(var(--toc-tab-width) / 2 - var(--dock-socket-spread, 0px));--dock-socket-glow:var(--dock-socket-glow-toc-rest)}
-
-/* Right socket (Mirror tab). */
 .nav-seals::after{left:calc(100% - (var(--toc-tab-width) / 2) + var(--dock-socket-spread, 0px));--dock-socket-glow:var(--dock-socket-glow-mirror-rest)}
 
-/* If the Lexicon door is open, keep both sockets quiet but present. */
 html.lexicon-scroll-lock .nav-seals::before,
 html.lexicon-scroll-lock .nav-seals::after{opacity:.45}
 
-/* Socket glow gates (root motion shells) — keep the cradle gradient alive while open, too. */
 html.toc-opening .nav-seals::before,
 html.toc-open .nav-seals::before,
 html.toc-closing .nav-seals::before{--dock-socket-glow:var(--dock-socket-glow-toc)}
@@ -616,7 +524,6 @@ html.reliquary-open .nav-seals::after,
 html.reliquary-closing .nav-seals::after,
 html.reliquary-dragging .nav-seals::after{--dock-socket-glow:var(--dock-socket-glow-mirror)}
 
-/* Socket glow gates (descendant drag states) — progressive enhancement. */
 @supports selector(:has(*)){
   .nav-seals:has(#tocToggle.is-toc-dragging)::before{--dock-socket-glow:var(--dock-socket-glow-toc)}
   .nav-seals:has(#mirrorToggle.is-reliquary-dragging)::after{--dock-socket-glow:var(--dock-socket-glow-mirror)}
@@ -631,19 +538,15 @@ html #mirrorToggle.dock-tab{
   padding:0;
   justify-self:center;
   align-self:center;
-
-  /* Quiet interior shadow so the tab feels seated in the dock. */
   box-shadow:inset 0 -12px 16px -16px rgba(0,0,0,.86);
 }
 
-/* Decorative: medallion cap on a stem (keeps the welded tab box intact). */
 html #tocToggle.dock-tab,
 html #mirrorToggle.dock-tab{overflow:visible}
 
 html #tocToggle.dock-tab .dock-cap,
 html #mirrorToggle.dock-tab .dock-cap{position:absolute;left:50%;top:0;width:var(--dock-cap-size);height:var(--dock-cap-h);transform:translate3d(-50%,calc(-1 * var(--dock-cap-lift) + (var(--dock-cap-size) - var(--dock-cap-h))),0);border-radius:0 0 999px 999px;overflow:hidden;pointer-events:none;z-index:0}
 
-/* Glyph-only: fully remove the medallion silhouette (rim + fill). */
 html #tocToggle.dock-tab .dock-cap::before,
 html #mirrorToggle.dock-tab .dock-cap::before{content:none;display:none}
 
@@ -656,7 +559,6 @@ html #mirrorToggle.dock-tab .toc-glyph{position:absolute;left:50%;top:calc(0px -
 html #tocToggle.dock-tab .toc-glyph{transform:translate3d(-50%,-50%,0) translateY(var(--toc-glyph-nudge-y, 0px))}
 html #mirrorToggle.dock-tab .toc-glyph{transform:translate3d(-50%,-50%,0) translateY(var(--mirror-glyph-nudge-y, 0px))}
 
-/* ToC + Mirror tabs ride with their panels (Lexicon-style). */
 html #tocToggle.dock-tab{
   transform:translate3d(
     var(--toc-tab-x-nudge, 0px),
@@ -664,12 +566,10 @@ html #tocToggle.dock-tab{
     0);
   transition:transform var(--toc-snap-duration) var(--toc-snap-ease);
   will-change:transform;
-
   touch-action:none;
   -webkit-tap-highlight-color:transparent;
   user-select:none;
   -webkit-user-select:none;
-
   cursor:ns-resize;
 }
 
@@ -680,37 +580,29 @@ html #mirrorToggle.dock-tab{
     0);
   transition:transform var(--reliquary-snap-duration, var(--toc-snap-duration)) var(--reliquary-snap-ease, var(--toc-snap-ease));
   will-change:transform;
-
   touch-action:none;
   -webkit-tap-highlight-color:transparent;
   user-select:none;
   -webkit-user-select:none;
-
   cursor:ns-resize;
 }
 
 html #tocToggle.dock-tab.is-toc-dragging,
 html #mirrorToggle.dock-tab.is-reliquary-dragging{transition:none !important}
 
-/* During dock settling, keep the dock tabs transitionless so the final variable cleanup
-   (clearing carry offsets) cannot read as a last-frame "snap". */
 html.toc-dock-settling #tocToggle.dock-tab,
 html.toc-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 
-/* When ToC + Reliquary are both open, ui-stack hides the background tab so it reads as covered. */
 html #tocToggle.dock-tab.is-ui-stack-covered,
 html #mirrorToggle.dock-tab.is-ui-stack-covered{opacity:0;visibility:hidden;pointer-events:none}
 
-/* Override the generic "nav-btn:not(.center)" framing (which uses inset:14px). */
 html #tocToggle.dock-tab::before,
 html #mirrorToggle.dock-tab::before{
   content:'';
   position:absolute;
   inset:0;
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
-
   border:1px solid rgba(0,0,0,0.72);
-
   box-shadow:inset 0 0 12px rgba(0,0,0,.95);
   pointer-events:none;
 }
@@ -723,25 +615,20 @@ html #mirrorToggle.dock-tab::after{
   border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) var(--toc-tab-radius) var(--toc-tab-radius);
   z-index:-1;
   pointer-events:none;
-
   background-color:var(--dock-tab-face, #010103);
   background-image:
     linear-gradient(to bottom, rgba(255, 242, 210, 0.10) 0%, rgba(255, 242, 210, 0) 14px),
     linear-gradient(to bottom, rgba(255, 232, 180, 0.06) 0%, rgba(0, 0, 0, 0.40) 100%);
 }
 
-/* Mirror tab: medallion-only (remove welded tab box permanently). */
 html #mirrorToggle.dock-tab{box-shadow:none;background:transparent}
 html #mirrorToggle.dock-tab::before,
 html #mirrorToggle.dock-tab::after{content:none !important;display:none !important}
 
-/* ToC tab: medallion-only (remove welded tab box permanently). */
 html #tocToggle.dock-tab{box-shadow:none;background:transparent}
 html #tocToggle.dock-tab::before,
 html #tocToggle.dock-tab::after{content:none !important;display:none !important}
 
-/* Bigger hit-box for side tabs (no visual change).
-   NOTE: bottom expansion stays modest so we do not steal taps from the citation label zone. */
 html #tocToggle.dock-tab::before{
   content:'' !important;
   display:block !important;
@@ -770,12 +657,10 @@ html #mirrorToggle.dock-tab::before{
   pointer-events:auto;
 }
 
-/* ToC tab: sharp bottom-left, slightly rounder bottom-right. */
 html #tocToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 html #tocToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 html #tocToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 
-/* Mirror tab: sharp bottom-right, slightly rounder bottom-left. */
 html #mirrorToggle.dock-tab{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 html #mirrorToggle.dock-tab::before{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
 html #mirrorToggle.dock-tab::after{border-radius:var(--dock-tab-radius-top) var(--dock-tab-radius-top) 0 0}
@@ -794,7 +679,6 @@ html #mirrorToggle.dock-tab:focus-visible::after{
     linear-gradient(to bottom, rgba(255, 235, 180, 0.10) 0%, rgba(0, 0, 0, 0.34) 100%);
 }
 
-/* Mechanical press: remove iOS touch-down 1px hop (it reads like a dock glitch). */
 html #mirrorToggle.dock-tab:active:not(:disabled){
   transform:translate3d(
     var(--mirror-tab-x-nudge, 0px),
@@ -802,7 +686,6 @@ html #mirrorToggle.dock-tab:active:not(:disabled){
     0);
 }
 
-/* ToC tab is also a drag handle: remove the 1px :active "jump" at touch-down. */
 html #tocToggle.dock-tab:active:not(:disabled){
   transform:translate3d(
     var(--toc-tab-x-nudge, 0px),
@@ -813,10 +696,6 @@ html #tocToggle.dock-tab:active:not(:disabled){
 html #tocToggle.dock-tab .toc-glyph,
 html #mirrorToggle.dock-tab .toc-glyph{font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:.86rem;line-height:1;display:inline-block}
 
-/* Dock z-index is already stable via assets/covenant.css (.nav-footer { z-index: 1700 }).
-   Do not toggle dock/toggle z-index during toc-opening; iOS Safari can jitter ~1px on compositor re-rasterization. */
-
-/* During settle, ignore hover/pointer churn while the tab is sliding into place (desktop fine pointers only). */
 @media (hover: hover) and (pointer: fine){html.toc-closing #tocToggle{pointer-events:none}}
 
 /* -------------------------------------------------
@@ -886,7 +765,6 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     --toc-tab-gap:14px;
     --dock-cap-size:var(--dock-tab-width-visual);
     --dock-cap-lift:9px;
-
     --dock-socket-d:calc(var(--dock-tab-width) + 2px);
     --dock-socket-r:calc(var(--dock-socket-d) / 2);
     --dock-socket-h:var(--dock-socket-r);
@@ -898,12 +776,9 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
     right:0;
     width:auto;
     border-radius:0 0 0 0;
-
     max-height:none;
   }
 
-  /* Mobile Safari: the tab's decorative cap can extend ~1px beyond the button's rect.
-     When open, bias the sheet left by 1px so the outer edge never reads "overhanging". */
   html.toc-opening .toc-panel,
   html.toc-open .toc-panel,
   html.toc-closing .toc-panel{left:max(0px, calc(var(--toc-panel-left, 12px) - 1px))}
@@ -920,7 +795,6 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
    Motion hairline guard
    ------------------------------------------------- */
 
-/* During open/close motion (ToC + Reliquary), suppress the top hairline to avoid stray 1px seams. */
 html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
 html.reliquary-opening .nav-footer,
@@ -930,10 +804,8 @@ html.reliquary-closing .nav-footer{border-top-color:transparent !important}
    ToC header connector strip override
    ------------------------------------------------- */
 
-/* Remove the top-left rectangular connector/notch block. */
 .toc-panel-header::after{content:none !important}
 
-/* If a visible title exists, do not reserve space for the removed connector strip. */
 html.toc-opening .toc-produced-title,
 html.toc-open .toc-produced-title,
 html.toc-closing .toc-produced-title,
@@ -994,18 +866,13 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   86%{opacity:.20;transform:translate3d(0,0,0) scale(1)}
 }
 
-/* Wash lives on the whole button surface (behind text).
-   Keep the staged node brass via .toc-item--pending::before above. */
 .toc-item--pending .toc-item-btn{
   position:relative;
   isolation:isolate;
 }
 
-/* Pending node pulse (the left dot becomes unmistakably "armed"). */
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{animation:tocPendingNodePulse 1100ms ease-in-out infinite}
 
-/* Ember flicker layer (brief, occasional flare) beneath the main wash.
-   IMPORTANT: keep this on the wash shade (not violet), so the node/underline remain the only violet elements. */
 .toc-item--pending .toc-item-btn::before{
   content:'';
   position:absolute;
@@ -1013,17 +880,13 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   bottom:-10px;
   left:.92rem;
   right:46%;
-
   border-radius:999px;
-
   background:
     radial-gradient(closest-side at 0% 56%, rgba(var(--toc-pending-wash-rgb),.32) 0%, rgba(var(--toc-pending-wash-rgb),0) 74%),
     radial-gradient(closest-side at 12% 56%, rgba(var(--toc-pending-wash-rgb),.20) 0%, rgba(var(--toc-pending-wash-rgb),0) 78%);
-
   filter:blur(5px);
   opacity:.18;
   animation:tocLanternFlicker 5200ms linear infinite;
-
   pointer-events:none;
   z-index:0;
 }
@@ -1033,38 +896,27 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   position:absolute;
   top:-6px;
   bottom:-6px;
-
-  /* Pull the wash closer to the left gutter so it reads as emanating from the brass node. */
   left:1.02rem;
   right:.30rem;
-
-  /* Dreamy lantern: bigger radius + blur to erase "box" edges. */
   border-radius:18px;
   filter:blur(7px);
-
   background:
-    /* Soft lamp shade (light): keep it gentle; the violet is reserved for node + underline. */
     radial-gradient(78% 190% at 0% 56%, rgba(var(--toc-pending-wash-rgb),.12) 0%, rgba(var(--toc-pending-wash-rgb),0) 60%),
     radial-gradient(95% 220% at 10% 56%, rgba(var(--toc-pending-wash-rgb),.16) 0%, rgba(var(--toc-pending-wash-rgb),0) 64%),
     radial-gradient(120% 260% at 68% 56%, rgba(var(--toc-pending-wash-rgb),.08) 0%, rgba(var(--toc-pending-wash-rgb),0) 70%),
     linear-gradient(to right, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 60%);
-
   box-shadow:
     0 0 28px rgba(var(--toc-pending-wash-rgb),.14),
     0 0 24px rgba(var(--toc-pending-wash-rgb),.10),
     inset 12px 0 18px -22px rgba(var(--toc-pending-wash-rgb),.22),
     inset 0 -14px 18px -26px rgba(0,0,0,.58);
-
   animation:tocLanternWash 2500ms ease-in-out infinite alternate;
-
   pointer-events:none;
   z-index:0;
 }
 
 .toc-item--pending .toc-item-btn > *{position:relative;z-index:1}
 
-/* Pending selection: title effect (staged vs confirm).
-   Confirm stage uses :disabled because JS disables the button during nav delay. */
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"]) .toc-entry-title{
   background-image:linear-gradient(to right,
     rgba(var(--toc-armed-underline-rgb),0),
@@ -1073,11 +925,9 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   background-repeat:no-repeat;
   background-position:0 calc(100% - .12em);
   background-size:var(--toc-pending-title-underline-w, 44%) 1px;
-
   text-shadow:
     0 1px 0 rgba(255,255,255,.20),
     0 0 10px rgba(var(--toc-armed-underline-rgb),.10);
-
   transition:
     background-size 180ms ease,
     text-shadow 180ms ease;
@@ -1085,14 +935,12 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
 .toc-item--pending:not(.toc-item--current):not([aria-current="page"]) .toc-item-btn:disabled .toc-entry-title{
   background-size:var(--toc-confirm-title-underline-w, 100%) 1px;
-
   text-shadow:
     0 1px 0 rgba(255,255,255,.22),
     0 0 14px rgba(var(--toc-armed-underline-rgb),.18),
     0 0 28px rgba(var(--toc-armed-underline-rgb),.09);
 }
 
-/* Kill the old underline indicator (baseline + fill). */
 .toc-item--pending .toc-entry-title::before,
 .toc-item--pending .toc-entry-title::after{content:none !important;display:none !important}
 
@@ -1102,11 +950,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
 :root{
   --toc-glyph-rest-color:rgba(212,226,246,0.72);
-
   --toc-glyph-intent-color:rgba(245,248,255,0.94);
-
-  /* Keep glyph shadow tight so the footer slab never reads "washed".
-     Intent glow is carried by the socket cradle, not the glyph aura. */
   --toc-glyph-intent-shadow:
     0 1px 0 rgba(0,0,0,0.92),
     0 0 4px rgba(255,255,255,0.10);
@@ -1116,18 +960,13 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
   position:relative;
   display:inline-block;
   z-index:0;
-
   color:var(--toc-glyph-rest-color, rgba(212,226,246,0.72));
-
-  text-shadow:
-    0 1px 0 rgba(0,0,0,0.92);
-
+  text-shadow:0 1px 0 rgba(0,0,0,0.92);
   transition:
     color 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
     text-shadow 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Glow only during motion/drag (not while fully open). */
 html.toc-opening #navFooter #tocToggle .toc-glyph,
 html.toc-closing #navFooter #tocToggle .toc-glyph,
 #navFooter #tocToggle.is-toc-dragging .toc-glyph{
@@ -1139,18 +978,11 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
    Dock glyph aura guard
    ------------------------------------------------- */
 
-/* Never allow glyph aura overlays to paint over the footer slab.
-   Any intent glow should live inside the dock cradle cutouts above.
-
-   Exception: allow explicit tap flash windows (is-tap-opening/is-tap-closing) to paint. */
 #navFooter #tocToggle:not(.is-tap-opening):not(.is-tap-closing) .toc-glyph::before,
 #navFooter #mirrorToggle:not(.is-tap-opening):not(.is-tap-closing) .toc-glyph::before{content:none !important;display:none !important}
 
 /* -------------------------------------------------
-   Dock tab tap flash (footer dock only)
-   Scope: #navFooter #tocToggle + #mirrorToggle on tap-open / tap-close.
-   Mirror tab: footer-overrides.css globally disables its legacy aura;
-   re-enable only during explicit tap-flash windows.
+   Dock tab tap flash
    ------------------------------------------------- */
 
 #navFooter #tocToggle .toc-glyph,
@@ -1163,12 +995,8 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
 #navFooter #tocToggle.is-tap-opening,
 #navFooter #tocToggle.is-tap-closing,
 #navFooter #mirrorToggle.is-tap-opening,
-#navFooter #mirrorToggle.is-tap-closing{
-  /* Let the aura radiate beyond the medallion silhouette during the tap flash. */
-  overflow:visible;
-}
+#navFooter #mirrorToggle.is-tap-closing{overflow:visible}
 
-/* Base aura layer (hidden until tapped). */
 #navFooter #tocToggle .toc-glyph::before,
 #navFooter #mirrorToggle .toc-glyph::before{
   content:'';
@@ -1198,23 +1026,19 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
     animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms)
       cubic-bezier(0.22, 0.61, 0.36, 1) 1;
   }
-
   #navFooter #tocToggle.is-tap-closing .toc-glyph::before{
     animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms)
       cubic-bezier(0.22, 0.61, 0.36, 1) 1;
   }
-
   #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before,
   #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
     content:'' !important;
     display:block !important;
   }
-
   #navFooter #mirrorToggle.is-tap-opening .toc-glyph::before{
     animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-open-duration, 280ms)
       cubic-bezier(0.22, 0.61, 0.36, 1) 1;
   }
-
   #navFooter #mirrorToggle.is-tap-closing .toc-glyph::before{
     animation:dockTabTapAuraPulse var(--dock-tab-glyph-tap-aura-close-duration, 240ms)
       cubic-bezier(0.22, 0.61, 0.36, 1) 1;
