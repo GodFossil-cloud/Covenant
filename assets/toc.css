@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.2.0 (header border-bottom neutralized; no more mauve seam) */
+/*! Covenant ToC Panel Styles v3.2.1 (header border restored; ash gradient extended) */
 
 /* -------------------------------------------------
    Variables
@@ -162,9 +162,10 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
     radial-gradient(900px 520px at 50% 0%, rgba(201,169,97,.08), rgba(201,169,97,0) 55%),
     linear-gradient(to bottom,
       var(--toc-parchment) 0%,
-      rgba(20,20,22,1) 30%,
-      rgba(14,14,17,1) 60%,
-      rgba(8,8,11,1) 80%,
+      var(--toc-parchment) 18%,
+      rgba(22,22,24,1) 42%,
+      rgba(14,14,17,1) 68%,
+      rgba(8,8,11,1) 86%,
       rgba(6,6,8,1) 100%);
   border:1px solid rgba(44,62,80,.16);
   border-left-color:var(--dock-tab-face,#010103);
@@ -235,8 +236,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
    Header + connector strip
    ------------------------------------------------- */
 
-/* border-bottom was rgba(100,80,90,1) — fully opaque mauve-red, visually bled into body top */
-.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(38,38,42,1);background:var(--dock-tab-face,#010103)}
+.toc-panel-header{position:relative;z-index:4;padding:.95rem 1.25rem .78rem;min-height:3.05rem;border-bottom:1px solid rgba(100,80,90,1);background:var(--dock-tab-face,#010103)}
 
 .toc-panel-title{
   position:relative;
