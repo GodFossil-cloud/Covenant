@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.3.0 (obsidian bg matching Glossary; black binding restored) */
+/*! Covenant ToC Panel Styles v3.3.1 (panel wrapper uses Glossary gradient) */
 
 /* -------------------------------------------------
    Variables
@@ -157,7 +157,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   top:auto;
   width:min(760px,calc(100vw - 24px));
   max-height:70vh;
-  background:#08090b;
+  background:#141418;
   border:1px solid rgba(44,62,80,.16);
   border-left-color:var(--dock-tab-face,#010103);
   border-top-color:rgba(44,62,80,.18);
@@ -173,6 +173,14 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   flex-direction:column;
   overflow:hidden;
   background-clip:padding-box;
+}
+
+@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))){
+  .toc-panel{
+    background:linear-gradient(to bottom,rgba(14,14,18,.52),rgba(10,10,12,.66));
+    -webkit-backdrop-filter:blur(10px) saturate(120%);
+    backdrop-filter:blur(10px) saturate(120%);
+  }
 }
 
 .toc-panel.is-open{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px))}
