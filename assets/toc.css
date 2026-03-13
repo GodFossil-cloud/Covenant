@@ -510,9 +510,9 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   filter:blur(7px);
 
   background:
-    radial-gradient(85% 260% at 0% 55%, rgba(200,220,255,.12) 0%, rgba(200,220,255,0) 62%),
-    radial-gradient(110% 300% at 55% 55%, rgba(160,190,235,.06) 0%, rgba(160,190,235,0) 70%),
-    linear-gradient(to right, rgba(255,255,255,.05), rgba(255,255,255,0) 56%);
+    radial-gradient(85% 260% at 0% 55%, rgba(12,10,10,.72) 0%, rgba(12,10,10,0) 62%),
+    radial-gradient(110% 300% at 55% 55%, rgba(12,10,10,.48) 0%, rgba(12,10,10,0) 70%),
+    linear-gradient(to right, rgba(12,10,10,.32), rgba(12,10,10,0) 56%);
 
   opacity:.75;
   pointer-events:none;
