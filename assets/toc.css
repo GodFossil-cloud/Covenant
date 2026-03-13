@@ -509,10 +509,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   border-radius:16px;
   filter:blur(7px);
 
-  background:
-    radial-gradient(85% 260% at 0% 55%, rgba(12,10,10,.72) 0%, rgba(12,10,10,0) 62%),
-    radial-gradient(110% 300% at 55% 55%, rgba(12,10,10,.48) 0%, rgba(12,10,10,0) 70%),
-    linear-gradient(to right, rgba(12,10,10,.32), rgba(12,10,10,0) 56%);
+  background:none;
 
   opacity:.75;
   pointer-events:none;
