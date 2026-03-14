@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.3.8 (gate sigil left; rule terminus at last node) */
+/*! Covenant ToC Panel Styles v3.3.15 (rule scoped to list; ::after sigil removed) */
 
 /* -------------------------------------------------
    Variables
@@ -316,40 +316,42 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 /*
   Binding rule layout:
-    --toc-gate-cut = distance from top of rule to gate centre = max(0, gate-y - rule-top-offset)
+    The rule lives on .toc-list::before so its bottom edge is flush with
+    the last <li> (Seal and Consecration) and never bleeds into .toc-annex.
+
+    --toc-gate-cut = distance from top of rule to gate centre.
 
   ::before  full-height rule track
     - background layer 1 (size: gate-cut):  gold above the gate
     - background layer 2 (size: remainder): black below the gate
 
-  ::after   gold fill overlay painted on top of ::before, same position/size as layer 1
-    - ensures the above-gate segment reads as bright gold even on dark backgrounds
-    - z-index 0 so it sits above ::before (z -1) but below list items (z 1)
-
-  Rule terminus:
-    bottom is set to match the last list item's node centre so the rule
-    does not bleed into the annex or empty space below. The gradient's
-    transparent tail handles the visual fade at that point.
-    JS may override --toc-rule-bottom for pixel-perfect alignment.
+  The ::after gold-fill overlay on .toc-index has been removed; the gold
+  segment is rendered entirely by ::before layer 1, avoiding the spurious
+  semi-transparent marker that appeared on some renderers.
 */
 
 .toc-index{
   position:relative;
   color:var(--toc-ink);
-  --toc-gate-y:0px;
-  --toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));
-  /* JS sets this to the last node's offsetTop when the list renders */
-  --toc-rule-bottom:.3rem;
   isolation:isolate;
 }
 
-/* Full-height rule track: gold above gate, black below.
-   bottom is driven by --toc-rule-bottom so the line ends at the last node. */
-.toc-index::before{
+/* Binding rule: scoped to .toc-list so bottom terminates at the last node. */
+.toc-list{
+  list-style:none;
+  max-width:100%;
+  padding:0;
+  margin:0;
+  position:relative;
+  --toc-gate-y:0px;
+  --toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));
+}
+
+.toc-list::before{
   content:'';
   position:absolute;
   top:.3rem;
-  bottom:var(--toc-rule-bottom, .3rem);
+  bottom:.3rem;
   left:var(--toc-rule-x);
   width:1.5px;
   background-image:
@@ -363,20 +365,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   z-index:-1;
 }
 
-/* Gold fill overlay: covers exactly the above-gate segment */
-.toc-index::after{
-  content:'';
-  position:absolute;
-  top:.3rem;
-  left:var(--toc-rule-x);
-  width:1.5px;
-  height:var(--toc-gate-cut);
-  background:linear-gradient(to bottom, transparent 0%, rgba(201,169,97,.82) 10%, rgba(201,169,97,.62) 90%, transparent 100%);
-  box-shadow:0 0 8px rgba(201,169,97,.18);
-  pointer-events:none;
-  z-index:0;
-}
-
 .toc-index .toc-list,
 .toc-index .toc-annex{position:relative;z-index:1}
 
@@ -386,7 +374,6 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-tab{display:inline-block;position:relative;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:650;letter-spacing:.18em;font-variant-caps:all-small-caps;color:rgba(220,200,165,.84);text-shadow:0 1px 0 rgba(0,0,0,.62)}
 .toc-tab::after{content:'';display:block;margin-top:.32rem;height:1px;width:min(220px,72vw);background:linear-gradient(to right,rgba(201,169,97,.72),rgba(201,169,97,.28),rgba(201,169,97,0));border-radius:999px}
 
-.toc-list{list-style:none;max-width:100%;padding:0;margin:0}
 .toc-item{margin:0 0 .42rem;display:block;max-width:100%;position:relative;z-index:1}
 
 .toc-item::before{
