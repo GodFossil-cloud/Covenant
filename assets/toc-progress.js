@@ -27,6 +27,17 @@
     return px;
   }
 
+  // Returns the offsetTop of el relative to ancestor (both must share a containing block chain).
+  function offsetTopFrom(el, ancestor){
+    let y = 0;
+    let node = el;
+    while(node && node !== ancestor){
+      y += node.offsetTop;
+      node = node.offsetParent;
+    }
+    return y;
+  }
+
   function ensureEl(tocIndex, className){
     let el = $(`.${className}`, tocIndex);
     if(el) return el;
@@ -155,93 +166,91 @@
     const items = $$('.toc-item', tocIndex);
     if(!items.length) return;
 
-    const indexRect = tocIndex.getBoundingClientRect();
     const indexStyle = window.getComputedStyle(tocIndex);
-
     const ruleXToken = (indexStyle.getPropertyValue('--toc-rule-x') || '.95rem').trim();
     const ruleTopToken = (indexStyle.getPropertyValue('--toc-rule-top') || '.3rem').trim();
     const ruleBottomToken = (indexStyle.getPropertyValue('--toc-rule-bottom') || '2.9rem').trim();
 
-    const ruleXPx = pxFromCssLength(tocIndex, ruleXToken);
-    const ruleTopPx = pxFromCssLength(tocIndex, ruleTopToken);
+    const ruleXPx     = pxFromCssLength(tocIndex, ruleXToken);
+    const ruleTopPx   = pxFromCssLength(tocIndex, ruleTopToken);
     const ruleBottomPx = pxFromCssLength(tocIndex, ruleBottomToken);
 
-    const maxH = Math.max(0, indexRect.height - ruleTopPx - ruleBottomPx);
+    const totalH = tocIndex.offsetHeight;
+    const maxH   = Math.max(0, totalH - ruleTopPx - ruleBottomPx);
 
-    // Gate geometry — resolved first so fill can use gateY.
-    const gateEl = $('.toc-gate', tocIndex);
+    // Gate geometry — scroll-stable via offsetTop.
+    const gateEl   = $('.toc-gate', tocIndex);
     const hasLocked = !!$('.toc-item--locked', tocIndex);
 
     let gateY = null;
     if(gateEl && hasLocked){
-      const gateRect = gateEl.getBoundingClientRect();
-      gateY = (gateRect.top + (gateRect.height / 2)) - indexRect.top;
+      const gateOffsetTop = offsetTopFrom(gateEl, tocIndex);
+      gateY = gateOffsetTop + (gateEl.offsetHeight / 2);
       gateY = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + maxH));
     }
 
-    // Fill: runs from top of track down to gate (if present), else to current node.
+    // Fill: top-of-track → gate. Fallback to current node if no gate.
     const fill = ensureFillEl(tocIndex);
     let fillH;
+
     if(gateY !== null){
       fillH = gateY - ruleTopPx;
     } else {
-      const current = $('.toc-item--current', tocIndex);
+      const current      = $('.toc-item--current', tocIndex);
       const lastUnlocked = [...items].reverse().find(it => !it.classList.contains('toc-item--locked'));
-      const anchor = current || lastUnlocked || items[0];
-      const btn = $('.toc-item-btn, .toc-locked-btn', anchor) || anchor;
-      const btnStyle = window.getComputedStyle(btn);
-      const fontSizePx = parseFloat(btnStyle.fontSize) || 16;
-      const lineHeightPx = (btnStyle.lineHeight === 'normal') ? (fontSizePx * 1.2) : (parseFloat(btnStyle.lineHeight) || (fontSizePx * 1.2));
-      const padTopPx = parseFloat(btnStyle.paddingTop) || 0;
-      const anchorRect = anchor.getBoundingClientRect();
-      const nodeCenterY = anchorRect.top + padTopPx + (lineHeightPx / 2);
-      fillH = nodeCenterY - (indexRect.top + ruleTopPx);
+      const anchor       = current || lastUnlocked || items[0];
+      const btn          = $('.toc-item-btn, .toc-locked-btn', anchor) || anchor;
+      const btnStyle     = window.getComputedStyle(btn);
+      const fontSizePx   = parseFloat(btnStyle.fontSize) || 16;
+      const lineHeightPx = (btnStyle.lineHeight === 'normal')
+        ? (fontSizePx * 1.2)
+        : (parseFloat(btnStyle.lineHeight) || (fontSizePx * 1.2));
+      const padTopPx     = parseFloat(btnStyle.paddingTop) || 0;
+      const anchorOffsetTop = offsetTopFrom(anchor, tocIndex);
+      fillH = anchorOffsetTop + padTopPx + (lineHeightPx / 2) - ruleTopPx;
     }
+
     fillH = Math.max(0, Math.min(fillH, maxH));
 
-    // Center fill on rule: rule is 1.5px wide at left:ruleXPx, so center = ruleXPx + 0.75px.
-    // Fill is also 1.5px wide, so left = center - 0.75 = ruleXPx.
-    fill.style.left = `${ruleXPx}px`;
-    fill.style.top = `${ruleTopPx}px`;
-    fill.style.height = `${fillH}px`;
+    fill.style.left      = `${ruleXPx}px`;
+    fill.style.top       = `${ruleTopPx}px`;
+    fill.style.height    = `${fillH}px`;
     fill.style.transform = 'none';
-    fill.style.opacity = (fillH > 0) ? '1' : '0';
+    fill.style.opacity   = (fillH > 0) ? '1' : '0';
 
     // Gate + sealed region emphasis.
     const sealedSpine = ensureSealedSpineEl(tocIndex);
-    const gateLine = ensureGateEmphasisEl(tocIndex);
-    const gateSigil = ensureGateSigilEl(tocIndex);
+    const gateLine    = ensureGateEmphasisEl(tocIndex);
+    const gateSigil   = ensureGateSigilEl(tocIndex);
 
     if(gateY !== null){
       const sealedTop = gateY;
-      const sealedH = Math.max(0, (ruleTopPx + maxH) - sealedTop);
+      const sealedH   = Math.max(0, (ruleTopPx + maxH) - sealedTop);
 
-      sealedSpine.style.left = `${ruleXPx}px`;
-      sealedSpine.style.top = `${sealedTop}px`;
-      sealedSpine.style.height = `${sealedH}px`;
+      sealedSpine.style.left      = `${ruleXPx}px`;
+      sealedSpine.style.top       = `${sealedTop}px`;
+      sealedSpine.style.height    = `${sealedH}px`;
       sealedSpine.style.transform = 'translateX(-1px)';
-      sealedSpine.style.opacity = (sealedH > 8) ? '1' : '0';
+      sealedSpine.style.opacity   = (sealedH > 8) ? '1' : '0';
 
-      gateLine.style.left = `${ruleXPx}px`;
-      gateLine.style.top = `${Math.max(ruleTopPx, gateY - 1)}px`;
-      gateLine.style.right = '0.2rem';
+      gateLine.style.left    = `${ruleXPx}px`;
+      gateLine.style.top     = `${Math.max(ruleTopPx, gateY - 1)}px`;
+      gateLine.style.right   = '0.2rem';
       gateLine.style.opacity = '1';
 
-      gateSigil.style.left = `${ruleXPx}px`;
-      gateSigil.style.top = `${gateY}px`;
+      gateSigil.style.left      = `${ruleXPx}px`;
+      gateSigil.style.top       = `${gateY}px`;
       gateSigil.style.transform = 'translate(-50%, -50%)';
-      gateSigil.style.opacity = '1';
+      gateSigil.style.opacity   = '1';
     } else {
       sealedSpine.style.opacity = '0';
-      gateLine.style.opacity = '0';
-      gateSigil.style.opacity = '0';
+      gateLine.style.opacity    = '0';
+      gateSigil.style.opacity   = '0';
     }
   }
 
   function schedule(){
-    window.requestAnimationFrame(()=>{
-      computeProgress();
-    });
+    window.requestAnimationFrame(() => { computeProgress(); });
   }
 
   function boot(){
@@ -252,19 +261,25 @@
     }
 
     const html = document.documentElement;
-    const htmlObs = new MutationObserver(()=>{
+    const htmlObs = new MutationObserver(() => {
       if(html.classList.contains('toc-open') || html.classList.contains('toc-opening')) schedule();
     });
     htmlObs.observe(html, { attributes:true, attributeFilter:['class'] });
 
-    window.addEventListener('resize', ()=>{
+    window.addEventListener('resize', () => {
       if(html.classList.contains('toc-open')) schedule();
     }, { passive:true });
 
     if(window.visualViewport){
-      window.visualViewport.addEventListener('resize', ()=>{
+      window.visualViewport.addEventListener('resize', () => {
         if(html.classList.contains('toc-open')) schedule();
       }, { passive:true });
+    }
+
+    // Also re-run on panel body scroll so fill stays locked to gate while scrolling.
+    const body = document.querySelector('.toc-panel-body');
+    if(body){
+      body.addEventListener('scroll', () => { schedule(); }, { passive:true });
     }
 
     schedule();
