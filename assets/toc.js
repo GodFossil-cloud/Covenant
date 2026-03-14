@@ -697,28 +697,22 @@
     //     bleeds past it into .toc-annex or dead space below. ---
     var listEl = indexEl.querySelector('.toc-list');
     if (listEl && listEl.getBoundingClientRect) {
-      var listRect = listEl.getBoundingClientRect();
 
     var allItems = listEl.querySelectorAll('.toc-item');
     var lastItem = allItems.length ? allItems[allItems.length - 1] : null;
+
       if (lastItem) {
-        // offsetTop is relative to .toc-list (the offsetParent) — scroll-independent
         var itemOffsetTop = lastItem.offsetTop;
-        var itemHeight    = lastItem.offsetHeight;
 
-        // Replicate exactly what CSS does for .toc-item::before top + translateY(-50%)
-        var padY     = readCssNumberVar('--toc-item-pad-y') || 0;
-        var lineH    = readCssNumberVar('--toc-item-line')  || 1.55;
-        var fontSize = parseFloat(getComputedStyle(lastItem).fontSize || '16') || 16;
-        var nodeH    = parseFloat(getComputedStyle(lastItem, '::before').height || '10') || 10;
+        // Resolve rem values to px by multiplying by root font-size
+        var rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        var padY   = readCssNumberVar('--toc-item-pad-y') * rootFontSize;  // .26rem → px
+        var lineH  = readCssNumberVar('--toc-item-line') || 1.55;          // unitless, fine
+        var fontSize = parseFloat(getComputedStyle(lastItem).fontSize) || 16;
 
-        // dot centre from top of lastItem
-        var dotFromItemTop = padY + (fontSize * lineH / 2) - (nodeH / 2);
-
-        // dot centre from top of .toc-list
+        var dotFromItemTop = padY + (fontSize * lineH / 2);
         var dotFromListTop = itemOffsetTop + dotFromItemTop;
 
-        // listEl.scrollHeight is the full layout height, scroll-independent
         var offset = listEl.scrollHeight - dotFromListTop;
         if (!isFinite(offset) || offset < 0) offset = 0;
 
