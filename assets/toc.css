@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.3.7 (cool-gray panel bg; gate sigil ๛) */
+/*! Covenant ToC Panel Styles v3.3.8 (gate sigil left; rule terminus at last node) */
 
 /* -------------------------------------------------
    Variables
@@ -325,6 +325,12 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   ::after   gold fill overlay painted on top of ::before, same position/size as layer 1
     - ensures the above-gate segment reads as bright gold even on dark backgrounds
     - z-index 0 so it sits above ::before (z -1) but below list items (z 1)
+
+  Rule terminus:
+    bottom is set to match the last list item's node centre so the rule
+    does not bleed into the annex or empty space below. The gradient's
+    transparent tail handles the visual fade at that point.
+    JS may override --toc-rule-bottom for pixel-perfect alignment.
 */
 
 .toc-index{
@@ -332,15 +338,18 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   color:var(--toc-ink);
   --toc-gate-y:0px;
   --toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));
+  /* JS sets this to the last node's offsetTop when the list renders */
+  --toc-rule-bottom:.3rem;
   isolation:isolate;
 }
 
-/* Full-height rule track: gold above gate, black below */
+/* Full-height rule track: gold above gate, black below.
+   bottom is driven by --toc-rule-bottom so the line ends at the last node. */
 .toc-index::before{
   content:'';
   position:absolute;
   top:.3rem;
-  bottom:2.9rem;
+  bottom:var(--toc-rule-bottom, .3rem);
   left:var(--toc-rule-x);
   width:1.5px;
   background-image:
@@ -407,12 +416,12 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
 }
 
-/* Gate marker — horizontal divider line: no shadow */
+/* Gate marker — horizontal divider line */
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 1.5px);transform:translateY(-50%);height:1.35px;border-radius:999px;background:linear-gradient(to right,rgba(220,0,0,1),rgba(220,0,0,.30),rgba(220,0,0,0));box-shadow:none;opacity:1}
 
-/* Gate marker — sigil glyph ๛ (U+0E5B Thai): broad system support */
-.toc-gate::after{content:'๛';position:absolute;left:calc(var(--toc-rule-x) - 3.4px);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Thai','Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:18px;line-height:1;color:rgba(220,0,0,1);text-shadow:none;box-shadow:none;pointer-events:none;z-index:-1}
+/* Gate marker — sigil ๛ (U+0E5B): nudged left of the binding rule */
+.toc-gate::after{content:'๛';position:absolute;left:calc(var(--toc-rule-x) - 9px);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Thai','Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:18px;line-height:1;color:rgba(220,0,0,1);text-shadow:none;box-shadow:none;pointer-events:none;z-index:-1}
 
 /* Locked nodes below gate: cold ember — bare dark disc with faint sealed-red inset ring */
 .toc-gate ~ .toc-item--locked::before{
