@@ -1,8 +1,8 @@
-/* Covenant ToC Progress Enhancer (v3.2)
+/* Covenant ToC Progress Enhancer (v3.3)
    The gold binding fill is now handled entirely by CSS (toc.css ::after on .toc-index),
    driven by the --toc-gate-y CSS variable set by toc.js updateGateBindingStop().
    This script handles only the supplementary decorations:
-     - .toc-bound-fill   : gold rope track above the gate
+     - .toc-bound-fill   : solid gold fill above the gate
      - .toc-sealed-spine : dark dashed track below the gate
      - .toc-gate-emphasis: gate horizontal line
      - .toc-gate-sigil   : gate sigil marker
@@ -32,8 +32,8 @@
     fill.style.borderRadius = '999px';
     fill.style.opacity = '0';
     fill.style.transition = 'height 240ms ease, opacity 180ms ease';
-    // Gold rope: alternating bright/dim gold bands — reads as textured cord
-    fill.style.background = 'repeating-linear-gradient(to bottom,\n      rgba(201,169,97,.88) 0px,\n      rgba(201,169,97,.88) 4px,\n      rgba(201,169,97,.28) 4px,\n      rgba(201,169,97,.28) 9px)';
+    // Solid gold fill: fades in at top, solid through body, fades out at bottom
+    fill.style.background = 'linear-gradient(to bottom,\n      transparent 0%,\n      rgba(201,169,97,.82) 10%,\n      rgba(201,169,97,.72) 90%,\n      transparent 100%)';
     fill.style.boxShadow = '0 0 4px rgba(201,169,97,.32), 0 0 0 1px rgba(201,169,97,.14)';
     return fill;
   }
@@ -162,7 +162,7 @@
       const gateY         = gateOffsetTop + (gateEl.offsetHeight / 2);
       const clampedGateY  = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + adjustedMaxH));
 
-      // --- Gold rope: list top → gate centre ---
+      // --- Solid gold fill: list top → gate centre ---
       const fillTop = ruleTopPx;
       const fillH   = Math.max(0, clampedGateY - fillTop);
 
@@ -193,7 +193,7 @@
       gateSigil.style.opacity   = '1';
 
     } else {
-      // No gate / no locked nodes — show full gold rope, hide sealed spine
+      // No gate / no locked nodes — full solid gold fill, hide sealed spine
       const fillH = Math.max(0, adjustedMaxH);
       boundFill.style.left      = `${ruleXPx}px`;
       boundFill.style.top       = `${ruleTopPx}px`;
