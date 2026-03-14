@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.3.5 (cold ember sealed nodes) */
+/*! Covenant ToC Panel Styles v3.3.6 (lighter panel bg; gate sigil ៚) */
 
 /* -------------------------------------------------
    Variables
@@ -157,7 +157,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   top:auto;
   width:min(760px,calc(100vw - 24px));
   max-height:70vh;
-  background:#141418;
+  background:#1e1a16;
   border:1px solid rgba(44,62,80,.16);
   border-left-color:var(--dock-tab-face,#010103);
   border-top-color:rgba(44,62,80,.18);
@@ -177,9 +177,9 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 
 @supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))){
   .toc-panel{
-    background:linear-gradient(to bottom,rgba(14,14,18,.52),rgba(10,10,12,.66));
-    -webkit-backdrop-filter:blur(10px) saturate(120%);
-    backdrop-filter:blur(10px) saturate(120%);
+    background:linear-gradient(to bottom,rgba(38,32,24,.72),rgba(28,22,16,.88));
+    -webkit-backdrop-filter:blur(10px) saturate(130%);
+    backdrop-filter:blur(10px) saturate(130%);
   }
 }
 
@@ -298,13 +298,13 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    Body
    ------------------------------------------------- */
 
-.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative;background:#141418;}
+.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative;background:#1e1a16;}
 
 @supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))){
   .toc-panel-body{
-    background:linear-gradient(to bottom,rgba(14,14,18,.52),rgba(10,10,12,.66));
-    -webkit-backdrop-filter:blur(10px) saturate(120%);
-    backdrop-filter:blur(10px) saturate(120%);
+    background:linear-gradient(to bottom,rgba(38,32,24,.72),rgba(28,22,16,.88));
+    -webkit-backdrop-filter:blur(10px) saturate(130%);
+    backdrop-filter:blur(10px) saturate(130%);
   }
 }
 
@@ -411,8 +411,8 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
 .toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 1.5px);transform:translateY(-50%);height:1.35px;border-radius:999px;background:linear-gradient(to right,rgba(220,0,0,1),rgba(220,0,0,.30),rgba(220,0,0,0));box-shadow:none;opacity:1}
 
-/* Gate marker — sigil glyph: no shadow, no border effects */
-.toc-gate::after{content:'Ⱝ';position:absolute;left:calc(var(--toc-rule-x) - 3.4px);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:18px;line-height:1;color:rgba(220,0,0,1);text-shadow:none;box-shadow:none;pointer-events:none;z-index:-1}
+/* Gate marker — sigil glyph ៚: Khmer-first font stack, no shadow/border */
+.toc-gate::after{content:'រ';position:absolute;left:calc(var(--toc-rule-x) - 3.4px);top:50%;transform:translate(-50%,-50%);font-family:'Noto Serif Khmer','Khmer UI','Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:18px;line-height:1;color:rgba(220,0,0,1);text-shadow:none;box-shadow:none;pointer-events:none;z-index:-1}
 
 /* Locked nodes below gate: cold ember — bare dark disc with faint sealed-red inset ring */
 .toc-gate ~ .toc-item--locked::before{
