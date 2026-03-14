@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.14 (Gate-centered binding stop) */
+/*! Covenant ToC v3.3.16 (last-node terminus; sigil suppressed) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.14';
+  window.COVENANT_TOC_VERSION = '3.3.16';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -54,26 +54,18 @@
   var holdStartedAt = 0;
   var holdCompleted = false;
 
-  // Tap-open/close animation guard (prevents re-entry + micro-jitter from rapid toggles).
   var tapAnimating = false;
 
-  // iOS Safari: tap→click synthesis can be suppressed after micro-jitter; allow a pointerup toggle
-  // and ignore the trailing click if it fires.
   var ignoreToggleClickUntil = 0;
   var IGNORE_TOGGLE_CLICK_MS = 650;
 
-  // Optional: UI stack coordination.
   var uiRegistered = false;
   var UI_STACK_ID = 'toc';
 
-  // While closing, keep the tab welded (1px) during descent.
-  // NOTE: Do not change the weld mid-transition (it can re-target transform and look like a bounce).
   var CLOSE_WELD_PX = 1;
   var CLOSE_WELD_DROP_MS = 120;
   var closeWeldTimer = null;
 
-  // When a different entry is staged, suppress the "current page" visual node indicator.
-  // (We keep aria-current semantics; we only toggle the CSS class that drives the node styling.)
   var suppressedCurrentItemEl = null;
 
   function setRootWeldNudge(px) {
@@ -156,12 +148,9 @@
         id: UI_STACK_ID,
         priority: 30,
 
-        // Participate in shared scroll lock.
         useSharedScrollLock: true,
         allowScrollSelector: '#tocPanel .toc-panel-body',
 
-        // Important: treat drag-open/drag-close as "open" so the UI stack can assign z-index
-        // immediately (prevents the ToC sheet rendering behind Reliquary during drag on iOS Safari).
         isOpen: function () {
           if (!tocPanel || !tocPanel.classList) return false;
 
@@ -195,7 +184,6 @@
 
         setActive: function (isActive) {
           try {
-            // Only enable trap when the panel is truly open (not merely dragging/animating).
             if (isActive) {
               if (tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open')) {
                 enableFocusTrap();
@@ -256,9 +244,6 @@
 
   function clearToCTabDragOffset() {
     if (!tocToggle) return;
-
-    // Pin rather than remove: removing the CSS variable at the end of a close/settle can cause
-    // a one-frame compositor re-evaluation that reads as a 1px snap on iOS Safari.
     tocToggle.style.setProperty('--toc-tab-drag-y', '0px');
     setToCTabDraggingState(false);
   }
@@ -422,16 +407,12 @@
     var mobile = isMobileSheet();
     var topPad = mobile ? topSafe : (topSafe > 0 ? topSafe : 12);
 
-    // Avoid flooring here: visualViewport height can be fractional on mobile Safari, and flooring
-    // can leave a 1px top gap that makes the dock tab appear "higher" than the panel.
     var available = viewportH - bottom - topPad;
     if (!isFinite(available)) available = 240;
 
     var maxH = Math.max(240, available);
 
     if (mobile) {
-      // Anchor with top+bottom so the top edge is truly flush (or safe-area flush) with the viewport.
-      // This avoids fractional height rounding leaving a hairline gap at the very top.
       tocPanel.style.top = topPad + 'px';
       tocPanel.style.bottom = bottom + 'px';
       tocPanel.style.height = 'auto';
@@ -445,8 +426,6 @@
 
     if (tocToggle && mobile) {
       var rect = tocToggle.getBoundingClientRect();
-      // Micro-weld: if the tab reads ~1px left of the sheet edge (subpixel rounding / border antialias),
-      // bias the sheet left by 1px so the seam disappears.
       var left = Math.max(0, rect.left - 1);
       tocPanel.style.setProperty('--toc-panel-left', left + 'px');
       tocPanel.style.setProperty('--toc-panel-x', '0px');
@@ -544,8 +523,6 @@
     var currentIdx = window.getJourneyIndex(currentPageId);
     if (currentIdx < 0) return;
 
-    // Harden linearity: do not allow a direct-URL visit of a future page to advance unlock state.
-    // Only unlock when arriving in order (or revisiting earlier pages).
     if (currentIdx <= maxIndexUnlocked + 1) {
       unlock(currentPageId);
     }
@@ -702,8 +679,9 @@
       return;
     }
 
+    // --- gate-y: distance from top of .toc-index to gate centre ---
     var indexRect = indexEl.getBoundingClientRect();
-    var gateRect = gateEl.getBoundingClientRect();
+    var gateRect  = gateEl.getBoundingClientRect();
 
     var gateCenterY = gateRect.top + (gateRect.height / 2);
     var y = gateCenterY - indexRect.top;
@@ -712,6 +690,42 @@
     y = Math.max(0, y);
 
     indexEl.style.setProperty('--toc-gate-y', y.toFixed(2) + 'px');
+
+    // --- last-node-offset: px from .toc-list bottom to last pre-gate node centre ---
+    // This is used by CSS as `bottom` on .toc-list::before so the binding rule
+    // terminates exactly at the last unlocked node and never bleeds past it.
+    var listEl = indexEl.querySelector('.toc-list');
+    if (listEl && listEl.getBoundingClientRect) {
+      var listRect = listEl.getBoundingClientRect();
+
+      // Find the last .toc-item that appears before .toc-gate in DOM order.
+      var allItems = listEl.querySelectorAll('.toc-item');
+      var lastPreGateItem = null;
+
+      for (var i = 0; i < allItems.length; i++) {
+        // compareDocumentPosition: 4 = following, 2 = preceding
+        if (gateEl.compareDocumentPosition(allItems[i]) & 4) {
+          // allItems[i] follows gateEl — stop
+          break;
+        }
+        lastPreGateItem = allItems[i];
+      }
+
+      if (lastPreGateItem && lastPreGateItem.getBoundingClientRect) {
+        var itemRect    = lastPreGateItem.getBoundingClientRect();
+        // Vertical centre of the node indicator pseudo-element:
+        // top of item + padding-top + half line-height (matches .toc-item::before top calc)
+        var nodeCenterY = itemRect.top
+          + parseFloat(getComputedStyle(lastPreGateItem).paddingTop || 0)
+          + (parseFloat(getComputedStyle(lastPreGateItem).fontSize || 16)
+             * parseFloat(getComputedStyle(lastPreGateItem).lineHeight || 1.55) / 2);
+
+        var offset = listRect.bottom - nodeCenterY;
+        if (!isFinite(offset) || offset < 0) offset = 0;
+
+        indexEl.style.setProperty('--toc-last-node-offset', offset.toFixed(2) + 'px');
+      }
+    }
   }
 
   function scheduleGateBindingStopUpdate() {
@@ -731,6 +745,16 @@
         updateGateBindingStop();
       });
     });
+  }
+
+  function suppressInjectedSigils() {
+    // toc-progress.js injects a .toc-gate-sigil div with textContent '\u2726' (✦).
+    // That glyph doubles the CSS gate sigil visually. Zero it out after each render.
+    if (!tocDynamicContent || !tocDynamicContent.querySelectorAll) return;
+    var sigils = tocDynamicContent.querySelectorAll('.toc-gate-sigil');
+    for (var i = 0; i < sigils.length; i++) {
+      sigils[i].textContent = '';
+    }
   }
 
   function parseCatalogTitle(rawTitle) {
@@ -786,7 +810,7 @@
     if (!itemsHtml) return '';
 
     return ''
-      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">' 
+      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">'
       +   '<div class="toc-group-title"><span class="toc-tab">' + escapeHtml(label) + '</span></div>'
       +   '<ol class="toc-list">'
       +     itemsHtml
@@ -854,6 +878,12 @@
 
     tocDynamicContent.innerHTML = html;
     scheduleGateBindingStopUpdate();
+    // toc-progress.js injects .toc-gate-sigil with ✦ after MutationObserver fires;
+    // suppress it here immediately and also after the observer's rAF delay.
+    suppressInjectedSigils();
+    requestAnimationFrame(function () {
+      requestAnimationFrame(suppressInjectedSigils);
+    });
   }
 
   // ---------------------------
@@ -866,7 +896,6 @@
     try {
       return tocDynamicContent.querySelector('.toc-item[data-page-id="' + CSS.escape(currentPageId) + '"]');
     } catch (err) {
-      // CSS.escape not supported? Fall back to current class.
       return tocDynamicContent.querySelector('.toc-item--current');
     }
   }
@@ -965,7 +994,6 @@
 
     if (pendingTitle) setProducedTitle(pendingTitle);
 
-    // Deliberate confirm lives on the staged entry itself: click again to enter.
     if (pendingHoldEl) {
       pendingHoldEl.setAttribute('aria-label', 'Click again to enter selected page');
       pendingHoldEl.disabled = false;
@@ -1036,7 +1064,6 @@
       return true;
     }
 
-    // Keyboard path: focused element is the pending hold surface.
     try {
       if ((e.type === 'keydown' || e.type === 'keyup') && pendingHoldEl && document.activeElement === pendingHoldEl) return true;
     } catch (err) {}
@@ -1149,7 +1176,7 @@
     var dragging = false;
     var moved = false;
     var pointerId = null;
-    var dragSource = null; // 'seal' or 'handle'
+    var dragSource = null;
 
     var sealPrimed = false;
     var sealPointerId = null;
@@ -1159,8 +1186,6 @@
     var handlePointerId = null;
     var handleStartY = 0;
 
-    // Pre-arm (iOS Safari): do heavier prep work on pointerdown so the first move frame can
-    // translate immediately without waiting on render/measure.
     var preArmed = false;
     var preArmedPointerId = null;
     var preArmedStartY = 0;
@@ -1182,7 +1207,6 @@
 
     var weldPxForDrag = 0;
 
-    // iOS Safari: taps often include a few pixels of jitter; treat touch as touch, not drag.
     var MOVE_SLOP = 2;
 
     var OPEN_VELOCITY = -0.85;
@@ -1206,7 +1230,6 @@
 
     function computeMoveSlop(pointerType, source) {
       if (pointerType !== 'touch') return 2;
-      // The ToC seal needs more slop than the handle to keep taps from becoming accidental drags on iOS Safari.
       if (source === 'seal') return 12;
       return 9;
     }
@@ -1251,13 +1274,10 @@
       preArmedStartY = e.clientY;
       preArmedWasOpen = tocPanel.classList.contains('is-open');
 
-      // Prep work that would otherwise happen on the first move frame.
       positionPanel();
       computeOpenLift();
 
       if (!preArmedWasOpen) {
-        // Rendering the ToC index is the most expensive part of drag-open.
-        // Doing it here reduces the chance that iOS Safari drops the first move frame.
         renderToC();
       }
 
@@ -1462,8 +1482,6 @@
         }, 0);
       } else {
         if (!startWasOpen) {
-          // IMPORTANT: cancel-open snap-back should behave like a close (not "opening") so
-          // root class cleanup cannot re-target the dock tab by 1px at the last frame.
           root.classList.add('toc-closing');
           root.classList.remove('toc-opening');
           root.classList.remove('toc-dock-settling');
@@ -1539,7 +1557,6 @@
 
       startWasOpen = usePreArm ? preArmedWasOpen : tocPanel.classList.contains('is-open');
 
-      // Once we commit to a drag, clear pre-arm state (tap path should not keep it around).
       clearPreArm();
 
       if (!usePreArm) {
@@ -1572,7 +1589,6 @@
         noteOpenToUIStack();
       }
 
-      // Cache weld value once per drag (avoid per-frame computed-style reads on iOS Safari).
       weldPxForDrag = readCssNumberVar('--toc-tab-weld-nudge') || 0;
 
       if (!usePreArm) {
@@ -1634,7 +1650,6 @@
         setTimeout(function () { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       } else {
-        // If we never moved enough to commit, discard any pre-arm state too.
         clearPreArm();
 
         if (startWasOpen) root.classList.remove('toc-closing');
@@ -1677,7 +1692,6 @@
       MOVE_SLOP = computeMoveSlop(e.pointerType, 'seal');
       OPEN_RATIO = computeOpenRatio(e.pointerType);
 
-      // Pre-arm: do measurement + (if needed) ToC render now so the first move frame can translate immediately.
       preArmSealDrag(e);
 
       if (tocToggle && tocToggle.setPointerCapture) {
@@ -1801,8 +1815,6 @@
 
       var itemBtn = closestSafe(e.target, '.toc-item-btn');
       if (!itemBtn) {
-        // Any click elsewhere inside the ToC clears staging.
-        // (Do not interfere with annex link navigation.)
         var annexLink = closestSafe(e.target, '.toc-annex-link');
         if (!annexLink && pendingPageId) clearPendingSelection();
         return;
@@ -1817,7 +1829,6 @@
         return;
       }
 
-      // Second click on the staged entry commits navigation.
       if (pageId && pendingPageId && pageId === pendingPageId) {
         stopEvent(e);
         commitNavigation();
@@ -2077,10 +2088,8 @@
         if (e.defaultPrevented) return;
         if (tapAnimating) return;
 
-        // Mouse path stays on click (prevents double-toggle on desktop).
         if (e.pointerType === 'mouse') return;
 
-        // If a drag just occurred, do not treat this as a tap toggle.
         if (window.__COVENANT_TOC_DRAG_JUST_HAPPENED) return;
         if (tocPanel && tocPanel.classList && tocPanel.classList.contains('is-dragging')) return;
 
@@ -2119,7 +2128,6 @@
       if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
       if (!isTopmost()) return;
 
-      // ESC clears staging first; ESC again closes.
       if (pendingPageId && !confirmNavigating) {
         stopEvent(e);
         clearPendingSelection();
