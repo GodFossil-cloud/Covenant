@@ -1,4 +1,4 @@
-/*! Covenant ToC Panel Styles v3.3.2 (gate glyph: no shadow, binding rule overlays) */
+/*! Covenant ToC Panel Styles v3.3.3 (gold binding fill via CSS ::after) */
 
 /* -------------------------------------------------
    Variables
@@ -314,9 +314,59 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    Index structure
    ------------------------------------------------- */
 
-.toc-index{position:relative;color:var(--toc-ink);--toc-gate-y:0px;--toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));isolation:isolate}
-.toc-index::before{content:'';position:absolute;top:.3rem;bottom:2.9rem;left:var(--toc-rule-x);width:1.5px;background-image:linear-gradient(to bottom,transparent 0%,var(--toc-rule) 10%,var(--toc-rule) 90%,transparent 100%),linear-gradient(to bottom,var(--toc-rule-below, rgba(0,0,0,1)) 0%,var(--toc-rule-below, rgba(0,0,0,1)) 90%,transparent 100%);background-repeat:no-repeat;background-size:1.5px var(--toc-gate-cut),1.5px calc(100% - var(--toc-gate-cut));background-position:0 0,0 var(--toc-gate-cut);box-shadow:none;pointer-events:none;z-index:-1}
-.toc-index::after{content:'';position:absolute;top:.3rem;left:var(--toc-rule-x);width:1.5px;height:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));background:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 90%,transparent 100%);box-shadow:none;pointer-events:none;z-index:-1}
+/*
+  Binding rule layout:
+    --toc-gate-cut = distance from top of rule to gate centre = max(0, gate-y - rule-top-offset)
+
+  ::before  full-height rule track
+    - background layer 1 (size: gate-cut):  gold above the gate
+    - background layer 2 (size: remainder): black below the gate
+
+  ::after   gold fill overlay painted on top of ::before, same position/size as layer 1
+    - ensures the above-gate segment reads as bright gold even on dark backgrounds
+    - z-index 0 so it sits above ::before (z -1) but below list items (z 1)
+*/
+
+.toc-index{
+  position:relative;
+  color:var(--toc-ink);
+  --toc-gate-y:0px;
+  --toc-gate-cut:max(0px, calc(var(--toc-gate-y, 0px) - .3rem));
+  isolation:isolate;
+}
+
+/* Full-height rule track: gold above gate, black below */
+.toc-index::before{
+  content:'';
+  position:absolute;
+  top:.3rem;
+  bottom:2.9rem;
+  left:var(--toc-rule-x);
+  width:1.5px;
+  background-image:
+    linear-gradient(to bottom, transparent 0%, rgba(201,169,97,.82) 10%, rgba(201,169,97,.62) 90%, transparent 100%),
+    linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 90%, transparent 100%);
+  background-repeat:no-repeat;
+  background-size:1.5px var(--toc-gate-cut), 1.5px calc(100% - var(--toc-gate-cut));
+  background-position:0 0, 0 var(--toc-gate-cut);
+  box-shadow:none;
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* Gold fill overlay: covers exactly the above-gate segment */
+.toc-index::after{
+  content:'';
+  position:absolute;
+  top:.3rem;
+  left:var(--toc-rule-x);
+  width:1.5px;
+  height:var(--toc-gate-cut);
+  background:linear-gradient(to bottom, transparent 0%, rgba(201,169,97,.82) 10%, rgba(201,169,97,.62) 90%, transparent 100%);
+  box-shadow:0 0 8px rgba(201,169,97,.18);
+  pointer-events:none;
+  z-index:0;
+}
 
 .toc-index .toc-list,
 .toc-index .toc-annex{position:relative;z-index:1}
