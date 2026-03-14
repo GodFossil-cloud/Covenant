@@ -1,4 +1,4 @@
-/* Covenant ToC Progress Enhancer (v3)
+/* Covenant ToC Progress Enhancer (v3.1)
    The gold binding fill is now handled entirely by CSS (toc.css ::after on .toc-index),
    driven by the --toc-gate-y CSS variable set by toc.js updateGateBindingStop().
    This script handles only the supplementary decorations: sealed spine, gate line, gate sigil.
@@ -127,6 +127,15 @@
     const totalH       = tocIndex.offsetHeight;
     const maxH         = Math.max(0, totalH - ruleTopPx - ruleBottomPx);
 
+    // Read --toc-last-node-offset set by toc.js updateGateBindingStop().
+    // This is the px distance from the bottom of .toc-list to the vertical
+    // centre of the last node (Seal and Consecration). Subtracting it from
+    // maxH ensures the sealed spine terminates at exactly the same point as
+    // .toc-list::before in toc.css — never bleeding past the final node.
+    const lastNodeOffsetToken = (indexStyle.getPropertyValue('--toc-last-node-offset') || '0px').trim();
+    const lastNodeOffsetPx    = pxFromCssLength(tocIndex, lastNodeOffsetToken);
+    const adjustedMaxH        = Math.max(0, maxH - lastNodeOffsetPx);
+
     // Read --toc-gate-y as set by toc.js (getBoundingClientRect-based, viewport-relative).
     // For decorations (sealed spine, gate line) we only need approximate placement;
     // we convert it to an offset-relative value by adding the panel body scroll offset.
@@ -141,10 +150,10 @@
       // Use offsetTop for decorations — scroll-stable.
       const gateOffsetTop = gateEl.offsetTop;
       const gateY = gateOffsetTop + (gateEl.offsetHeight / 2);
-      const clampedGateY = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + maxH));
+      const clampedGateY = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + adjustedMaxH));
 
       const sealedTop = clampedGateY;
-      const sealedH   = Math.max(0, (ruleTopPx + maxH) - sealedTop);
+      const sealedH   = Math.max(0, (ruleTopPx + adjustedMaxH) - sealedTop);
 
       sealedSpine.style.left      = `${ruleXPx}px`;
       sealedSpine.style.top       = `${sealedTop}px`;
