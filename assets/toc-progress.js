@@ -47,7 +47,7 @@
     const fill = ensureEl(tocIndex, 'toc-progress-fill');
 
     fill.style.zIndex = '-1';
-    fill.style.width = '2px';
+    fill.style.width = '1.5px';
     fill.style.borderRadius = '999px';
     fill.style.opacity = '0';
     fill.style.transition = 'height 260ms ease, opacity 180ms ease';
@@ -126,7 +126,6 @@
       if(!hit) continue;
       g.classList.add(`toc-group--${hit.key}`);
 
-      // Insert a single subtle divider before Articles and Rites (Prelude is first).
       if(hit.key === 'articles' || hit.key === 'rites'){
         const prev = g.previousElementSibling;
         const already = prev && prev.classList && prev.classList.contains('toc-soft-divider');
@@ -156,22 +155,9 @@
     const items = $$('.toc-item', tocIndex);
     if(!items.length) return;
 
-    // Anchor: prefer current, else last unlocked, else first.
-    const current = $('.toc-item--current', tocIndex);
-    const lastUnlocked = [...items].reverse().find(it => !it.classList.contains('toc-item--locked'));
-    const anchor = current || lastUnlocked || items[0];
-
-    const btn = $('.toc-item-btn, .toc-locked-btn', anchor) || anchor;
-    const btnStyle = window.getComputedStyle(btn);
-
-    const fontSizePx = parseFloat(btnStyle.fontSize) || 16;
-    const lineHeightPx = (btnStyle.lineHeight === 'normal') ? (fontSizePx * 1.2) : (parseFloat(btnStyle.lineHeight) || (fontSizePx * 1.2));
-    const padTopPx = parseFloat(btnStyle.paddingTop) || 0;
-
-    const anchorRect = anchor.getBoundingClientRect();
     const indexRect = tocIndex.getBoundingClientRect();
-
     const indexStyle = window.getComputedStyle(tocIndex);
+
     const ruleXToken = (indexStyle.getPropertyValue('--toc-rule-x') || '.95rem').trim();
     const ruleTopToken = (indexStyle.getPropertyValue('--toc-rule-top') || '.3rem').trim();
     const ruleBottomToken = (indexStyle.getPropertyValue('--toc-rule-bottom') || '2.9rem').trim();
@@ -182,33 +168,51 @@
 
     const maxH = Math.max(0, indexRect.height - ruleTopPx - ruleBottomPx);
 
-    const nodeCenterY = anchorRect.top + padTopPx + (lineHeightPx / 2);
-    let h = nodeCenterY - (indexRect.top + ruleTopPx);
-    h = Math.max(0, Math.min(h, maxH));
-
-    // Fill (unlocked progress) — centered on the binding rule (brackets both sides).
-    const fill = ensureFillEl(tocIndex);
-    fill.style.left = `${ruleXPx - 1}px`;
-    fill.style.top = `${ruleTopPx}px`;
-    fill.style.height = `${h}px`;
-    fill.style.transform = 'none';
-    fill.style.opacity = (h > 0) ? '1' : '0';
-
-    // Gate + sealed region emphasis (if gate exists).
+    // Gate geometry — resolved first so fill can use gateY.
     const gateEl = $('.toc-gate', tocIndex);
     const hasLocked = !!$('.toc-item--locked', tocIndex);
 
+    let gateY = null;
+    if(gateEl && hasLocked){
+      const gateRect = gateEl.getBoundingClientRect();
+      gateY = (gateRect.top + (gateRect.height / 2)) - indexRect.top;
+      gateY = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + maxH));
+    }
+
+    // Fill: runs from top of track down to gate (if present), else to current node.
+    const fill = ensureFillEl(tocIndex);
+    let fillH;
+    if(gateY !== null){
+      fillH = gateY - ruleTopPx;
+    } else {
+      const current = $('.toc-item--current', tocIndex);
+      const lastUnlocked = [...items].reverse().find(it => !it.classList.contains('toc-item--locked'));
+      const anchor = current || lastUnlocked || items[0];
+      const btn = $('.toc-item-btn, .toc-locked-btn', anchor) || anchor;
+      const btnStyle = window.getComputedStyle(btn);
+      const fontSizePx = parseFloat(btnStyle.fontSize) || 16;
+      const lineHeightPx = (btnStyle.lineHeight === 'normal') ? (fontSizePx * 1.2) : (parseFloat(btnStyle.lineHeight) || (fontSizePx * 1.2));
+      const padTopPx = parseFloat(btnStyle.paddingTop) || 0;
+      const anchorRect = anchor.getBoundingClientRect();
+      const nodeCenterY = anchorRect.top + padTopPx + (lineHeightPx / 2);
+      fillH = nodeCenterY - (indexRect.top + ruleTopPx);
+    }
+    fillH = Math.max(0, Math.min(fillH, maxH));
+
+    // Center fill on rule: rule is 1.5px wide at left:ruleXPx, so center = ruleXPx + 0.75px.
+    // Fill is also 1.5px wide, so left = center - 0.75 = ruleXPx.
+    fill.style.left = `${ruleXPx}px`;
+    fill.style.top = `${ruleTopPx}px`;
+    fill.style.height = `${fillH}px`;
+    fill.style.transform = 'none';
+    fill.style.opacity = (fillH > 0) ? '1' : '0';
+
+    // Gate + sealed region emphasis.
     const sealedSpine = ensureSealedSpineEl(tocIndex);
     const gateLine = ensureGateEmphasisEl(tocIndex);
     const gateSigil = ensureGateSigilEl(tocIndex);
 
-    if(gateEl && hasLocked){
-      const gateRect = gateEl.getBoundingClientRect();
-      let gateY = (gateRect.top + (gateRect.height / 2)) - indexRect.top;
-
-      // Clamp gate to within track bounds.
-      gateY = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + maxH));
-
+    if(gateY !== null){
       const sealedTop = gateY;
       const sealedH = Math.max(0, (ruleTopPx + maxH) - sealedTop);
 
@@ -227,7 +231,7 @@
       gateSigil.style.top = `${gateY}px`;
       gateSigil.style.transform = 'translate(-50%, -50%)';
       gateSigil.style.opacity = '1';
-    }else{
+    } else {
       sealedSpine.style.opacity = '0';
       gateLine.style.opacity = '0';
       gateSigil.style.opacity = '0';
@@ -263,7 +267,6 @@
       }, { passive:true });
     }
 
-    // Initial attempt (harmless if ToC hasn't rendered yet).
     schedule();
   }
 
