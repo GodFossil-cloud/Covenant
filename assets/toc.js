@@ -703,11 +703,15 @@
       var lastItem = allItems.length ? allItems[allItems.length - 1] : null;
 
       if (lastItem && lastItem.getBoundingClientRect) {
-        var itemRect    = lastItem.getBoundingClientRect();
-        var nodeCenterY = itemRect.top
-          + parseFloat(getComputedStyle(lastItem).paddingTop || 0)
-          + (parseFloat(getComputedStyle(lastItem).fontSize || 16)
-             * parseFloat(getComputedStyle(lastItem).lineHeight || 1.55) / 2);
+        var itemRect = lastItem.getBoundingClientRect();
+        var btn = lastItem.querySelector('.toc-item-btn, .toc-locked-btn');
+        var btnRect = btn ? btn.getBoundingClientRect() : itemRect;
+
+        var padY = parseFloat(getComputedStyle(btn || lastItem).paddingTop || 0);
+        var fs   = parseFloat(getComputedStyle(btn || lastItem).fontSize || 16);
+        var lh   = parseFloat(getComputedStyle(btn || lastItem).lineHeight || 1.55);
+
+        var nodeCenterY = btnRect.top + padY + (fs * lh / 2);
 
         var offset = listRect.bottom - nodeCenterY;
         if (!isFinite(offset) || offset < 0) offset = 0;
