@@ -1,7 +1,11 @@
-/* Covenant ToC Progress Enhancer (v3.1)
+/* Covenant ToC Progress Enhancer (v3.2)
    The gold binding fill is now handled entirely by CSS (toc.css ::after on .toc-index),
    driven by the --toc-gate-y CSS variable set by toc.js updateGateBindingStop().
-   This script handles only the supplementary decorations: sealed spine, gate line, gate sigil.
+   This script handles only the supplementary decorations:
+     - .toc-bound-fill   : gold rope track above the gate
+     - .toc-sealed-spine : dark dashed track below the gate
+     - .toc-gate-emphasis: gate horizontal line
+     - .toc-gate-sigil   : gate sigil marker
    The .toc-progress-fill element is retained but kept permanently hidden to avoid conflicts.
 */
 
@@ -20,6 +24,18 @@
     el.style.zIndex = '1';
     tocIndex.insertBefore(el, tocIndex.firstChild);
     return el;
+  }
+
+  function ensureBoundFillEl(tocIndex){
+    const fill = ensureEl(tocIndex, 'toc-bound-fill');
+    fill.style.width = '2px';
+    fill.style.borderRadius = '999px';
+    fill.style.opacity = '0';
+    fill.style.transition = 'height 240ms ease, opacity 180ms ease';
+    // Gold rope: alternating bright/dim gold bands — reads as textured cord
+    fill.style.background = 'repeating-linear-gradient(to bottom,\n      rgba(201,169,97,.88) 0px,\n      rgba(201,169,97,.88) 4px,\n      rgba(201,169,97,.28) 4px,\n      rgba(201,169,97,.28) 9px)';
+    fill.style.boxShadow = '0 0 4px rgba(201,169,97,.32), 0 0 0 1px rgba(201,169,97,.14)';
+    return fill;
   }
 
   function ensureSealedSpineEl(tocIndex){
@@ -117,8 +133,8 @@
     markGroupsAndDividers(dyn);
 
     const indexStyle = window.getComputedStyle(tocIndex);
-    const ruleXToken   = (indexStyle.getPropertyValue('--toc-rule-x')     || '.95rem').trim();
-    const ruleTopToken = (indexStyle.getPropertyValue('--toc-rule-top')   || '.3rem').trim();
+    const ruleXToken      = (indexStyle.getPropertyValue('--toc-rule-x')      || '.95rem').trim();
+    const ruleTopToken    = (indexStyle.getPropertyValue('--toc-rule-top')    || '.3rem').trim();
     const ruleBottomToken = (indexStyle.getPropertyValue('--toc-rule-bottom') || '2.9rem').trim();
 
     const ruleXPx      = pxFromCssLength(tocIndex, ruleXToken);
@@ -127,31 +143,36 @@
     const totalH       = tocIndex.offsetHeight;
     const maxH         = Math.max(0, totalH - ruleTopPx - ruleBottomPx);
 
-    // Read --toc-last-node-offset set by toc.js updateGateBindingStop().
-    // This is the px distance from the bottom of .toc-list to the vertical
-    // centre of the last node (Seal and Consecration). Subtracting it from
-    // maxH ensures the sealed spine terminates at exactly the same point as
-    // .toc-list::before in toc.css — never bleeding past the final node.
+    // --toc-last-node-offset: px from bottom of .toc-list to last node centre.
+    // Subtracting it from maxH aligns both spine elements with .toc-list::before.
     const lastNodeOffsetToken = (indexStyle.getPropertyValue('--toc-last-node-offset') || '0px').trim();
     const lastNodeOffsetPx    = pxFromCssLength(tocIndex, lastNodeOffsetToken);
     const adjustedMaxH        = Math.max(0, maxH - lastNodeOffsetPx);
 
-    // Read --toc-gate-y as set by toc.js (getBoundingClientRect-based, viewport-relative).
-    // For decorations (sealed spine, gate line) we only need approximate placement;
-    // we convert it to an offset-relative value by adding the panel body scroll offset.
-    const gateEl   = $('.toc-gate', tocIndex);
+    const gateEl    = $('.toc-gate', tocIndex);
     const hasLocked = !!$('.toc-item--locked', tocIndex);
 
+    const boundFill   = ensureBoundFillEl(tocIndex);
     const sealedSpine = ensureSealedSpineEl(tocIndex);
     const gateLine    = ensureGateEmphasisEl(tocIndex);
     const gateSigil   = ensureGateSigilEl(tocIndex);
 
     if(gateEl && hasLocked){
-      // Use offsetTop for decorations — scroll-stable.
       const gateOffsetTop = gateEl.offsetTop;
-      const gateY = gateOffsetTop + (gateEl.offsetHeight / 2);
-      const clampedGateY = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + adjustedMaxH));
+      const gateY         = gateOffsetTop + (gateEl.offsetHeight / 2);
+      const clampedGateY  = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + adjustedMaxH));
 
+      // --- Gold rope: list top → gate centre ---
+      const fillTop = ruleTopPx;
+      const fillH   = Math.max(0, clampedGateY - fillTop);
+
+      boundFill.style.left      = `${ruleXPx}px`;
+      boundFill.style.top       = `${fillTop}px`;
+      boundFill.style.height    = `${fillH}px`;
+      boundFill.style.transform = 'translateX(-1px)';
+      boundFill.style.opacity   = (fillH > 8) ? '1' : '0';
+
+      // --- Dark dashed void: gate centre → last node ---
       const sealedTop = clampedGateY;
       const sealedH   = Math.max(0, (ruleTopPx + adjustedMaxH) - sealedTop);
 
@@ -170,7 +191,16 @@
       gateSigil.style.top       = `${clampedGateY}px`;
       gateSigil.style.transform = 'translate(-50%, -50%)';
       gateSigil.style.opacity   = '1';
+
     } else {
+      // No gate / no locked nodes — show full gold rope, hide sealed spine
+      const fillH = Math.max(0, adjustedMaxH);
+      boundFill.style.left      = `${ruleXPx}px`;
+      boundFill.style.top       = `${ruleTopPx}px`;
+      boundFill.style.height    = `${fillH}px`;
+      boundFill.style.transform = 'translateX(-1px)';
+      boundFill.style.opacity   = (fillH > 8) ? '1' : '0';
+
       sealedSpine.style.opacity = '0';
       gateLine.style.opacity    = '0';
       gateSigil.style.opacity   = '0';
