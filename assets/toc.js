@@ -1,8 +1,8 @@
-/*! Covenant ToC v3.3.16 (last-node terminus; sigil suppressed) */
+/*! Covenant ToC v3.3.17 (binding stops at absolute last node) */
 (function () {
   'use strict';
 
-  window.COVENANT_TOC_VERSION = '3.3.16';
+  window.COVENANT_TOC_VERSION = '3.3.17';
 
   if (!window.COVENANT_JOURNEY || !window.getJourneyIndex) {
     console.warn('[Covenant ToC] Journey definition not found; ToC disabled.');
@@ -691,34 +691,23 @@
 
     indexEl.style.setProperty('--toc-gate-y', y.toFixed(2) + 'px');
 
-    // --- last-node-offset: px from .toc-list bottom to last pre-gate node centre ---
-    // This is used by CSS as `bottom` on .toc-list::before so the binding rule
-    // terminates exactly at the last unlocked node and never bleeds past it.
+    // --- last-node-offset: measure from the ABSOLUTE last .toc-item in the
+    //     list (regardless of gate position) so the binding rule always
+    //     terminates at the final node — "Seal and Consecration" — and never
+    //     bleeds past it into .toc-annex or dead space below. ---
     var listEl = indexEl.querySelector('.toc-list');
     if (listEl && listEl.getBoundingClientRect) {
       var listRect = listEl.getBoundingClientRect();
 
-      // Find the last .toc-item that appears before .toc-gate in DOM order.
       var allItems = listEl.querySelectorAll('.toc-item');
-      var lastPreGateItem = null;
+      var lastItem = allItems.length ? allItems[allItems.length - 1] : null;
 
-      for (var i = 0; i < allItems.length; i++) {
-        // compareDocumentPosition: 4 = following, 2 = preceding
-        if (gateEl.compareDocumentPosition(allItems[i]) & 4) {
-          // allItems[i] follows gateEl — stop
-          break;
-        }
-        lastPreGateItem = allItems[i];
-      }
-
-      if (lastPreGateItem && lastPreGateItem.getBoundingClientRect) {
-        var itemRect    = lastPreGateItem.getBoundingClientRect();
-        // Vertical centre of the node indicator pseudo-element:
-        // top of item + padding-top + half line-height (matches .toc-item::before top calc)
+      if (lastItem && lastItem.getBoundingClientRect) {
+        var itemRect    = lastItem.getBoundingClientRect();
         var nodeCenterY = itemRect.top
-          + parseFloat(getComputedStyle(lastPreGateItem).paddingTop || 0)
-          + (parseFloat(getComputedStyle(lastPreGateItem).fontSize || 16)
-             * parseFloat(getComputedStyle(lastPreGateItem).lineHeight || 1.55) / 2);
+          + parseFloat(getComputedStyle(lastItem).paddingTop || 0)
+          + (parseFloat(getComputedStyle(lastItem).fontSize || 16)
+             * parseFloat(getComputedStyle(lastItem).lineHeight || 1.55) / 2);
 
         var offset = listRect.bottom - nodeCenterY;
         if (!isFinite(offset) || offset < 0) offset = 0;
@@ -750,6 +739,7 @@
   function suppressInjectedSigils() {
     // toc-progress.js injects a .toc-gate-sigil div with textContent '\u2726' (✦).
     // That glyph doubles the CSS gate sigil visually. Zero it out after each render.
+    // CSS also hides .toc-gate-sigil as a timing-independent backstop.
     if (!tocDynamicContent || !tocDynamicContent.querySelectorAll) return;
     var sigils = tocDynamicContent.querySelectorAll('.toc-gate-sigil');
     for (var i = 0; i < sigils.length; i++) {
