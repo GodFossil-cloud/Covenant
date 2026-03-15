@@ -412,7 +412,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 
 /* Gate marker — horizontal divider line */
 .toc-gate{list-style:none;position:relative;height:16px;margin:.35rem 0 .78rem}
-.toc-gate::before{content:'';position:absolute;left:var(--toc-rule-x);right:.2rem;top:calc(50% - 1.5px);transform:translateY(-50%);height:1.35px;border-radius:999px;background:linear-gradient(to right,rgba(220,0,0,1),rgba(220,0,0,.30),rgba(220,0,0,0));box-shadow:none;opacity:1}
+.toc-gate::before{content:'';position:absolute;left:calc(var(--toc-rule-x) + 2px);right:.2rem;top:calc(50% - 1.5px);transform:translateY(-50%);height:1.35px;border-radius:999px;background:linear-gradient(to right,rgba(220,0,0,1),rgba(220,0,0,.30),rgba(220,0,0,0));box-shadow:none;opacity:1}
 
 /* Gate marker — sigil 𖤓 */
 .toc-gate::after{content:'';position:absolute;left:var(--toc-rule-x);top:50%;transform:translate(-50%,-50%);font-family:'Noto Sans Symbols 2','Noto Sans Symbols','Segoe UI Symbol','Apple Symbols',serif;font-size:18px;line-height:1;color:rgba(220,0,0,1);text-shadow:none;box-shadow:none;pointer-events:none;z-index:-1}
