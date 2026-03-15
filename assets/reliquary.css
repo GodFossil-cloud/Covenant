@@ -122,7 +122,7 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 .reliquary-panel:focus,
 .reliquary-panel:focus-visible{outline:none !important}
 
-.reliquary-panel.is-open{opacity:1;transform:translateX(var(--reliquary-panel-x)) translateY(var(--reliquary-open-lift, 0px))}
+.reliquary-panel.is-open{opacity:1;}
 .reliquary-panel.is-dragging{transition:none !important}
 
 .reliquary-panel[aria-hidden="true"]{pointer-events:none}
