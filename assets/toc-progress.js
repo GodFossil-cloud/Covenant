@@ -54,8 +54,8 @@
     gate.style.height = '2px';
     gate.style.opacity = '0';
     gate.style.transition = 'opacity 180ms ease';
-    gate.style.borderRadius = '0';
-    gate.style.boxShadow = '0 0 0 1px rgba(255,255,255,.06), 0 0 18px rgba(139,0,0,.10)';
+    gate.style.borderRadius = '999px';
+    gate.style.boxShadow = 'none';
     gate.style.background = 'linear-gradient(to right,\n      rgba(139,0,0,1) 0%,\n      rgba(139,0,0,.40) 40%,\n      rgba(139,0,0,.00) 100%)';
     return gate;
   }
