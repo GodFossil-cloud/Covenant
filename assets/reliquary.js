@@ -608,6 +608,12 @@
     toggle.classList.add('is-open');
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Close Reliquary');
+
+    if (isIOS) enableIOSTouchScrollLock();
+
+    syncTabsOnOpen();
+
+    noteOpen();
   }
 
   function openReliquaryImmediately() {
