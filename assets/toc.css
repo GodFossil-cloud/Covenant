@@ -779,8 +779,8 @@ html.toc-dock-settling .nav-footer::after{opacity:.90}
 @media (max-width:600px){
   :root{
     --toc-rule-x:.75rem;
-    --toc-node:10px;
-    --toc-node-locked:8px;
+    --toc-node:16px;
+    --toc-node-locked:14px;
     --dock-tab-raise:-29px;
     --dock-socket-raise:-2px;
     --dock-socket-spread:5px;
