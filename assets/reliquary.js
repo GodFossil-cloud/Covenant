@@ -1159,8 +1159,7 @@
       }
 
       computeClosedY();
-
-      currentY = startWasOpen ? openLiftPx : Math.min(closedY, panelHBase * 0.55);
+      currentY = startWasOpen ? openLiftPx : closedY;
 
       panel.classList.add('is-dragging');
       toggle.classList.add('is-reliquary-dragging');
