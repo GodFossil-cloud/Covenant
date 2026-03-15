@@ -597,6 +597,8 @@
   }
 
   function openReliquaryShellForDrag() {
+    root.classList.add('reliquary-open');
+
     focusReturnEl = toggle;
 
     panel.classList.add('is-open');
@@ -1150,9 +1152,6 @@
         root.classList.remove('reliquary-closing');
         root.classList.add('reliquary-opening');
         root.classList.remove('reliquary-dock-settling');
-          if (window.COVENANT_RELIQUARY_ARCHIVE && typeof window.COVENANT_RELIQUARY_ARCHIVE.render === 'function') {
-          window.COVENANT_RELIQUARY_ARCHIVE.render();
-        }
         openReliquaryShellForDrag();
       }
 
