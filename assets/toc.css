@@ -31,8 +31,8 @@
 
   --toc-rule-x:.95rem;
   --toc-node-x-nudge:-0.5px;
-  --toc-node:10px;
-  --toc-node-locked:8px;
+  --toc-node:16px;
+  --toc-node-locked:14px;
   --toc-item-pad-y:.26rem;
   --toc-item-line:1.55;
 
