@@ -608,16 +608,6 @@
     toggle.classList.add('is-open');
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Close Reliquary');
-
-  if (isIOS) enableIOSTouchScrollLock();
-
-    syncTabsOnOpen();
-
-    noteOpen();
-
-    if (window.COVENANT_RELIQUARY_ARCHIVE && typeof window.COVENANT_RELIQUARY_ARCHIVE.render === 'function') {
-      window.COVENANT_RELIQUARY_ARCHIVE.render();
-    }
   }
 
   function openReliquaryImmediately() {
