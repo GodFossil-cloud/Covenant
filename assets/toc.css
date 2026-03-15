@@ -393,11 +393,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
   width:var(--toc-node);
   height:var(--toc-node);
   border-radius:999px;
-  background:repeating-linear-gradient(to bottom,
-  rgba(201,169,97,.88) 0px,
-  rgba(201,169,97,.88) 3px,
-  rgba(28,20,20,1) 3px,
-  rgba(28,20,20,1) 7px);
+  background:rgba(28,20,20,1);
   border:1px solid rgba(0,0,0,1);
   box-shadow:inset 0 0 0 2px rgba(139,100,40,.52),0 10px 14px rgba(0,0,0,.03);
   pointer-events:none;
