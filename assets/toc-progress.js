@@ -35,7 +35,7 @@
     // Solid gold fill: fades in at top, solid through body, fades out at bottom
     fill.style.background = 'linear-gradient(to bottom,\n      transparent 0%,\n      rgba(201,169,97,.82) 10%,\n      rgba(201,169,97,.72) 90%,\n      transparent 100%)';
     fill.style.boxShadow = '0 0 4px rgba(201,169,97,.32), 0 0 0 1px rgba(201,169,97,.14)';
-    fill.style.borderBottom = '1px solid rgba(0,0,0,.82)';
+    fill.style.borderBottom = '1.5px solid rgba(0,0,0,1)';
     return fill;
   }
 
