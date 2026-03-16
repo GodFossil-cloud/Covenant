@@ -72,14 +72,6 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 
 .reliquary-overlay.is-open{opacity:1;pointer-events:auto}
 
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
-  .reliquary-overlay{-webkit-backdrop-filter:blur(0px);backdrop-filter:blur(0px)}
-  .reliquary-overlay.is-open{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-  html.reliquary-opening .reliquary-overlay,
-  html.reliquary-closing .reliquary-overlay,
-  .reliquary-panel.is-dragging ~ .reliquary-overlay{-webkit-backdrop-filter:none;backdrop-filter:none}
-}
-
 /* -------------------------------------------------
    Panel — Reliquary (warm parchment to black)
    ------------------------------------------------- */
