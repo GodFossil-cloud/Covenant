@@ -5,7 +5,7 @@
    ------------------------------------------------- */
 
 :root{
-  --reliquary-snap-duration:420ms;
+  --reliquary-snap-duration:300ms;
   --reliquary-snap-ease:cubic-bezier(.22,.61,.36,1);
 
   --reliquary-open-lift:0px;
@@ -75,6 +75,9 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
   .reliquary-overlay{-webkit-backdrop-filter:blur(0px);backdrop-filter:blur(0px)}
   .reliquary-overlay.is-open{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  html.reliquary-opening .reliquary-overlay,
+  html.reliquary-closing .reliquary-overlay,
+  .reliquary-panel.is-dragging ~ .reliquary-overlay{-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 
 /* -------------------------------------------------
