@@ -70,7 +70,7 @@
   --toc-closed-offset:0px;
   --toc-open-lift:0px;
 
-  --toc-snap-duration:420ms;
+  --toc-snap-duration:300ms;
   --toc-snap-ease:cubic-bezier(.22,.61,.36,1);
 
   --dock-cap-size:var(--dock-tab-width-visual);
@@ -144,6 +144,9 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
   .toc-overlay{-webkit-backdrop-filter:blur(0px);backdrop-filter:blur(0px)}
   .toc-overlay.is-open{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  html.toc-opening .toc-overlay,
+  html.toc-closing .toc-overlay,
+  .toc-panel.is-dragging ~ .toc-overlay{-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 
 /* -------------------------------------------------
@@ -181,6 +184,9 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
     -webkit-backdrop-filter:blur(10px) saturate(120%);
     backdrop-filter:blur(10px) saturate(120%);
   }
+  html.toc-opening .toc-panel,
+  html.toc-closing .toc-panel,
+  .toc-panel.is-dragging{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
 }
 
 .toc-panel.is-open{opacity:1;transform:translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px))}
@@ -306,6 +312,9 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
     -webkit-backdrop-filter:blur(10px) saturate(120%);
     backdrop-filter:blur(10px) saturate(120%);
   }
+  html.toc-opening .toc-panel-body,
+  html.toc-closing .toc-panel-body,
+  .toc-panel.is-dragging .toc-panel-body{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
 }
 
 .toc-panel-body>*{position:relative}
