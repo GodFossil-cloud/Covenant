@@ -1944,7 +1944,7 @@
 
           root.classList.remove('toc-opening');
           tapAnimating = false;
-        }, snapMs + 50);
+        }, snapMs + 20);
       });
     })();
 
@@ -2042,7 +2042,7 @@
 
         setTimeout(function () {
           root.classList.remove('toc-dock-settling');
-        }, snapMs + 30);
+        }, snapMs + 20);
 
         clearToCTabDragOffset();
 
@@ -2056,7 +2056,7 @@
         tocPanel.style.transform = 'translate3d(var(--toc-panel-x, -50%), ' + closedY + 'px, 0)';
 
         tapAnimating = false;
-      }, snapMs + 50);
+      }, snapMs + 20);
     });
   }
 
