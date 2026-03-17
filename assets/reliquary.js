@@ -751,7 +751,7 @@
         clearMirrorTabTransitionOverride();
 
         setTimeout(focusIntoPanel, 0);
-      }, snapMs + 50);
+      }, snapMs + 20);
     });
   }
 
@@ -812,7 +812,7 @@
 
         setTimeout(function () {
           root.classList.remove('reliquary-dock-settling');
-        }, snapMs + 30);
+        }, snapMs + 20);
 
         toggle.classList.remove('is-open');
         toggle.setAttribute('aria-expanded', 'false');
@@ -839,7 +839,7 @@
         panel.style.transform = 'translateX(var(--reliquary-panel-x, -50%)) translateY(' + closedY + 'px)';
 
         tapAnimating = false;
-      }, snapMs + 50);
+      }, snapMs + 20);
     });
   }
 
@@ -1040,7 +1040,7 @@
       }
 
       panel.addEventListener('transitionend', onEnd);
-      setTimeout(finish, SNAP_MS + 90);
+      setTimeout(finish, SNAP_MS + 50);
     }
 
     function snap() {
@@ -1108,7 +1108,7 @@
 
           setTimeout(function () {
             root.classList.remove('reliquary-dock-settling');
-          }, SNAP_MS + 80);
+          }, SNAP_MS + 40);
 
           closeReliquaryImmediately(false);
         }
