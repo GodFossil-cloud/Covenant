@@ -1293,6 +1293,7 @@ body.is-exiting #blackFadeOverlay {
 .lexicon-link:focus-visible {
     background-color: #8a6e3a;
     color: #fdf8f0;
+}
 
 .lexicon-glossary-footer {
     margin-top: 1.6rem;
