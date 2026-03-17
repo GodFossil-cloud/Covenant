@@ -383,6 +383,7 @@
 
         <button class="dock-socket-close" type="button" aria-label="Close Contents" aria-controls="tocPanel">⌄</button>
         <button class="dock-socket-close--mirror" type="button" aria-label="Close Reliquary" aria-controls="reliquaryPanel">⌄</button>
+        <button class="dock-socket-close--lexicon" type="button" aria-label="Close Lexicon" aria-controls="lexiconPanel">⌄</button>
       </div>
 
       <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true">
@@ -675,15 +676,20 @@
 <script>
   (function(){
     'use strict';
-    var closeToc = document.querySelector('.dock-socket-close');
-    var closeMirror = document.querySelector('.dock-socket-close--mirror');
-    var tocToggle = document.getElementById('tocToggle');
-    var mirrorToggle = document.getElementById('mirrorToggle');
+    var closeToc     = document.querySelector('.dock-socket-close');
+    var closeMirror  = document.querySelector('.dock-socket-close--mirror');
+    var closeLexicon = document.querySelector('.dock-socket-close--lexicon');
+    var tocToggle     = document.getElementById('tocToggle');
+    var mirrorToggle  = document.getElementById('mirrorToggle');
+    var lexiconToggle = document.getElementById('lexiconToggle');
     if (closeToc && tocToggle) {
       closeToc.addEventListener('click', function(e){ e.stopPropagation(); tocToggle.click(); });
     }
     if (closeMirror && mirrorToggle) {
       closeMirror.addEventListener('click', function(e){ e.stopPropagation(); mirrorToggle.click(); });
+    }
+    if (closeLexicon && lexiconToggle) {
+      closeLexicon.addEventListener('click', function(e){ e.stopPropagation(); lexiconToggle.click(); });
     }
   })();
 </script>
