@@ -1077,6 +1077,7 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
   pointer-events:none;
   user-select:none;
   -webkit-user-select:none;
+  cursor:pointer;
 
   opacity:0;
   transition:opacity 200ms ease;
@@ -1086,6 +1087,7 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
 html.toc-open .nav-seals .dock-socket-close,
 html.toc-opening .nav-seals .dock-socket-close{
   opacity:1;
+  pointer-events:auto;
 }
 
 html.toc-closing .nav-seals .dock-socket-close,
