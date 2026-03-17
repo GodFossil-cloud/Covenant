@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.4.0 (split-tab header) */
+/*! Covenant Reliquary Panel Styles v0.4.1 (equal tab split) */
 
 /* -------------------------------------------------
    Variables
@@ -207,14 +207,13 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   -webkit-tap-highlight-color:transparent;
 }
 
-/* Reliquary tab — wider primary wing (~62%) */
+/* Equal split — divider lands dead center */
 #reliquaryTabArchive{
-  flex:62;
+  flex:1;
 }
 
-/* Glossary tab — narrower secondary wing (~38%) */
 #reliquaryTabGlossary{
-  flex:38;
+  flex:1;
 }
 
 /* --- Active: Reliquary (warm brass world) --- */
