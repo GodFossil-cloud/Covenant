@@ -1193,9 +1193,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
   /* Match paragraph text right edge (12px body padding-right + 20px paragraph padding-right). */
   margin-right:20px !important;
 
-  background: #f0e6d2 !important;
-  
-  color: #3a2a14 !important;
+  background: #3a1f0e !important;
+  color: #d8c8a8 !important;
 
   overflow-wrap:anywhere;
   word-break:break-word;
