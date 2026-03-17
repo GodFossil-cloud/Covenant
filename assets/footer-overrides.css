@@ -1193,13 +1193,18 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
   /* Match paragraph text right edge (12px body padding-right + 20px paragraph padding-right). */
   margin-right:20px !important;
 
-  background: #3b0c10 !important;
+  background: rgba(160, 155, 150, 0.18) !important;
   color: #d0c0c0 !important;
 
   overflow-wrap:anywhere;
   word-break:break-word;
 }
 
+/* Quote box: saved state — bold red */
+.lexicon-panel-body .lexicon-sentence-quote.is-saved {
+  background: #7a1a1a !important;
+  color: #f0dede !important;
+}
 
 /* =================================================================
    § Lexicon stack cover (ui-stack cover motion)
