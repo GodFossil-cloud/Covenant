@@ -299,7 +299,7 @@ html.reliquary-open .reliquary-archive{display:block}
 .lexicon-sentence-quote.is-saveable {
   cursor: pointer;
   border-left-color: rgba(201,169,97,.52);
-  background: #d8d4ce !important;
+  background: #bdb8b0 !important;
   color: #1a1612 !important;
   transition:
     border-left-color 260ms cubic-bezier(0.22,0.61,0.36,1),
@@ -319,7 +319,7 @@ html.reliquary-open .reliquary-archive{display:block}
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saveable:hover {
     border-left-color: rgba(201,169,97,.82);
-    background: #cac5be !important;
+    background: #b0aba3 !important;
     color: #1a1612 !important;
     animation: none;
   }
@@ -370,7 +370,7 @@ html.reliquary-open .reliquary-archive{display:block}
   letter-spacing: .13em;
   text-transform: uppercase;
   line-height: 1;
-  color: rgba(201,169,97,.62);
+  color: rgba(80, 60, 20, 0.72);
   pointer-events: none;
   user-select: none;
   transition: color 260ms ease;
