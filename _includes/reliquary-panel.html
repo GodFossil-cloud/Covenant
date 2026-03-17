@@ -3,18 +3,21 @@
 <div class="reliquary-overlay" id="reliquaryOverlay" aria-hidden="true"></div>
 
 <div class="reliquary-panel" id="reliquaryPanel" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="reliquaryPanelTitle">
-  <div class="reliquary-panel-header">
+  <div class="reliquary-panel-header" role="tablist" aria-label="Reliquary tabs">
     <!-- Drag handle region (sheet-style gesture). -->
     <div class="reliquary-drag-region" id="reliquaryDragRegion" aria-hidden="true"></div>
 
     <!-- Screen-reader label. -->
     <div class="reliquary-panel-title sr-only" id="reliquaryPanelTitle">Reliquary</div>
 
-    <!-- Internal tabs (session remembers last view; default = Reliquary). -->
-    <div class="reliquary-tabs" role="tablist" aria-label="Reliquary tabs">
-      <button type="button" class="reliquary-tab" id="reliquaryTabArchive" role="tab" aria-selected="true" aria-controls="reliquaryViewArchive" tabindex="0">Reliquary</button>
-      <button type="button" class="reliquary-tab" id="reliquaryTabGlossary" role="tab" aria-selected="false" aria-controls="reliquaryViewGlossary" tabindex="-1">Glossary</button>
+    <!-- Tab buttons fill the header directly; divider sits between them. -->
+    <button type="button" class="reliquary-tab reliquary-tab--archive" id="reliquaryTabArchive" role="tab" aria-selected="true" aria-controls="reliquaryViewArchive" tabindex="0">Reliquary</button>
+
+    <div class="reliquary-header-divider" aria-hidden="true">
+      <span class="reliquary-divider-glyph">◆</span>
     </div>
+
+    <button type="button" class="reliquary-tab reliquary-tab--glossary" id="reliquaryTabGlossary" role="tab" aria-selected="false" aria-controls="reliquaryViewGlossary" tabindex="-1">Glossary</button>
   </div>
 
   <div class="reliquary-panel-body">
