@@ -1063,6 +1063,9 @@ html.toc-closing #navFooter #tocToggle .toc-glyph,
 
 .nav-seals .dock-socket-close{
   position:absolute;
+  background:none;
+  border:0;
+  padding:0;
   left:calc(var(--toc-tab-width) / 2 - var(--dock-socket-spread, 0px));
   top:calc(50% + var(--dock-socket-raise, -2px) + var(--dock-socket-y-nudge, -6px));
   transform:translate(-50%, -50%);
