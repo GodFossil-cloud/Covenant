@@ -1200,12 +1200,6 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
   word-break:break-word;
 }
 
-/* Quote box: saved state — bold red */
-.lexicon-panel-body .lexicon-sentence-quote.is-saved {
-  background: #7a1a1a !important;
-  color: #f0dede !important;
-}
-
 /* =================================================================
    § Lexicon stack cover (ui-stack cover motion)
    Absorbed from: lexicon-stack-cover.css
