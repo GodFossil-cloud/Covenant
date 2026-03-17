@@ -1,4 +1,4 @@
-/*! Covenant Reliquary Panel Styles v0.3.20 (Glossary pane own background world) */
+/*! Covenant Reliquary Panel Styles v0.4.0 (split-tab header) */
 
 /* -------------------------------------------------
    Variables
@@ -139,12 +139,15 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
 .reliquary-drag-region{display:none}
 
 /* -------------------------------------------------
-   Header + body
+   Header — split-tab bar
    ------------------------------------------------- */
 
 .reliquary-panel-header{
   position:relative;
-  padding:.90rem 1.25rem .82rem;
+  display:flex;
+  align-items:stretch;
+  /* no padding — tabs fill the header directly */
+  padding:0;
   border-bottom:1px solid rgba(100,80,90,1);
   background:var(--dock-tab-face,#010103);
 
@@ -153,6 +156,9 @@ html.reliquary-dock-settling #mirrorToggle.dock-tab{transition:none !important}
   touch-action:none;
   user-select:none;
   -webkit-user-select:none;
+
+  /* Minimum hit height for drag slop */
+  min-height:2.80rem;
 }
 
 /* Header border shifts to silver-violet when Glossary is active */
@@ -165,6 +171,161 @@ html.reliquary-open .reliquary-panel-header::after,
 html.reliquary-closing .reliquary-panel-header::after,
 html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
 
+/* -------------------------------------------------
+   Tab buttons — fill the header as flex children
+   ------------------------------------------------- */
+
+#reliquaryPanel .reliquary-tab{
+  appearance:none;
+  background:transparent;
+  border:none;
+  border-bottom:2px solid transparent;
+  border-radius:0;
+  padding:.72rem .90rem .68rem;
+
+  font-family:'Cormorant Garamond',serif;
+  font-size:.95rem;
+  font-weight:650;
+  letter-spacing:.16em;
+  font-variant-caps:all-small-caps;
+  line-height:1.1;
+
+  color:rgba(245,236,214,.42);
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition:
+    color 220ms ease,
+    background 220ms ease,
+    border-bottom-color 220ms ease,
+    text-shadow 220ms ease;
+
+  /* Prevent text from initiating drag */
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Reliquary tab — wider primary wing (~62%) */
+#reliquaryTabArchive{
+  flex:62;
+}
+
+/* Glossary tab — narrower secondary wing (~38%) */
+#reliquaryTabGlossary{
+  flex:38;
+}
+
+/* --- Active: Reliquary (warm brass world) --- */
+#reliquaryTabArchive[aria-selected="true"]{
+  color:rgba(245,236,214,.92);
+  background:rgba(201,169,97,.07);
+  border-bottom-color:transparent;  /* dissolves into panel body */
+  text-shadow:
+    0 0 18px rgba(201,169,97,.28),
+    0 1px 0 rgba(0,0,0,.80);
+}
+
+/* --- Active: Glossary (cool silver-violet world) --- */
+#reliquaryTabGlossary[aria-selected="true"]{
+  color:rgba(245,236,214,.92);
+  background:rgba(185,180,220,.07);
+  border-bottom-color:transparent;  /* dissolves into panel body */
+  text-shadow:
+    0 0 18px rgba(138,76,68,.50),
+    0 1px 0 rgba(0,0,0,.80);
+}
+
+/* --- Inactive states (explicit for clarity) --- */
+#reliquaryTabArchive[aria-selected="false"]{
+  color:rgba(245,236,214,.36);
+  background:transparent;
+  border-bottom-color:rgba(100,80,90,.60);
+}
+
+#reliquaryTabGlossary[aria-selected="false"]{
+  color:rgba(245,236,214,.36);
+  background:transparent;
+  border-bottom-color:rgba(51,51,51,.80);
+}
+
+/* Hover: nudge inactive tab toward its active color */
+#reliquaryTabArchive[aria-selected="false"]:hover{
+  color:rgba(245,236,214,.62);
+  background:rgba(201,169,97,.04);
+}
+#reliquaryTabGlossary[aria-selected="false"]:hover{
+  color:rgba(245,236,214,.62);
+  background:rgba(185,180,220,.04);
+}
+
+/* Focus rings */
+#reliquaryTabArchive:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:-2px}
+#reliquaryTabGlossary:focus-visible{outline:2px solid var(--glossary-accent-soft);outline-offset:-2px}
+
+/* -------------------------------------------------
+   Divider — vertical rule + ◆ glyph
+   ------------------------------------------------- */
+
+.reliquary-header-divider{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  width:1px;
+  background:rgba(100,80,90,.55);
+  z-index:2;
+
+  /* Extend slightly beyond the header into the border below */
+  margin-bottom:-1px;
+
+  transition:background 280ms ease;
+}
+
+/* Divider shifts color with active tab world */
+.reliquary-panel:has(#reliquaryViewArchive:not([hidden])) .reliquary-header-divider{
+  background:rgba(201,169,97,.30);
+}
+.reliquary-panel:has(#reliquaryViewGlossary:not([hidden])) .reliquary-header-divider{
+  background:rgba(138,76,68,.40);
+}
+
+.reliquary-divider-glyph{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+
+  font-size:.52rem;
+  line-height:1;
+  letter-spacing:0;
+
+  /* Sits above the rule line */
+  padding:0 2px;
+  background:var(--dock-tab-face,#010103);
+
+  color:rgba(100,80,90,.55);
+
+  pointer-events:none;
+  transition:color 280ms ease, text-shadow 280ms ease;
+}
+
+/* Glyph shifts + glows with active world */
+.reliquary-panel:has(#reliquaryViewArchive:not([hidden])) .reliquary-divider-glyph{
+  color:rgba(201,169,97,.55);
+  text-shadow:0 0 10px rgba(201,169,97,.28);
+}
+.reliquary-panel:has(#reliquaryViewGlossary:not([hidden])) .reliquary-divider-glyph{
+  color:rgba(138,76,68,.70);
+  text-shadow:0 0 10px rgba(138,76,68,.34);
+}
+
+/* -------------------------------------------------
+   Panel body
+   ------------------------------------------------- */
+
 .reliquary-panel-body{
   flex:1;
   overflow:auto;
@@ -173,52 +334,6 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
 }
-
-/* -------------------------------------------------
-   Internal tabs (header)
-   ------------------------------------------------- */
-
-#reliquaryPanel .reliquary-tabs{
-  position:relative;
-  z-index:11;
-  display:flex;
-  gap:.65rem;
-  margin-top:0;
-}
-
-#reliquaryPanel .reliquary-tab{
-  appearance:none;
-  background:transparent;
-  border:1px solid rgba(245,236,214,.22);
-  border-radius:999px;
-  padding:.40rem .72rem;
-  font-family:'Cormorant Garamond',serif;
-  font-size:.95rem;
-  font-weight:650;
-  letter-spacing:.14em;
-  font-variant-caps:all-small-caps;
-  line-height:1.1;
-  color:rgba(245,236,214,.70);
-  cursor:pointer;
-}
-
-/* Reliquary tab — selected: warm brass */
-#reliquaryTabArchive[aria-selected="true"]{
-  border-color:rgba(201,169,97,.56);
-  background:rgba(255,255,255,.06);
-  color:rgba(245,236,214,.92);
-}
-
-/* Glossary tab — selected: cool silver-violet */
-#reliquaryTabGlossary[aria-selected="true"]{
-  border-color:var(--glossary-accent-mid);
-  background:rgba(185,180,220,.07);
-  color:rgba(245,236,214,.92);
-}
-
-/* Focus rings */
-#reliquaryTabArchive:focus-visible{outline:2px solid rgba(201,169,97,.34);outline-offset:3px}
-#reliquaryTabGlossary:focus-visible{outline:2px solid var(--glossary-accent-soft);outline-offset:3px}
 
 /* -------------------------------------------------
    Glossary view
@@ -264,6 +379,9 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   .reliquary-overlay{transition:none}
   .reliquary-panel{transition:opacity 140ms ease !important;transform:translateX(var(--reliquary-panel-x, -50%)) !important}
   html #mirrorToggle.dock-tab{transition:none}
+  #reliquaryPanel .reliquary-tab{transition:none}
+  .reliquary-header-divider{transition:none}
+  .reliquary-divider-glyph{transition:none}
 }
 
 /* -------------------------------------------------
@@ -284,6 +402,13 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   html.reliquary-opening .reliquary-panel,
   html.reliquary-open .reliquary-panel,
   html.reliquary-closing .reliquary-panel{right:max(0px, calc(var(--reliquary-panel-right, 0px) - 1px))}
+
+  /* Slightly tighter tab padding on narrow screens */
+  #reliquaryPanel .reliquary-tab{
+    padding:.65rem .60rem .60rem;
+    font-size:.88rem;
+    letter-spacing:.12em;
+  }
 }
 
 /* -------------------------------------------------
