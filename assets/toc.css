@@ -17,8 +17,8 @@
   --toc-rule-strong:rgba(201,169,97,.48);
   --toc-rule-below:rgba(0,0,0,1);
 
-  --toc-parchment:rgba(8,9,11,1);
-  --toc-parchment-hi:rgba(14,14,18,.72);
+  --toc-parchment:rgba(20,20,20,1);
+  --toc-parchment-hi:rgba(26,26,26,.72);
 
   --toc-brass:rgba(201,169,97,1);
 
@@ -152,7 +152,7 @@ html.toc-scroll-lock body{overflow:hidden;height:100%}
   top:auto;
   width:min(760px,calc(100vw - 24px));
   max-height:70vh;
-  background:#0a0a14;
+  background:linear-gradient(to bottom, #1a1a1a 0%, #141414 50%, #0d0d0d 100%);
   border:1px solid rgba(44,62,80,.16);
   border-left-color:var(--dock-tab-face,#010103);
   border-top-color:rgba(44,62,80,.18);
@@ -285,8 +285,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
    Body
    ------------------------------------------------- */
 
-.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative;background:#0a0a14;}
-
+.toc-panel-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:1.1rem 1.35rem 1.25rem;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative;background:linear-gradient(to bottom, #141414 0%, #0d0d0d 100%);}
 .toc-panel-body>*{position:relative}
 
 /* -------------------------------------------------
