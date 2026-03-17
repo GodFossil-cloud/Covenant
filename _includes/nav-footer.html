@@ -82,7 +82,7 @@
     height: var(--dock-cap-h);
     transform: translate3d(
       -50%,
-      calc(0 * var(--dock-cap-lift, 10px) + (var(--dock-cap-size, 46px) - var(--dock-cap-h))),
+      calc(0 * (var(--dock-cap-lift, 10px)) + (var(--dock-cap-size, 46px) - var(--dock-cap-h))),
       0
     );
     border-radius: 0 0 999px 999px;
@@ -362,6 +362,7 @@
         <button class="nav-btn dock-tab" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
           <span class="dock-cap" aria-hidden="true"></span>
           <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">≡</span>
+          <span class="dock-socket-close" aria-hidden="true">⌄</span>
         </button>
 
         <button
@@ -406,6 +407,7 @@
         </button>
       {% endif %}
     </div>
+
   </div>
 </nav>
 
