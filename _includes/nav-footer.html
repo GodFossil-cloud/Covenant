@@ -358,22 +358,31 @@
     <div class="nav-center">
       <span class="sr-only">{{ include.current_label | default: "" }}</span>
 
-    <div class="nav-seals" aria-label="Panels">
-      <button class="nav-btn dock-tab" id="tocToggle" …>
-      <span class="dock-cap" aria-hidden="true"></span>
-      <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">≡</span>
-      </button>
+            <div class="nav-seals" aria-label="Panels">
+        <button class="nav-btn dock-tab" id="tocToggle" type="button" aria-label="Open Contents" aria-expanded="false" aria-controls="tocPanel">
+          <span class="dock-cap" aria-hidden="true"></span>
+          <span class="toc-glyph toc-glyph--hamburger" aria-hidden="true">≡</span>
+        </button>
 
-      <button … id="lexiconToggle" …>…</button>
+        <button
+          class="nav-btn center"
+          id="lexiconToggle"
+          type="button"
+          aria-label="{{ include.center_aria_label | default: "Open Lexicon" }}"
+          aria-expanded="false"
+          aria-controls="lexiconPanel"
+        >
+          <span class="lexicon-glyph lexicon-glyph--idle" aria-hidden="true">𖥸</span>
+          <span class="lexicon-glyph lexicon-glyph--active" aria-hidden="true">𖥸</span>
+        </button>
 
-      <button class="nav-btn dock-tab" id="mirrorToggle" …>
-    
-      <span class="dock-cap" aria-hidden="true"></span>
-      <span class="toc-glyph" aria-hidden="true">⁜</span>
-      </button>
+        <button class="nav-btn dock-tab" id="mirrorToggle" type="button" aria-label="Open Reliquary" aria-expanded="false" aria-controls="reliquaryPanel">
+          <span class="dock-cap" aria-hidden="true"></span>
+          <span class="toc-glyph" aria-hidden="true">⁜</span>
+        </button>
 
-      <span class="dock-socket-close" aria-hidden="true">⌄</span>
-    </div>
+        <span class="dock-socket-close" aria-hidden="true">⌄</span>
+      </div>
 
       <div class="citation-label" id="citationLabel" aria-live="polite" aria-atomic="true">
         <button class="citation-copy" id="citationCopy" type="button" aria-label="Copy citation">
