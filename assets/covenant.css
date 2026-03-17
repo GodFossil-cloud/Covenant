@@ -1230,27 +1230,27 @@ body.is-exiting #blackFadeOverlay {
 
 .lexicon-panel-body {
     font-size: 0.95rem;
-    color: #2c3e50;
+    color: #e8dfd0;
     line-height: 1.6;
     flex: 1 1 auto;
     overflow-y: auto;
 
     /* Fallback surface (readable even without blur support). */
-    background: linear-gradient(to bottom, #f5f0e8, #ede5d8);
+    background: linear-gradient(to bottom, #2a1f14, #1c1510);
     padding: 16px 20px calc(var(--footer-total-height) + 18px) 20px;
     padding-right: 12px;
 
     box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
 
     scrollbar-width: thin;
-    scrollbar-color: #8a6e3a #e0d8cc;
+    scrollbar-color: #8a6e3a #1c1510;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     touch-action: pan-y;
 }
 
 .lexicon-panel-body::-webkit-scrollbar { width: 10px; }
-.lexicon-panel-body::-webkit-scrollbar-track { background: #e0d8cc; }
+.lexicon-panel-body::-webkit-scrollbar-track { background: #1c1510; }
 .lexicon-panel-body::-webkit-scrollbar-thumb { background: #8a6e3a; }
 .lexicon-panel-body::-webkit-scrollbar-thumb:hover { background: #6b4f22; }
 
@@ -1280,13 +1280,13 @@ body.is-exiting #blackFadeOverlay {
     padding: 0.5rem 1.2rem;
     border-radius: 2px;
     border: 1px solid #8a6e3a;
-    color: #5a3e1b;
+    color: #c9a961;
     text-decoration: none;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     font-size: 0.8rem;
     transition: background-color 0.2s ease, color 0.2s ease;
-    background-color: #ede0cc;
+    background-color: #2e1f10;
 }
 
 .lexicon-link:hover,
@@ -1298,7 +1298,7 @@ body.is-exiting #blackFadeOverlay {
 .lexicon-glossary-footer {
     margin-top: 1.6rem;
     padding-top: 1rem;
-    border-top: 1px solid #c8b99a;
+    border-top: 1px solid #4a3520;
     font-size: 0.85rem;
 }
 
@@ -1308,7 +1308,7 @@ body.is-exiting #blackFadeOverlay {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     margin-bottom: 0.6rem;
-    color: #5a3e1b;
+    color: #c9a961;
 }
 
 .lexicon-term-list { list-style: none; }
@@ -1316,13 +1316,13 @@ body.is-exiting #blackFadeOverlay {
 
 .lexicon-term-label {
     font-weight: 600;
-    color: #6b4520;
+    color: #c9a961;
 }
 
 .lexicon-term-ref {
     font-size: 0.75rem;
     vertical-align: super;
-    color: #8a6030;
+    color: #a07840;
     margin-left: 2px;
 }
 
