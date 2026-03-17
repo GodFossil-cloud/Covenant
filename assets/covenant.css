@@ -2,10 +2,10 @@
     --primary-color: #2c3e50;
     --accent-color: #8b7355;
     --text-color: #1a1a1a;
-    --bg-color: #fafaf8;
+    --bg-color: #f5f0e8;
     --border-color: #d4c5b9;
-    --highlight-color: #f5f1ed;
-    --sentence-highlight: #f0e3d4;
+    --highlight-color: #ede5d8;
+    --sentence-highlight: #e8d8c4;
 
     /* Legacy token name retained for compatibility; mapped away from red. */
     --glyph-red: #08090b;
