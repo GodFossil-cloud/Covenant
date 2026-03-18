@@ -218,6 +218,8 @@
   }
 
   #navFooter #lexiconToggle .lexicon-glyph--active { display: none; }
+  #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph--active { display: inline-block; }
+  #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph--idle { display: none; }
   #navFooter #lexiconToggle.has-selection .lexicon-glyph--idle { display: none; }
   #navFooter #lexiconToggle.has-selection .lexicon-glyph--active { display: inline-block; }
 
