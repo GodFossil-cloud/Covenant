@@ -70,6 +70,13 @@
   /* Fully-open "embedded" state: keep gold, remove halo (tiny ink seat only). */
   --lexicon-glyph-open-embedded-shadow:0 1px 0 rgba(0,0,0,0.86);
 
+  /* Open state: glyph shifts to a darker, embossed tone (pressed-in aesthetic). */
+  --lexicon-glyph-open-dark-color: rgba(80, 68, 44, 0.92);
+  --lexicon-glyph-open-dark-shadow:
+    0 1px 0 rgba(0,0,0,0.96),
+    0 -1px 0 rgba(255,255,255,0.06),
+    inset 0 1px 2px rgba(0,0,0,0.80);
+
   /* Fully-open + selection: "leaf inlay" (sacred distinction without radiance).
      Crisp bevel/seat only: no blur values, so it reads engraved/inlaid, not glowing. */
   --lexicon-glyph-open-inlay-color:var(--leaf-1, rgba(255,215,122,0.98));
@@ -1091,6 +1098,14 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle:not(.is-tap-opening):not(.is-
   filter:none !important;
 }
 
+/* OPEN: glyph shifts to darker embossed tone — overrides the quiet-kill above. */
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner{
+  color: var(--lexicon-glyph-open-dark-color) !important;
+  text-shadow: var(--lexicon-glyph-open-dark-shadow) !important;
+}
 
 /* =================================================================
    § Lexicon tap-flash timing
