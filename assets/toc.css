@@ -423,6 +423,9 @@ html.toc-dock-settling .toc-produced-title{padding-left:calc(var(--toc-notch-w) 
 .toc-item--current .toc-entry-title{font-weight:600;color:rgba(255,240,200,1)}
 .toc-item--current .toc-entry-key{color:rgba(201,169,97,.92)}
 
+.toc-item--current::before{background:rgba(201,169,97,.82);border-color:rgba(0,0,0,1);box-shadow:inset 0 0 0 2px rgba(255,240,180,.28),0 0 8px rgba(201,169,97,.18)}
+.toc-item--current-suppressed::before{background:rgba(44,38,28,1);border-color:rgba(0,0,0,1);box-shadow:inset 0 0 0 2px rgba(201,169,97,.22)}
+
 .toc-item--pending .toc-entry-title{color:rgba(255,240,200,1)}
 .toc-item--pending .toc-item-btn:hover .toc-entry-title,
 .toc-item--pending .toc-item-btn:focus-visible .toc-entry-title{text-decoration:none}
@@ -869,7 +872,7 @@ html.toc-dock-settling .toc-produced-title{padding-left:.9rem !important}
 
 .toc-item--pending .toc-item-btn{position:relative;isolation:isolate}
 
-.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{animation:tocPendingNodePulse 1100ms ease-in-out infinite}
+.toc-item--pending:not(.toc-item--current):not([aria-current="page"])::before{animation:none !important;background:rgba(80,110,200,.88) !important;border-color:rgba(0,0,0,1) !important;box-shadow:inset 0 0 0 2px rgba(180,200,255,.28),0 0 10px rgba(80,110,200,.22) !important;opacity:1 !important;transform:translateY(-50%) !important;filter:none !important}
 
 .toc-item--pending .toc-item-btn::before{
   content:'';
