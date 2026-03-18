@@ -1236,7 +1236,7 @@ body.is-exiting #blackFadeOverlay {
     overflow-y: auto;
 
     /* Fallback surface (readable even without blur support). */
-    background: linear-gradient(to bottom, #1e1f26, #0d0e12);
+    background: linear-gradient(to bottom, #2e3040, #171922);
     padding: 16px 20px calc(var(--footer-total-height) + 18px) 20px;
     padding-right: 12px;
 
