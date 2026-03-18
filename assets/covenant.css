@@ -781,6 +781,15 @@ body.is-exiting #blackFadeOverlay {
     pointer-events: none;
     user-select: none;
     white-space: nowrap;
+    transition: color 260ms ease, text-shadow 260ms ease;
+}
+
+#lexiconToggle[aria-expanded="true"] .lexicon-glyph {
+    color: #3a3020;
+    text-shadow:
+        0 1px 0 rgba(255, 235, 180, 0.18),
+        0 -1px 0 rgba(0, 0, 0, 0.72),
+        0 0 6px rgba(0, 0, 0, 0.60);
 }
 
 /* Fixed rotation box for the middle 𖤓 (prevents layout jitter while spinning) */
