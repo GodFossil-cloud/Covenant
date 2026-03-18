@@ -1193,6 +1193,10 @@
     lexOverlay.setAttribute('aria-hidden', 'false');
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'true');
     if (lexiconToggle) lexiconToggle.classList.add('is-open');
+    if (lexiconToggle) {
+      lexiconToggle.style.color = '#2a2010';
+      lexiconToggle.style.textShadow = '0 1px 0 rgba(255,235,180,0.22), 0 -1px 0 rgba(0,0,0,0.80)';
+    }
 
     lockBodyScroll();
     setLexiconGlyph();
@@ -1220,6 +1224,10 @@
     lexOverlay.setAttribute('aria-hidden', 'true');
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
     if (lexiconToggle) lexiconToggle.classList.remove('is-open');
+    if (lexiconToggle) {
+      lexiconToggle.style.color = '';
+      lexiconToggle.style.textShadow = '';
+    }
 
     if (isBottomSheetMode()) {
       setSealToClosedPosition();
