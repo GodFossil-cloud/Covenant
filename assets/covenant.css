@@ -2160,3 +2160,12 @@ body.page-invocation #invocation .section-divider {
         font-size: 1.35em;
     }
 }
+
+/* Seal embossed state when panel is open */
+#lexiconToggle.is-open .lexicon-glyph {
+    color: #2a2010 !important;
+    text-shadow:
+        0 1px 0 rgba(255, 235, 180, 0.22),
+        0 -1px 0 rgba(0, 0, 0, 0.80) !important;
+    transition: color 260ms ease, text-shadow 260ms ease;
+}
