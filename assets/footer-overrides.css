@@ -1571,3 +1571,13 @@ html #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]::after{
   background-image:none !important;
   box-shadow:var(--lexicon-seal-face-open-shadow) !important;
 }
+
+/* Lexicon glyph: open state — darker embossed color on the symbol itself. */
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph--active,
+#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner {
+  color: rgba(60, 50, 30, 0.88) !important;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.96),
+    0 -1px 0 rgba(255,255,255,0.07) !important;
+  filter: none !important;
+}
