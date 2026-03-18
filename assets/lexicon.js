@@ -1192,6 +1192,7 @@
     panel.setAttribute('aria-hidden', 'false');
     lexOverlay.setAttribute('aria-hidden', 'false');
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'true');
+    if (lexiconToggle) lexiconToggle.classList.add('is-open');
 
     lockBodyScroll();
     setLexiconGlyph();
@@ -1218,6 +1219,7 @@
     panel.setAttribute('aria-hidden', 'true');
     lexOverlay.setAttribute('aria-hidden', 'true');
     if (lexiconToggle) lexiconToggle.setAttribute('aria-expanded', 'false');
+    if (lexiconToggle) lexiconToggle.classList.remove('is-open');
 
     if (isBottomSheetMode()) {
       setSealToClosedPosition();
@@ -1597,6 +1599,8 @@
         panel.setAttribute('aria-hidden', 'false');
         lexOverlay.setAttribute('aria-hidden', 'false');
         lexiconToggle.setAttribute('aria-expanded', 'true');
+        lexiconToggle.classList.add('is-open');
+
         lockBodyScroll();
         setLexiconGlyph();
 
@@ -1618,6 +1622,7 @@
         panel.setAttribute('aria-hidden', 'true');
         lexOverlay.setAttribute('aria-hidden', 'true');
         lexiconToggle.setAttribute('aria-expanded', 'false');
+        lexiconToggle.classList.remove('is-open');
         unlockBodyScroll();
         setLexiconGlyph();
 
