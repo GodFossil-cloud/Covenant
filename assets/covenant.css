@@ -2162,7 +2162,7 @@ body.page-invocation #invocation .section-divider {
 }
 
 /* Seal embossed state when panel is open */
-#lexiconToggle.is-open .lexicon-glyph {
+#lexiconToggle.is-open {
     color: #2a2010 !important;
     text-shadow:
         0 1px 0 rgba(255, 235, 180, 0.22),
