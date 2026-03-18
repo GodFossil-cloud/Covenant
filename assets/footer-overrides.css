@@ -1549,3 +1549,10 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
   animation:none !important;
   filter:none !important;
 }
+
+/* Final guard: ensure open-state emboss survives the transparent-face block. */
+html #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]::after{
+  background-color:var(--lexicon-seal-face-open, #030406) !important;
+  background-image:none !important;
+  box-shadow:var(--lexicon-seal-face-open-shadow) !important;
+}
