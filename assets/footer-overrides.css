@@ -1572,12 +1572,14 @@ html #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]::after{
   box-shadow:var(--lexicon-seal-face-open-shadow) !important;
 }
 
-/* Lexicon glyph: open state — darker embossed color on the symbol itself. */
-#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph--active,
-#navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner {
-  color: rgba(60, 50, 30, 0.88) !important;
+/* Lexicon glyph: OPEN — darker embossed tone, beats all kill rules above. */
+html #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph,
+html #navFooter #lexiconToggle[aria-expanded="true"] .lexicon-glyph-mid-inner,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph,
+html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner {
+  color: rgba(72, 58, 32, 0.90) !important;
   text-shadow:
-    0 1px 0 rgba(0,0,0,0.96),
-    0 -1px 0 rgba(255,255,255,0.07) !important;
+    0 1px 0 rgba(0,0,0,0.98),
+    0 -1px 0 rgba(255,255,255,0.06) !important;
   filter: none !important;
 }
