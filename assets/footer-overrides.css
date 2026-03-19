@@ -1044,8 +1044,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
 }
 
 /* Fully open, no selection */
-#navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
-#navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
+html #navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+html #navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner{
   color: var(--lexicon-glyph-open-color-b) !important;
 }
 
