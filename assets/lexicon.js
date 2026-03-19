@@ -1731,6 +1731,9 @@
       e.preventDefault();
     });
 
+    // --- Header drag region (full header as drag surface when panel is open) ---
+    var panelHeader = qs('.lexicon-panel-header', panel);
+
     function endDrag(e) {
       if (!dragging || (e && e.pointerId !== pointerId)) return;
 
@@ -1743,14 +1746,85 @@
         snap();
       }
 
-      if (e && lexiconToggle.hasPointerCapture && lexiconToggle.hasPointerCapture(e.pointerId)) {
-        lexiconToggle.releasePointerCapture(e.pointerId);
+      var capEl = (panelHeader && panelHeader.hasPointerCapture && panelHeader.hasPointerCapture(e.pointerId))
+        ? panelHeader
+        : lexiconToggle;
+        if (e && capEl.hasPointerCapture && capEl.hasPointerCapture(e.pointerId)) {
+        capEl.releasePointerCapture(e.pointerId);
       }
     }
 
     lexiconToggle.addEventListener('pointerup', endDrag);
     lexiconToggle.addEventListener('pointercancel', endDrag);
     lexiconToggle.addEventListener('lostpointercapture', endDrag);
-  })();
+    
+    if (panelHeader) {
+    panelHeader.addEventListener('pointerdown', function (e) {
+    if (!isMobileSheet()) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    // Only allow drag-to-close when panel is already open
+    if (!panel.classList.contains('is-open')) return;
+    // If the pointer landed directly on the seal, let the seal handle it
+    if (lexiconToggle && lexiconToggle.contains(e.target)) return;
 
+    clearSealSettling();
+
+    dragging = true;
+    moved = false;
+    dragIntentPulsed = false;
+    pointerId = e.pointerId;
+
+    startY = e.clientY;
+    lastY = startY;
+    lastT = Date.now();
+    velocity = 0;
+
+    startWasOpen = true;
+
+    computeClosedY();
+    currentY = 0;
+
+    panel.classList.add('is-dragging');
+    panel.style.transition = 'none';
+    if (lexOverlay) lexOverlay.style.transition = 'none';
+
+    panelHeader.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    });
+
+    panelHeader.addEventListener('pointermove', function (e) {
+    if (!dragging || e.pointerId !== pointerId) return;
+
+    var deltaY = e.clientY - startY;
+    if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
+    moved = true;
+    window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
+
+    if (!dragIntentPulsed) {
+    dragIntentPulsed = true;
+    triggerSealNudge();
+    }
+    }
+    if (!moved) return;
+
+    var now = Date.now();
+    var dt = now - lastT;
+    if (dt > 0) velocity = (e.clientY - lastY) / dt;
+
+    lastY = e.clientY;
+    lastT = now;
+
+    var targetY = deltaY;
+    if (targetY < 0) targetY = 0;
+    if (targetY > closedY) targetY = closedY;
+
+    setPanelY(targetY, true);
+    e.preventDefault();
+    });
+
+    panelHeader.addEventListener('pointerup', function (e) { endDrag(e); });
+    panelHeader.addEventListener('pointercancel', function (e) { endDrag(e); });
+    panelHeader.addEventListener('lostpointercapture', function (e) { endDrag(e); });
+    }
+})();
 })();
