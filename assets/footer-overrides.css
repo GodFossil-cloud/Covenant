@@ -1572,6 +1572,14 @@ html #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]::after{
   box-shadow:var(--lexicon-seal-face-open-shadow) !important;
 }
 
+/* Drag-to-close: restore gold + halo as the seal descends. */
+html #navFooter #lexiconToggle[aria-expanded="true"].is-seal-dragging:not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
+html #navFooter #lexiconToggle[aria-expanded="true"].is-seal-dragging:not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner {
+  color: var(--lexicon-glyph-open-color) !important;
+  text-shadow: var(--lexicon-glyph-open-shadow) !important;
+  filter: none !important;
+}
+
 /* Lexicon glyph: OPEN — darker embossed tone, beats Palette B (specificity matched). */
 html #navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph,
 html #navFooter #lexiconToggle[aria-expanded="true"]:not(.has-selection):not(.is-lexicon-locked):not([data-lexicon-locked="true"]) .lexicon-glyph-mid-inner,
