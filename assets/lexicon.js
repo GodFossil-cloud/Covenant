@@ -1654,6 +1654,7 @@
         applyOpenStateFromDrag();
       } else {
         markSealSettling(SNAP_MS);
+        panel.classList.add('is-settling');
         currentY = closedY;
         panel.style.transform = 'translateY(' + closedY + 'px)';
         if (lexOverlay) lexOverlay.style.opacity = '0';
@@ -1661,6 +1662,7 @@
       }
 
       setTimeout(function () {
+        panel.classList.remove('is-settling');
         panel.style.transform = '';
         panel.style.transition = '';
         if (lexOverlay) {
