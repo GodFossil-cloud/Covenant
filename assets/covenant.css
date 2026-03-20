@@ -1063,6 +1063,8 @@ body.is-exiting #blackFadeOverlay {
     background: var(--lexicon-seal-face, #08090b);
 
     border-left: 1px solid #3a3a3a;
+    border-top: 1px solid #3a3a3a;
+
     box-shadow: none;
     transform: translateX(100%);
     transition: transform 0.3s ease, box-shadow 0.3s ease, opacity var(--intro-panel-duration) ease-in;
