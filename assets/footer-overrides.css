@@ -1170,10 +1170,6 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
 .lexicon-panel-header{
   justify-content:flex-start;
   gap:12px;
-  /* Hide the top border when the panel is fully open (it reads as a gray strip). */
-  .lexicon-panel.is-open {
-    border-top-color: transparent;
-  }
 }
 
 /* Pin the close button to the far right without forcing the title block to center. */
@@ -1192,6 +1188,11 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
 #lexiconHeaderText .lexicon-panel-title,
 #lexiconHeaderText .lexicon-panel-mode{
   text-align:left;
+}
+
+/* Hide the top border when the panel is fully open (it reads as a gray strip). */
+.lexicon-panel.is-open {
+  border-top-color: transparent;
 }
 
 /* Mobile: don't reserve space for an empty seal slot; tighten the gap so the header text sits closer left. */
