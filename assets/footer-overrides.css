@@ -1219,6 +1219,13 @@ html.lexicon-scroll-lock .lexicon-drag-region,
   box-shadow: none !important;
 }
 
+@media (max-width: 600px) {
+  html.lexicon-scroll-lock .lexicon-panel,
+  #lexiconPanel[aria-hidden="false"] {
+    border-top: none !important;
+  }
+}
+
 /* Mobile: don't reserve space for an empty seal slot; tighten the gap so the header text sits closer left. */
 @media (max-width: 520px){
   #lexiconSealSlot:empty{
