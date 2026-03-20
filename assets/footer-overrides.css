@@ -1170,6 +1170,8 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
 .lexicon-panel-header{
   justify-content:flex-start;
   gap:12px;
+  margin-top: -2px;
+  padding-top: calc(22px + 2px);
 }
 
 /* Pin the close button to the far right without forcing the title block to center. */
