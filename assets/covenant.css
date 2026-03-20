@@ -1062,8 +1062,8 @@ body.is-exiting #blackFadeOverlay {
 
     background: var(--lexicon-seal-face, #08090b);
 
-    border-left: 1px solid #3a3a3a;
-    border-top: 1px solid #3a3a3a;
+    border-left: 1px solid #000;
+    border-top: 1px solid #000;
 
     box-shadow: none;
     transform: translateX(100%);
