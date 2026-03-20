@@ -203,8 +203,9 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   box-shadow:none !important;
 }
 
-/* Hide the panel close button while dragging so it doesn't ghost over the cradle. */
-#lexiconPanel.is-dragging .lexicon-panel-close{
+/* Hide the panel close button while dragging or snap-settling so it doesn't ghost over the cradle. */
+#lexiconPanel.is-dragging .lexicon-panel-close,
+#lexiconPanel.is-settling .lexicon-panel-close{
   opacity:0;
   pointer-events:none;
 }
