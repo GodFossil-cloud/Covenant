@@ -572,10 +572,6 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   mask-size:100% 100%;
 
   background:
-    /* Top edge seam (inside cradle): force black without touching the rim trace. */
-    linear-gradient(to bottom,
-      rgba(0,0,0,0.95) 0 1px,
-      rgba(0,0,0,0) 1px 100%),
     /* Border trace (U-shape): MUST be topmost or the depth layers will cover it. */
     radial-gradient(ellipse var(--seal-notch-radius) var(--seal-notch-radius-y) at 50% 0%,
       transparent 0 calc(var(--seal-notch-radius) - 2px),
