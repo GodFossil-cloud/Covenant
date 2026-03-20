@@ -210,6 +210,16 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   pointer-events:none;
 }
 
+/* Hide the dock's own close button in the empty cradle while the panel is being dragged down to close.
+   The panel and the dock button are siblings, so we use :has() on a shared ancestor. */
+@supports selector(body:has(#lexiconPanel.is-dragging)){
+  body:has(#lexiconPanel.is-dragging) #navFooter .dock-socket-close--lexicon,
+  body:has(#lexiconPanel.is-settling) #navFooter .dock-socket-close--lexicon{
+    opacity:0;
+    pointer-events:none;
+  }
+}
+
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.86em !important;position:relative;display:inline-block;z-index:0}
 
