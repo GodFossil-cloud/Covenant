@@ -1060,8 +1060,7 @@ body.is-exiting #blackFadeOverlay {
     height: 100vh;
     width: min(360px, 90vw);
 
-    /* Panel itself is transparent; header/body paint their own surfaces. */
-    background: transparent;
+    background: var(--lexicon-seal-face, #08090b);
 
     border-left: 1px solid #3a3a3a;
     box-shadow: none;
