@@ -1572,9 +1572,9 @@ html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]).ha
 
 /* Final guard: ensure open-state emboss survives the transparent-face block. */
 html #navFooter #lexiconToggle.nav-btn.center[aria-expanded="true"]::after{
-  background-color:var(--lexicon-seal-face-open, #030406) !important;
+  background-color: transparent !important;
   background-image:none !important;
-  box-shadow:var(--lexicon-seal-face-open-shadow) !important;
+  box-shadow: none !important;
 }
 
 /* Lexicon glyph: OPEN — darker embossed tone, beats Palette B (specificity matched). */
