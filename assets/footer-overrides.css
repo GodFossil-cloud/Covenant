@@ -203,6 +203,12 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.nav-btn.center,
   box-shadow:none !important;
 }
 
+/* Hide the panel close button while dragging so it doesn't ghost over the cradle. */
+#lexiconPanel.is-dragging .lexicon-panel-close{
+  opacity:0;
+  pointer-events:none;
+}
+
 /* Lexicon tab: shrink glyph only (do not alter seal/cradle geometry). */
 #navFooter #lexiconToggle .lexicon-glyph{font-size:0.86em !important;position:relative;display:inline-block;z-index:0}
 
