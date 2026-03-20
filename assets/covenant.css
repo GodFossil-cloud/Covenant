@@ -1133,9 +1133,9 @@ body.is-exiting #blackFadeOverlay {
 
     /* Opaque header (not glass) */
     background: var(--lexicon-seal-face, #08090b);
-    border-bottom: 1px solid rgba(242, 220, 154, 0.10);
+    border-bottom: 1px solid rgba(100, 80, 90, 1);
 
-    padding: 22px 20px 14px;
+    padding: 22px 20px 18px;
     margin: 0;
 }
 
@@ -1249,8 +1249,8 @@ body.is-exiting #blackFadeOverlay {
     padding: 16px 20px calc(var(--footer-total-height) + 18px) 20px;
     padding-right: 12px;
 
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05),
-            inset 0 18px 30px rgba(0, 0, 0, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        inset 0 22px 36px rgba(0, 0, 0, 0.42);
 
     scrollbar-width: thin;
     scrollbar-color: #8a6e3a #0b0c0e;
