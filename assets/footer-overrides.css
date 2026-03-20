@@ -1206,9 +1206,17 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection:active::after,
   text-align:left;
 }
 
-/* Hide the top border when the panel is fully open (it reads as a gray strip). */
-.lexicon-panel.is-open {
-  border-top-color: transparent !important;
+/* Hide the top border when the panel is fully open (it reads as a gray strip).
+   Use lexicon-scroll-lock as the truth signal — .is-open may never be applied by lexicon.js. */
+html.lexicon-scroll-lock .lexicon-panel,
+#lexiconPanel[aria-hidden="false"] {
+  border-top: none !important;
+}
+
+html.lexicon-scroll-lock .lexicon-drag-region,
+#lexiconPanel[aria-hidden="false"] .lexicon-drag-region {
+  border-top: none !important;
+  box-shadow: none !important;
 }
 
 /* Mobile: don't reserve space for an empty seal slot; tighten the gap so the header text sits closer left. */
