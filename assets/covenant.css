@@ -1136,7 +1136,7 @@ body.is-exiting #blackFadeOverlay {
     border-bottom: 1px solid rgba(100, 80, 90, 1);
 
     padding: 22px 20px 18px;
-    margin: 0;
+    margin-top: -1px;
 }
 
 /* Title wrapper: flex column so key sits above sub */
