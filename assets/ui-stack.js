@@ -1,5 +1,5 @@
 /*! Covenant UI Stack v0.3.23 */
-(function () {
+(function() {
   'use strict';
 
   // A tiny coordination layer for modal/veil surfaces.
@@ -33,7 +33,7 @@
   var lexiconBreathAnim = null;
   var lastLexiconBreathAt = 0;
 
-  var isIOS = (function () {
+  var isIOS = (function() {
     try {
       var ua = navigator.userAgent || '';
       var platform = navigator.platform || '';
@@ -270,7 +270,7 @@
   }
 
   function sortOpenEntries(list) {
-    list.sort(function (a, b) {
+    list.sort(function(a, b) {
       // Higher priority first.
       var pa = (a && typeof a.priority === 'number') ? a.priority : 0;
       var pb = (b && typeof b.priority === 'number') ? b.priority : 0;
@@ -351,7 +351,7 @@
   function enableIOSTouchScrollLock() {
     if (iosTouchMoveBlocker) return;
 
-    iosTouchMoveBlocker = function (e) {
+    iosTouchMoveBlocker = function(e) {
       if (!scrollLocked) return;
 
       var target = e && e.target;
@@ -480,7 +480,6 @@
           if (root.classList.contains('toc-opening')) return true;
           if (root.classList.contains('toc-closing')) return true;
           if (root.classList.contains('toc-dock-settling')) return true;
-          if (root.classList.contains('toc-dock-setting')) return true;
 
           if (root.classList.contains('reliquary-opening')) return true;
           if (root.classList.contains('reliquary-closing')) return true;
@@ -505,7 +504,7 @@
       }
     }
 
-    var blocker = function (e) {
+    var blocker = function(e) {
       if (!isActive()) return;
 
       // Allow scrolling inside the panel bodies.
@@ -676,13 +675,11 @@
         if (toc.classList.contains('is-dragging') || toc.classList.contains('is-closing')) return false;
 
         // Not committed while root motion classes are in-flight.
-        // (Support older cached builds that used "toc-dock-setting".)
         if (root && root.classList) {
           if (
-            root.classList.contains('toc-opening')
-            || root.classList.contains('toc-closing')
-            || root.classList.contains('toc-dock-settling')
-            || root.classList.contains('toc-dock-setting')
+            root.classList.contains('toc-opening') ||
+            root.classList.contains('toc-closing') ||
+            root.classList.contains('toc-dock-settling')
           ) return false;
         }
 
@@ -875,8 +872,7 @@
         var GOLD = 'rgba(218, 184, 86, 0.34)';
         var GOLD_SOFT = 'rgba(218, 184, 86, 0.00)';
 
-        lexiconBreathAnim = toggle.animate([
-          {
+        lexiconBreathAnim = toggle.animate([{
             opacity: 1,
             transform: 'translateY(0px) scale(1)',
             boxShadow: '0 0 0 0 ' + GOLD_SOFT,
@@ -899,12 +895,12 @@
           easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)'
         });
 
-        lexiconBreathAnim.onfinish = function () {
+        lexiconBreathAnim.onfinish = function() {
           lexiconBreathAnimating = false;
           lexiconBreathAnim = null;
         };
 
-        lexiconBreathAnim.oncancel = function () {
+        lexiconBreathAnim.oncancel = function() {
           lexiconBreathAnimating = false;
           lexiconBreathAnim = null;
         };
@@ -922,7 +918,7 @@
       toggle.style.opacity = '1';
       toggle.style.transform = 'translateY(-1px) scale(1.02)';
       toggle.style.boxShadow = '0 0 12px 2px rgba(218, 184, 86, 0.28)';
-      setTimeout(function () {
+      setTimeout(function() {
         toggle.style.opacity = '';
         toggle.style.transform = '';
         toggle.style.boxShadow = '';
@@ -971,21 +967,21 @@
     }
 
     // Critical: block drag-to-open on mobile by intercepting pointerdown before lexicon.js begins seal-drag.
-    document.addEventListener('pointerdown', function (e) {
+    document.addEventListener('pointerdown', function(e) {
       if (!isPlainPrimaryPointerDown(e)) return;
       intercept(e);
     }, true);
 
-    document.addEventListener('pointerup', function (e) {
+    document.addEventListener('pointerup', function(e) {
       if (!isPlainPrimaryPointerUp(e)) return;
       intercept(e);
     }, true);
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
       intercept(e);
     }, true);
 
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener('keydown', function(e) {
       if (!lexiconLocked) return;
       if (!isLexiconToggleTarget(e && e.target)) return;
 
@@ -1005,9 +1001,9 @@
       if (pending) return;
       pending = true;
 
-      var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
+      var raf = window.requestAnimationFrame || function(cb) { return setTimeout(cb, 0); };
 
-      raf(function () {
+      raf(function() {
         pending = false;
         try { applyLexiconGateState(); } catch (err) {}
       });
@@ -1031,7 +1027,7 @@
         if (relPanel) targets.push(relPanel);
         if (lexPanel) targets.push(lexPanel);
 
-        var observer = new MutationObserver(function () { schedule(); });
+        var observer = new MutationObserver(function() { schedule(); });
 
         for (var i = 0; i < targets.length; i++) {
           observer.observe(targets[i], { attributes: true, attributeFilter: ['class', 'style'] });
@@ -1063,9 +1059,9 @@
       if (pending) return;
       pending = true;
 
-      var raf = window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); };
+      var raf = window.requestAnimationFrame || function(cb) { return setTimeout(cb, 0); };
 
-      raf(function () {
+      raf(function() {
         pending = false;
 
         // Guard against tight mutation loops.
@@ -1095,7 +1091,7 @@
         if (relPanel) targets.push(relPanel);
         if (lexPanel) targets.push(lexPanel);
 
-        var observer = new MutationObserver(function () { schedule(); });
+        var observer = new MutationObserver(function() { schedule(); });
 
         for (var i = 0; i < targets.length; i++) {
           observer.observe(targets[i], { attributes: true, attributeFilter: ['class'] });
@@ -1396,6 +1392,7 @@
 
         // Cleanup (in case navigation is delayed by panel close timing).
         var cleaned = false;
+
         function cleanup() {
           if (cleaned) return;
           cleaned = true;
@@ -1404,18 +1401,18 @@
           try { if (frame && frame.style) frame.style.overflow = ''; } catch (err4) {}
         }
 
-        anim.onfinish = function () {
+        anim.onfinish = function() {
           setTimeout(cleanup, 120);
         };
 
-        anim.oncancel = function () {
+        anim.oncancel = function() {
           cleanup();
         };
       } catch (errX) {}
     }
 
     // Any touch/click elsewhere disarms.
-    document.addEventListener('pointerdown', function (e) {
+    document.addEventListener('pointerdown', function(e) {
       if (!armed) return;
       var t = e && e.target;
       if (!t) return;
@@ -1430,7 +1427,7 @@
       window.addEventListener('pageshow', clearArmed);
     } catch (err3) {}
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
       if (!isPlainLeftClick(e)) return;
 
       var t = e.target;
@@ -1482,7 +1479,7 @@
       var takeoffDelay = prefersReducedMotion() ? 0 : TAKEOFF_MS;
 
       if (!isPanelOpenByDom()) {
-        setTimeout(function () {
+        setTimeout(function() {
           window.location.href = href;
         }, takeoffDelay);
         return;
@@ -1490,7 +1487,7 @@
 
       requestCloseAll();
 
-      setTimeout(function () {
+      setTimeout(function() {
         window.location.href = href;
       }, Math.max(getCloseAllDelayMs(), takeoffDelay));
 
@@ -1502,7 +1499,7 @@
   // ---------------------------
 
   window.COVENANT_UI_STACK = {
-    register: function (id, opts) {
+    register: function(id, opts) {
       // Back-compat: allow register({ id, ... }) as well as register(id, opts).
       if (id && typeof id === 'object') {
         opts = id;
@@ -1545,7 +1542,7 @@
       applyStackState();
     },
 
-    unregister: function (id) {
+    unregister: function(id) {
       id = toId(id);
       if (!id || !registry[id]) return;
 
@@ -1559,63 +1556,52 @@
       applyStackState();
     },
 
-    noteOpened: function (id) {
+    noteOpen: function(id) {
       var entry = getEntry(id);
       if (!entry) return;
       entry.openedAt = now();
       entry.open = true;
-
       pushToTop(openStack, entry.id);
       applyStackState();
     },
 
-    noteClosed: function (id) {
+    noteClose: function(id) {
       var entry = getEntry(id);
       if (!entry) return;
       entry.open = false;
-
       removeId(openStack, entry.id);
       applyStackState();
     },
 
-    // Aliases expected by newer callers.
-    noteOpen: function (id) {
-      window.COVENANT_UI_STACK.noteOpened(id);
-    },
-
-    noteClose: function (id) {
-      window.COVENANT_UI_STACK.noteClosed(id);
-    },
-
-    bringToFront: function (id) {
+    bringToFront: function(id) {
       bringToFront(id);
     },
 
-    isOpen: function (id) {
+    isOpen: function(id) {
       var entry = getEntry(id);
       return !!(entry && isEntryOpen(entry));
     },
 
-    getOpenIds: function () {
+    getOpenIds: function() {
       return getOpenIds();
     },
 
-    getTopOpenId: function () {
+    getTopOpenId: function() {
       return getTopOpenId();
     },
 
     // Back-compat: retain the legacy view (priority-sorted list).
-    getOpen: function () {
+    getOpen: function() {
       return getOpenEntries().slice();
     },
 
     // Updated: "top" is the most recently opened/foregrounded surface.
-    getTopOpen: function () {
+    getTopOpen: function() {
       var id = getTopOpenId();
       return id ? getEntry(id) : null;
     },
 
-    requestExclusive: function (id) {
+    requestExclusive: function(id) {
       // Legacy behavior: close all other open entries.
       id = toId(id);
       if (!id) return;
@@ -1627,7 +1613,7 @@
       }
     },
 
-    requestCloseAll: function () {
+    requestCloseAll: function() {
       requestCloseAll();
     }
   };
