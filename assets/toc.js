@@ -1,5 +1,5 @@
 /*! Covenant ToC v3.3.17 (binding stops at absolute last node) */
-(function () {
+(function() {
   'use strict';
 
   window.COVENANT_TOC_VERSION = '3.3.17';
@@ -89,7 +89,7 @@
     var ms = (typeof snapMs === 'number' && isFinite(snapMs)) ? snapMs : 420;
     var t = Math.max(0, ms - CLOSE_WELD_DROP_MS);
 
-    closeWeldTimer = setTimeout(function () {
+    closeWeldTimer = setTimeout(function() {
       closeWeldTimer = null;
       setRootWeldNudge(0);
     }, t);
@@ -111,11 +111,11 @@
 
   function uiStackReady(stack) {
     return !!(
-      stack
-      && typeof stack.register === 'function'
-      && typeof stack.noteOpen === 'function'
-      && typeof stack.noteClose === 'function'
-      && typeof stack.getTopOpenId === 'function'
+      stack &&
+      typeof stack.register === 'function' &&
+      typeof stack.noteOpen === 'function' &&
+      typeof stack.noteClose === 'function' &&
+      typeof stack.getTopOpenId === 'function'
     );
   }
 
@@ -151,7 +151,7 @@
         useSharedScrollLock: true,
         allowScrollSelector: '#tocPanel .toc-panel-body',
 
-        isOpen: function () {
+        isOpen: function() {
           if (!tocPanel || !tocPanel.classList) return false;
 
           if (tocPanel.classList.contains('is-open')) return true;
@@ -161,13 +161,13 @@
           return false;
         },
 
-        requestClose: function () {
+        requestClose: function() {
           try {
             closeToC(false);
           } catch (err) {}
         },
 
-        setInert: function (isInert) {
+        setInert: function(isInert) {
           try {
             var asleep = !!isInert;
 
@@ -182,7 +182,7 @@
           } catch (err2) {}
         },
 
-        setActive: function (isActive) {
+        setActive: function(isActive) {
           try {
             if (isActive) {
               if (tocPanel && tocPanel.classList && tocPanel.classList.contains('is-open')) {
@@ -195,7 +195,7 @@
           } catch (err3) {}
         },
 
-        setZIndex: function (baseZ) {
+        setZIndex: function(baseZ) {
           try {
             if (tocOverlay) tocOverlay.style.zIndex = String(baseZ);
             if (tocPanel) tocPanel.style.zIndex = String(baseZ + 1);
@@ -572,7 +572,7 @@
     if (focusTrapEnabled) return;
     if (!tocPanel || !tocPanel.addEventListener) return;
 
-    focusTrapHandler = function (e) {
+    focusTrapHandler = function(e) {
       if (!e || e.key !== 'Tab') return;
       if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
       if (!isTopmost()) return;
@@ -633,7 +633,7 @@
     tocToast.classList.add('is-visible');
     tocToast.setAttribute('aria-hidden', 'false');
 
-    toastTimer = setTimeout(function () {
+    toastTimer = setTimeout(function() {
       tocToast.classList.remove('is-visible');
       tocToast.setAttribute('aria-hidden', 'true');
       tocToast.textContent = '';
@@ -644,7 +644,7 @@
   function announce(message) {
     if (tocLiveRegion) {
       tocLiveRegion.textContent = message;
-      setTimeout(function () {
+      setTimeout(function() {
         if (tocLiveRegion.textContent === message) tocLiveRegion.textContent = '';
       }, 2500);
     }
@@ -681,7 +681,7 @@
 
     // --- gate-y: distance from top of .toc-index to gate centre ---
     var indexRect = indexEl.getBoundingClientRect();
-    var gateRect  = gateEl.getBoundingClientRect();
+    var gateRect = gateEl.getBoundingClientRect();
 
     var gateCenterY = gateRect.top + (gateRect.height / 2);
     var y = gateCenterY - indexRect.top;
@@ -698,16 +698,16 @@
     var listEl = indexEl.querySelector('.toc-list');
     if (listEl && listEl.getBoundingClientRect) {
 
-    var allItems = listEl.querySelectorAll('.toc-item');
-    var lastItem = allItems.length ? allItems[allItems.length - 1] : null;
+      var allItems = listEl.querySelectorAll('.toc-item');
+      var lastItem = allItems.length ? allItems[allItems.length - 1] : null;
 
       if (lastItem) {
         var itemOffsetTop = lastItem.offsetTop;
 
         // Resolve rem values to px by multiplying by root font-size
         var rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-        var padY   = readCssNumberVar('--toc-item-pad-y') * rootFontSize;  // .26rem → px
-        var lineH  = readCssNumberVar('--toc-item-line') || 1.55;          // unitless, fine
+        var padY = readCssNumberVar('--toc-item-pad-y') * rootFontSize; // .26rem → px
+        var lineH = readCssNumberVar('--toc-item-line') || 1.55; // unitless, fine
         var fontSize = parseFloat(getComputedStyle(lastItem).fontSize) || 16;
 
         var dotFromItemTop = padY + (fontSize * lineH / 2);
@@ -732,8 +732,8 @@
       gateMeasureRaf = 0;
     }
 
-    gateMeasureRaf = requestAnimationFrame(function () {
-      gateMeasureRaf = requestAnimationFrame(function () {
+    gateMeasureRaf = requestAnimationFrame(function() {
+      gateMeasureRaf = requestAnimationFrame(function() {
         gateMeasureRaf = 0;
         updateGateBindingStop();
       });
@@ -803,13 +803,13 @@
   function renderGroup(groupId, label, itemsHtml) {
     if (!itemsHtml) return '';
 
-    return ''
-      + '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">'
-      +   '<div class="toc-group-title"><span class="toc-tab">' + escapeHtml(label) + '</span></div>'
-      +   '<ol class="toc-list">'
-      +     itemsHtml
-      +   '</ol>'
-      + '</section>';
+    return '' +
+      '<section class="toc-group toc-group--' + escapeHtml(groupId) + '">' +
+      '<div class="toc-group-title"><span class="toc-tab">' + escapeHtml(label) + '</span></div>' +
+      '<ol class="toc-list">' +
+      itemsHtml +
+      '</ol>' +
+      '</section>';
   }
 
   function renderToC() {
@@ -834,48 +834,48 @@
         gateInserted = true;
       }
 
-      var itemClass = 'toc-item'
-        + (isCurrent ? ' toc-item--current' : '')
-        + (unlocked ? '' : ' toc-item--locked');
+      var itemClass = 'toc-item' +
+        (isCurrent ? ' toc-item--current' : '') +
+        (unlocked ? '' : ' toc-item--locked');
 
       if (!unlocked && !dawningMarked) {
         itemClass += ' toc-item--dawning';
         dawningMarked = true;
       }
 
-      var item = ''
-        + '<li class="' + itemClass + '" data-page-id="' + escapeHtml(page.id) + '"'
-        + (isCurrent ? ' aria-current="page"' : '')
-        + '>'
-        + renderEntryButton(page, unlocked, isCurrent)
-        + '</li>';
+      var item = '' +
+        '<li class="' + itemClass + '" data-page-id="' + escapeHtml(page.id) + '"' +
+        (isCurrent ? ' aria-current="page"' : '') +
+        '>' +
+        renderEntryButton(page, unlocked, isCurrent) +
+        '</li>';
 
       itemsHtml += item;
     }
 
     var lexicon = resolveLexiconReference();
-    var annex = ''
-      + '<div class="toc-annex">'
-      +   '<a class="toc-annex-link" href="' + escapeHtml(lexicon.href || 'lexicon.html') + '" target="_blank" rel="noopener">'
-      +     '<span class="toc-annex-sigil" aria-hidden="true">𖤓</span>'
-      +     '<span class="toc-annex-text">' + escapeHtml(lexicon.title || 'Full Lexicon') + '</span>'
-      +   '</a>'
-      + '</div>';
+    var annex = '' +
+      '<div class="toc-annex">' +
+      '<a class="toc-annex-link" href="' + escapeHtml(lexicon.href || 'lexicon.html') + '" target="_blank" rel="noopener">' +
+      '<span class="toc-annex-sigil" aria-hidden="true">𖤓</span>' +
+      '<span class="toc-annex-text">' + escapeHtml(lexicon.title || 'Full Lexicon') + '</span>' +
+      '</a>' +
+      '</div>';
 
-    var html = ''
-      + '<nav aria-label="Covenant contents" class="toc-index">'
-      +   '<ol class="toc-list">'
-      +     itemsHtml
-      +   '</ol>'
-      +   annex
-      + '</nav>';
+    var html = '' +
+      '<nav aria-label="Covenant contents" class="toc-index">' +
+      '<ol class="toc-list">' +
+      itemsHtml +
+      '</ol>' +
+      annex +
+      '</nav>';
 
     tocDynamicContent.innerHTML = html;
     scheduleGateBindingStopUpdate();
     // toc-progress.js injects .toc-gate-sigil with ✦ after MutationObserver fires;
     // suppress it here immediately and also after the observer's rAF delay.
     suppressInjectedSigils();
-    requestAnimationFrame(function () {
+    requestAnimationFrame(function() {
       requestAnimationFrame(suppressInjectedSigils);
     });
   }
@@ -1091,7 +1091,7 @@
 
     holdRaf = requestAnimationFrame(tickHold);
 
-    holdTimer = setTimeout(function () {
+    holdTimer = setTimeout(function() {
       holdTimer = null;
       holdCompleted = true;
       commitNavigation();
@@ -1154,7 +1154,7 @@
     var href = pendingHref;
     var navDelay = getNavigationDelayMs();
 
-    setTimeout(function () {
+    setTimeout(function() {
       window.location.href = href;
     }, navDelay);
   }
@@ -1357,7 +1357,7 @@
       root.classList.add('toc-dock-settling');
       root.classList.remove('toc-closing');
 
-      setTimeout(function () {
+      setTimeout(function() {
         root.classList.remove('toc-dock-settling');
       }, snapMs + 30);
     }
@@ -1423,7 +1423,7 @@
 
       setToCTabDragOffset(-CLOSE_WELD_PX, false);
 
-      var onEnd = function (e) {
+      var onEnd = function(e) {
         if (!e) return;
         if (e.target !== tocPanel) return;
         if (e.propertyName && e.propertyName.indexOf('transform') === -1) return;
@@ -1468,7 +1468,7 @@
 
         applyOpenStateFromDrag();
 
-        setTimeout(function () {
+        setTimeout(function() {
           if (!tocPanel) return;
           var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
           if (firstBtn && firstBtn.focus) firstBtn.focus();
@@ -1489,7 +1489,7 @@
         }
       }
 
-      setTimeout(function () {
+      setTimeout(function() {
         if (!tocPanel) return;
 
         if (shouldOpen) {
@@ -1512,16 +1512,16 @@
 
           root.classList.add('toc-dock-settling');
 
-          var raf2 = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-          raf2(function () {
-            raf2(function () {
+          var raf2 = window.requestAnimationFrame || function(cb) { return window.setTimeout(cb, 0); };
+          raf2(function() {
+            raf2(function() {
               root.classList.remove('toc-opening');
               root.classList.remove('toc-closing');
               clearRootWeldNudge();
             });
           });
 
-          setTimeout(function () {
+          setTimeout(function() {
             root.classList.remove('toc-dock-settling');
           }, SNAP_MS + 80);
 
@@ -1641,7 +1641,7 @@
 
       if (moved) {
         window.__COVENANT_TOC_DRAG_JUST_HAPPENED = true;
-        setTimeout(function () { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 300);
+        setTimeout(function() { window.__COVENANT_TOC_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       } else {
         clearPreArm();
@@ -1675,7 +1675,7 @@
       }
     }
 
-    tocToggle.addEventListener('pointerdown', function (e) {
+    tocToggle.addEventListener('pointerdown', function(e) {
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
@@ -1693,7 +1693,7 @@
       }
     });
 
-    tocToggle.addEventListener('pointermove', function (e) {
+    tocToggle.addEventListener('pointermove', function(e) {
       if (dragging) {
         moveDrag(e);
         return;
@@ -1710,7 +1710,7 @@
       moveDrag(e);
     });
 
-    tocToggle.addEventListener('pointerup', function (e) {
+    tocToggle.addEventListener('pointerup', function(e) {
       if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
@@ -1718,7 +1718,7 @@
       endDrag(e);
     });
 
-    tocToggle.addEventListener('pointercancel', function (e) {
+    tocToggle.addEventListener('pointercancel', function(e) {
       if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
@@ -1726,7 +1726,7 @@
       endDrag(e);
     });
 
-    tocToggle.addEventListener('lostpointercapture', function (e) {
+    tocToggle.addEventListener('lostpointercapture', function(e) {
       sealPrimed = false;
       sealPointerId = null;
       clearPreArm();
@@ -1734,7 +1734,7 @@
     });
 
     if (tocDragRegion) {
-      tocDragRegion.addEventListener('pointerdown', function (e) {
+      tocDragRegion.addEventListener('pointerdown', function(e) {
         if (tapAnimating) return;
         if (!tocPanel.classList.contains('is-open')) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1751,7 +1751,7 @@
         }
       });
 
-      tocDragRegion.addEventListener('pointermove', function (e) {
+      tocDragRegion.addEventListener('pointermove', function(e) {
         if (dragging) {
           moveDrag(e);
           return;
@@ -1770,21 +1770,21 @@
         moveDrag(e);
       });
 
-      tocDragRegion.addEventListener('pointerup', function (e) {
+      tocDragRegion.addEventListener('pointerup', function(e) {
         if (handlePrimed) releaseHandleCapture(e);
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
       });
 
-      tocDragRegion.addEventListener('pointercancel', function (e) {
+      tocDragRegion.addEventListener('pointercancel', function(e) {
         if (handlePrimed) releaseHandleCapture(e);
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
       });
 
-      tocDragRegion.addEventListener('lostpointercapture', function (e) {
+      tocDragRegion.addEventListener('lostpointercapture', function(e) {
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
@@ -1799,7 +1799,7 @@
   function bindContentClicks() {
     if (!tocDynamicContent) return;
 
-    tocDynamicContent.addEventListener('click', function (e) {
+    tocDynamicContent.addEventListener('click', function(e) {
       var lockedBtn = closestSafe(e.target, '.toc-locked-btn');
       if (lockedBtn) {
         stopEvent(e);
@@ -1834,8 +1834,9 @@
 
       stopEvent(e);
 
-      var title = String(itemBtn.textContent || '').trim();
-      stageSelection(pageId, href, title, itemEl, itemBtn);
+      var titleEl = itemBtn.querySelector('.toc-entry-title');
+      var title = titleEl ? String(titleEl.textContent || '').trim() :
+        String(itemBtn.textContent || '').trim();
     });
   }
 
@@ -1923,8 +1924,8 @@
       tocPanel.style.opacity = '1';
       setPanelTranslateY(closedY);
 
-      var raf1 = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf1(function () {
+      var raf1 = window.requestAnimationFrame || function(cb) { return window.setTimeout(cb, 0); };
+      raf1(function() {
         setToCTabDragOffset(0, false);
 
         tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -1935,7 +1936,7 @@
 
         setToCTabDragOffset(openLift - closedYForTab, false);
 
-        setTimeout(function () {
+        setTimeout(function() {
           tocPanel.style.transform = '';
           tocPanel.style.opacity = '';
           tocPanel.style.transition = '';
@@ -1948,7 +1949,7 @@
       });
     })();
 
-    setTimeout(function () {
+    setTimeout(function() {
       var firstBtn = tocPanel.querySelector('.toc-item-btn:not([disabled]), .toc-locked-btn');
       if (firstBtn && firstBtn.focus) firstBtn.focus();
       else if (tocPanel.focus) tocPanel.focus();
@@ -2006,8 +2007,8 @@
 
     setToCTabDragOffset(openLift - closedYForTab, true);
 
-    var raf2 = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-    raf2(function () {
+    var raf2 = window.requestAnimationFrame || function(cb) { return window.setTimeout(cb, 0); };
+    raf2(function() {
       setToCTabDragOffset(openLift - closedYForTab, false);
 
       tocPanel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
@@ -2018,7 +2019,7 @@
 
       setToCTabDragOffset(-CLOSE_WELD_PX, false);
 
-      setTimeout(function () {
+      setTimeout(function() {
         cancelCloseWeldDrop();
         clearRootWeldNudge();
 
@@ -2040,7 +2041,7 @@
         root.classList.add('toc-dock-settling');
         root.classList.remove('toc-closing');
 
-        setTimeout(function () {
+        setTimeout(function() {
           root.classList.remove('toc-dock-settling');
         }, snapMs + 20);
 
@@ -2077,7 +2078,7 @@
 
   function wireControls() {
     if (tocToggle) {
-      tocToggle.addEventListener('pointerup', function (e) {
+      tocToggle.addEventListener('pointerup', function(e) {
         if (!e) return;
         if (e.defaultPrevented) return;
         if (tapAnimating) return;
@@ -2092,7 +2093,7 @@
         toggleToC();
       });
 
-      tocToggle.addEventListener('click', function (e) {
+      tocToggle.addEventListener('click', function(e) {
         if (ignoreToggleClickUntil && Date.now() < ignoreToggleClickUntil) {
           stopEvent(e);
           return;
@@ -2110,14 +2111,14 @@
     }
 
     if (tocOverlay) {
-      tocOverlay.addEventListener('click', function (e) {
+      tocOverlay.addEventListener('click', function(e) {
         stopEvent(e);
         if (!isTopmost()) return;
         closeToC(true);
       });
     }
 
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener('keydown', function(e) {
       if (!e || e.key !== 'Escape') return;
       if (!tocPanel || !tocPanel.classList || !tocPanel.classList.contains('is-open')) return;
       if (!isTopmost()) return;
@@ -2131,25 +2132,25 @@
       closeToC(true);
     });
 
-    window.addEventListener('resize', function () {
+    window.addEventListener('resize', function() {
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
         scheduleGateBindingStopUpdate();
       }
     });
 
-    window.addEventListener('orientationchange', function () {
+    window.addEventListener('orientationchange', function() {
       if (tocPanel && tocPanel.classList.contains('is-open')) {
         positionPanel();
         scheduleGateBindingStopUpdate();
       }
     });
 
-    window.addEventListener('blur', function () {
-      if (tocPanel && tocPanel.classList.contains('is-open') && isTopmost()) closeToC(false);
+    window.addEventListener('blur', function() {
+      if (document.hidden && tocPanel && tocPanel.classList.contains('is-open') && isTopmost()) closeToC(false);
     });
 
-    document.addEventListener('visibilitychange', function () {
+    document.addEventListener('visibilitychange', function() {
       if (document.hidden && tocPanel && tocPanel.classList.contains('is-open') && isTopmost()) closeToC(false);
     });
   }
