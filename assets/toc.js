@@ -1837,6 +1837,7 @@
       var titleEl = itemBtn.querySelector('.toc-entry-title');
       var title = titleEl ? String(titleEl.textContent || '').trim() :
         String(itemBtn.textContent || '').trim();
+      stageSelection(pageId, href, title, itemEl, itemBtn);
     });
   }
 
