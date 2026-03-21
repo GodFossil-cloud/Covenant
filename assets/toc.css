@@ -1239,7 +1239,7 @@ html.toc-dock-settling .nav-footer::after {
 
   .toc-panel {
     transition: opacity 160ms ease !important;
-    transform: translateX(var(--toc-panel-x)) !important
+    transform: translateX(var(--toc-panel-x)) translateY(var(--toc-open-lift, 0px)) !important
   }
 
   .toc-toast {

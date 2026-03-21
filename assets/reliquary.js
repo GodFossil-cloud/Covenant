@@ -1,5 +1,5 @@
 /*! Covenant Reliquary UI v0.3.45 (no passage highlight on open) */
-(function () {
+(function() {
   'use strict';
 
   window.COVENANT_RELIQUARY_VERSION = '0.3.45';
@@ -43,7 +43,7 @@
     }
   }
 
-  var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(function () { cb(Date.now()); }, 16); };
+  var raf = window.requestAnimationFrame || function(cb) { return window.setTimeout(function() { cb(Date.now()); }, 16); };
 
   function getSnapMs() {
     var ms = readCssNumberVar('--reliquary-snap-duration');
@@ -165,7 +165,7 @@
   }
 
   if (tabArchiveBtn) {
-    tabArchiveBtn.addEventListener('click', function (e) {
+    tabArchiveBtn.addEventListener('click', function(e) {
       if (window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED) {
         stopEvent(e);
         return;
@@ -176,7 +176,7 @@
   }
 
   if (tabGlossaryBtn) {
-    tabGlossaryBtn.addEventListener('click', function (e) {
+    tabGlossaryBtn.addEventListener('click', function(e) {
       if (window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED) {
         stopEvent(e);
         return;
@@ -186,7 +186,7 @@
     });
   }
 
-  panel.addEventListener('keydown', function (e) {
+  panel.addEventListener('keydown', function(e) {
     if (!e) return;
     var k = e.key;
     if (k !== 'ArrowLeft' && k !== 'ArrowRight') return;
@@ -209,11 +209,11 @@
 
   function uiStackReady(stack) {
     return !!(
-      stack
-      && typeof stack.register === 'function'
-      && typeof stack.noteOpen === 'function'
-      && typeof stack.noteClose === 'function'
-      && typeof stack.getTopOpenId === 'function'
+      stack &&
+      typeof stack.register === 'function' &&
+      typeof stack.noteOpen === 'function' &&
+      typeof stack.noteClose === 'function' &&
+      typeof stack.getTopOpenId === 'function'
     );
   }
 
@@ -258,11 +258,11 @@
         priority: 20,
         useSharedScrollLock: true,
         allowScrollSelector: '#reliquaryPanel .reliquary-panel-body',
-        isOpen: function () {
+        isOpen: function() {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
         requestClose: closeFromStack,
-        setInert: function (isInert) {
+        setInert: function(isInert) {
           try {
             var asleep = !!isInert;
 
@@ -276,13 +276,13 @@
             }
           } catch (err2) {}
         },
-        setActive: function (isActive) {
+        setActive: function(isActive) {
           try {
             if (isActive) enableFocusTrap();
             else disableFocusTrap();
           } catch (err3) {}
         },
-        setZIndex: function (baseZ) {
+        setZIndex: function(baseZ) {
           try {
             if (overlay) overlay.style.zIndex = String(baseZ);
             if (panel) panel.style.zIndex = String(baseZ + 1);
@@ -381,7 +381,7 @@
       return;
     }
 
-    dragWillChangeTimer = setTimeout(function () {
+    dragWillChangeTimer = setTimeout(function() {
       dragWillChangeTimer = null;
       disableDragWillChange();
     }, delay);
@@ -429,7 +429,7 @@
   var ignoreMirrorToggleClickUntil = 0;
   var IGNORE_MIRROR_TOGGLE_CLICK_MS = 650;
 
-  var isIOS = (function () {
+  var isIOS = (function() {
     try {
       var ua = navigator.userAgent || '';
       var platform = navigator.platform || '';
@@ -449,7 +449,7 @@
   function enableIOSTouchScrollLock() {
     if (iosTouchMoveBlocker) return;
 
-    iosTouchMoveBlocker = function (e) {
+    iosTouchMoveBlocker = function(e) {
       if (!panel || !panel.classList.contains('is-open')) return;
 
       if (closestSafe(e.target, '#reliquaryPanel .reliquary-panel-body')) return;
@@ -495,7 +495,7 @@
     if (focusTrapEnabled) return;
     if (!panel || !panel.addEventListener) return;
 
-    focusTrapHandler = function (e) {
+    focusTrapHandler = function(e) {
       if (!e || e.key !== 'Tab') return;
       if (!panel.classList.contains('is-open')) return;
       if (!isTopmostForDismiss()) return;
@@ -718,9 +718,6 @@
     panel.style.transition = 'none';
     overlay.style.transition = 'none';
 
-    panel.style.opacity = '0';
-    overlay.style.opacity = '0';
-
     setPanelTranslateY(openLift);
 
     panel.style.opacity = '1';
@@ -728,7 +725,7 @@
 
     setMirrorTabDragOffset(0);
 
-    raf(function () {
+    raf(function() {
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
@@ -737,7 +734,7 @@
 
       setMirrorTabDragOffset(openLift - closedYForTab);
 
-      setTimeout(function () {
+      setTimeout(function() {
         panel.style.transform = '';
         panel.style.opacity = '';
         panel.style.transition = '';
@@ -785,7 +782,7 @@
 
     setMirrorTabDragOffset(openLift - closedYForTab);
 
-    raf(function () {
+    raf(function() {
       panel.style.transition = 'transform ' + snapMs + 'ms ' + snapEase + ', opacity ' + snapMs + 'ms ' + snapEase;
       overlay.style.transition = 'opacity ' + snapMs + 'ms ' + snapEase;
 
@@ -794,7 +791,7 @@
 
       setMirrorTabDragOffset(0);
 
-      setTimeout(function () {
+      setTimeout(function() {
         panel.style.transition = '';
         panel.style.opacity = '0';
 
@@ -810,7 +807,7 @@
         root.classList.remove('reliquary-closing');
         root.classList.add('reliquary-dock-settling');
 
-        setTimeout(function () {
+        setTimeout(function() {
           root.classList.remove('reliquary-dock-settling');
         }, snapMs + 20);
 
@@ -969,7 +966,7 @@
       root.classList.add('reliquary-dock-settling');
       root.classList.remove('reliquary-closing');
 
-      setTimeout(function () {
+      setTimeout(function() {
         root.classList.remove('reliquary-dock-settling');
       }, SNAP_MS + 30);
     }
@@ -1025,7 +1022,7 @@
 
       var done = false;
 
-      var onEnd = function (e) {
+      var onEnd = function(e) {
         if (!e) return;
         if (e.target !== panel) return;
         if (e.propertyName && e.propertyName.indexOf('transform') === -1) return;
@@ -1081,7 +1078,7 @@
         }
       }
 
-      setTimeout(function () {
+      setTimeout(function() {
         if (shouldOpen) {
           panel.style.transform = '';
           panel.style.opacity = '';
@@ -1099,14 +1096,14 @@
 
           root.classList.add('reliquary-dock-settling');
 
-          raf(function () {
-            raf(function () {
+          raf(function() {
+            raf(function() {
               root.classList.remove('reliquary-opening');
               root.classList.remove('reliquary-closing');
             });
           });
 
-          setTimeout(function () {
+          setTimeout(function() {
             root.classList.remove('reliquary-dock-settling');
           }, SNAP_MS + 40);
 
@@ -1156,7 +1153,7 @@
       }
 
       computeClosedY();
-      
+
       currentY = startWasOpen ? openLiftPx : closedY;
 
       panel.classList.add('is-dragging');
@@ -1212,7 +1209,7 @@
 
       if (moved) {
         window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED = true;
-        setTimeout(function () { window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED = false; }, 300);
+        setTimeout(function() { window.__COVENANT_RELIQUARY_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       } else {
         root.classList.remove('reliquary-dragging');
@@ -1244,7 +1241,7 @@
       }
     }
 
-    toggle.addEventListener('pointerdown', function (e) {
+    toggle.addEventListener('pointerdown', function(e) {
       if (tapAnimating) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
 
@@ -1260,7 +1257,7 @@
       }
     });
 
-    toggle.addEventListener('pointermove', function (e) {
+    toggle.addEventListener('pointermove', function(e) {
       if (dragging) {
         moveDrag(e);
         return;
@@ -1276,28 +1273,28 @@
       moveDrag(e);
     });
 
-    toggle.addEventListener('pointerup', function (e) {
+    toggle.addEventListener('pointerup', function(e) {
       if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
       endDrag(e);
     });
 
-    toggle.addEventListener('pointercancel', function (e) {
+    toggle.addEventListener('pointercancel', function(e) {
       if (sealPrimed) releaseSealCapture(e);
       sealPrimed = false;
       sealPointerId = null;
       endDrag(e);
     });
 
-    toggle.addEventListener('lostpointercapture', function (e) {
+    toggle.addEventListener('lostpointercapture', function(e) {
       sealPrimed = false;
       sealPointerId = null;
       endDrag(e);
     });
 
     if (handleSurface) {
-      handleSurface.addEventListener('pointerdown', function (e) {
+      handleSurface.addEventListener('pointerdown', function(e) {
         if (tapAnimating) return;
         if (!panel.classList.contains('is-open')) return;
         if (!isTopmostForDismiss()) return;
@@ -1315,7 +1312,7 @@
         }
       });
 
-      handleSurface.addEventListener('pointermove', function (e) {
+      handleSurface.addEventListener('pointermove', function(e) {
         if (dragging) {
           moveDrag(e);
           return;
@@ -1334,21 +1331,21 @@
         moveDrag(e);
       });
 
-      handleSurface.addEventListener('pointerup', function (e) {
+      handleSurface.addEventListener('pointerup', function(e) {
         if (handlePrimed) releaseHandleCapture(e);
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
       });
 
-      handleSurface.addEventListener('pointercancel', function (e) {
+      handleSurface.addEventListener('pointercancel', function(e) {
         if (handlePrimed) releaseHandleCapture(e);
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
       });
 
-      handleSurface.addEventListener('lostpointercapture', function (e) {
+      handleSurface.addEventListener('lostpointercapture', function(e) {
         handlePrimed = false;
         handlePointerId = null;
         endDrag(e);
@@ -1360,7 +1357,7 @@
   // Wiring
   // ---------------------------
 
-  toggle.addEventListener('pointerup', function (e) {
+  toggle.addEventListener('pointerup', function(e) {
     if (!e) return;
     if (e.defaultPrevented) return;
     if (tapAnimating) return;
@@ -1375,7 +1372,7 @@
     toggleReliquaryTap();
   });
 
-  toggle.addEventListener('click', function (e) {
+  toggle.addEventListener('click', function(e) {
     if (ignoreMirrorToggleClickUntil && Date.now() < ignoreMirrorToggleClickUntil) {
       stopEvent(e);
       return;
@@ -1391,13 +1388,13 @@
     toggleReliquaryTap();
   });
 
-  overlay.addEventListener('click', function (e) {
+  overlay.addEventListener('click', function(e) {
     stopEvent(e);
     if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryTap(true);
   });
 
-  doc.addEventListener('keydown', function (e) {
+  doc.addEventListener('keydown', function(e) {
     if (!e || e.key !== 'Escape') return;
     if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryTap(true);
@@ -1412,12 +1409,12 @@
   window.addEventListener('resize', onViewportChange);
   window.addEventListener('orientationchange', onViewportChange);
 
-  window.addEventListener('blur', function () {
+  window.addEventListener('blur', function() {
     if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryImmediately(false);
   });
 
-  doc.addEventListener('visibilitychange', function (e) {
+  doc.addEventListener('visibilitychange', function(e) {
     if (!doc.hidden) return;
     if (!isTopmostForDismiss()) return;
     if (panel.classList.contains('is-open')) closeReliquaryImmediately(false);
