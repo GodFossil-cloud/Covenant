@@ -378,7 +378,8 @@ html.toc-dock-settling .toc-produced-title {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 1.1rem 1.35rem 1.25rem;
+  padding: 1.1rem calc(1.35rem + 8px) 1.25rem 1.35rem;
+  width: calc(100% + 8px);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   touch-action: pan-y;
