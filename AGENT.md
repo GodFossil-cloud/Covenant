@@ -1,4 +1,4 @@
-# AGENT.md — Covenant Repository Operating Map (AI-only)
+# AGENT.md — Covenant Repository Operating Map (AI-only) 
 
 This file is for AI assistants making changes in this repository.
 It is the canonical map of structure, invariants, coupling rules, and verification steps.
