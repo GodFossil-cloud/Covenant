@@ -186,7 +186,7 @@ html.toc-scroll-lock body {
   border: 1px solid rgba(44, 62, 80, .16);
   border-left-color: var(--dock-tab-face, #010103);
   border-top-color: rgba(44, 62, 80, .18);
-  border-bottom-color: rgba(0, 0, 0, 0);
+  border-bottom-color: var(--dock-tab-face,#010103);
   border-right-color: rgba(0, 0, 0, 0);
   box-shadow: 0 22px 60px rgba(0, 0, 0, .26), 0 8px 24px rgba(0, 0, 0, .14), inset 0 18px 22px -22px rgba(0, 0, 0, .42);
   border-radius: 16px 0 0 0;
