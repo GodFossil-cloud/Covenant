@@ -32,12 +32,7 @@
 
   /* Lexicon seal: open state — darker face with embossed accent. */
   --lexicon-seal-face-open: #030406;
-  --lexicon-seal-face-open-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.90),
-    inset 0 2px 6px rgba(0, 0, 0, 0.82),
-    inset 0 4px 12px rgba(0, 0, 0, 0.72),
-    0 1px 0 rgba(255, 255, 255, 0.04);
+  --lexicon-seal-face-open-shadow: none;
 
   /* -------------------------------------------------
      Metal system (palette improvements)
@@ -1125,17 +1120,12 @@ html.lexicon-scroll-lock #navFooter {
   background-image: none !important;
 }
 
-/* -------------------------------------------------
-   Lexicon weld (open): remove seal backdrop
-   ------------------------------------------------- */
-
-/* When open: shift the seal face to a deeper embossed tone rather than going transparent.
-   The glyph reads as carved/pressed into a darker plate. */
+/* Lexicon weld (open): seal face fully transparent — glyph only, no backdrop, no shadow. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
 #navFooter #lexiconToggle[aria-expanded="true"]::after {
-  background-color: var(--lexicon-seal-face-open, #030406) !important;
+  background-color: transparent !important;
   background-image: none !important;
-  box-shadow: var(--lexicon-seal-face-open-shadow) !important;
+  box-shadow: none !important;
   transition: background-color 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
