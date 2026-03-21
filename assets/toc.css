@@ -186,7 +186,7 @@ html.toc-scroll-lock body {
   border: 1px solid rgba(44, 62, 80, .16);
   border-left-color: var(--dock-tab-face, #010103);
   border-top-color: rgba(44, 62, 80, .18);
-  border-bottom-color: var(--dock-tab-face,#010103);
+  border-bottom-color: var(--dock-tab-face, #010103);
   border-right-color: rgba(0, 0, 0, 0);
   box-shadow: 0 22px 60px rgba(0, 0, 0, .26), 0 8px 24px rgba(0, 0, 0, .14), inset 0 18px 22px -22px rgba(0, 0, 0, .42);
   border-radius: 16px 0 0 0;
@@ -385,14 +385,25 @@ html.toc-dock-settling .toc-produced-title {
   touch-action: pan-y;
   position: relative;
   background: linear-gradient(to bottom, #141414 0%, #0d0d0d 100%);
-  scrollbar-width:thin;
-  scrollbar-color:#8a6e3a #0b0c0e;
+  scrollbar-width: thin;
+  scrollbar-color: #8a6e3a #0b0c0e;
 }
 
-.toc-panel-body::-webkit-scrollbar{width:5px}
-.toc-panel-body::-webkit-scrollbar-track{background:#0b0c0e}
-.toc-panel-body::-webkit-scrollbar-thumb{background:#8a6e3a}
-.toc-panel-body::-webkit-scrollbar-thumb:hover{background:#6b4f22}
+.toc-panel-body::-webkit-scrollbar {
+  width: 5px
+}
+
+.toc-panel-body::-webkit-scrollbar-track {
+  background: #0b0c0e
+}
+
+.toc-panel-body::-webkit-scrollbar-thumb {
+  background: #8a6e3a
+}
+
+.toc-panel-body::-webkit-scrollbar-thumb:hover {
+  background: #6b4f22
+}
 
 .toc-panel-body>* {
   position: relative
@@ -1272,11 +1283,11 @@ html.toc-dock-settling .nav-footer::after {
     --toc-panel-x: 0px;
     left: var(--toc-panel-left, 12px);
     right: 0;
-    width:auto;
+    width: auto;
     border-radius: 0 0 0 0;
     max-height: none;
     bottom: calc(var(--toc-footer-reserved, var(--footer-total-height)) + var(--toc-panel-gap, 0px) - 2px);
-    border-right:1px solid rgba(0,0,0,1);
+    border-right: 1px solid rgba(0, 0, 0, 1);
   }
 
   html.toc-opening .toc-panel,
@@ -1295,7 +1306,8 @@ html.toc-dock-settling .nav-footer::after {
   }
 
   .toc-panel-body {
-    padding: 1.0rem 1.1rem 1.05rem
+    padding: 1.0rem calc(1.1rem + 8px) 1.05rem 1.1rem;
+    width: calc(100% + 8px);
   }
 
   .toc-group-title,
