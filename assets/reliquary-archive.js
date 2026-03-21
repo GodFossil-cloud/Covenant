@@ -1,12 +1,12 @@
 /*! Covenant Reliquary Archive v0.4.13 (quote box = interactive save surface) */
-(function () {
+(function() {
   'use strict';
 
   var doc = document;
   var root = doc.documentElement;
 
   var KEY_PENDING = 'covenant_reliquary_pending_v1';
-  var KEY_STORE   = 'covenant_reliquary_v1';
+  var KEY_STORE = 'covenant_reliquary_v1';
 
   // Hoisted ref set by wireCitationBookmarkToggle so doRemove can call sync().
   var _syncCitationState = null;
@@ -55,17 +55,17 @@
 
   function normalizeItem(item) {
     if (!item || typeof item !== 'object') return null;
-    var href       = String(item.href       || '').trim();
+    var href = String(item.href || '').trim();
     var lexiconKey = String(item.lexiconKey || '').trim();
     if (!href || !lexiconKey) return null;
-    var quote     = String(item.quote || '').trim();
+    var quote = String(item.quote || '').trim();
     var createdAt = (typeof item.createdAt === 'number' && isFinite(item.createdAt)) ? item.createdAt : Date.now();
     return { href: basename(href), lexiconKey: lexiconKey, quote: quote, createdAt: createdAt };
   }
 
   function dedupeItems(items) {
     var seen = Object.create(null);
-    var out  = [];
+    var out = [];
     for (var i = 0; i < items.length; i++) {
       var it = normalizeItem(items[i]);
       if (!it) continue;
@@ -87,12 +87,12 @@
   }
 
   function removeItem(href, lexiconKey) {
-    href       = basename(href);
+    href = basename(href);
     lexiconKey = String(lexiconKey || '').trim();
     if (!href || !lexiconKey) return false;
-    var store  = readStore();
+    var store = readStore();
     var before = Array.isArray(store.items) ? store.items.length : 0;
-    var out    = [];
+    var out = [];
     for (var i = 0; i < store.items.length; i++) {
       var it = normalizeItem(store.items[i]);
       if (!it) continue;
@@ -105,7 +105,7 @@
   }
 
   function hasItem(href, lexiconKey) {
-    href       = basename(href);
+    href = basename(href);
     lexiconKey = String(lexiconKey || '').trim();
     if (!href || !lexiconKey) return false;
     var store = readStore();
@@ -133,14 +133,12 @@
 
   function scrollToSentence(el) {
     if (!el || !el.scrollIntoView) return;
-    try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
-    catch (err) { try { el.scrollIntoView(true); } catch (err2) {} }
+    try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (err) { try { el.scrollIntoView(true); } catch (err2) {} }
   }
 
   function clickSentence(el) {
     if (!el) return false;
-    try { el.click(); return true; }
-    catch (err) {
+    try { el.click(); return true; } catch (err) {
       try {
         var evt = doc.createEvent('MouseEvents');
         evt.initEvent('click', true, true);
@@ -152,20 +150,21 @@
 
   function openLexiconIfPossible() {
     var toggle = byId('lexiconToggle');
-    var panel  = byId('lexiconPanel');
+    var panel = byId('lexiconPanel');
     if (!toggle || !panel) return;
     try { if (panel.classList && panel.classList.contains('is-open')) return; } catch (err0) {}
     try { toggle.click(); } catch (err1) {}
   }
 
   function closeReliquaryThen(cb) {
-    cb = (typeof cb === 'function') ? cb : function () {};
+    cb = (typeof cb === 'function') ? cb : function() {};
     var toggle = byId('mirrorToggle');
-    var panel  = byId('reliquaryPanel');
+    var panel = byId('reliquaryPanel');
     if (!toggle || !panel) { cb(); return; }
     if (!root.classList.contains('reliquary-open')) { cb(); return; }
     var done = false;
-    var obs  = null;
+    var obs = null;
+
     function finish() {
       if (done) return;
       done = true;
@@ -173,12 +172,12 @@
       setTimeout(cb, 0);
     }
     try {
-      obs = new MutationObserver(function () {
-        var closed = (!root.classList.contains('reliquary-open'))
-                     && (panel.getAttribute('aria-hidden') === 'true');
+      obs = new MutationObserver(function() {
+        var closed = (!root.classList.contains('reliquary-open')) &&
+          (panel.getAttribute('aria-hidden') === 'true');
         if (closed) finish();
       });
-      obs.observe(root,  { attributes: true, attributeFilter: ['class'] });
+      obs.observe(root, { attributes: true, attributeFilter: ['class'] });
       obs.observe(panel, { attributes: true, attributeFilter: ['aria-hidden', 'class'] });
     } catch (err1) { obs = null; }
     try { toggle.click(); } catch (err2) { finish(); }
@@ -189,7 +188,7 @@
     var el = findSentenceByKey(lexiconKey);
     if (!el) return;
     scrollToSentence(el);
-    setTimeout(function () {
+    setTimeout(function() {
       var ok = clickSentence(el);
       if (!ok) return;
       if (openLexicon) setTimeout(openLexiconIfPossible, 80);
@@ -203,7 +202,7 @@
     var payload = safeJsonParse(raw);
     clearPending();
     if (!payload || !payload.href || !payload.lexiconKey) return;
-    var here   = getCurrentFile();
+    var here = getCurrentFile();
     var target = basename(payload.href);
     if (!here || !target || here !== target) return;
     playHere(payload.lexiconKey, !!payload.openLexicon);
@@ -211,11 +210,11 @@
 
   function escapeHtml(value) {
     return String(value)
-      .replace(/&/g,  '&amp;')
-      .replace(/</g,  '&lt;')
-      .replace(/>/g,  '&gt;')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
-      .replace(/'/g,  '&#39;');
+      .replace(/'/g, '&#39;');
   }
 
   function truncate(s, n) {
@@ -235,7 +234,7 @@
     }
     var keys = Object.keys(map);
     for (var k = 0; k < keys.length; k++) {
-      map[keys[k]].sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+      map[keys[k]].sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
     }
     return map;
   }
@@ -260,19 +259,19 @@
     var summaries = doc.querySelectorAll('.reliquary-archive summary');
     if (!summaries || !summaries.length) return;
     for (var i = 0; i < summaries.length; i++) {
-      var summary  = summaries[i];
-      var titleEl  = summary.querySelector('.reliquary-archive-page-title');
+      var summary = summaries[i];
+      var titleEl = summary.querySelector('.reliquary-archive-page-title');
       if (!titleEl) continue;
-      titleEl.style.fontSize   = '';
+      titleEl.style.fontSize = '';
       titleEl.style.whiteSpace = 'nowrap';
       var summaryWidth = summary.offsetWidth;
-      var padding      = 1.44 * 16;
-      var countEl      = summary.querySelector('.reliquary-archive-count');
-      var countWidth   = countEl ? countEl.offsetWidth : 0;
-      var availWidth   = summaryWidth - padding - countWidth - 10 - 4;
+      var padding = 1.44 * 16;
+      var countEl = summary.querySelector('.reliquary-archive-count');
+      var countWidth = countEl ? countEl.offsetWidth : 0;
+      var availWidth = summaryWidth - padding - countWidth - 10 - 4;
       if (availWidth <= 0) { titleEl.style.whiteSpace = ''; continue; }
       var currentSize = 1.04;
-      var minSize     = 0.86;
+      var minSize = 0.86;
       titleEl.style.fontSize = currentSize + 'rem';
       var attempts = 0;
       while (titleEl.scrollWidth > availWidth && currentSize > minSize && attempts < 20) {
@@ -289,11 +288,15 @@
   // ---------------------------
 
   var activeItemHref = null;
-  var activeItemKey  = null;
+  var activeItemKey = null;
 
-  function setActiveItem(href, key) { activeItemHref = href || null; activeItemKey = key || null; }
-  function clearActiveItem()        { activeItemHref = null; activeItemKey = null; }
-  function isActiveItem(href, key)  { return activeItemHref === href && activeItemKey === key; }
+  function setActiveItem(href, key) { activeItemHref = href || null;
+    activeItemKey = key || null; }
+
+  function clearActiveItem() { activeItemHref = null;
+    activeItemKey = null; }
+
+  function isActiveItem(href, key) { return activeItemHref === href && activeItemKey === key; }
 
   // ---------------------------
   // Armed button state
@@ -306,12 +309,12 @@
     var host = byId('reliquaryArchive');
     if (!host) return null;
     var safeHref = activeItemHref.replace(/"/g, '');
-    var safeKey  = activeItemKey.replace(/"/g, '');
+    var safeKey = activeItemKey.replace(/"/g, '');
     try {
       return host.querySelector(
-        '.reliquary-archive-item-action[data-reliquary-action="' + armedAction + '"]'
-        + '[data-reliquary-href="' + safeHref + '"]'
-        + '[data-reliquary-key="'  + safeKey  + '"]'
+        '.reliquary-archive-item-action[data-reliquary-action="' + armedAction + '"]' +
+        '[data-reliquary-href="' + safeHref + '"]' +
+        '[data-reliquary-key="' + safeKey + '"]'
       );
     } catch (err) { return null; }
   }
@@ -325,7 +328,7 @@
 
   function clearArmed() {
     if (!armedAction) return;
-    var btn    = getArmedBtn();
+    var btn = getArmedBtn();
     var caption = (armedAction === 'remove') ? 'Remove' : 'Navigate';
     disarmBtn(btn, caption);
     armedAction = null;
@@ -371,7 +374,7 @@
     var menu = doc.createElement('div');
     menu.className = 'reliquary-archive-item-menu';
     menu.setAttribute('aria-hidden', 'false');
-    menu.appendChild(makeActionBtn('remove',   href, key, '\u2715', 'Remove',   'reliquary-archive-item-remove'));
+    menu.appendChild(makeActionBtn('remove', href, key, '\u2715', 'Remove', 'reliquary-archive-item-remove'));
     menu.appendChild(makeActionBtn('navigate', href, key, '\u21f2', 'Navigate', 'reliquary-archive-item-navigate'));
     return menu;
   }
@@ -385,13 +388,14 @@
   function collapseActiveItem() {
     if (!activeItemHref || !activeItemKey) return;
     var host = byId('reliquaryArchive');
-    if (!host) { clearActiveItem(); clearArmed(); return; }
+    if (!host) { clearActiveItem();
+      clearArmed(); return; }
     var safeHref = activeItemHref.replace(/"/g, '');
-    var safeKey  = activeItemKey.replace(/"/g, '');
+    var safeKey = activeItemKey.replace(/"/g, '');
     var btn = host.querySelector(
-      '.reliquary-archive-item.is-expanded'
-      + '[data-reliquary-href="' + safeHref + '"]'
-      + '[data-reliquary-key="'  + safeKey  + '"]'
+      '.reliquary-archive-item.is-expanded' +
+      '[data-reliquary-href="' + safeHref + '"]' +
+      '[data-reliquary-key="' + safeKey + '"]'
     );
     if (btn) {
       btn.classList.remove('is-expanded');
@@ -411,12 +415,12 @@
     if (!label) label = '\u00a7 ' + it.lexiconKey;
     var html = [];
     html.push(
-      '<button type="button"'
-      + ' class="reliquary-archive-item"'
-      + ' data-reliquary-action="select"'
-      + ' data-reliquary-href="' + escapeHtml(href)           + '"'
-      + ' data-reliquary-key="'  + escapeHtml(it.lexiconKey) + '"'
-      + '>'
+      '<button type="button"' +
+      ' class="reliquary-archive-item"' +
+      ' data-reliquary-action="select"' +
+      ' data-reliquary-href="' + escapeHtml(href) + '"' +
+      ' data-reliquary-key="' + escapeHtml(it.lexiconKey) + '"' +
+      '>'
     );
     html.push('<div class="reliquary-archive-item-face">');
     html.push('<div class="reliquary-archive-item-text">' + escapeHtml(label) + '</div>');
@@ -430,7 +434,7 @@
   }
 
   function renderArchive() {
-    var host        = byId('reliquaryArchive');
+    var host = byId('reliquaryArchive');
     var placeholder = byId('reliquaryPlaceholder');
     if (!host) return;
 
@@ -438,23 +442,23 @@
     store.items = dedupeItems(store.items);
     writeStore(store);
 
-    var byHref      = groupByHref(store.items);
-    var journey     = getJourney();
+    var byHref = groupByHref(store.items);
+    var journey = getJourney();
     var currentHref = getCurrentHrefForJourney();
-    var total       = store.items.length;
+    var total = store.items.length;
 
     if (placeholder) placeholder.style.display = total ? 'none' : '';
 
     var html = ['<div class="reliquary-archive-index">'];
 
     for (var i = 0; i < journey.length; i++) {
-      var p     = journey[i];
+      var p = journey[i];
       if (!p || !p.href) continue;
-      var href  = String(p.href);
+      var href = String(p.href);
       var title = String(p.title || href);
-      var list  = byHref[href] || [];
+      var list = byHref[href] || [];
       var count = list.length;
-      var cls   = (currentHref && href === currentHref) ? ' class="is-current"' : '';
+      var cls = (currentHref && href === currentHref) ? ' class="is-current"' : '';
 
       html.push('<details' + cls + ' data-reliquary-href="' + escapeHtml(href) + '">');
       html.push('<summary>');
@@ -491,10 +495,10 @@
   function doNavigate(href, key) {
     clearActiveItem();
     armedAction = null;
-    var here   = getCurrentFile();
+    var here = getCurrentFile();
     var target = basename(href);
     if (here && target && here === target) {
-      closeReliquaryThen(function () { playHere(key, true); });
+      closeReliquaryThen(function() { playHere(key, true); });
       return;
     }
     setPendingJump({ href: href, lexiconKey: key, openLexicon: true });
@@ -518,13 +522,14 @@
   // ---------------------------
 
   function handleArchiveClick(e) {
-    var action   = null;
+    var action = null;
     var actionEl = null;
 
     var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target ? e.target.parentElement : null);
     while (el) {
       var a = el.getAttribute && el.getAttribute('data-reliquary-action');
-      if (a) { action = a; actionEl = el; break; }
+      if (a) { action = a;
+        actionEl = el; break; }
       if (el.id === 'reliquaryArchive') break;
       el = el.parentElement;
     }
@@ -536,7 +541,7 @@
     }
 
     var href = String(actionEl.getAttribute('data-reliquary-href') || '').trim();
-    var key  = String(actionEl.getAttribute('data-reliquary-key')  || '').trim();
+    var key = String(actionEl.getAttribute('data-reliquary-key') || '').trim();
 
     if (action === 'navigate' || action === 'remove') {
       e.preventDefault();
@@ -557,7 +562,8 @@
       e.preventDefault();
       e.stopPropagation();
       if (!href || !key) return;
-      if (isActiveItem(href, key)) { clearArmed(); collapseActiveItem(); return; }
+      if (isActiveItem(href, key)) { clearArmed();
+        collapseActiveItem(); return; }
       clearArmed();
       collapseActiveItem();
       expandItem(actionEl, href, key);
@@ -570,10 +576,14 @@
     if (host && host.addEventListener) host.addEventListener('click', handleArchiveClick);
 
     var lastOpen = root.classList.contains('reliquary-open');
+
     function sync() {
       var isOpen = root.classList.contains('reliquary-open');
-      if (isOpen && !lastOpen)  { clearActiveItem(); armedAction = null; renderArchive(); }
-      if (!isOpen && lastOpen)  { clearActiveItem(); armedAction = null; }
+      if (isOpen && !lastOpen) { clearActiveItem();
+        armedAction = null;
+        renderArchive(); }
+      if (!isOpen && lastOpen) { clearActiveItem();
+        armedAction = null; }
       lastOpen = isOpen;
     }
     try {
@@ -592,31 +602,34 @@
   }
 
   var flashTimer = null;
-  
-    // Mirror tab consecration pulse on save / remove.
+
+  // Mirror tab consecration pulse on save / remove.
   var pulseTabTimer = null;
+
   function pulseMirrorTab(type) {
     var btn = byId('mirrorToggle');
     if (!btn) return;
-    if (pulseTabTimer) { window.clearTimeout(pulseTabTimer); pulseTabTimer = null; }
+    if (pulseTabTimer) { window.clearTimeout(pulseTabTimer);
+      pulseTabTimer = null; }
     btn.classList.remove('is-reliquary-pulse-save', 'is-reliquary-pulse-remove');
     void btn.offsetWidth; // force reflow so re-triggering works
     var cls = (type === 'save') ? 'is-reliquary-pulse-save' : 'is-reliquary-pulse-remove';
     btn.classList.add(cls);
-    pulseTabTimer = window.setTimeout(function () {
+    pulseTabTimer = window.setTimeout(function() {
       try { btn.classList.remove('is-reliquary-pulse-save', 'is-reliquary-pulse-remove'); } catch (err) {}
       pulseTabTimer = null;
     }, type === 'save' ? 560 : 440);
   }
-  
+
   function flashQuoteBox(type) {
     var box = getQuoteBox();
     if (!box) return;
-    if (flashTimer) { window.clearTimeout(flashTimer); flashTimer = null; }
+    if (flashTimer) { window.clearTimeout(flashTimer);
+      flashTimer = null; }
     box.classList.remove('is-consecrating', 'is-removing');
     void box.offsetWidth;
     box.classList.add(type === 'save' ? 'is-consecrating' : 'is-removing');
-    flashTimer = window.setTimeout(function () {
+    flashTimer = window.setTimeout(function() {
       try { if (box) box.classList.remove('is-consecrating', 'is-removing'); } catch (err) {}
       flashTimer = null;
     }, type === 'save' ? 420 : 380);
@@ -639,7 +652,7 @@
       box.classList.toggle('is-saved', isSaved);
       box.classList.toggle('is-saveable', !isSaved);
       box.setAttribute('data-quote-hint', isSaved ? 'Saved \u2726  \u2014 tap to remove' : 'Tap to save');
-      box.setAttribute('aria-label',   isSaved ? 'Remove from Reliquary' : 'Save to Reliquary');
+      box.setAttribute('aria-label', isSaved ? 'Remove from Reliquary' : 'Save to Reliquary');
       box.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
     }
 
@@ -676,7 +689,7 @@
     }
 
     box.addEventListener('click', toggle);
-    box.addEventListener('keydown', function (e) {
+    box.addEventListener('keydown', function(e) {
       var k = e && e.key;
       if (k !== 'Enter' && k !== ' ') return;
       toggle(e);
@@ -709,21 +722,23 @@
   }
 
   function wireCitationBookmarkToggle() {
-    var el    = byId('citationText');
+    var el = byId('citationText');
     var label = byId('citationLabel');
     if (!el) return;
 
-    try { el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); } catch (err0) {}
+    try { el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0'); } catch (err0) {}
 
     var pulseTimer = null;
-    var lastArmed  = false;
+    var lastArmed = false;
 
     function pulse() {
-      if (pulseTimer) { window.clearTimeout(pulseTimer); pulseTimer = null; }
+      if (pulseTimer) { window.clearTimeout(pulseTimer);
+        pulseTimer = null; }
       el.classList.remove('bookmark-pulse');
       void el.offsetWidth;
       el.classList.add('bookmark-pulse');
-      pulseTimer = window.setTimeout(function () {
+      pulseTimer = window.setTimeout(function() {
         try { el.classList.remove('bookmark-pulse'); } catch (err2) {}
         pulseTimer = null;
       }, 280);
@@ -736,7 +751,7 @@
       if (armed && !lastArmed) {
         try {
           label.classList.add('is-armed-wake');
-          window.setTimeout(function () {
+          window.setTimeout(function() {
             try { label.classList.remove('is-armed-wake'); } catch (err2) {}
           }, 480);
         } catch (err1) {}
@@ -747,16 +762,18 @@
 
     // Flash confirmation message via the citation label's ::after pseudo-element.
     var flashLabelTimer = null;
+
     function flashLabel(type) {
       if (!label) return;
-      if (flashLabelTimer) { window.clearTimeout(flashLabelTimer); flashLabelTimer = null; }
+      if (flashLabelTimer) { window.clearTimeout(flashLabelTimer);
+        flashLabelTimer = null; }
       label.classList.remove('is-reliquary-flash', 'is-reliquary-saved', 'is-reliquary-removed');
       void label.offsetWidth;
-      var msg  = (type === 'save') ? 'Saved \u2726' : 'Removed';
-      var cls  = (type === 'save') ? 'is-reliquary-saved' : 'is-reliquary-removed';
+      var msg = (type === 'save') ? 'Saved \u2726' : 'Removed';
+      var cls = (type === 'save') ? 'is-reliquary-saved' : 'is-reliquary-removed';
       label.setAttribute('data-reliquary-flash', msg);
       label.classList.add('is-reliquary-flash', cls);
-      flashLabelTimer = window.setTimeout(function () {
+      flashLabelTimer = window.setTimeout(function() {
         try {
           label.classList.remove('is-reliquary-flash', 'is-reliquary-saved', 'is-reliquary-removed');
           label.removeAttribute('data-reliquary-flash');
@@ -769,13 +786,14 @@
       setArmedState(!!sel);
       if (!sel) {
         el.classList.remove('is-bookmarked');
-        try { el.setAttribute('aria-label', 'Select a passage to mark'); el.setAttribute('aria-pressed', 'false'); } catch (err0) {}
+        try { el.setAttribute('aria-label', 'Select a passage to mark');
+          el.setAttribute('aria-pressed', 'false'); } catch (err0) {}
         return;
       }
       var saved = hasItem(sel.href, sel.lexiconKey);
       el.classList.toggle('is-bookmarked', saved);
       try {
-        el.setAttribute('aria-label',   saved ? 'Remove from Reliquary' : 'Save to Reliquary');
+        el.setAttribute('aria-label', saved ? 'Remove from Reliquary' : 'Save to Reliquary');
         el.setAttribute('aria-pressed', saved ? 'true' : 'false');
       } catch (err1) {}
     }
@@ -802,20 +820,22 @@
       sync();
     }
 
-    el.addEventListener('click', function (e) {
+    el.addEventListener('click', function(e) {
       if (e && e.preventDefault) e.preventDefault();
       if (e && e.stopImmediatePropagation) e.stopImmediatePropagation();
       if (e && e.stopPropagation) e.stopPropagation();
-      pulse(); toggleSelection();
+      pulse();
+      toggleSelection();
     }, true);
 
-    el.addEventListener('keydown', function (e) {
+    el.addEventListener('keydown', function(e) {
       var k = e && e.key;
       if (k !== 'Enter' && k !== ' ') return;
       if (e && e.preventDefault) e.preventDefault();
       if (e && e.stopImmediatePropagation) e.stopImmediatePropagation();
       if (e && e.stopPropagation) e.stopPropagation();
-      pulse(); toggleSelection();
+      pulse();
+      toggleSelection();
     }, true);
 
     try {
@@ -823,7 +843,7 @@
       obs.observe(el, { attributes: true, attributeFilter: ['data-lexicon-key'] });
     } catch (err3) {}
 
-    window.addEventListener('storage', function (evt) {
+    window.addEventListener('storage', function(evt) {
       if (!evt || evt.key !== KEY_STORE) return;
       sync();
     });
@@ -833,19 +853,19 @@
 
   window.COVENANT_RELIQUARY_ARCHIVE = {
     version: '0.4.13',
-    readStore:  readStore,
+    readStore: readStore,
     writeStore: writeStore,
-    addItem:    addItem,
-    removeItem: function (href, lexiconKey) { return removeItem(href, lexiconKey); },
-    hasItem:    function (href, lexiconKey) { return hasItem(href, lexiconKey); },
-    render:     renderArchive,
-    setPendingJump: function (href, lexiconKey, openLexicon) {
+    addItem: addItem,
+    removeItem: function(href, lexiconKey) { return removeItem(href, lexiconKey); },
+    hasItem: function(href, lexiconKey) { return hasItem(href, lexiconKey); },
+    render: renderArchive,
+    setPendingJump: function(href, lexiconKey, openLexicon) {
       setPendingJump({ href: href, lexiconKey: lexiconKey, openLexicon: !!openLexicon });
     }
   };
 
   if (doc.readyState === 'loading') {
-    doc.addEventListener('DOMContentLoaded', function () {
+    doc.addEventListener('DOMContentLoaded', function() {
       consumePendingJump();
       wireArchiveList();
       wireCitationBookmarkToggle();
