@@ -574,7 +574,7 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle.has-selection[aria-expanded="
   background-position: 0 0, 0 0;
 
   /* Single top seam only (no second line beneath). */
-  border-top: 1px solid #000;
+  border-top: 0;
   border-bottom: 0;
 
   box-shadow:
