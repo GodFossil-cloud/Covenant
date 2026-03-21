@@ -1264,9 +1264,11 @@ html.toc-dock-settling .nav-footer::after {
     --toc-panel-x: 0px;
     left: var(--toc-panel-left, 12px);
     right: 0;
-    width: auto;
+    width:auto;
     border-radius: 0 0 0 0;
     max-height: none;
+    bottom: calc(var(--toc-footer-reserved, var(--footer-total-height)) + var(--toc-panel-gap, 0px) - 2px);
+    border-right:1px solid rgba(0,0,0,1);
   }
 
   html.toc-opening .toc-panel,
