@@ -384,7 +384,14 @@ html.toc-dock-settling .toc-produced-title {
   touch-action: pan-y;
   position: relative;
   background: linear-gradient(to bottom, #141414 0%, #0d0d0d 100%);
+  scrollbar-width:thin;
+  scrollbar-color:#8a6e3a #0b0c0e;
 }
+
+.toc-panel-body::-webkit-scrollbar{width:5px}
+.toc-panel-body::-webkit-scrollbar-track{background:#0b0c0e}
+.toc-panel-body::-webkit-scrollbar-thumb{background:#8a6e3a}
+.toc-panel-body::-webkit-scrollbar-thumb:hover{background:#6b4f22}
 
 .toc-panel-body>* {
   position: relative

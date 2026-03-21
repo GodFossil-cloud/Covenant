@@ -332,7 +332,17 @@ html.reliquary-dock-settling .reliquary-panel-header::after{content:none}
   color:var(--reliquary-ink-soft);
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
+  direction:rtl;
+  scrollbar-width:thin;
+  scrollbar-color:#8a6e3a #0b0c0e;
 }
+
+.reliquary-panel-body > *{direction:ltr}
+.reliquary-panel-body::-webkit-scrollbar{width:5px}
+.reliquary-panel-body::-webkit-scrollbar-track{background:#0b0c0e}
+.reliquary-panel-body::-webkit-scrollbar-thumb{background:#8a6e3a}
+.reliquary-panel-body::-webkit-scrollbar-thumb:hover{background:#6b4f22}
+
 
 /* -------------------------------------------------
    Glossary view
