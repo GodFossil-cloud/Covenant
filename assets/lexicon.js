@@ -1,5 +1,5 @@
 /*! Covenant Lexicon UI v0.3.16 (is-saved/is-saveable mutually exclusive) */
-(function () {
+(function() {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
@@ -9,7 +9,9 @@
   var root = doc.documentElement;
 
   function byId(id) { return doc.getElementById(id); }
+
   function qs(sel, scope) { return (scope || doc).querySelector(sel); }
+
   function qsa(sel, scope) { return (scope || doc).querySelectorAll(sel); }
 
   function closestSafe(target, selector) {
@@ -124,11 +126,11 @@
 
   function uiStackReady(stack) {
     return !!(
-      stack
-      && typeof stack.register === 'function'
-      && typeof stack.noteOpen === 'function'
-      && typeof stack.noteClose === 'function'
-      && typeof stack.getTopOpenId === 'function'
+      stack &&
+      typeof stack.register === 'function' &&
+      typeof stack.noteOpen === 'function' &&
+      typeof stack.noteClose === 'function' &&
+      typeof stack.getTopOpenId === 'function'
     );
   }
 
@@ -169,15 +171,15 @@
         useSharedScrollLock: true,
         allowScrollSelector: '#lexiconPanel .lexicon-panel-body',
 
-        isOpen: function () {
+        isOpen: function() {
           return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
 
-        requestClose: function () {
+        requestClose: function() {
           if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
         },
 
-        setInert: function (isInert) {
+        setInert: function(isInert) {
           try {
             var asleep = !!isInert;
 
@@ -192,7 +194,7 @@
           } catch (err2) {}
         },
 
-        setZIndex: function (baseZ) {
+        setZIndex: function(baseZ) {
           try {
             if (lexOverlay) lexOverlay.style.zIndex = String(baseZ);
             if (panel) panel.style.zIndex = String(baseZ + 1);
@@ -346,9 +348,10 @@
   var isMobileGlyphMode = !!(mobileGlyphMql && mobileGlyphMql.matches);
 
   var bottomSheetMql = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
+
   function isBottomSheetMode() { return !!(bottomSheetMql && bottomSheetMql.matches); }
 
-  var isIOS = (function () {
+  var isIOS = (function() {
     try {
       var ua = navigator.userAgent || '';
       var platform = navigator.platform || '';
@@ -374,7 +377,7 @@
   function enableIOSTouchScrollLock() {
     if (iosTouchMoveBlocker) return;
 
-    iosTouchMoveBlocker = function (e) {
+    iosTouchMoveBlocker = function(e) {
       if (!panel || !panel.classList.contains('is-open')) return;
       if (closestSafe(e.target, '.lexicon-panel-body')) return;
       if (e && e.cancelable) e.preventDefault();
@@ -446,13 +449,13 @@
     if (!el) return;
     var lastPointerUpAt = 0;
 
-    el.addEventListener('pointerup', function (e) {
+    el.addEventListener('pointerup', function(e) {
       if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
       lastPointerUpAt = Date.now();
       handler(e);
     });
 
-    el.addEventListener('click', function (e) {
+    el.addEventListener('click', function(e) {
       if (Date.now() - lastPointerUpAt < 700) return;
       handler(e);
     });
@@ -462,16 +465,17 @@
     if (!el) return;
 
     function add() { el.classList.add('is-pressed'); }
+
     function remove() { el.classList.remove('is-pressed'); }
 
     if (window.PointerEvent) {
       el.addEventListener('pointerdown', add);
-      el.addEventListener('pointerup', function () { setTimeout(remove, 160); });
+      el.addEventListener('pointerup', function() { setTimeout(remove, 160); });
       el.addEventListener('pointercancel', remove);
       el.addEventListener('pointerleave', remove);
     } else {
       el.addEventListener('touchstart', add, { passive: true });
-      el.addEventListener('touchend', function () { setTimeout(remove, 160); }, { passive: true });
+      el.addEventListener('touchend', function() { setTimeout(remove, 160); }, { passive: true });
       el.addEventListener('touchcancel', remove, { passive: true });
     }
   }
@@ -483,6 +487,29 @@
   var sealNudgeTimer = null;
 
   var sealTapClassTimer = null;
+
+  var sealSettlingTimer = null;
+
+  function clearSealSettling() {
+    if (!lexiconToggle || !lexiconToggle.classList) return;
+    lexiconToggle.classList.remove('is-seal-settling');
+  }
+
+  function markSealSettling(ms) {
+    if (!lexiconToggle || !lexiconToggle.classList) return;
+
+    if (sealSettlingTimer) {
+      window.clearTimeout(sealSettlingTimer);
+      sealSettlingTimer = null;
+    }
+
+    lexiconToggle.classList.add('is-seal-settling');
+
+    sealSettlingTimer = window.setTimeout(function() {
+      try { clearSealSettling(); } catch (err) {}
+      sealSettlingTimer = null;
+    }, Math.max(0, ms || 0) + 80);
+  }
 
   function getNavPulseDurationMs() {
     return getCssVarNumber('--nav-pulse-duration', 520);
@@ -503,7 +530,7 @@
       sealTapClassTimer = null;
     }
 
-    sealTapClassTimer = window.setTimeout(function () {
+    sealTapClassTimer = window.setTimeout(function() {
       try { clearSealTapClasses(); } catch (err) {}
       sealTapClassTimer = null;
     }, Math.max(0, ms || 0) + 60);
@@ -535,7 +562,7 @@
     void lexiconToggle.offsetWidth;
     lexiconToggle.classList.add('is-pulsing');
 
-    sealPulseTimer = window.setTimeout(function () {
+    sealPulseTimer = window.setTimeout(function() {
       try { if (lexiconToggle && lexiconToggle.classList) lexiconToggle.classList.remove('is-pulsing'); } catch (err) {}
       sealPulseTimer = null;
     }, getNavPulseDurationMs() + 90);
@@ -553,7 +580,7 @@
     void lexiconToggle.offsetWidth;
     lexiconToggle.classList.add('is-nudging');
 
-    sealNudgeTimer = window.setTimeout(function () {
+    sealNudgeTimer = window.setTimeout(function() {
       try { if (lexiconToggle && lexiconToggle.classList) lexiconToggle.classList.remove('is-nudging'); } catch (err) {}
       sealNudgeTimer = null;
     }, 140);
@@ -631,16 +658,16 @@
     if (isOpen) {
       glyph = lexiconHovering ? LEX_GLYPHS.openHover : (hasSelection ? LEX_GLYPHS.openSelected : LEX_GLYPHS.openSummary);
     } else {
-      glyph = lexiconHovering
-        ? (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover)
-        : (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
+      glyph = lexiconHovering ?
+        (hasSelection ? LEX_GLYPHS.selectedHover : LEX_GLYPHS.defaultHover) :
+        (hasSelection ? LEX_GLYPHS.selected : LEX_GLYPHS.default);
     }
 
     setGlyphMarkup(glyphTarget, glyph);
   }
 
   if (mobileGlyphMql) {
-    var onMobileGlyphChange = function () {
+    var onMobileGlyphChange = function() {
       isMobileGlyphMode = !!mobileGlyphMql.matches;
       setLexiconGlyph();
     };
@@ -662,20 +689,29 @@
   // Panel header: title + mode/subtitle
   // ----------------------------------------
   var titleEl = byId('lexiconPanelTitle');
-  var modeEl  = byId('lexiconModeLabel') || qs('.lexicon-panel-mode');
+  var modeEl = byId('lexiconModeLabel') || qs('.lexicon-panel-mode');
 
   function resolvePageTitle() {
     if (pageConfig.modeLabel) return String(pageConfig.modeLabel);
 
     var id = pageConfig.pageId || '';
-    if (id === 'invocation')  return 'Invocation';
-    if (id === 'foundation')  return 'Foundation';
+    if (id === 'invocation') return 'Invocation';
+    if (id === 'foundation') return 'Foundation';
     if (id === 'declaration') return 'Declaration';
 
     var UNICODE_ROMAN = {
-      'I':'\u2160','II':'\u2161','III':'\u2162','IV':'\u2163','V':'\u2164',
-      'VI':'\u2165','VII':'\u2166','VIII':'\u2167','IX':'\u2168','X':'\u2169',
-      'XI':'\u216A','XII':'\u216B'
+      'I': '\u2160',
+      'II': '\u2161',
+      'III': '\u2162',
+      'IV': '\u2163',
+      'V': '\u2164',
+      'VI': '\u2165',
+      'VII': '\u2166',
+      'VIII': '\u2167',
+      'IX': '\u2168',
+      'X': '\u2169',
+      'XI': '\u216A',
+      'XII': '\u216B'
     };
     if (id && UNICODE_ROMAN[id]) return 'Article\u00a0' + UNICODE_ROMAN[id];
 
@@ -829,22 +865,22 @@
   applyIntroOverrides();
   var introDelays = resolveIntroDelays();
 
-  setTimeout(function () {
+  setTimeout(function() {
     if (loadingIcon) loadingIcon.classList.add('fade-out');
 
-    setTimeout(function () {
+    setTimeout(function() {
       if (overlay) overlay.classList.add('fade-out');
 
-      setTimeout(function () {
+      setTimeout(function() {
         if (container) container.classList.add('fade-in');
 
         if (panel) panel.classList.add('fade-in');
 
-        setTimeout(function () {
+        setTimeout(function() {
           if (navFooter) navFooter.classList.add('fade-in');
         }, introDelays.panelToFooterDelay);
 
-        setTimeout(function () {
+        setTimeout(function() {
           if (loadingIcon && loadingIcon.parentNode) loadingIcon.parentNode.removeChild(loadingIcon);
           if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
         }, introDelays.cleanupDelay);
@@ -858,8 +894,18 @@
   var lastCitationText = '';
 
   var UNICODE_ROMAN_ARTICLE = {
-    'I': '\u2160', 'II': '\u2161', 'III': '\u2162', 'IV': '\u2163', 'V': '\u2164', 'VI': '\u2165',
-    'VII': '\u2166', 'VIII': '\u2167', 'IX': '\u2168', 'X': '\u2169', 'XI': '\u216A', 'XII': '\u216B'
+    'I': '\u2160',
+    'II': '\u2161',
+    'III': '\u2162',
+    'IV': '\u2163',
+    'V': '\u2164',
+    'VI': '\u2165',
+    'VII': '\u2166',
+    'VIII': '\u2167',
+    'IX': '\u2168',
+    'X': '\u2169',
+    'XI': '\u216A',
+    'XII': '\u216B'
   };
 
   var UNICODE_ROMAN_NUM = ['', '\u2160', '\u2161', '\u2162', '\u2163', '\u2164', '\u2165', '\u2166', '\u2167', '\u2168', '\u2169', '\u216A', '\u216B'];
@@ -1087,7 +1133,7 @@
   function renderOverview() {
     if (!dynamicContent) return;
     dynamicContent.style.opacity = '0';
-    setTimeout(function () {
+    setTimeout(function() {
       dynamicContent.innerHTML = defaultOverviewHTML;
       dynamicContent.style.opacity = '1';
     }, 150);
@@ -1107,11 +1153,11 @@
     var box = getQuoteBox();
     if (!box) return;
     var saved = !!isSaved;
-    box.classList.toggle('is-saved',    saved);
+    box.classList.toggle('is-saved', saved);
     box.classList.toggle('is-saveable', !saved);
     box.setAttribute('data-quote-hint', saved ? 'Saved \u2726' : 'Tap to save');
-    box.setAttribute('aria-label',      saved ? 'Remove from Reliquary' : 'Save to Reliquary');
-    box.setAttribute('aria-pressed',    saved ? 'true' : 'false');
+    box.setAttribute('aria-label', saved ? 'Remove from Reliquary' : 'Save to Reliquary');
+    box.setAttribute('aria-pressed', saved ? 'true' : 'false');
   }
 
   window.COVENANT_LEXICON_UPDATE_QUOTE_BOX = updateQuoteBoxSaveState;
@@ -1137,17 +1183,17 @@
     var safeSentence = escapeHtml(sentenceText);
 
     // Determine saved state before injecting HTML so the correct class is set from the start.
-    var currentFile = (window.location && window.location.pathname)
-      ? window.location.pathname.split('/').pop() || ''
-      : '';
+    var currentFile = (window.location && window.location.pathname) ?
+      window.location.pathname.split('/').pop() || '' :
+      '';
     var alreadySaved = isPassageSaved(currentFile, key);
-    var saveClass  = alreadySaved ? 'is-saved'    : 'is-saveable';
-    var saveHint   = alreadySaved ? 'Saved \u2726' : 'Tap to save';
-    var saveLabel  = alreadySaved ? 'Remove from Reliquary' : 'Save to Reliquary';
+    var saveClass = alreadySaved ? 'is-saved' : 'is-saveable';
+    var saveHint = alreadySaved ? 'Saved \u2726' : 'Tap to save';
+    var saveLabel = alreadySaved ? 'Remove from Reliquary' : 'Save to Reliquary';
     var savePressed = alreadySaved ? 'true' : 'false';
 
     dynamicContent.style.opacity = '0';
-    setTimeout(function () {
+    setTimeout(function() {
       dynamicContent.innerHTML =
         '<div class="lexicon-sentence-quote ' + saveClass + '"' +
         ' role="button"' +
@@ -1201,12 +1247,12 @@
     noteOpen();
 
     if (bottomSheet) {
-      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () { setSealToOpenPosition(); });
+      var raf = window.requestAnimationFrame || function(cb) { return window.setTimeout(cb, 0); };
+      raf(function() { setSealToOpenPosition(); });
     }
 
     var preferCloseFocus = isKeyboardIntentEvent(openEvent);
-    setTimeout(function () { focusIntoPanel(preferCloseFocus); }, 0);
+    setTimeout(function() { focusIntoPanel(preferCloseFocus); }, 0);
   }
 
   function closePanel() {
@@ -1237,7 +1283,7 @@
 
     if (!isBottomSheetMode()) restoreSealToDock();
 
-    setTimeout(function () {
+    setTimeout(function() {
       var target = (focusReturnEl && doc.contains(focusReturnEl)) ? focusReturnEl : lexiconToggle;
       if (target && target.focus) target.focus();
       focusReturnEl = null;
@@ -1262,21 +1308,27 @@
     setLexiconGlyph();
 
     if (!isMobileGlyphMode) {
-      lexiconToggle.addEventListener('pointerenter', function () { lexiconHovering = true; setLexiconGlyph(); });
-      lexiconToggle.addEventListener('mouseenter', function () { lexiconHovering = true; setLexiconGlyph(); });
-      lexiconToggle.addEventListener('focus', function () { lexiconHovering = true; setLexiconGlyph(); });
+      lexiconToggle.addEventListener('pointerenter', function() { lexiconHovering = true;
+        setLexiconGlyph(); });
+      lexiconToggle.addEventListener('mouseenter', function() { lexiconHovering = true;
+        setLexiconGlyph(); });
+      lexiconToggle.addEventListener('focus', function() { lexiconHovering = true;
+        setLexiconGlyph(); });
 
-      lexiconToggle.addEventListener('pointerleave', function () { lexiconHovering = false; setLexiconGlyph(); });
-      lexiconToggle.addEventListener('mouseleave', function () { lexiconHovering = false; setLexiconGlyph(); });
-      lexiconToggle.addEventListener('blur', function () { lexiconHovering = false; setLexiconGlyph(); });
+      lexiconToggle.addEventListener('pointerleave', function() { lexiconHovering = false;
+        setLexiconGlyph(); });
+      lexiconToggle.addEventListener('mouseleave', function() { lexiconHovering = false;
+        setLexiconGlyph(); });
+      lexiconToggle.addEventListener('blur', function() { lexiconHovering = false;
+        setLexiconGlyph(); });
     }
 
-    lexiconToggle.addEventListener('pointerdown', function (e) {
+    lexiconToggle.addEventListener('pointerdown', function(e) {
       if (e && e.pointerType === 'mouse' && typeof e.button === 'number' && e.button !== 0) return;
       triggerSealNudge();
     });
 
-    lexiconToggle.addEventListener('keydown', function (e) {
+    lexiconToggle.addEventListener('keydown', function(e) {
       var k = e && e.key;
       if (k !== 'Enter' && k !== ' ') return;
       if (e && e.repeat) return;
@@ -1285,7 +1337,7 @@
 
     applyPressFeedback(lexiconToggle);
 
-    bindActivate(lexiconToggle, function (e) {
+    bindActivate(lexiconToggle, function(e) {
       if (window.__COVENANT_SEAL_DRAG_JUST_HAPPENED) {
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false;
         return;
@@ -1308,7 +1360,7 @@
       openFromToggleIntent(e);
     });
 
-    bindActivate(lexOverlay, function () {
+    bindActivate(lexOverlay, function() {
       if (!isTopmostForDismiss()) return;
       markSealTapClosing();
       closePanel();
@@ -1317,14 +1369,14 @@
     var closeBtns = qsa('.lexicon-panel-close', panel);
     for (var i = 0; i < closeBtns.length; i++) {
       applyPressFeedback(closeBtns[i]);
-      bindActivate(closeBtns[i], function (e) {
+      bindActivate(closeBtns[i], function(e) {
         stopEvent(e);
         markSealTapClosing();
         closePanel();
       });
     }
 
-    doc.addEventListener('keydown', function (event) {
+    doc.addEventListener('keydown', function(event) {
       if (event.key === 'Escape' && panel.classList.contains('is-open')) {
         if (!isTopmostForDismiss()) return;
         markSealTapClosing();
@@ -1332,7 +1384,7 @@
       }
     });
 
-    window.addEventListener('blur', function () {
+    window.addEventListener('blur', function() {
       if (!isTopmostForDismiss()) return;
       if (panel.classList.contains('is-open')) {
         markSealTapClosing();
@@ -1340,7 +1392,7 @@
       }
     });
 
-    doc.addEventListener('visibilitychange', function () {
+    doc.addEventListener('visibilitychange', function() {
       if (!doc.hidden) return;
       if (!isTopmostForDismiss()) return;
       if (panel.classList.contains('is-open')) {
@@ -1359,13 +1411,13 @@
       return !!(isMobileGlyphMode || (e && e.pointerType && e.pointerType !== 'mouse'));
     }
 
-    doc.addEventListener('pointerdown', function (e) {
+    doc.addEventListener('pointerdown', function(e) {
       if (!closestSafe(e.target, '.glossary-term')) clearActiveTooltip();
     }, true);
 
     for (var i = 0; i < terms.length; i++) {
-      (function (term) {
-        term.addEventListener('click', function (e) {
+      (function(term) {
+        term.addEventListener('click', function(e) {
           if (!isTouchLikeEvent(e)) return;
 
           if (currentlyActiveTooltip !== term) {
@@ -1386,8 +1438,8 @@
     if (!subparts || !subparts.length) return;
 
     for (var i = 0; i < subparts.length; i++) {
-      (function (subpart) {
-        subpart.addEventListener('click', function (e) {
+      (function(subpart) {
+        subpart.addEventListener('click', function(e) {
           stopEvent(e);
           clearActiveTooltip();
 
@@ -1446,8 +1498,8 @@
     if (!sentences || !sentences.length) return;
 
     for (var i = 0; i < sentences.length; i++) {
-      (function (sentence) {
-        sentence.addEventListener('click', function (e) {
+      (function(sentence) {
+        sentence.addEventListener('click', function(e) {
           if (closestSafe(e && e.target, '.subpart')) return;
 
           clearActiveTooltip();
@@ -1523,29 +1575,6 @@
 
     var dragIntentPulsed = false;
 
-    var sealSettlingTimer = null;
-
-    function clearSealSettling() {
-      if (!lexiconToggle || !lexiconToggle.classList) return;
-      lexiconToggle.classList.remove('is-seal-settling');
-    }
-
-    function markSealSettling(ms) {
-      if (!lexiconToggle || !lexiconToggle.classList) return;
-
-      if (sealSettlingTimer) {
-        window.clearTimeout(sealSettlingTimer);
-        sealSettlingTimer = null;
-      }
-
-      lexiconToggle.classList.add('is-seal-settling');
-
-      sealSettlingTimer = window.setTimeout(function () {
-        try { clearSealSettling(); } catch (err) {}
-        sealSettlingTimer = null;
-      }, Math.max(0, ms || 0) + 80);
-    }
-
     function isMobileSheet() { return isBottomSheetMode(); }
 
     function getClosedPeek() {
@@ -1611,8 +1640,8 @@
         bringSelfToFront();
       }
 
-      var raf = window.requestAnimationFrame || function (cb) { return window.setTimeout(cb, 0); };
-      raf(function () { setSealToOpenPosition(); });
+      var raf = window.requestAnimationFrame || function(cb) { return window.setTimeout(cb, 0); };
+      raf(function() { setSealToOpenPosition(); });
     }
 
     function applyClosedStateFromDrag() {
@@ -1661,7 +1690,7 @@
         applyClosedStateFromDrag();
       }
 
-      setTimeout(function () {
+      setTimeout(function() {
         panel.classList.remove('is-settling');
         panel.style.transform = '';
         panel.style.transition = '';
@@ -1672,7 +1701,7 @@
       }, SNAP_MS + 20);
     }
 
-    lexiconToggle.addEventListener('pointerdown', function (e) {
+    lexiconToggle.addEventListener('pointerdown', function(e) {
       if (!isMobileSheet()) return;
 
       if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1702,7 +1731,7 @@
       e.preventDefault();
     });
 
-    lexiconToggle.addEventListener('pointermove', function (e) {
+    lexiconToggle.addEventListener('pointermove', function(e) {
       if (!dragging || e.pointerId !== pointerId) return;
 
       var deltaY = e.clientY - startY;
@@ -1744,14 +1773,14 @@
 
       if (moved) {
         window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
-        setTimeout(function () { window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false; }, 300);
+        setTimeout(function() { window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = false; }, 300);
         snap();
       }
 
-      var capEl = (panelHeader && panelHeader.hasPointerCapture && panelHeader.hasPointerCapture(e.pointerId))
-        ? panelHeader
-        : lexiconToggle;
-        if (e && capEl.hasPointerCapture && capEl.hasPointerCapture(e.pointerId)) {
+      var capEl = (panelHeader && panelHeader.hasPointerCapture && panelHeader.hasPointerCapture(e.pointerId)) ?
+        panelHeader :
+        lexiconToggle;
+      if (e && capEl.hasPointerCapture && capEl.hasPointerCapture(e.pointerId)) {
         capEl.releasePointerCapture(e.pointerId);
       }
     }
@@ -1759,74 +1788,74 @@
     lexiconToggle.addEventListener('pointerup', endDrag);
     lexiconToggle.addEventListener('pointercancel', endDrag);
     lexiconToggle.addEventListener('lostpointercapture', endDrag);
-    
+
     if (panelHeader) {
-    panelHeader.addEventListener('pointerdown', function (e) {
-    if (!isMobileSheet()) return;
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    // Only allow drag-to-close when panel is already open
-    if (!panel.classList.contains('is-open')) return;
-    // If the pointer landed directly on the seal, let the seal handle it
-    if (lexiconToggle && lexiconToggle.contains(e.target)) return;
+      panelHeader.addEventListener('pointerdown', function(e) {
+        if (!isMobileSheet()) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        // Only allow drag-to-close when panel is already open
+        if (!panel.classList.contains('is-open')) return;
+        // If the pointer landed directly on the seal, let the seal handle it
+        if (lexiconToggle && lexiconToggle.contains(e.target)) return;
 
-    clearSealSettling();
+        clearSealSettling();
 
-    dragging = true;
-    moved = false;
-    dragIntentPulsed = false;
-    pointerId = e.pointerId;
+        dragging = true;
+        moved = false;
+        dragIntentPulsed = false;
+        pointerId = e.pointerId;
 
-    startY = e.clientY;
-    lastY = startY;
-    lastT = Date.now();
-    velocity = 0;
+        startY = e.clientY;
+        lastY = startY;
+        lastT = Date.now();
+        velocity = 0;
 
-    startWasOpen = true;
+        startWasOpen = true;
 
-    computeClosedY();
-    currentY = 0;
+        computeClosedY();
+        currentY = 0;
 
-    panel.classList.add('is-dragging');
-    panel.style.transition = 'none';
-    if (lexOverlay) lexOverlay.style.transition = 'none';
+        panel.classList.add('is-dragging');
+        panel.style.transition = 'none';
+        if (lexOverlay) lexOverlay.style.transition = 'none';
 
-    panelHeader.setPointerCapture(e.pointerId);
-    e.preventDefault();
-    });
+        panelHeader.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
 
-    panelHeader.addEventListener('pointermove', function (e) {
-    if (!dragging || e.pointerId !== pointerId) return;
+      panelHeader.addEventListener('pointermove', function(e) {
+        if (!dragging || e.pointerId !== pointerId) return;
 
-    var deltaY = e.clientY - startY;
-    if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
-    moved = true;
-    window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
+        var deltaY = e.clientY - startY;
+        if (!moved && Math.abs(deltaY) > MOVE_SLOP) {
+          moved = true;
+          window.__COVENANT_SEAL_DRAG_JUST_HAPPENED = true;
 
-    if (!dragIntentPulsed) {
-    dragIntentPulsed = true;
-    triggerSealNudge();
+          if (!dragIntentPulsed) {
+            dragIntentPulsed = true;
+            triggerSealNudge();
+          }
+        }
+        if (!moved) return;
+
+        var now = Date.now();
+        var dt = now - lastT;
+        if (dt > 0) velocity = (e.clientY - lastY) / dt;
+
+        lastY = e.clientY;
+        lastT = now;
+
+        var targetY = deltaY;
+        if (targetY < 0) targetY = 0;
+        if (targetY > closedY) targetY = closedY;
+
+        setPanelY(targetY, true);
+        e.preventDefault();
+      });
+
+      panelHeader.addEventListener('pointerup', function(e) { endDrag(e); });
+      panelHeader.addEventListener('pointercancel', function(e) { endDrag(e); });
+      panelHeader.addEventListener('lostpointercapture', function(e) { endDrag(e); });
     }
-    }
-    if (!moved) return;
-
-    var now = Date.now();
-    var dt = now - lastT;
-    if (dt > 0) velocity = (e.clientY - lastY) / dt;
-
-    lastY = e.clientY;
-    lastT = now;
-
-    var targetY = deltaY;
-    if (targetY < 0) targetY = 0;
-    if (targetY > closedY) targetY = closedY;
-
-    setPanelY(targetY, true);
-    e.preventDefault();
-    });
-
-    panelHeader.addEventListener('pointerup', function (e) { endDrag(e); });
-    panelHeader.addEventListener('pointercancel', function (e) { endDrag(e); });
-    panelHeader.addEventListener('lostpointercapture', function (e) { endDrag(e); });
-    }
-})();
+  })();
 })();
