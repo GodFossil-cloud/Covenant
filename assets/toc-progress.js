@@ -9,16 +9,16 @@
    The .toc-progress-fill element is retained but kept permanently hidden to avoid conflicts.
 */
 
-(()=>{
-  const $ = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+(() => {
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  function ensureEl(tocIndex, className){
+  function ensureEl(tocIndex, className) {
     let el = $(`.${className}`, tocIndex);
-    if(el) return el;
+    if (el) return el;
     el = document.createElement('div');
     el.className = className;
-    el.setAttribute('aria-hidden','true');
+    el.setAttribute('aria-hidden', 'true');
     el.style.position = 'absolute';
     el.style.pointerEvents = 'none';
     el.style.zIndex = '1';
@@ -26,7 +26,7 @@
     return el;
   }
 
-  function ensureBoundFillEl(tocIndex){
+  function ensureBoundFillEl(tocIndex) {
     const fill = ensureEl(tocIndex, 'toc-bound-fill');
     fill.style.width = '2px';
     fill.style.borderRadius = '999px';
@@ -39,7 +39,7 @@
     return fill;
   }
 
-  function ensureSealedSpineEl(tocIndex){
+  function ensureSealedSpineEl(tocIndex) {
     const spine = ensureEl(tocIndex, 'toc-sealed-spine');
     spine.style.width = '2px';
     spine.style.borderRadius = '999px';
@@ -50,7 +50,7 @@
     return spine;
   }
 
-  function ensureGateEmphasisEl(tocIndex){
+  function ensureGateEmphasisEl(tocIndex) {
     const gate = ensureEl(tocIndex, 'toc-gate-emphasis');
     gate.style.height = '2px';
     gate.style.opacity = '0';
@@ -61,7 +61,7 @@
     return gate;
   }
 
-  function ensureGateSigilEl(tocIndex){
+  function ensureGateSigilEl(tocIndex) {
     const sigil = ensureEl(tocIndex, 'toc-gate-sigil');
     sigil.style.zIndex = '-1';
     sigil.style.width = '18px';
@@ -75,13 +75,13 @@
     sigil.style.fontSize = '14px';
     sigil.style.lineHeight = '1';
     sigil.style.textShadow = 'none';
-    sigil.textContent = '\u2726';
+    sigil.textContent = '៚';
     return sigil;
   }
 
-  function pxFromCssLength(contextEl, cssLength){
+  function pxFromCssLength(contextEl, cssLength) {
     const v = (cssLength || '').trim();
-    if(!v) return 0;
+    if (!v) return 0;
     const probe = document.createElement('div');
     probe.style.position = 'absolute';
     probe.style.visibility = 'hidden';
@@ -93,28 +93,28 @@
     return px;
   }
 
-  function markGroupsAndDividers(root){
+  function markGroupsAndDividers(root) {
     const groups = $$('.toc-group', root);
-    if(!groups.length) return;
+    if (!groups.length) return;
     const wanted = [
-      { key:'prelude', label:'prelude' },
-      { key:'articles', label:'articles' },
-      { key:'rites', label:'rites' }
+      { key: 'prelude', label: 'prelude' },
+      { key: 'articles', label: 'articles' },
+      { key: 'rites', label: 'rites' }
     ];
-    for(const g of groups){
+    for (const g of groups) {
       const tab = $('.toc-group-title .toc-tab', g);
-      if(!tab) continue;
+      if (!tab) continue;
       const name = (tab.textContent || '').trim().toLowerCase();
       const hit = wanted.find(w => name === w.label);
-      if(!hit) continue;
+      if (!hit) continue;
       g.classList.add(`toc-group--${hit.key}`);
-      if(hit.key === 'articles' || hit.key === 'rites'){
+      if (hit.key === 'articles' || hit.key === 'rites') {
         const prev = g.previousElementSibling;
         const already = prev && prev.classList && prev.classList.contains('toc-soft-divider');
-        if(!already){
+        if (!already) {
           const div = document.createElement('div');
           div.className = 'toc-soft-divider';
-          div.setAttribute('aria-hidden','true');
+          div.setAttribute('aria-hidden', 'true');
           div.style.height = '1px';
           div.style.margin = '0.95rem 0 1.05rem 1.65rem';
           div.style.background = 'linear-gradient(to right, rgba(44,62,80,.00), rgba(44,62,80,.18), rgba(44,62,80,.00))';
@@ -125,119 +125,119 @@
     }
   }
 
-  function computeDecorations(){
+  function computeDecorations() {
     const dyn = document.getElementById('tocDynamicContent');
-    if(!dyn) return;
+    if (!dyn) return;
     const tocIndex = $('.toc-index', dyn);
-    if(!tocIndex) return;
+    if (!tocIndex) return;
 
     markGroupsAndDividers(dyn);
 
     const indexStyle = window.getComputedStyle(tocIndex);
-    const ruleXToken      = (indexStyle.getPropertyValue('--toc-rule-x')      || '.95rem').trim();
-    const ruleTopToken    = (indexStyle.getPropertyValue('--toc-rule-top')    || '.3rem').trim();
+    const ruleXToken = (indexStyle.getPropertyValue('--toc-rule-x') || '.95rem').trim();
+    const ruleTopToken = (indexStyle.getPropertyValue('--toc-rule-top') || '.3rem').trim();
     const ruleBottomToken = (indexStyle.getPropertyValue('--toc-rule-bottom') || '2.9rem').trim();
 
-    const ruleXPx      = pxFromCssLength(tocIndex, ruleXToken);
-    const ruleTopPx    = pxFromCssLength(tocIndex, ruleTopToken);
+    const ruleXPx = pxFromCssLength(tocIndex, ruleXToken);
+    const ruleTopPx = pxFromCssLength(tocIndex, ruleTopToken);
     const ruleBottomPx = pxFromCssLength(tocIndex, ruleBottomToken);
-    const totalH       = tocIndex.offsetHeight;
-    const maxH         = Math.max(0, totalH - ruleTopPx - ruleBottomPx);
+    const totalH = tocIndex.offsetHeight;
+    const maxH = Math.max(0, totalH - ruleTopPx - ruleBottomPx);
 
     // --toc-last-node-offset: px from bottom of .toc-list to last node centre.
     // Subtracting it from maxH aligns both spine elements with .toc-list::before.
     const lastNodeOffsetToken = (indexStyle.getPropertyValue('--toc-last-node-offset') || '0px').trim();
-    const lastNodeOffsetPx    = pxFromCssLength(tocIndex, lastNodeOffsetToken);
-    const adjustedMaxH        = Math.max(0, maxH - lastNodeOffsetPx);
+    const lastNodeOffsetPx = pxFromCssLength(tocIndex, lastNodeOffsetToken);
+    const adjustedMaxH = Math.max(0, maxH - lastNodeOffsetPx);
 
-    const gateEl    = $('.toc-gate', tocIndex);
+    const gateEl = $('.toc-gate', tocIndex);
     const hasLocked = !!$('.toc-item--locked', tocIndex);
 
-    const boundFill   = ensureBoundFillEl(tocIndex);
+    const boundFill = ensureBoundFillEl(tocIndex);
     const sealedSpine = ensureSealedSpineEl(tocIndex);
-    const gateLine    = ensureGateEmphasisEl(tocIndex);
-    const gateSigil   = ensureGateSigilEl(tocIndex);
+    const gateLine = ensureGateEmphasisEl(tocIndex);
+    const gateSigil = ensureGateSigilEl(tocIndex);
 
-    if(gateEl && hasLocked){
+    if (gateEl && hasLocked) {
       const gateOffsetTop = gateEl.offsetTop;
-      const gateY         = gateOffsetTop + (gateEl.offsetHeight / 2);
-      const clampedGateY  = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + adjustedMaxH));
+      const gateY = gateOffsetTop + (gateEl.offsetHeight / 2);
+      const clampedGateY = Math.max(ruleTopPx, Math.min(gateY, ruleTopPx + adjustedMaxH));
 
       // --- Solid gold fill: list top → gate centre ---
       const fillTop = ruleTopPx;
-      const fillH   = Math.max(0, clampedGateY - fillTop);
+      const fillH = Math.max(0, clampedGateY - fillTop);
 
-      boundFill.style.left      = `${ruleXPx}px`;
-      boundFill.style.top       = `${fillTop}px`;
-      boundFill.style.height    = `${fillH}px`;
+      boundFill.style.left = `${ruleXPx}px`;
+      boundFill.style.top = `${fillTop}px`;
+      boundFill.style.height = `${fillH}px`;
       boundFill.style.transform = 'translateX(-1px)';
-      boundFill.style.opacity   = (fillH > 8) ? '1' : '0';
+      boundFill.style.opacity = (fillH > 8) ? '1' : '0';
 
       // --- Dark dashed void: gate centre → last node ---
       const sealedTop = clampedGateY;
-      const sealedH   = Math.max(0, (ruleTopPx + adjustedMaxH) - sealedTop);
+      const sealedH = Math.max(0, (ruleTopPx + adjustedMaxH) - sealedTop);
 
-      sealedSpine.style.left      = `${ruleXPx}px`;
-      sealedSpine.style.top       = `${sealedTop}px`;
-      sealedSpine.style.height    = `${sealedH}px`;
+      sealedSpine.style.left = `${ruleXPx}px`;
+      sealedSpine.style.top = `${sealedTop}px`;
+      sealedSpine.style.height = `${sealedH}px`;
       sealedSpine.style.transform = 'translateX(-1px)';
-      sealedSpine.style.opacity   = (sealedH > 8) ? '1' : '0';
+      sealedSpine.style.opacity = (sealedH > 8) ? '1' : '0';
 
-      gateLine.style.left    = `${ruleXPx}px`;
-      gateLine.style.top     = `${Math.max(ruleTopPx, clampedGateY - 1)}px`;
-      gateLine.style.right   = '0.2rem';
+      gateLine.style.left = `${ruleXPx}px`;
+      gateLine.style.top = `${Math.max(ruleTopPx, clampedGateY - 1)}px`;
+      gateLine.style.right = '0.2rem';
       gateLine.style.opacity = '1';
 
-      gateSigil.style.left      = `${ruleXPx}px`;
-      gateSigil.style.top       = `${clampedGateY}px`;
+      gateSigil.style.left = `${ruleXPx}px`;
+      gateSigil.style.top = `${clampedGateY}px`;
       gateSigil.style.transform = 'translate(-50%, -50%)';
-      gateSigil.style.opacity   = '1';
+      gateSigil.style.opacity = '1';
 
     } else {
       // No gate / no locked nodes — full solid gold fill, hide sealed spine
       const fillH = Math.max(0, adjustedMaxH);
-      boundFill.style.left      = `${ruleXPx}px`;
-      boundFill.style.top       = `${ruleTopPx}px`;
-      boundFill.style.height    = `${fillH}px`;
+      boundFill.style.left = `${ruleXPx}px`;
+      boundFill.style.top = `${ruleTopPx}px`;
+      boundFill.style.height = `${fillH}px`;
       boundFill.style.transform = 'translateX(-1px)';
-      boundFill.style.opacity   = (fillH > 8) ? '1' : '0';
+      boundFill.style.opacity = (fillH > 8) ? '1' : '0';
 
       sealedSpine.style.opacity = '0';
-      gateLine.style.opacity    = '0';
-      gateSigil.style.opacity   = '0';
+      gateLine.style.opacity = '0';
+      gateSigil.style.opacity = '0';
     }
   }
 
-  function schedule(){
+  function schedule() {
     window.requestAnimationFrame(() => { computeDecorations(); });
   }
 
-  function boot(){
+  function boot() {
     const dyn = document.getElementById('tocDynamicContent');
-    if(dyn){
+    if (dyn) {
       const obs = new MutationObserver(schedule);
-      obs.observe(dyn, { childList:true, subtree:true });
+      obs.observe(dyn, { childList: true, subtree: true });
     }
     const html = document.documentElement;
     const htmlObs = new MutationObserver(() => {
-      if(html.classList.contains('toc-open') || html.classList.contains('toc-opening')) schedule();
+      if (html.classList.contains('toc-open') || html.classList.contains('toc-opening')) schedule();
     });
-    htmlObs.observe(html, { attributes:true, attributeFilter:['class'] });
+    htmlObs.observe(html, { attributes: true, attributeFilter: ['class'] });
     window.addEventListener('resize', () => {
-      if(html.classList.contains('toc-open')) schedule();
-    }, { passive:true });
-    if(window.visualViewport){
+      if (html.classList.contains('toc-open')) schedule();
+    }, { passive: true });
+    if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
-        if(html.classList.contains('toc-open')) schedule();
-      }, { passive:true });
+        if (html.classList.contains('toc-open')) schedule();
+      }, { passive: true });
     }
     const body = document.querySelector('.toc-panel-body');
-    if(body){
-      body.addEventListener('scroll', () => { schedule(); }, { passive:true });
+    if (body) {
+      body.addEventListener('scroll', () => { schedule(); }, { passive: true });
     }
     schedule();
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
