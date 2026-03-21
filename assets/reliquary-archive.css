@@ -1,269 +1,281 @@
 /* Reliquary Archive (ToC-like page list) — minimal styling only.
    Keep this file small; core Reliquary veil geometry lives in assets/reliquary.css. */
 
-.reliquary-archive{display:none}
-html.reliquary-open .reliquary-archive{display:block}
-
-.reliquary-archive-index{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+.reliquary-archive {
+  display: none
 }
 
-.reliquary-archive details{
-  background:rgba(0,0,0,.18);
-  border:1px solid rgba(201,169,97,.14);
-  border-left:2px solid rgba(201,169,97,.26);
-  border-radius:10px;
-  overflow:hidden;
+html.reliquary-open .reliquary-archive {
+  display: block
 }
 
-.reliquary-archive details.is-current{border-left-color:rgba(201,169,97,.58)}
-
-.reliquary-archive summary{
-  list-style:none;
-  cursor:pointer;
-  padding:.62rem .72rem;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-
-  font-family:'Cormorant Garamond',serif;
-  font-size:.88rem;
-  letter-spacing:.08em;
-  line-height:1.25;
-  color:var(--reliquary-ink, rgba(245,236,214,.92));
-
-  background:rgba(0,0,0,.18);
+.reliquary-archive-index {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.reliquary-archive summary::-webkit-details-marker{display:none}
-
-.reliquary-archive details[open] summary{
-  background:linear-gradient(to right, rgba(201,169,97,.12), rgba(0,0,0,0));
+.reliquary-archive details {
+  background: rgba(0, 0, 0, .18);
+  border: 1px solid rgba(201, 169, 97, .14);
+  border-left: 2px solid rgba(201, 169, 97, .26);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.reliquary-archive .reliquary-archive-page-title{
-  flex:1 1 auto;
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
+.reliquary-archive details.is-current {
+  border-left-color: rgba(201, 169, 97, .58)
 }
 
-.reliquary-archive .reliquary-archive-count{
-  flex:0 0 auto;
-  font-size:.78rem;
-  letter-spacing:.10em;
-  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
-  opacity:.85;
+.reliquary-archive summary {
+  list-style: none;
+  cursor: pointer;
+  padding: .62rem .72rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .88rem;
+  letter-spacing: .08em;
+  line-height: 1.25;
+  color: var(--reliquary-ink, rgba(245, 236, 214, .92));
+
+  background: rgba(0, 0, 0, .18);
 }
 
-.reliquary-archive-items{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  padding:.62rem .72rem .74rem;
+.reliquary-archive summary::-webkit-details-marker {
+  display: none
+}
+
+.reliquary-archive details[open] summary {
+  background: linear-gradient(to right, rgba(201, 169, 97, .12), rgba(0, 0, 0, 0));
+}
+
+.reliquary-archive .reliquary-archive-page-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reliquary-archive .reliquary-archive-count {
+  flex: 0 0 auto;
+  font-size: .78rem;
+  letter-spacing: .10em;
+  color: var(--reliquary-ink-soft, rgba(245, 236, 214, .74));
+  opacity: .85;
+}
+
+.reliquary-archive-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: .62rem .72rem .74rem;
 }
 
 /* ---------------------------
    Archive item — base
    --------------------------- */
 
-.reliquary-archive-item{
-  position:relative;
-  width:100%;
-  text-align:left;
-  border-radius:10px;
-  border:1px solid rgba(201,169,97,.14);
-  background:rgba(0,0,0,.22);
-  padding:.58rem .62rem;
-  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
+.reliquary-archive-item {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 169, 97, .14);
+  background: rgba(0, 0, 0, .22);
+  padding: .58rem .62rem;
+  color: var(--reliquary-ink-soft, rgba(245, 236, 214, .74));
 
-  font-family:'Crimson Text',serif;
-  font-size:.88rem;
-  line-height:1.55;
+  font-family: 'Crimson Text', serif;
+  font-size: .88rem;
+  line-height: 1.55;
 
-  cursor:pointer;
-  overflow:hidden;
+  cursor: pointer;
+  overflow: hidden;
 
   transition:
-    border-color 220ms cubic-bezier(0.22,0.61,0.36,1),
-    background   220ms cubic-bezier(0.22,0.61,0.36,1);
+    border-color 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    background 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 @media (hover: hover) {
-  .reliquary-archive-item:hover{
-    border-color:rgba(201,169,97,.22);
-    background:rgba(0,0,0,.26);
+  .reliquary-archive-item:not(.is-expanded):hover {
+    border-color: rgba(201, 169, 97, .22);
+    background: rgba(0, 0, 0, .26);
   }
 }
 
 .reliquary-archive-item:focus,
-.reliquary-archive-item:focus-visible{
-  outline:none;
-  box-shadow:0 0 0 2px rgba(201,169,97,.22);
+.reliquary-archive-item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 169, 97, .22);
 }
 
 /* Expanded state — outer item */
-.reliquary-archive-item.is-expanded{
-  border-color:rgba(201,169,97,.32);
-  background:rgba(0,0,0,.30);
-  cursor:default;
+.reliquary-archive-item.is-expanded {
+  border-color: rgba(201, 169, 97, .32);
+  background: rgba(0, 0, 0, .30);
+  cursor: default;
 }
 
 /* ---------------------------
    Normal face
    --------------------------- */
 
-.reliquary-archive-item-face{
-  transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1);
-  opacity:1;
-  pointer-events:auto;
+.reliquary-archive-item-face {
+  transition: opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.reliquary-archive-item.is-expanded .reliquary-archive-item-face{
-  opacity:0;
-  pointer-events:none;
-  user-select:none;
-  visibility:hidden;
+.reliquary-archive-item.is-expanded .reliquary-archive-item-face {
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  visibility: hidden;
 }
 
-.reliquary-archive-item .reliquary-archive-item-meta{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  margin-top:.25rem;
+.reliquary-archive-item .reliquary-archive-item-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: .25rem;
 
-  font-family:'Cormorant Garamond',serif;
-  font-size:.78rem;
-  letter-spacing:.10em;
-  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
-  opacity:.82;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .78rem;
+  letter-spacing: .10em;
+  color: var(--reliquary-ink-soft, rgba(245, 236, 214, .74));
+  opacity: .82;
 }
 
-.reliquary-archive-item .reliquary-archive-item-key{white-space:nowrap;flex:0 0 auto}
+.reliquary-archive-item .reliquary-archive-item-key {
+  white-space: nowrap;
+  flex: 0 0 auto
+}
 
 /* ---------------------------
    Menu face (expanded)
    --------------------------- */
 
-.reliquary-archive-item-menu{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:1.6rem;
+.reliquary-archive-item-menu {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
 
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.reliquary-archive-item.is-expanded .reliquary-archive-item-menu{
-  opacity:1;
-  pointer-events:auto;
-  transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1) 220ms;
+.reliquary-archive-item.is-expanded .reliquary-archive-item-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1) 220ms;
 }
 
 /* Action buttons — stacked glyph over caption */
-.reliquary-archive-item-action{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:.18rem;
+.reliquary-archive-item-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .18rem;
 
-  min-width:3.2rem;
-  padding:.44rem .60rem;
-  border-radius:8px;
-  border:1px solid rgba(201,169,97,.22);
-  background:rgba(0,0,0,.28);
+  min-width: 3.2rem;
+  padding: .44rem .60rem;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 169, 97, .22);
+  background: rgba(0, 0, 0, .28);
 
-  color:var(--reliquary-ink, rgba(245,236,214,.92));
-  cursor:pointer;
+  color: var(--reliquary-ink, rgba(245, 236, 214, .92));
+  cursor: pointer;
 
   transition:
-    background     180ms cubic-bezier(0.22,0.61,0.36,1),
-    border-color   180ms cubic-bezier(0.22,0.61,0.36,1),
-    color          180ms cubic-bezier(0.22,0.61,0.36,1),
-    transform      180ms cubic-bezier(0.22,0.61,0.36,1),
-    box-shadow     180ms cubic-bezier(0.22,0.61,0.36,1);
+    background 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 @media (hover: hover) {
-  .reliquary-archive-item-action:hover{
-    background:rgba(201,169,97,.14);
-    border-color:rgba(201,169,97,.38);
-    color:rgba(245,236,214,1);
-    transform:scale(1.06);
+  .reliquary-archive-item-action:hover {
+    background: rgba(201, 169, 97, .14);
+    border-color: rgba(201, 169, 97, .38);
+    color: rgba(245, 236, 214, 1);
+    transform: scale(1.06);
   }
 }
 
 .reliquary-archive-item-action:focus,
-.reliquary-archive-item-action:focus-visible{
-  outline:none;
-  box-shadow:0 0 0 2px rgba(201,169,97,.32);
+.reliquary-archive-item-action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 169, 97, .32);
 }
 
-.reliquary-archive-item-action:active{
-  transform:scale(0.96);
+.reliquary-archive-item-action:active {
+  transform: scale(0.96);
 }
 
 /* Glyph — larger symbol on top */
-.reliquary-archive-item-action-glyph{
-  display:block;
-  font-size:1.10rem;
-  line-height:1;
-  pointer-events:none;
+.reliquary-archive-item-action-glyph {
+  display: block;
+  font-size: 1.10rem;
+  line-height: 1;
+  pointer-events: none;
 }
 
 /* Caption — small label beneath */
-.reliquary-archive-item-action-caption{
-  display:block;
-  font-family:'Cormorant Garamond',serif;
-  font-size:.62rem;
-  letter-spacing:.12em;
-  line-height:1;
-  text-transform:uppercase;
-  opacity:.78;
-  pointer-events:none;
+.reliquary-archive-item-action-caption {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .62rem;
+  letter-spacing: .12em;
+  line-height: 1;
+  text-transform: uppercase;
+  opacity: .78;
+  pointer-events: none;
 
-  transition:opacity 180ms cubic-bezier(0.22,0.61,0.36,1);
+  transition: opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* ---------------------------
    Armed state (tap-to-confirm)
    --------------------------- */
 
-.reliquary-archive-item-navigate.is-armed{
-  background:rgba(201,169,97,.18);
-  border-color:rgba(201,169,97,.52);
-  color:rgba(245,236,214,1);
-  box-shadow:0 0 0 2px rgba(201,169,97,.22), 0 0 14px rgba(201,169,97,.14);
-  transform:scale(1.06);
+.reliquary-archive-item-navigate.is-armed {
+  background: rgba(201, 169, 97, .18);
+  border-color: rgba(201, 169, 97, .52);
+  color: rgba(245, 236, 214, 1);
+  box-shadow: 0 0 0 2px rgba(201, 169, 97, .22), 0 0 14px rgba(201, 169, 97, .14);
+  transform: scale(1.06);
 }
 
-.reliquary-archive-item-remove.is-armed{
-  background:rgba(176,86,74,.22);
-  border-color:rgba(224,124,104,.52);
-  color:rgba(224,164,144,1);
-  box-shadow:0 0 0 2px rgba(224,124,104,.22), 0 0 14px rgba(176,86,74,.14);
-  transform:scale(1.06);
+.reliquary-archive-item-remove.is-armed {
+  background: rgba(176, 86, 74, .22);
+  border-color: rgba(224, 124, 104, .52);
+  color: rgba(224, 164, 144, 1);
+  box-shadow: 0 0 0 2px rgba(224, 124, 104, .22), 0 0 14px rgba(176, 86, 74, .14);
+  transform: scale(1.06);
 }
 
-.reliquary-archive-item-action.is-armed .reliquary-archive-item-action-caption{
-  opacity:1;
-  letter-spacing:.14em;
+.reliquary-archive-item-action.is-armed .reliquary-archive-item-action-caption {
+  opacity: 1;
+  letter-spacing: .14em;
 }
 
 @media (hover: hover) {
-  .reliquary-archive-item-remove:hover{
-    background:rgba(176,86,74,.18);
-    border-color:rgba(224,124,104,.38);
-    color:rgba(224,164,144,1);
+  .reliquary-archive-item-remove:hover {
+    background: rgba(176, 86, 74, .18);
+    border-color: rgba(224, 124, 104, .38);
+    color: rgba(224, 164, 144, 1);
   }
 }
 
@@ -271,18 +283,18 @@ html.reliquary-open .reliquary-archive{display:block}
    Misc
    --------------------------- */
 
-.reliquary-archive-empty{
-  font-family:'Cormorant Garamond',serif;
-  font-size:.88rem;
-  letter-spacing:.06em;
-  line-height:1.55;
-  color:var(--reliquary-ink-soft, rgba(245,236,214,.74));
-  padding:.20rem .10rem .02rem;
-  opacity:.92;
+.reliquary-archive-empty {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .88rem;
+  letter-spacing: .06em;
+  line-height: 1.55;
+  color: var(--reliquary-ink-soft, rgba(245, 236, 214, .74));
+  padding: .20rem .10rem .02rem;
+  opacity: .92;
 }
 
-.reliquary-placeholder{
-  display:none;
+.reliquary-placeholder {
+  display: none;
 }
 
 /* ---------------------------
@@ -291,20 +303,27 @@ html.reliquary-open .reliquary-archive{display:block}
 
 /* Saveable pulse: border-left breathes */
 @keyframes quoteBoxSaveablePulse {
-  0%, 100% { border-left-color: rgba(201,169,97,.42); }
-  50%       { border-left-color: rgba(201,169,97,.72); }
+
+  0%,
+  100% {
+    border-left-color: rgba(201, 169, 97, .42);
+  }
+
+  50% {
+    border-left-color: rgba(201, 169, 97, .72);
+  }
 }
 
 /* Base saveable state */
 .lexicon-sentence-quote.is-saveable {
   cursor: pointer;
-  border-left-color: rgba(201,169,97,.52);
+  border-left-color: rgba(201, 169, 97, .52);
   background: #bdb8b0 !important;
   color: #1a1612 !important;
   transition:
-    border-left-color 260ms cubic-bezier(0.22,0.61,0.36,1),
-    background        260ms cubic-bezier(0.22,0.61,0.36,1),
-    color             260ms cubic-bezier(0.22,0.61,0.36,1);
+    border-left-color 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    background 260ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 
   animation: quoteBoxSaveablePulse 2.8s ease-in-out infinite;
 }
@@ -312,13 +331,13 @@ html.reliquary-open .reliquary-archive{display:block}
 @media (prefers-reduced-motion: reduce) {
   .lexicon-sentence-quote.is-saveable {
     animation: none;
-    border-left-color: rgba(201,169,97,.52);
+    border-left-color: rgba(201, 169, 97, .52);
   }
 }
 
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saveable:hover {
-    border-left-color: rgba(201,169,97,.82);
+    border-left-color: rgba(201, 169, 97, .82);
     background: #b0aba3 !important;
     color: #1a1612 !important;
     animation: none;
@@ -328,7 +347,7 @@ html.reliquary-open .reliquary-archive{display:block}
 /* Focus (keyboard) */
 .lexicon-sentence-quote.is-saveable:focus-visible,
 .lexicon-sentence-quote.is-saved:focus-visible {
-  outline: 2px solid rgba(201,169,97,.38);
+  outline: 2px solid rgba(201, 169, 97, .38);
   outline-offset: 2px;
   animation: none;
 }
@@ -339,21 +358,21 @@ html.reliquary-open .reliquary-archive{display:block}
    --------------------------- */
 .lexicon-sentence-quote.is-saved {
   cursor: pointer;
-  border-left-color: rgba(201,169,97,.90);
+  border-left-color: rgba(201, 169, 97, .90);
   background: linear-gradient(to right, #d94f47, #c23a4a) !important;
   color: #1a0505 !important;
 
   transition:
-    border-left-color 300ms cubic-bezier(0.22,0.61,0.36,1),
-    background        300ms cubic-bezier(0.22,0.61,0.36,1),
-    color             300ms cubic-bezier(0.22,0.61,0.36,1);
+    border-left-color 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    background 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
 
   animation: none;
 }
 
 @media (hover: hover) {
   .lexicon-sentence-quote.is-saved:hover {
-    border-left-color: rgba(201,169,97,1);
+    border-left-color: rgba(201, 169, 97, 1);
     background: linear-gradient(to right, #e05550, #cc4050) !important;
     color: #1a0505 !important;
   }
@@ -382,87 +401,87 @@ html.reliquary-open .reliquary-archive{display:block}
 
 /* Citation label bookmark toggle (beneath Lexicon seal). */
 
-#citationLabel{
-  position:relative;
+#citationLabel {
+  position: relative;
 }
 
-#citationText{
-  cursor:pointer;
-  user-select:none;
+#citationText {
+  cursor: pointer;
+  user-select: none;
 }
 
-#citationText[data-lexicon-key=""]{
-  cursor:default;
+#citationText[data-lexicon-key=""] {
+  cursor: default;
 }
 
-#citationText::before{
-  content:"\2301";
-  display:inline-block;
-  margin-right:.46em;
-  opacity:.74;
-  transform:translateY(-0.5px) scale(1);
-  transition:transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 240ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
+#citationText::before {
+  content: "\2301";
+  display: inline-block;
+  margin-right: .46em;
+  opacity: .74;
+  transform: translateY(-0.5px) scale(1);
+  transition: transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 240ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-#citationText[data-lexicon-key=""]::before{
-  content:none;
+#citationText[data-lexicon-key=""]::before {
+  content: none;
 }
 
-#citationText.is-bookmarked::before{
-  content:"\2318";
-  opacity:.94;
+#citationText.is-bookmarked::before {
+  content: "\2318";
+  opacity: .94;
 }
 
-#citationText.bookmark-pulse::before{
-  transform:translateY(-0.5px) scale(1.10);
-  opacity:1;
+#citationText.bookmark-pulse::before {
+  transform: translateY(-0.5px) scale(1.10);
+  opacity: 1;
 }
 
-#citationLabel.is-armed #citationText::before{
-  opacity:.88;
-  filter:drop-shadow(0 0 8px rgba(242,220,154,0.12));
+#citationLabel.is-armed #citationText::before {
+  opacity: .88;
+  filter: drop-shadow(0 0 8px rgba(242, 220, 154, 0.12));
 }
 
-#citationLabel.is-armed-wake{
-  text-shadow:0 0 10px rgba(242,220,154,0.10);
+#citationLabel.is-armed-wake {
+  text-shadow: 0 0 10px rgba(242, 220, 154, 0.10);
 }
 
-#citationLabel.is-reliquary-flash{
-  isolation:isolate;
-  overflow:visible;
+#citationLabel.is-reliquary-flash {
+  isolation: isolate;
+  overflow: visible;
 }
 
-#citationLabel.is-reliquary-flash::after{
-  content:attr(data-reliquary-flash);
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%, -50%);
-  z-index:2;
+#citationLabel.is-reliquary-flash::after {
+  content: attr(data-reliquary-flash);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
 
-  font-family:'Cormorant Garamond',serif;
-  font-size:.78rem;
-  letter-spacing:.14em;
-  line-height:1;
-  white-space:nowrap;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .78rem;
+  letter-spacing: .14em;
+  line-height: 1;
+  white-space: nowrap;
 
-  padding:.20rem .60rem;
-  box-sizing:border-box;
+  padding: .20rem .60rem;
+  box-sizing: border-box;
 
-  color:rgba(245,236,214,.92);
-  text-shadow:0 1px 0 rgba(0,0,0,.90), 0 0 10px rgba(242,220,154,0.14);
+  color: rgba(245, 236, 214, .92);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .90), 0 0 10px rgba(242, 220, 154, 0.14);
 }
 
-#citationLabel.is-reliquary-flash #citationCopy{
-  opacity:.16;
+#citationLabel.is-reliquary-flash #citationCopy {
+  opacity: .16;
 }
 
-#citationLabel.is-reliquary-saved::after{
-  color:rgba(138,206,182,.94);
-  text-shadow:0 1px 0 rgba(0,0,0,.92), 0 0 12px rgba(138,206,182,0.16);
+#citationLabel.is-reliquary-saved::after {
+  color: rgba(138, 206, 182, .94);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .92), 0 0 12px rgba(138, 206, 182, 0.16);
 }
 
-#citationLabel.is-reliquary-removed::after{
-  color:rgba(224,124,104,.94);
-  text-shadow:0 1px 0 rgba(0,0,0,.92), 0 0 12px rgba(224,124,104,0.14);
+#citationLabel.is-reliquary-removed::after {
+  color: rgba(224, 124, 104, .94);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .92), 0 0 12px rgba(224, 124, 104, 0.14);
 }
