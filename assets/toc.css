@@ -571,7 +571,7 @@ html.toc-dock-settling .toc-produced-title {
 .toc-gate::after {
   content: '៚';
   position: absolute;
-  left: calc(var(--toc-rule-x) - 8px);
+  left: calc(var(--toc-rule-x) - 12px);
   top: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', serif;
