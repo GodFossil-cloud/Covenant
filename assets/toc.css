@@ -569,7 +569,7 @@ html.toc-dock-settling .toc-produced-title {
 
 /* Gate marker — sigil ❥ */
 .toc-gate::after {
-  content: '࿅';
+  content: '✵';
   position: absolute;
   left: calc(var(--toc-rule-x) - 0px);
   top: 50%;
