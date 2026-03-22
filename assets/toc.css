@@ -556,7 +556,7 @@ html.toc-dock-settling .toc-produced-title {
 .toc-gate::before {
   content: '';
   position: absolute;
-  left: calc(var(--toc-rule-x) - 2px);
+  left: calc(var(--toc-rule-x) + 2px);
   right: .2rem;
   top: calc(50% - 1.5px);
   transform: translateY(-50%);
@@ -569,13 +569,13 @@ html.toc-dock-settling .toc-produced-title {
 
 /* Gate marker — sigil ❥ */
 .toc-gate::after {
-  content: '៚';
+  content: '𖢁';
   position: absolute;
-  left: calc(var(--toc-rule-x) - 10px);
+  left: calc(var(--toc-rule-x) - 0px);
   top: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', serif;
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1;
   color: rgba(220, 0, 0, 1);
   text-shadow: none;
