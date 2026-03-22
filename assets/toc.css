@@ -556,7 +556,7 @@ html.toc-dock-settling .toc-produced-title {
 .toc-gate::before {
   content: '';
   position: absolute;
-  left: calc(var(--toc-rule-x) + 2px);
+  left: calc(var(--toc-rule-x) - 2px);
   right: .2rem;
   top: calc(50% - 1.5px);
   transform: translateY(-50%);
