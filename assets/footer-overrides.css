@@ -1462,6 +1462,19 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered {
       0) !important;
 }
 
+/* Covered: keep the seal face fully transparent while covered by a side panel. */
+#navFooter #lexiconToggle.is-ui-stack-covered::after,
+#navFooter #lexiconToggle.is-ui-stack-covered:active::after {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#navFooter #lexiconToggle.is-ui-stack-covered::before {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html body #lexiconToggle {
     transition: none !important
@@ -1473,7 +1486,6 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered {
     transform: translate3d(0, 0, 0) !important;
   }
 }
-
 
 /* =================================================================
    § Lexicon locked: black feedback (reliquary gate + locked at-rest)
