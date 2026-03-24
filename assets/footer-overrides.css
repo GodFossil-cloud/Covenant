@@ -674,7 +674,9 @@ html.lexicon-scroll-lock #navFooter {
 
 #navFooter #lexiconToggle {
   overflow: hidden;
-  margin-top: calc(-1 * var(--lexicon-seal-top-align) + 4px) !important;
+  margin-top: 0 !important;
+  position: relative;
+  top: calc(-1 * var(--lexicon-seal-top-align) + 4px);
 
   /* iPhone Safari: keep the seal on its own stable layer so the cradle border
      doesn't hitch a ride on first drag frame reraster. */
