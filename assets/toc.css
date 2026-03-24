@@ -1162,10 +1162,15 @@ html .nav-footer {
   transition: border-top-color 220ms var(--toc-scroll-ease), border-bottom-color 220ms var(--toc-scroll-ease)
 }
 
-html .nav-footer::before,
-html .nav-footer::after {
+html .nav-footer::before {
   transition: opacity 220ms var(--toc-scroll-ease);
   will-change: opacity
+}
+
+html .nav-footer::after {
+  transition: opacity 220ms var(--toc-scroll-ease);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0)
 }
 
 html #citationLabel {
