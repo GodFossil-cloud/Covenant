@@ -1127,6 +1127,19 @@ html.lexicon-scroll-lock #navFooter {
   background-image: none !important;
 }
 
+/* Kill the covenant.css hotfix background-color on the seal face in the footer context.
+   The hotfix uses background-color (not shorthand) so we must match it explicitly. */
+#navFooter #lexiconToggle.nav-btn.center::after,
+#navFooter #lexiconToggle.nav-btn.center:hover::after,
+#navFooter #lexiconToggle.nav-btn.center:focus::after,
+#navFooter #lexiconToggle.nav-btn.center:active::after,
+#navFooter #lexiconToggle.nav-btn.center.is-nudging::after,
+#navFooter #lexiconToggle.nav-btn.center.is-pulsing::after,
+#navFooter #lexiconToggle.nav-btn.center.is-seal-dragging::after {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
 /* Lexicon weld (open): seal face fully transparent — glyph only, no backdrop, no shadow. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
 #navFooter #lexiconToggle[aria-expanded="true"]::after {
