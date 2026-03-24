@@ -1338,8 +1338,11 @@ html.toc-dock-settling .nav-footer::after {
 html.toc-opening .nav-footer,
 html.toc-closing .nav-footer,
 html.reliquary-opening .nav-footer,
-html.reliquary-closing .nav-footer {
-  border-top-color: transparent !important
+html.reliquary-closing .nav-footer,
+html.toc-open .nav-footer,
+html.reliquary-open .nav-footer {
+  border-top-color: transparent !important;
+  transition: none !important
 }
 
 /* -------------------------------------------------
