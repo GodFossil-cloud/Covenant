@@ -1094,6 +1094,13 @@ html.lexicon-scroll-lock #navFooter {
   }
 }
 
+/* Lexicon seal: kill the button element's own background in all closed/resting states.
+   The ::after face is already transparent; this zeroes the element background that covenant.css
+   sets on .nav-btn.center so nothing bleeds through the transparent pseudo. */
+#navFooter #lexiconToggle.nav-btn.center {
+  background: transparent !important;
+}
+
 /* -------------------------------------------------
    Lexicon seal face: transparent across ALL states
    (glyph-only; dock/cradle visible beneath)
@@ -1236,15 +1243,13 @@ html.lexicon-scroll-lock #navFooter #lexiconToggle .lexicon-glyph-mid-inner,
   }
 }
 
-
 /* =================================================================
    § Lexicon seal: selection surface clean
    Absorbed from: lexicon-seal-clean.css
    ================================================================= */
 
-/* Selected + CLOSED (resting and interaction): always a clean face (no fleck stack). */
 #navFooter #lexiconToggle.has-selection:not([aria-expanded="true"]):not(.is-seal-dragging)::after {
-  background-color: var(--lexicon-seal-face, #08090b) !important;
+  background-color: transparent !important;
   background-image: none !important;
 }
 
