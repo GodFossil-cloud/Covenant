@@ -1140,6 +1140,12 @@ html.lexicon-scroll-lock #navFooter {
   background-image: none !important;
 }
 
+/* Kill the ::before rim on the closed seal — glyph only, no border or inset shadow. */
+#navFooter #lexiconToggle.nav-btn.center:not([aria-expanded="true"]):not(.is-seal-dragging):not(.is-nudging)::before {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
 /* Lexicon weld (open): seal face fully transparent — glyph only, no backdrop, no shadow. */
 html.lexicon-scroll-lock #navFooter #lexiconToggle::after,
 #navFooter #lexiconToggle[aria-expanded="true"]::after {
