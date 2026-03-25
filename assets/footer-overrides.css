@@ -1496,13 +1496,10 @@ html body #navFooter #lexiconToggle.is-ui-stack-covered {
    Reliquary gate compatibility
    ------------------------------------------------- */
 
-/* reliquary.css dims #lexiconToggle via opacity during reliquary-open/closing/dragging.
-   That can visually overshoot (too dark) and then "snap back" once ui-stack applies the locked
-   attributes/classes. Keep the seal opaque and let the embedded styling carry the lock message. */
-html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]),
-html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]),
-html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]),
-html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]) {
+html.reliquary-opening #navFooter #lexiconToggle:not([aria-expanded="true"]):not(.is-ui-stack-covered),
+html.reliquary-open #navFooter #lexiconToggle:not([aria-expanded="true"]):not(.is-ui-stack-covered),
+html.reliquary-closing #navFooter #lexiconToggle:not([aria-expanded="true"]):not(.is-ui-stack-covered),
+html.reliquary-dragging #navFooter #lexiconToggle:not([aria-expanded="true"]):not(.is-ui-stack-covered) {
   opacity: 1 !important;
   filter: none !important;
   cursor: not-allowed;
