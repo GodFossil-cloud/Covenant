@@ -696,11 +696,6 @@ html.lexicon-scroll-lock #navFooter {
     --toc-tab-gap: 12px !important
   }
 
-  html.lexicon-scroll-lock .lexicon-panel,
-  #lexiconPanel[aria-hidden="false"] {
-    border-top: none !important;
-  }
-
   #navFooter .citation-label {
     margin-top: 2px;
     min-height: 16px
@@ -1121,21 +1116,7 @@ html.lexicon-scroll-lock #navFooter {
 #navFooter #lexiconToggle.nav-btn.center.has-selection:active::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-nudging::after,
 #navFooter #lexiconToggle.nav-btn.center.has-selection.is-pulsing::after,
-#navFooter #lexiconToggle.nav-btn.center.has-selection.is-seal-dragging::after,
-#navFooter #lexiconToggle.nav-btn.center.has-selection.is-sel-dragging::after {
-  background-color: transparent !important;
-  background-image: none !important;
-}
-
-/* Kill the covenant.css hotfix background-color on the seal face in the footer context.
-   The hotfix uses background-color (not shorthand) so we must match it explicitly. */
-#navFooter #lexiconToggle.nav-btn.center::after,
-#navFooter #lexiconToggle.nav-btn.center:hover::after,
-#navFooter #lexiconToggle.nav-btn.center:focus::after,
-#navFooter #lexiconToggle.nav-btn.center:active::after,
-#navFooter #lexiconToggle.nav-btn.center.is-nudging::after,
-#navFooter #lexiconToggle.nav-btn.center.is-pulsing::after,
-#navFooter #lexiconToggle.nav-btn.center.is-seal-dragging::after {
+#navFooter #lexiconToggle.nav-btn.center.has-selection.is-seal-dragging::after {
   background-color: transparent !important;
   background-image: none !important;
 }
