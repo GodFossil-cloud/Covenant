@@ -3,7 +3,6 @@
   --accent-color: #8b7355;
   --text-color: #1a1a1a;
   --bg-color: #f5f0e8;
-  --border-color: #d4c5b9;
   --highlight-color: #ede5d8;
   --sentence-highlight: #e8d8c4;
 
@@ -25,11 +24,7 @@
 
   /* Footer palette tokens live in the Obsidian & Gold Leaf block near the bottom. */
 
-  /* Keep this at 0 so the lexicon control sits perfectly centered in the footer. */
-  --lexicon-frame-raise: 0px;
-
   /* Reliquary / mechanical refinements */
-  --focus-ring: rgba(201, 169, 97, 0.48);
   --focus-ring-outer: rgba(0, 0, 0, 0.72);
 
   /* Intro sequence durations (override per-page via lexicon.js). */
@@ -1695,9 +1690,6 @@ body.is-exiting #blackFadeOverlay {
 
   /* Hairline accent across the footer slab (footer-only). */
   --footer-hairline: rgba(154, 119, 38, 0.18);
-
-  /* Cradle highlight line (footer-only). */
-  --footer-cradle-line: #3B362B;
 
   /* Citation label (footer-only). */
   --citation-color: rgba(242, 220, 154, 0.95);
