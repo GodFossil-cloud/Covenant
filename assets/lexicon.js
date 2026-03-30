@@ -1260,8 +1260,8 @@
 
     clearActiveTooltip();
     resetPanelInlineMotion();
-
     panel.classList.remove('is-open');
+    panel.classList.remove('is-half-open');
     lexOverlay.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
     lexOverlay.setAttribute('aria-hidden', 'true');
@@ -1288,6 +1288,49 @@
       if (target && target.focus) target.focus();
       focusReturnEl = null;
     }, 0);
+  }
+
+    // Half-open state for mobile bottom sheet.
+  function openPanelHalf(openEvent) {
+    if (!panel || !lexOverlay || !lexiconToggle) return;
+
+    clearActiveTooltip();
+    resetPanelInlineMotion();
+
+    focusReturnEl = lexiconToggle;
+
+    var bottomSheet = isBottomSheetMode();
+
+    // On non-bottom-sheet layouts, fall back to the existing full-open behavior.
+    if (!bottomSheet) {
+      openPanel(openEvent);
+      return;
+    }
+
+    // Keep the seal in the dock for bottom-sheet mode.
+    restoreSealToDock();
+
+    // Clear any full-open state.
+    panel.classList.remove('is-open');
+    panel.classList.remove('is-dragging');
+    if (lexOverlay) lexOverlay.classList.remove('is-open');
+
+    // Apply half-open state.
+    panel.classList.add('is-half-open');
+    panel.setAttribute('aria-hidden', 'false');
+
+    if (lexOverlay) {
+      lexOverlay.classList.add('is-open');
+      lexOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    // From an accessibility perspective the panel is open and interactive.
+    lexiconToggle.setAttribute('aria-expanded', 'true');
+    lexiconToggle.setAttribute('data-panel-open', 'true');
+
+    // Do NOT call lockBodyScroll() here. At half-open we want the panel body
+    // to scroll, but we don't hard-lock the entire page yet.
+    setLexiconGlyph();
   }
 
   function openFromToggleIntent(e) {
@@ -1343,7 +1386,10 @@
         return;
       }
 
-      if (panel.classList.contains('is-open')) {
+      var bottomSheet = isBottomSheetMode();
+
+      // If the panel is fully open OR half-open, a tap closes it.
+      if (panel.classList.contains('is-open') || panel.classList.contains('is-half-open')) {
         if (!isTopmostForDismiss()) {
           bringSelfToFront();
           return;
@@ -1354,10 +1400,28 @@
         return;
       }
 
-      if (!(isIOS && isBottomSheetMode())) triggerSealPulse();
-
+      // From closed: tap opens.
+      if (!(isIOS && bottomSheet)) triggerSealPulse();
       markSealTapOpening();
-      openFromToggleIntent(e);
+
+      // Prepare content (same behavior as openFromToggleIntent).
+      if (currentlySelectedKey) {
+        renderSentenceExplanation(
+          currentlySelectedKey,
+          currentlySelectedQuoteText,
+          currentlySelectedFallbackKey
+        );
+      } else {
+        renderOverview();
+      }
+
+      if (bottomSheet) {
+        // Mobile: first tap opens to half height.
+        openPanelHalf(e);
+      } else {
+        // Desktop / side panel: keep existing full-open behavior.
+        openPanel(e);
+      }
     });
 
     bindActivate(lexOverlay, function() {
