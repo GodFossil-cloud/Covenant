@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.16 (is-saved/is-saveable mutually exclusive) */
+/*! Covenant Lexicon UI v0.3.17 (half-open glyph, header drag, scroll lock) */
 (function() {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.16';
+  window.COVENANT_LEXICON_VERSION = '0.3.17';
 
   var doc = document;
   var root = doc.documentElement;
@@ -157,6 +157,12 @@
     return !uiStackReady(stack);
   }
 
+  function isPanelAnyOpen() {
+    // True when the panel is committed open OR sitting at the half-open midpoint.
+    return !!(panel && panel.classList &&
+      (panel.classList.contains('is-open') || panel.classList.contains('is-half-open')));
+  }
+
   function registerWithUIStack() {
     if (uiRegistered) return;
 
@@ -171,12 +177,15 @@
         useSharedScrollLock: true,
         allowScrollSelector: '#lexiconPanel .lexicon-panel-body',
 
+        // FIX: treat half-open as "open" so the shared scroll lock engages at
+        // the midpoint and the main page no longer scrolls behind the sheet.
         isOpen: function() {
-          return !!(panel && panel.classList && panel.classList.contains('is-open'));
+          return isPanelAnyOpen();
         },
 
+        // FIX: also close from half-open state.
         requestClose: function() {
-          if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
+          if (isPanelAnyOpen()) closePanel();
         },
 
         setInert: function(isInert) {
@@ -378,7 +387,8 @@
     if (iosTouchMoveBlocker) return;
 
     iosTouchMoveBlocker = function(e) {
-      if (!panel || !panel.classList.contains('is-open')) return;
+      // Local lock guards both full-open and half-open states.
+      if (!isPanelAnyOpen()) return;
       if (closestSafe(e.target, '.lexicon-panel-body')) return;
       if (e && e.cancelable) e.preventDefault();
     };
@@ -644,7 +654,8 @@
     var explicitActive = qs('.lexicon-glyph--active', lexiconToggle);
     if (explicitIdle && explicitActive) return;
 
-    var isOpen = panel.classList.contains('is-open');
+    // Treat half-open the same as open for glyph purposes.
+    var isOpen = panel.classList.contains('is-open') || panel.classList.contains('is-half-open');
     var hasSelection = !!currentlySelectedKey;
     var glyphTarget = qs('.lexicon-glyph', lexiconToggle) || lexiconToggle;
 
@@ -917,8 +928,8 @@
 
   function intToUnicodeRoman(n) {
     var num = parseInt(n, 10);
-    if (!isFinite(num) || num <= 0) return String(n);
-    return UNICODE_ROMAN_NUM[num] || String(n);
+    if (!isNaN(num) && num > 0 && UNICODE_ROMAN_NUM[num]) return UNICODE_ROMAN_NUM[num];
+    return String(n);
   }
 
   function latinToCircled(letter) {
@@ -1233,6 +1244,7 @@
       try { if (panel) void panel.offsetWidth; } catch (err1) {}
     }
 
+    panel.classList.remove('is-half-open');
     panel.classList.add('is-open');
     lexOverlay.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -1290,7 +1302,7 @@
     }, 0);
   }
 
-    // Half-open state for mobile bottom sheet.
+  // Half-open state for mobile bottom sheet.
   function openPanelHalf(openEvent) {
     if (!panel || !lexOverlay || !lexiconToggle) return;
 
@@ -1325,11 +1337,16 @@
     }
 
     // From an accessibility perspective the panel is open and interactive.
+    // FIX: also set .is-open on the toggle so the seal glyph and face adopt
+    // their "open" tone visually (was staying in closed/selection look).
     lexiconToggle.setAttribute('aria-expanded', 'true');
     lexiconToggle.setAttribute('data-panel-open', 'true');
+    lexiconToggle.classList.add('is-open');
 
-    // Do NOT call lockBodyScroll() here. At half-open we want the panel body
-    // to scroll, but we don't hard-lock the entire page yet.
+    // Notify the UI stack so the shared scroll lock engages at the midpoint
+    // (see isOpen callback above, which now returns true for is-half-open).
+    noteOpen();
+
     setLexiconGlyph();
   }
 
@@ -1689,6 +1706,7 @@
       clearSealSettling();
 
       if (!panel.classList.contains('is-open')) {
+        panel.classList.remove('is-half-open');
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
@@ -1711,8 +1729,9 @@
     function applyClosedStateFromDrag() {
       clearSealTapClasses();
 
-      if (panel.classList.contains('is-open')) {
+      if (panel.classList.contains('is-open') || panel.classList.contains('is-half-open')) {
         panel.classList.remove('is-open');
+        panel.classList.remove('is-half-open');
         lexOverlay.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
         lexOverlay.setAttribute('aria-hidden', 'true');
@@ -1782,7 +1801,8 @@
       lastT = Date.now();
       velocity = 0;
 
-      startWasOpen = panel.classList.contains('is-open');
+      // FIX: treat half-open the same as open for drag-start purposes.
+      startWasOpen = panel.classList.contains('is-open') || panel.classList.contains('is-half-open');
 
       computeClosedY();
       currentY = startWasOpen ? 0 : closedY;
@@ -1826,7 +1846,7 @@
       e.preventDefault();
     });
 
-    // --- Header drag region (full header as drag surface when panel is open) ---
+    // --- Header drag region (full header as drag surface when panel is open or half-open) ---
     var panelHeader = qs('.lexicon-panel-header', panel);
 
     function endDrag(e) {
@@ -1857,9 +1877,9 @@
       panelHeader.addEventListener('pointerdown', function(e) {
         if (!isMobileSheet()) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
-        // Only allow drag-to-close when panel is already open
-        if (!panel.classList.contains('is-open')) return;
-        // If the pointer landed directly on the seal, let the seal handle it
+        // FIX: allow drag-to-close from half-open as well as fully-open.
+        if (!panel.classList.contains('is-open') && !panel.classList.contains('is-half-open')) return;
+        // If the pointer landed directly on the seal, let the seal handle it.
         if (lexiconToggle && lexiconToggle.contains(e.target)) return;
 
         clearSealSettling();
