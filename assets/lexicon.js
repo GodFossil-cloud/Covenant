@@ -1,9 +1,9 @@
-/*! Covenant Lexicon UI v0.3.17 (half-open glyph, header drag, scroll lock) */
+/*! Covenant Lexicon UI v0.3.16 (is-saved/is-saveable mutually exclusive) */
 (function() {
   'use strict';
 
   // Exposed for quick verification during future page migrations.
-  window.COVENANT_LEXICON_VERSION = '0.3.17';
+  window.COVENANT_LEXICON_VERSION = '0.3.16';
 
   var doc = document;
   var root = doc.documentElement;
@@ -157,12 +157,6 @@
     return !uiStackReady(stack);
   }
 
-  function isPanelAnyOpen() {
-    // True when the panel is committed open OR sitting at the half-open midpoint.
-    return !!(panel && panel.classList &&
-      (panel.classList.contains('is-open') || panel.classList.contains('is-half-open')));
-  }
-
   function registerWithUIStack() {
     if (uiRegistered) return;
 
@@ -177,15 +171,12 @@
         useSharedScrollLock: true,
         allowScrollSelector: '#lexiconPanel .lexicon-panel-body',
 
-        // FIX: treat half-open as "open" so the shared scroll lock engages at
-        // the midpoint and the main page no longer scrolls behind the sheet.
         isOpen: function() {
-          return isPanelAnyOpen();
+          return !!(panel && panel.classList && panel.classList.contains('is-open'));
         },
 
-        // FIX: also close from half-open state.
         requestClose: function() {
-          if (isPanelAnyOpen()) closePanel();
+          if (panel && panel.classList && panel.classList.contains('is-open')) closePanel();
         },
 
         setInert: function(isInert) {
@@ -387,8 +378,7 @@
     if (iosTouchMoveBlocker) return;
 
     iosTouchMoveBlocker = function(e) {
-      // Local lock guards both full-open and half-open states.
-      if (!isPanelAnyOpen()) return;
+      if (!panel || !panel.classList.contains('is-open')) return;
       if (closestSafe(e.target, '.lexicon-panel-body')) return;
       if (e && e.cancelable) e.preventDefault();
     };
@@ -654,8 +644,7 @@
     var explicitActive = qs('.lexicon-glyph--active', lexiconToggle);
     if (explicitIdle && explicitActive) return;
 
-    // Treat half-open the same as open for glyph purposes.
-    var isOpen = panel.classList.contains('is-open') || panel.classList.contains('is-half-open');
+    var isOpen = panel.classList.contains('is-open');
     var hasSelection = !!currentlySelectedKey;
     var glyphTarget = qs('.lexicon-glyph', lexiconToggle) || lexiconToggle;
 
@@ -928,8 +917,8 @@
 
   function intToUnicodeRoman(n) {
     var num = parseInt(n, 10);
-    if (!isNaN(num) && num > 0 && UNICODE_ROMAN_NUM[num]) return UNICODE_ROMAN_NUM[num];
-    return String(n);
+    if (!isFinite(num) || num <= 0) return String(n);
+    return UNICODE_ROMAN_NUM[num] || String(n);
   }
 
   function latinToCircled(letter) {
@@ -1244,7 +1233,6 @@
       try { if (panel) void panel.offsetWidth; } catch (err1) {}
     }
 
-    panel.classList.remove('is-half-open');
     panel.classList.add('is-open');
     lexOverlay.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -1272,8 +1260,8 @@
 
     clearActiveTooltip();
     resetPanelInlineMotion();
+
     panel.classList.remove('is-open');
-    panel.classList.remove('is-half-open');
     lexOverlay.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
     lexOverlay.setAttribute('aria-hidden', 'true');
@@ -1300,54 +1288,6 @@
       if (target && target.focus) target.focus();
       focusReturnEl = null;
     }, 0);
-  }
-
-  // Half-open state for mobile bottom sheet.
-  function openPanelHalf(openEvent) {
-    if (!panel || !lexOverlay || !lexiconToggle) return;
-
-    clearActiveTooltip();
-    resetPanelInlineMotion();
-
-    focusReturnEl = lexiconToggle;
-
-    var bottomSheet = isBottomSheetMode();
-
-    // On non-bottom-sheet layouts, fall back to the existing full-open behavior.
-    if (!bottomSheet) {
-      openPanel(openEvent);
-      return;
-    }
-
-    // Keep the seal in the dock for bottom-sheet mode.
-    restoreSealToDock();
-
-    // Clear any full-open state.
-    panel.classList.remove('is-open');
-    panel.classList.remove('is-dragging');
-    if (lexOverlay) lexOverlay.classList.remove('is-open');
-
-    // Apply half-open state.
-    panel.classList.add('is-half-open');
-    panel.setAttribute('aria-hidden', 'false');
-
-    if (lexOverlay) {
-      lexOverlay.classList.add('is-open');
-      lexOverlay.setAttribute('aria-hidden', 'false');
-    }
-
-    // From an accessibility perspective the panel is open and interactive.
-    // FIX: also set .is-open on the toggle so the seal glyph and face adopt
-    // their "open" tone visually (was staying in closed/selection look).
-    lexiconToggle.setAttribute('aria-expanded', 'true');
-    lexiconToggle.setAttribute('data-panel-open', 'true');
-    lexiconToggle.classList.add('is-open');
-
-    // Notify the UI stack so the shared scroll lock engages at the midpoint
-    // (see isOpen callback above, which now returns true for is-half-open).
-    noteOpen();
-
-    setLexiconGlyph();
   }
 
   function openFromToggleIntent(e) {
@@ -1403,10 +1343,7 @@
         return;
       }
 
-      var bottomSheet = isBottomSheetMode();
-
-      // If the panel is fully open OR half-open, a tap closes it.
-      if (panel.classList.contains('is-open') || panel.classList.contains('is-half-open')) {
+      if (panel.classList.contains('is-open')) {
         if (!isTopmostForDismiss()) {
           bringSelfToFront();
           return;
@@ -1417,28 +1354,10 @@
         return;
       }
 
-      // From closed: tap opens.
-      if (!(isIOS && bottomSheet)) triggerSealPulse();
+      if (!(isIOS && isBottomSheetMode())) triggerSealPulse();
+
       markSealTapOpening();
-
-      // Prepare content (same behavior as openFromToggleIntent).
-      if (currentlySelectedKey) {
-        renderSentenceExplanation(
-          currentlySelectedKey,
-          currentlySelectedQuoteText,
-          currentlySelectedFallbackKey
-        );
-      } else {
-        renderOverview();
-      }
-
-      if (bottomSheet) {
-        // Mobile: first tap opens to half height.
-        openPanelHalf(e);
-      } else {
-        // Desktop / side panel: keep existing full-open behavior.
-        openPanel(e);
-      }
+      openFromToggleIntent(e);
     });
 
     bindActivate(lexOverlay, function() {
@@ -1458,7 +1377,7 @@
     }
 
     doc.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape' && isPanelAnyOpen()) {
+      if (event.key === 'Escape' && panel.classList.contains('is-open')) {
         if (!isTopmostForDismiss()) return;
         markSealTapClosing();
         closePanel();
@@ -1467,7 +1386,7 @@
 
     window.addEventListener('blur', function() {
       if (!isTopmostForDismiss()) return;
-      if (isPanelAnyOpen()) {
+      if (panel.classList.contains('is-open')) {
         markSealTapClosing();
         closePanel();
       }
@@ -1476,7 +1395,7 @@
     doc.addEventListener('visibilitychange', function() {
       if (!doc.hidden) return;
       if (!isTopmostForDismiss()) return;
-      if (isPanelAnyOpen()) {
+      if (panel.classList.contains('is-open')) {
         markSealTapClosing();
         closePanel();
       }
@@ -1706,7 +1625,6 @@
       clearSealSettling();
 
       if (!panel.classList.contains('is-open')) {
-        panel.classList.remove('is-half-open');
         panel.classList.add('is-open');
         lexOverlay.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
@@ -1729,9 +1647,8 @@
     function applyClosedStateFromDrag() {
       clearSealTapClasses();
 
-      if (panel.classList.contains('is-open') || panel.classList.contains('is-half-open')) {
+      if (panel.classList.contains('is-open')) {
         panel.classList.remove('is-open');
-        panel.classList.remove('is-half-open');
         lexOverlay.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
         lexOverlay.setAttribute('aria-hidden', 'true');
@@ -1801,8 +1718,7 @@
       lastT = Date.now();
       velocity = 0;
 
-      // FIX: treat half-open the same as open for drag-start purposes.
-      startWasOpen = panel.classList.contains('is-open') || panel.classList.contains('is-half-open');
+      startWasOpen = panel.classList.contains('is-open');
 
       computeClosedY();
       currentY = startWasOpen ? 0 : closedY;
@@ -1846,7 +1762,7 @@
       e.preventDefault();
     });
 
-    // --- Header drag region (full header as drag surface when panel is open or half-open) ---
+    // --- Header drag region (full header as drag surface when panel is open) ---
     var panelHeader = qs('.lexicon-panel-header', panel);
 
     function endDrag(e) {
@@ -1877,9 +1793,9 @@
       panelHeader.addEventListener('pointerdown', function(e) {
         if (!isMobileSheet()) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
-        // FIX: allow drag-to-close from half-open as well as fully-open.
-        if (!panel.classList.contains('is-open') && !panel.classList.contains('is-half-open')) return;
-        // If the pointer landed directly on the seal, let the seal handle it.
+        // Only allow drag-to-close when panel is already open
+        if (!panel.classList.contains('is-open')) return;
+        // If the pointer landed directly on the seal, let the seal handle it
         if (lexiconToggle && lexiconToggle.contains(e.target)) return;
 
         clearSealSettling();
