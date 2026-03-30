@@ -1458,7 +1458,7 @@
     }
 
     doc.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape' && panel.classList.contains('is-open')) {
+      if (event.key === 'Escape' && isPanelAnyOpen()) {
         if (!isTopmostForDismiss()) return;
         markSealTapClosing();
         closePanel();
@@ -1467,7 +1467,7 @@
 
     window.addEventListener('blur', function() {
       if (!isTopmostForDismiss()) return;
-      if (panel.classList.contains('is-open')) {
+      if (isPanelAnyOpen()) {
         markSealTapClosing();
         closePanel();
       }
@@ -1476,7 +1476,7 @@
     doc.addEventListener('visibilitychange', function() {
       if (!doc.hidden) return;
       if (!isTopmostForDismiss()) return;
-      if (panel.classList.contains('is-open')) {
+      if (isPanelAnyOpen()) {
         markSealTapClosing();
         closePanel();
       }
