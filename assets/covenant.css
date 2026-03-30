@@ -1508,6 +1508,18 @@ body.is-exiting #blackFadeOverlay {
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.5);
   }
 
+    /* Half-open state: mobile sheet at a comfortable reading height. */
+  .lexicon-panel.is-half-open {
+    transform: translateY(40vh);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  @supports (height: 100dvh) {
+    .lexicon-panel.is-half-open {
+      transform: translateY(40dvh);
+    }
+  }
+
   /* When the sheet is fully open, drop the seal slightly so it sits flush with the sheet lip. */
   #lexiconToggle[aria-expanded="true"] {
     --seal-translate: 0px;
