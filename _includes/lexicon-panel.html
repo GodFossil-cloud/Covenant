@@ -25,7 +25,16 @@
   <div class="lexicon-panel-body">
     <!-- Collapsible Overview section (always the first entry) -->
     <section class="lexicon-overview" id="lexiconOverview">
-      <!-- JS will inject the page Overview here -->
+      <button type="button"
+          class="lexicon-overview-head"
+          aria-expanded="true"
+          aria-controls="lexiconOverviewBody">
+        <span class="lexicon-overview-title">Overview</span>
+      </button>
+
+      <div class="lexicon-overview-body" id="lexiconOverviewBody">
+      <!-- JS will inject overview HTML here -->
+      </div>
     </section>
 
     <!-- Ledger: all selectable passages on this page -->
