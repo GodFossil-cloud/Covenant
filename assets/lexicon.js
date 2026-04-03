@@ -1269,9 +1269,22 @@
     else if (panel.focus) panel.focus();
   }
 
+  var overviewBody = byId('lexiconOverviewBody');
+  var overviewHead = qs('.lexicon-overview-head', overviewEl);
+
   function renderOverview() {
-    if (!overviewEl) return;
-    overviewEl.innerHTML = defaultOverviewHTML;
+    if (!overviewBody) return;
+    overviewBody.innerHTML = defaultOverviewHTML;
+  }
+
+  function wireOverviewToggle() {
+    if (!overviewHead || !overviewBody) return;
+
+    overviewHead.addEventListener('click', function() {
+      overviewOpen = !overviewOpen;
+      overviewHead.setAttribute('aria-expanded', overviewOpen ? 'true' : 'false');
+      overviewBody.hidden = !overviewOpen;
+    });
   }
 
   // ----------------------------------------
@@ -1598,7 +1611,8 @@
   buildPassageModel();
   renderLedger();
   wireLedgerClicks();
-  renderOverview(); // Unsure if this goes here
+  renderOverview();
+  wireOverviewToggle();
   registerWithUIStack();
 
   if (lexiconToggle && panel && lexOverlay) {
