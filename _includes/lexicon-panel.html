@@ -23,7 +23,20 @@
   </div>
 
   <div class="lexicon-panel-body">
-    <div id="lexiconDynamicContent"></div>
+    <!-- Collapsible Overview section (always the first entry) -->
+    <section class="lexicon-overview" id="lexiconOverview">
+      <!-- JS will inject the page Overview here -->
+    </section>
+
+    <!-- Ledger: all selectable passages on this page -->
+    <section class="lexicon-passage-ledger"
+             id="lexiconPassageLedger"
+             aria-label="Passages on this page">
+      <!-- JS will inject passage entries here -->
+    </section>
+
+    <!-- Hidden scratchpad preserved for compatibility -->
+    <div id="lexiconDynamicContent" hidden></div>
   </div>
 </div>
 
