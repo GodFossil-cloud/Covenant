@@ -1292,6 +1292,14 @@
   // ----------------------------------------
 
   function getQuoteBox() {
+    // Prefer any visible Lexicon quote box inside the panel.
+    var panelEl = byId('lexiconPanel');
+    if (panelEl) {
+      var box = panelEl.querySelector('.lexicon-sentence-quote');
+      if (box) return box;
+    }
+
+    // Fallback: old scratchpad (for safety / migrations).
     return dynamicContent ? dynamicContent.querySelector('.lexicon-sentence-quote') : null;
   }
 
@@ -1598,8 +1606,13 @@
   }
 
   function openFromToggleIntent(e) {
-    if (currentlySelectedKey) renderSentenceExplanation(currentlySelectedKey, currentlySelectedQuoteText, currentlySelectedFallbackKey);
-    else renderOverview();
+    if (currentlySelectedKey) {
+      // Ensure ledger entry for the current selection is active/expanded.
+      activatePassage(currentlySelectedKey, 'ledger');
+    } else {
+      // No selection yet: just make sure Overview is rendered.
+      renderOverview();
+    }
 
     openPanel(e);
   }
@@ -1751,13 +1764,24 @@
 
     for (var i = 0; i < subparts.length; i++) {
       (function(subpart) {
-        
         subpart.addEventListener('click', function(e) {
-          if (closestSafe(e && e.target, '.subpart')) return;
           clearActiveTooltip();
 
-          var key = sentence.dataset.lexiconKey;
-          if (!key) return;
+          // Find parent sentence
+          var sentence = closestSafe(subpart, '.sentence');
+          if (!sentence || !sentence.dataset) return;
+
+          var baseKey = sentence.dataset.lexiconKey;
+          if (!baseKey) return;
+
+          // Find this subpart’s letter (A, B, C…)
+          var markerEl = qs('.subpart-marker', subpart);
+          var letter = circledToLatin(
+            markerEl ? normalizeWhitespace(markerEl.textContent) : ''
+          );
+          if (!letter) return;
+
+          var childKey = baseKey + '.' + letter;
 
           activatePassage(childKey, 'page');
         });
