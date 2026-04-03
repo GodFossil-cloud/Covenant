@@ -113,6 +113,8 @@
 
   var dynamicContent = byId('lexiconDynamicContent');
   var dragRegion = byId('lexiconDragRegion');
+  var overviewEl = byId('lexiconOverview');
+  var ledgerEl = byId('lexiconPassageLedger');
 
   var citationText = byId('citationText');
 
@@ -339,6 +341,11 @@
   var currentlySelectedKey = null;
   var currentlySelectedQuoteText = '';
   var currentlySelectedFallbackKey = null;
+
+  var passages = [];        // ledger model for this page
+  var activeKey = null;     // currently active passage key (or null)
+
+  var overviewOpen = true;  // current Overview open/closed state
 
   var currentlyActiveTooltip = null;
   var focusReturnEl = null;
@@ -817,6 +824,138 @@
     }
   }
 
+  function buildPassageModel() {
+    passages = [];
+
+    var sentenceNodes = qsa('.sentence');
+    if (!sentenceNodes || !sentenceNodes.length) return;
+
+    for (var i = 0; i < sentenceNodes.length; i++) {
+      var sentence = sentenceNodes[i];
+      var baseKey = sentence.dataset ? sentence.dataset.lexiconKey : null;
+      if (!baseKey) continue;
+
+      var hasSubparts = sentence.classList.contains('has-subparts');
+      var subparts = hasSubparts ? qsa('.subpart', sentence) : null;
+
+      if (hasSubparts && subparts && subparts.length) {
+        // Block entry
+        passages.push({
+          key: baseKey,
+          fallbackKey: null,
+          type: 'block',
+          blockKey: null,
+          citationText: formatCitation(baseKey),
+          quoteText: '' // optional: or derive a short label
+        });
+
+        // Child subparts under this block
+        for (var j = 0; j < subparts.length; j++) {
+          var subpart = subparts[j];
+          var markerEl = qs('.subpart-marker', subpart);
+          var letter = circledToLatin(
+            markerEl ? normalizeWhitespace(markerEl.textContent) : ''
+          );
+          if (!letter) continue;
+
+          var childKey = baseKey + '.' + letter;
+          var quoteEl = qs('.subpart-content', subpart) || subpart;
+          var quoteText = normalizeWhitespace(quoteEl.textContent);
+
+          passages.push({
+            key: childKey,
+            fallbackKey: baseKey,
+            type: 'subpart',
+            blockKey: baseKey,
+            citationText: formatCitation(childKey),
+            quoteText: quoteText
+          });
+        }
+      } else {
+        // Simple sentence
+        var text = sentence.dataset.sentenceText ||
+          sentence.textContent.replace(/^[0-9]+\\.\\s*/, '');
+        text = normalizeWhitespace(text);
+
+        passages.push({
+          key: baseKey,
+          fallbackKey: null,
+          type: 'sentence',
+          blockKey: null,
+          citationText: formatCitation(baseKey),
+          quoteText: text
+        });
+      }
+    }
+  }
+
+  function renderLedger() {
+    if (!ledgerEl) return;
+
+    // Clear any previous content
+    while (ledgerEl.firstChild) ledgerEl.removeChild(ledgerEl.firstChild);
+
+    for (var i = 0; i < passages.length; i++) {
+      var p = passages[i];
+
+      var entry = doc.createElement('article');
+      entry.className = 'lexicon-entry lexicon-entry--' + p.type;
+      entry.setAttribute('data-lexicon-key', p.key);
+      if (p.blockKey) entry.setAttribute('data-lexicon-block', p.blockKey);
+
+      var head = doc.createElement('button');
+      head.type = 'button';
+      head.className = 'lexicon-entry-head';
+      head.setAttribute('aria-expanded', 'false');
+
+      var bodyId = 'lexiconEntryBody-' + p.key.replace(/[^A-Za-z0-9_-]/g, '_');
+      head.setAttribute('aria-controls', bodyId);
+
+      var cit = doc.createElement('span');
+      cit.className = 'lexicon-entry-citation';
+      cit.textContent = p.citationText;
+
+      var preview = doc.createElement('span');
+      preview.className = 'lexicon-entry-preview';
+      preview.textContent = p.quoteText || '';
+
+      var savedIndicator = doc.createElement('span');
+      savedIndicator.className = 'lexicon-entry-saved-indicator';
+      savedIndicator.setAttribute('aria-hidden', 'true');
+
+      head.appendChild(cit);
+      head.appendChild(preview);
+      head.appendChild(savedIndicator);
+
+      var body = doc.createElement('div');
+      body.className = 'lexicon-entry-body';
+      body.id = bodyId;
+      body.hidden = true;
+
+      entry.appendChild(head);
+      entry.appendChild(body);
+
+      ledgerEl.appendChild(entry);
+    }
+  }
+
+  function wireLedgerClicks() {
+    if (!ledgerEl) return;
+
+    ledgerEl.addEventListener('click', function(e) {
+      var head = closestSafe(e.target, '.lexicon-entry-head');
+      if (!head) return;
+
+      var entry = closestSafe(head, '.lexicon-entry');
+      if (!entry) return;
+
+      var key = entry.dataset ? entry.dataset.lexiconKey : null;
+      if (!key) return;
+
+      activatePassage(key, 'ledger');
+    });
+  }
+
   // ----------------------------------------
   // Intro sequencing
   // ----------------------------------------
@@ -1131,12 +1270,8 @@
   }
 
   function renderOverview() {
-    if (!dynamicContent) return;
-    dynamicContent.style.opacity = '0';
-    setTimeout(function() {
-      dynamicContent.innerHTML = defaultOverviewHTML;
-      dynamicContent.style.opacity = '1';
-    }, 150);
+    if (!overviewEl) return;
+    overviewEl.innerHTML = defaultOverviewHTML;
   }
 
   // ----------------------------------------
@@ -1211,6 +1346,165 @@
         }
       } catch (err) {}
     }, 150);
+  }
+
+  function ensureEntryBody(key, sentenceText, fallbackKey) {
+    if (!ledgerEl) return;
+
+    var entry = qs('.lexicon-entry[data-lexicon-key="' + key + '"]', ledgerEl);
+    if (!entry) return;
+
+    var body = qs('.lexicon-entry-body', entry);
+    if (!body) return;
+
+    if (body.dataset && body.dataset.lexiconLoaded === 'true') {
+      // We'll update saved state elsewhere
+      return;
+    }
+
+    var explanation = sentenceExplanations[key] ||
+      (fallbackKey ? sentenceExplanations[fallbackKey] : null);
+
+    if (!explanation) {
+      body.innerHTML = '<p class="lexicon-entry-empty">No Lexicon entry yet.</p>';
+      if (body.dataset) body.dataset.lexiconLoaded = 'true';
+      return;
+    }
+
+    var safeSentence = escapeHtml(sentenceText);
+
+    var currentFile = (window.location && window.location.pathname)
+      ? window.location.pathname.split('/').pop() || ''
+      : '';
+
+    var alreadySaved = isPassageSaved(currentFile, key);
+    var saveClass = alreadySaved ? 'is-saved' : 'is-saveable';
+    var saveHint = alreadySaved ? 'Saved ✦' : 'Tap to save';
+    var saveLabel = alreadySaved ? 'Remove from Reliquary' : 'Save to Reliquary';
+    var savePressed = alreadySaved ? 'true' : 'false';
+
+    body.innerHTML =
+      '<div class="lexicon-sentence-quote ' + saveClass + '" ' +
+        'role="button" tabindex="0" ' +
+        'aria-label="' + saveLabel + '" ' +
+        'aria-pressed="' + savePressed + '" ' +
+        'data-quote-hint="' + saveHint + '">' +
+        '“' + safeSentence + '”' +
+      '</div>' +
+      '<p>' + explanation + '</p>';
+
+    if (body.dataset) body.dataset.lexiconLoaded = 'true';
+
+    try {
+      if (typeof window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX === 'function') {
+        window.COVENANT_RELIQUARY_WIRE_QUOTE_BOX();
+      }
+    } catch (err) {}
+  }
+
+  function activatePassage(key, source) {
+    if (!key) {
+      // Clear selection
+      if (currentlySelectedSentence) {
+        currentlySelectedSentence.classList.remove('is-selected');
+        currentlySelectedSentence = null;
+      }
+      clearSubpartSelection();
+      activeKey = null;
+      currentlySelectedKey = null;
+      currentlySelectedQuoteText = '';
+      currentlySelectedFallbackKey = null;
+
+      updateLexiconButtonState();
+      updateCitationLabel(null, true);
+
+      // Collapse all ledger entries
+      if (ledgerEl) {
+        var heads = qsa('.lexicon-entry-head', ledgerEl);
+        var bodies = qsa('.lexicon-entry-body', ledgerEl);
+        for (var i = 0; i < heads.length; i++) heads[i].setAttribute('aria-expanded', 'false');
+        for (var j = 0; j < bodies.length; j++) bodies[j].hidden = true;
+      }
+      return;
+    }
+
+    var hadPreviousSelection = !!activeKey;
+    var isSame = (activeKey === key);
+
+    if (isSame) {
+      activatePassage(null, source);
+      return;
+    }
+
+    // Clear previous
+    if (currentlySelectedSentence) {
+      currentlySelectedSentence.classList.remove('is-selected');
+      currentlySelectedSentence = null;
+    }
+    clearSubpartSelection();
+
+    // Mark on page
+    var sentence = qs('.sentence[data-lexicon-key="' + key.split('.')[0] + '"]');
+    if (sentence) {
+      sentence.classList.add('is-selected');
+      currentlySelectedSentence = sentence;
+
+      // If subpart, also mark subpart node
+      var parts = key.split('.');
+      if (parts.length === 3) {
+        var letter = parts[2];
+        var subparts = qsa('.subpart', sentence);
+        for (var i = 0; i < subparts.length; i++) {
+          var markerEl = qs('.subpart-marker', subparts[i]);
+          var letterHere = circledToLatin(
+            markerEl ? normalizeWhitespace(markerEl.textContent) : ''
+          );
+          if (letterHere === letter) {
+            subparts[i].classList.add('is-subpart-selected');
+            currentlySelectedSubpart = subparts[i];
+            break;
+          }
+        }
+      }
+    }
+
+    // Find passage data
+    var p = null;
+    for (var k = 0; k < passages.length; k++) {
+      if (passages[k].key === key) { p = passages[k]; break; }
+    }
+    if (!p) return;
+
+    activeKey = key;
+    currentlySelectedKey = key;
+    currentlySelectedQuoteText = p.quoteText || '';
+    currentlySelectedFallbackKey = p.fallbackKey || null;
+
+    updateLexiconButtonState();
+    updateCitationLabel(key, hadPreviousSelection);
+
+    ensureEntryBody(key, p.quoteText, p.fallbackKey);
+
+    // Update ledger expansion
+    if (ledgerEl) {
+      var heads = qsa('.lexicon-entry-head', ledgerEl);
+      var bodies = qsa('.lexicon-entry-body', ledgerEl);
+      for (var i = 0; i < heads.length; i++) heads[i].setAttribute('aria-expanded', 'false');
+      for (var j = 0; j < bodies.length; j++) bodies[j].hidden = true;
+
+      var entry = qs('.lexicon-entry[data-lexicon-key="' + key + '"]', ledgerEl);
+      if (entry) {
+        var head = qs('.lexicon-entry-head', entry);
+        var body = qs('.lexicon-entry-body', entry);
+        if (head) head.setAttribute('aria-expanded', 'true');
+        if (body) body.hidden = false;
+      }
+    }
+
+    // If activation came from page and panel is closed, open it
+    if (source === 'page' && panel && !panel.classList.contains('is-open')) {
+      openPanel(null);
+    }
   }
 
   function openPanel(openEvent) {
@@ -1301,6 +1595,10 @@
   // Initialization / event wiring
   // ========================================
   validateSentenceKeys();
+  buildPassageModel();
+  renderLedger();
+  wireLedgerClicks();
+  renderOverview(); // Unsure if this goes here
   registerWithUIStack();
 
   if (lexiconToggle && panel && lexOverlay) {
@@ -1439,54 +1737,15 @@
 
     for (var i = 0; i < subparts.length; i++) {
       (function(subpart) {
+        
         subpart.addEventListener('click', function(e) {
-          stopEvent(e);
+          if (closestSafe(e && e.target, '.subpart')) return;
           clearActiveTooltip();
 
-          var sentence = closestSafe(subpart, '.sentence');
-          if (!sentence) return;
+          var key = sentence.dataset.lexiconKey;
+          if (!key) return;
 
-          var baseKey = (sentence.dataset && sentence.dataset.lexiconKey) ? String(sentence.dataset.lexiconKey) : '';
-          if (!baseKey) return;
-
-          var markerEl = qs('.subpart-marker', subpart);
-          var letter = circledToLatin(markerEl ? normalizeWhitespace(markerEl.textContent) : '');
-          if (!letter) return;
-
-          var key = baseKey + '.' + letter;
-          var quoteEl = qs('.subpart-content', subpart) || subpart;
-          var quoteText = normalizeWhitespace(quoteEl.textContent);
-
-          var hadPreviousSelection = !!currentlySelectedKey;
-          var isSameSelection = (currentlySelectedKey === key);
-
-          if (currentlySelectedSentence && currentlySelectedSentence !== sentence) {
-            currentlySelectedSentence.classList.remove('is-selected');
-          }
-          clearSubpartSelection();
-
-          if (isSameSelection) {
-            sentence.classList.remove('is-selected');
-            clearSelectionState();
-            updateLexiconButtonState();
-            updateCitationLabel(null, true);
-            renderOverview();
-            return;
-          }
-
-          sentence.classList.add('is-selected');
-          currentlySelectedSentence = sentence;
-
-          subpart.classList.add('is-subpart-selected');
-          currentlySelectedSubpart = subpart;
-
-          currentlySelectedKey = key;
-          currentlySelectedFallbackKey = baseKey;
-          currentlySelectedQuoteText = quoteText;
-
-          updateLexiconButtonState();
-          updateCitationLabel(key, hadPreviousSelection);
-          renderSentenceExplanation(key, quoteText, baseKey);
+          activatePassage(childKey, 'page');
         });
       })(subparts[i]);
     }
@@ -1499,43 +1758,15 @@
 
     for (var i = 0; i < sentences.length; i++) {
       (function(sentence) {
+        
         sentence.addEventListener('click', function(e) {
           if (closestSafe(e && e.target, '.subpart')) return;
-
           clearActiveTooltip();
 
-          var wasSelected = sentence.classList.contains('is-selected');
-          var hadPreviousSelection = !!currentlySelectedKey;
-          var hadSubpartInThisSentence = !!(currentlySelectedSubpart && currentlySelectedSentence === sentence);
-
-          if (currentlySelectedSentence && currentlySelectedSentence !== sentence) {
-            currentlySelectedSentence.classList.remove('is-selected');
-          }
-          clearSubpartSelection();
-
-          if (wasSelected && !hadSubpartInThisSentence && currentlySelectedSentence === sentence) {
-            sentence.classList.remove('is-selected');
-            clearSelectionState();
-            updateLexiconButtonState();
-            updateCitationLabel(null, true);
-            renderOverview();
-            return;
-          }
-
-          sentence.classList.add('is-selected');
-          currentlySelectedSentence = sentence;
-
           var key = sentence.dataset.lexiconKey;
-          var text = sentence.dataset.sentenceText || sentence.textContent.replace(/^[0-9]+\.\s*/, '');
-          text = normalizeWhitespace(text);
+          if (!key) return;
 
-          currentlySelectedKey = key;
-          currentlySelectedQuoteText = text;
-          currentlySelectedFallbackKey = null;
-
-          updateLexiconButtonState();
-          updateCitationLabel(key, hadPreviousSelection);
-          renderSentenceExplanation(key, text);
+          activatePassage(key, 'page');
         });
       })(sentences[i]);
     }
