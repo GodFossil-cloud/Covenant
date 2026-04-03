@@ -597,6 +597,14 @@
   // ---------------------------
 
   function getQuoteBox() {
+    // Prefer any visible Lexicon quote box inside the Lexicon panel.
+    var panelEl = byId('lexiconPanel');
+    if (panelEl) {
+      var box = panelEl.querySelector('.lexicon-sentence-quote');
+      if (box) return box;
+    }
+
+    // Fallback for older layouts.
     var dc = byId('lexiconDynamicContent');
     return dc ? dc.querySelector('.lexicon-sentence-quote') : null;
   }
